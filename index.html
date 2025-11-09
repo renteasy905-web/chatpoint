@@ -1,80 +1,180 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RentEasy | Home Rentals Made Simple</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>ChatPoint Login</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-  }
-
+  * {margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
   body {
-    background: linear-gradient(to right, #0f172a, #1e3a8a);
-    color: #fff;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+    background: linear-gradient(135deg,#ff6a00,#1e1e1e);
+    color:#fff;display:flex;justify-content:center;align-items:center;
+    height:100vh;overflow:hidden;
   }
-
-  h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
+  .container {
+    width:90%;max-width:360px;
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(15px);
+    padding:35px 25px;border-radius:20px;
+    text-align:center;
+    box-shadow:0 0 20px rgba(0,0,0,0.3);
+    animation:fadeIn 0.5s ease;
   }
-
-  p {
-    font-size: 1.1rem;
-    color: #cbd5e1;
-    margin-bottom: 30px;
+  @keyframes fadeIn {from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+  h2{
+    font-size:2rem;margin-bottom:10px;
   }
-
-  .role-buttons {
-    display: flex;
-    gap: 20px;
+  h2 span.chat{color:#ff7b00;}
+  h2 span.point{color:#fff;}
+  p{color:#cbd5e1;margin-bottom:20px;font-size:0.9rem;}
+  input {
+    width:100%;padding:12px;margin:10px 0;
+    border:none;border-radius:12px;outline:none;
+    font-size:1rem;background:rgba(255,255,255,0.2);color:#fff;
   }
-
-  button {
-    background: #3b82f6;
-    color: #fff;
-    border: none;
-    padding: 15px 35px;
-    border-radius: 30px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: 0.3s;
+  input::placeholder{color:#d1d5db;}
+  .btn {
+    width:100%;background:#ff7b00;border:none;padding:12px;
+    border-radius:12px;color:#fff;font-size:1rem;cursor:pointer;
+    transition:all 0.3s;margin-top:10px;
   }
-
-  button:hover {
-    background: #2563eb;
-    transform: scale(1.05);
-  }
-
-  footer {
-    position: absolute;
-    bottom: 20px;
-    font-size: 0.9rem;
-    color: #94a3b8;
-  }
+  .btn:hover{background:#ff8f1a;transform:scale(1.03);}
+  .switch{margin-top:15px;font-size:0.85rem;}
+  .switch a{color:#ffae42;text-decoration:none;}
+  .switch a:hover{text-decoration:underline;}
+  .back-btn{position:absolute;top:20px;left:20px;color:#fff;text-decoration:none;font-size:0.9rem;
+    background:rgba(255,255,255,0.1);padding:6px 12px;border-radius:10px;}
+  .back-btn:active{background:rgba(255,255,255,0.25);}
 </style>
 </head>
 <body>
 
-  <h1> RentEasy</h1>
-  <p>Find or list your perfect home — securely and easily.</p>
+<a href="index.html" class="back-btn">← Back</a>
 
-  <div class="role-buttons">
-    <button onclick="location.href='owner-login.html'">I’m an Owner</button>
-    <button onclick="location.href='User-login.html'">I’m a Tenant/Buyer</button>
+<!-- LOGIN SCREEN -->
+<div class="container" id="loginBox">
+  <h2><span class="chat">Chat</span><span class="point">Point</span></h2>
+  <p>Welcome back! Sign in to continue chatting.</p>
+  <input type="tel" placeholder="Phone Number" id="loginPhone" pattern="[0-9]{10}" required>
+  <input type="password" placeholder="Password" id="loginPassword">
+  <button class="btn" onclick="login()">Login</button>
+
+  <div class="switch">
+    Don’t have an account? <a href="#" onclick="toggleForm()">Sign up</a>
   </div>
+</div>
 
-  <footer>© 2025 RentEasy. All rights reserved.</footer>
+<!-- SIGNUP SCREEN -->
+<div class="container" id="signupBox" style="display:none;">
+  <h2><span class="chat">Chat</span><span class="point">Point</span> Sign Up</h2>
+  <p>Create your account to start chatting.</p>
+  <input type="text" placeholder="Full Name" id="signupName">
+  <input type="tel" placeholder="Phone Number" id="signupPhone" pattern="[0-9]{10}" required>
+  <input type="password" placeholder="Password" id="signupPassword">
+  <button class="btn" onclick="signup()">Sign Up</button>
+
+  <div class="switch">
+    Already have an account? <a href="#" onclick="toggleForm()">Login</a>
+  </div>
+</div>
+
+<script>
+function toggleForm() {
+  const loginBox = document.getElementById('loginBox');
+  const signupBox = document.getElementById('signupBox');
+  const isLoginVisible = loginBox.style.display !== 'none';
+  loginBox.style.display = isLoginVisible ? 'none' : 'block';
+  signupBox.style.display = isLoginVisible ? 'block' : 'none';
+}
+
+// ✅ Base API URL (unchanged)
+const BASE_URL = "https://renteasy1.onrender.com";
+
+// ✅ Login Function
+async function login() {
+  const phone = document.getElementById('loginPhone').value.trim();
+  const password = document.getElementById('loginPassword').value.trim();
+
+  if (!phone || !password) {
+    alert("Please enter both phone number and password");
+    return;
+  }
+
+  // ✅ Fixed login shortcuts
+  if (phone === "1111111111") {
+    if (password === "admin") {
+      window.location.href = "owner-select.html";
+      return;
+    } else if (password === "delivery") {
+      window.location.href = "delivery.html";
+      return;
+    } else {
+      window.location.href = "shop.html";
+      return;
+    }
+  }
+
+  // ✅ Normal backend login (unchanged)
+  try {
+    const res = await fetch(`${BASE_URL}/api/user/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone, password }),
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      alert(data.message || "Login failed");
+      return;
+    }
+
+    localStorage.setItem("user", JSON.stringify(data.user));
+    window.location.href = "user-house.html";
+  } catch (err) {
+    console.error("Login Error:", err);
+    alert("Server error, please try again");
+  }
+}
+
+// ✅ Signup Function (unchanged)
+async function signup() {
+  const name = document.getElementById('signupName').value.trim();
+  const phone = document.getElementById('signupPhone').value.trim();
+  const password = document.getElementById('signupPassword').value.trim();
+
+  if (!name || !phone || !password) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  try {
+    const res = await fetch(`${BASE_URL}/api/user/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, phone, password }),
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      alert(data.message || "Signup failed");
+      return;
+    }
+
+    alert("Signup successful! Please log in.");
+    toggleForm();
+  } catch (err) {
+    console.error("Signup Error:", err);
+    alert("Server error, please try again");
+  }
+}
+</script>
 
 </body>
 </html>
+
+
+
