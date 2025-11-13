@@ -203,10 +203,27 @@ app.get("/api/my-orders", async (req, res) => {
 });
 
 // ==============================
-// STATIC FILES (MUST BE AFTER APIs)
+// FORCE CORRECT MIME TYPES FOR ICONS & ASSETS
 // ==============================
 
-// Serve all static files (HTML, images, icons, etc.)
+app.use((req, res, next) => {
+  const ext = path.extname(req.path).toLowerCase();
+  if (ext === '.png') {
+    res.setHeader('Content-Type', 'image/png');
+  } else if (ext === '.jpg' || ext === '.jpeg') {
+    res.setHeader('Content-Type', 'image/jpeg');
+  } else if (ext === '.webp') {
+    res.setHeader('Content-Type', 'image/webp');
+  } else if (ext === '.mp3') {
+    res.setHeader('Content-Type', 'audio/mpeg');
+  }
+  next();
+});
+
+// ==============================
+// SERVE STATIC FILES (HTML, IMAGES, ICONS, etc.)
+// ==============================
+
 app.use(express.static(path.join(__dirname)));
 
 // Explicit routes for HTML pages
@@ -250,5 +267,5 @@ app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server LIVE on port ${PORT}`);
   console.log(`App: http://localhost:${PORT}`);
   console.log(`Privacy: http://localhost:${PORT}/privacy.html`);
-  console.log(`Delivery: http://localhost:${PORT}/delivery.html`);
+  console.log(`Icons: http://localhost:${PORT}/icon-192.png`);
 });
