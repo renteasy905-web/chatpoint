@@ -1,7 +1,4 @@
-// ==============================
-// CHAT POINT – server.cjs (Render + Local)
-// ==============================
-
+// RENT EASY – server.cjs (PWA ICONS 100% FIXED – NOV 2025)
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -16,8 +13,8 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.raw({ type: "application/octet-stream", limit: "50mb" }));
 
-// Log every request
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
   next();
@@ -25,10 +22,9 @@ app.use((req, res, next) => {
 
 // ---------- MONGODB ----------
 const mongoURI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/chatpoint";
-mongoose
-  .connect(mongoURI)
+mongoose.connect(mongoURI)
   .then(() => console.log("MongoDB connected"))
-  .catch((err) => {
+  .catch(err => {
     console.error("MongoDB error:", err);
     process.exit(1);
   });
@@ -62,9 +58,7 @@ const Order = mongoose.model("Order", new mongoose.Schema({
   date: { type: Date, default: Date.now },
 }, { timestamps: true }));
 
-// ==============================
-// API ROUTES
-// ==============================
+// ============================== API ROUTES ==============================
 
 app.post("/api/user/signup", async (req, res) => {
   try {
@@ -140,21 +134,14 @@ app.get("/api/shops", async (req, res) => {
   }
 });
 
-// ==============================
-// DELIVERY PORTAL APIs
-// ==============================
-
 app.get("/api/delivery-orders", async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 50;
-    const orders = await Order.find({ status: "pending" })
-      .sort({ date: -1 })
-      .limit(limit)
-      .lean();
+    const orders = await Order.find({ status: "pending" }).sort({ date: -1 }).limit(limit).lean();
     res.json({ success: true, orders });
   } catch (e) {
     console.error("DELIVERY ORDERS ERROR:", e.message);
-    res.status(500).json({ success: false, message: "Error loading orders" });
+    res.status(500).json({ success: false, message: "Error" });
   }
 });
 
@@ -164,15 +151,8 @@ app.post("/api/update-order-status", async (req, res) => {
     if (!orderId || !["delivered", "cancelled"].includes(status)) {
       return res.status(400).json({ success: false, message: "Invalid data" });
     }
-
-    const order = await Order.findByIdAndUpdate(
-      orderId,
-      { status },
-      { new: true }
-    ).lean();
-
+    const order = await Order.findByIdAndUpdate(orderId, { status }, { new: true }).lean();
     if (!order) return res.status(404).json({ success: false, message: "Order not found" });
-
     res.json({ success: true, order });
   } catch (e) {
     console.error("UPDATE STATUS ERROR:", e.message);
@@ -180,75 +160,47 @@ app.post("/api/update-order-status", async (req, res) => {
   }
 });
 
-// ==============================
-// USER – MY ORDERS API
-// ==============================
-
 app.get("/api/my-orders", async (req, res) => {
   try {
     const userId = req.headers["x-user-id"];
-    if (!userId) {
-      return res.status(400).json({ success: false, message: "Missing x-user-id header" });
-    }
-
-    const orders = await Order.find({ userId })
-      .sort({ date: -1 })
-      .lean();
-
+    if (!userId) return res.status(400).json({ success: false, message: "Missing x-user-id" });
+    const orders = await Order.find({ userId }).sort({ date: -1 }).lean();
     res.json({ success: true, orders });
   } catch (e) {
     console.error("MY-ORDERS ERROR:", e.message);
-    res.status(500).json({ success: false, message: "Error loading orders" });
+    res.status(500).json({ success: false, message: "Error" });
   }
 });
 
-// ==============================
-// STATIC FILES (MUST BE AFTER APIs)
-// ==============================
+// ============================== SERVE STATIC FILES (ICONS FIXED – FIRST!) ==============================
 
-// Serve all static files (HTML, images, icons, etc.)
-app.use(express.static(path.join(__dirname)));
+// CRITICAL: Serve /icons FIRST with forced image/png header (before catch-all)
+app.use('/icons', express.static(path.join(__dirname, 'icons'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.png')) {
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+  }
+}));
 
-// Explicit routes for HTML pages
-app.get("/privacy.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "privacy.html"));
+// Serve root static files (index.html, manifest.json, etc.)
+app.use(express.static(__dirname));
+
+// Specific HTML pages
+["privacy", "delivery", "orders", "items", "cart", "payment", "login"].forEach(page => {
+  app.get(`/${page}.html`, (req, res) => {
+    res.sendFile(path.join(__dirname, `${page}.html`));
+  });
 });
 
-app.get("/delivery.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "delivery.html"));
+// Catch-all (LAST – serves index.html for SPA routes)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.get("/orders.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "orders.html"));
-});
-
-app.get("/items.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "items.html"));
-});
-
-app.get("/cart.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "cart.html"));
-});
-
-app.get("/payment.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "payment.html"));
-});
-
-app.get("/login.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "login.html"));
-});
-
-// Catch-all: Serve index.html for SPA routing
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
-
-// ==============================
-// START SERVER
-// ==============================
+// ============================== START SERVER ==============================
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server LIVE on port ${PORT}`);
   console.log(`App: http://localhost:${PORT}`);
-  console.log(`Privacy: http://localhost:${PORT}/privacy.html`);
-  console.log(`Delivery: http://localhost:${PORT}/delivery.html`);
 });

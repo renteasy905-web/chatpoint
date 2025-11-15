@@ -1,4 +1,4 @@
-const CACHE_NAME = 'chatpoint-v9';
+const CACHE_NAME = 'chatpoint-v10';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -9,7 +9,6 @@ const urlsToCache = [
   '/manifest.json',
   '/icon-192.png',
   '/icon-512.png'
-  // Images auto cached by browser
 ];
 
 self.addEventListener('install', e => {
