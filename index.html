@@ -64,37 +64,15 @@
       animation: float 12s infinite ease-in-out;
     }
 
-    .icon:nth-child(1) {
-      top: 10%;
-      left: 5%;
-      animation-duration: 14s;
-    }
-    .icon:nth-child(2) {
-      top: 70%;
-      left: 80%;
-      animation-duration: 18s;
-    }
-    .icon:nth-child(3) {
-      top: 40%;
-      left: 50%;
-      animation-duration: 16s;
-    }
-    .icon:nth-child(4) {
-      top: 80%;
-      left: 20%;
-      animation-duration: 20s;
-    }
+    .icon:nth-child(1) { top: 10%; left: 5%; animation-duration: 14s; }
+    .icon:nth-child(2) { top: 70%; left: 80%; animation-duration: 18s; }
+    .icon:nth-child(3) { top: 40%; left: 50%; animation-duration: 16s; }
+    .icon:nth-child(4) { top: 80%; left: 20%; animation-duration: 20s; }
 
     @keyframes float {
-      0% {
-        transform: translateY(0px) rotate(0deg);
-      }
-      50% {
-        transform: translateY(-25px) rotate(10deg);
-      }
-      100% {
-        transform: translateY(0px) rotate(0deg);
-      }
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-25px) rotate(10deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
     }
 
     header {
@@ -216,6 +194,7 @@
       padding: 0 24px;
       font-weight: 700;
       cursor: pointer;
+      width: 56px;           /* fixed width so it doesn't shrink */
     }
 
     /* AUTO GRID RESPONSIVE LAYOUT */
@@ -279,8 +258,7 @@
     }
 
     /* FIX HORIZONTAL SCROLL */
-    html,
-    body {
+    html, body {
       max-width: 100%;
       overflow-x: hidden;
     }
@@ -316,7 +294,7 @@
   <main>
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Search your favorite shop...">
-      <button onclick="searchShops()">Search</button>
+      <button onclick="searchShops()"></button>   <!-- Text removed, button stays for functionality -->
     </div>
 
     <div class="grid" id="grid"></div>
@@ -359,15 +337,15 @@
           };
 
           card.innerHTML = `
-          <img src="${shop.img}" alt="${shop.name}" onerror="this.src='https://via.placeholder.com/300x180?text=${encodeURIComponent(
+            <img src="${shop.img}" alt="${shop.name}" onerror="this.src='https://via.placeholder.com/300x180?text=${encodeURIComponent(
             shop.name
           )}'">
-          <div class="info">
-            <div class="shop-name">${shop.name}</div>
-            <div class="rating"><i class="fas fa-star"></i> ${shop.rating}</div>
-          </div>
-          <div class="desc">${shop.desc}</div>
-        `;
+            <div class="info">
+              <div class="shop-name">${shop.name}</div>
+              <div class="rating"><i class="fas fa-star"></i> ${shop.rating}</div>
+            </div>
+            <div class="desc">${shop.desc}</div>
+          `;
 
           grid.appendChild(card);
         });
@@ -395,10 +373,10 @@
 
       if (user && user._id) {
         profile.innerHTML = `
-        <i class="fas fa-user-circle" style="font-size:40px;color:${"var(--accent)"}"></i>
-        <div style="font-weight:700;font-size:18px;">${user.name || "User"}</div>
-        <div style="font-size:14px;opacity:0.7;">${user.phone || "N/A"}</div>
-      `;
+          <i class="fas fa-user-circle" style="font-size:40px;color:var(--accent)"></i>
+          <div style="font-weight:700;font-size:18px;">${user.name || "User"}</div>
+          <div style="font-size:14px;opacity:0.7;">${user.phone || "N/A"}</div>
+        `;
         logoutBtn.style.display = "block";
         logoutBtn.onclick = () => {
           localStorage.removeItem("chatpoint_user");
@@ -406,11 +384,11 @@
         };
       } else {
         profile.innerHTML = `
-        <div style="font-size:15px;">
-          <i class="fas fa-user-circle" style="font-size:40px;color:#888;"></i><br>
-          <a href="login.html" style="color:var(--accent);text-decoration:underline;">Login to see profile</a>
-        </div>
-      `;
+          <div style="font-size:15px;">
+            <i class="fas fa-user-circle" style="font-size:40px;color:#888;"></i>
+            <a href="login.html" style="color:var(--accent);text-decoration:underline;">Login to see profile</a>
+          </div>
+        `;
         logoutBtn.style.display = "none";
       }
     }
@@ -420,6 +398,5 @@
       loadProfile();
     };
   </script>
-
 </body>
 </html>
