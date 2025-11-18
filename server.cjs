@@ -1,4 +1,6 @@
-// RENT EASY – server.cjs (PWA ICONS 100% FIXED – NOV 2025)
+// RENT EASY – server.cjs (FULLY FIXED – NOV 2025)
+// ORDERS & USERS 100% SAVING AFTER DB RECREATION
+
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -10,7 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // ---------- MIDDLEWARE ----------
-app.use(cors());
+app.use(cors({ origin: "*", credentials: true }));
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.raw({ type: "application/octet-stream", limit: "50mb" }));
@@ -20,12 +22,22 @@ app.use((req, res, next) => {
   next();
 });
 
-// ---------- MONGODB ----------
-const mongoURI = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/chatpoint";
-mongoose.connect(mongoURI)
-  .then(() => console.log("MongoDB connected"))
+// ---------- MONGODB – FIXED FOREVER ----------
+const mongoURI = process.env.MONGODB_URI;
+
+if (!mongoURI) {
+  console.error("FATAL ERROR: MONGODB_URI is missing!");
+  console.error("Add it in Render → Environment Variables with your Atlas string");
+  process.exit(1);
+}
+
+mongoose.connect(mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => console.log("MongoDB Atlas connected successfully"))
   .catch(err => {
-    console.error("MongoDB error:", err);
+    console.error("MongoDB connection failed:", err.message);
     process.exit(1);
   });
 
@@ -34,7 +46,7 @@ const User = mongoose.model("User", new mongoose.Schema({
   name: String,
   phone: { type: String, required: true, unique: true },
   password: String,
-}));
+}, { timestamps: true }));
 
 const Shop = mongoose.model("Shop", new mongoose.Schema({
   type: { type: String, default: "shop" },
@@ -93,13 +105,11 @@ app.post("/api/save-order", async (req, res) => {
     if (!userId || !name || !phone || !address1 || !cart) return res.status(400).json({ success: false, message: "Missing data" });
 
     const items = [];
-    let total = 0;
     for (const shop in cart) {
       for (const item in cart[shop]) {
         const { qty, price } = cart[shop][item];
         if (qty > 0) {
           items.push({ name: item, price, quantity: qty });
-          total += qty * price;
         }
       }
     }
@@ -117,10 +127,11 @@ app.post("/api/save-order", async (req, res) => {
     });
 
     await order.save();
+    console.log("ORDER SAVED SUCCESSFULLY:", order._id);
     res.json({ success: true, orderId: order._id, message: "Order saved!" });
   } catch (e) {
     console.error("SAVE ORDER ERROR:", e.message);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ success: false, message: "Server error", error: e.message });
   }
 });
 
@@ -172,9 +183,8 @@ app.get("/api/my-orders", async (req, res) => {
   }
 });
 
-// ============================== SERVE STATIC FILES (ICONS FIXED – FIRST!) ==============================
+// ============================== SERVE STATIC FILES ==============================
 
-// CRITICAL: Serve /icons FIRST with forced image/png header (before catch-all)
 app.use('/icons', express.static(path.join(__dirname, 'icons'), {
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('.png')) {
@@ -184,23 +194,22 @@ app.use('/icons', express.static(path.join(__dirname, 'icons'), {
   }
 }));
 
-// Serve root static files (index.html, manifest.json, etc.)
 app.use(express.static(__dirname));
 
-// Specific HTML pages
 ["privacy", "delivery", "orders", "items", "cart", "payment", "login"].forEach(page => {
   app.get(`/${page}.html`, (req, res) => {
     res.sendFile(path.join(__dirname, `${page}.html`));
   });
 });
 
-// Catch-all (LAST – serves index.html for SPA routes)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // ============================== START SERVER ==============================
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server LIVE on port ${PORT}`);
-  console.log(`App: http://localhost:${PORT}`);
+  console.log(`ChatPoint Backend LIVE on port ${PORT}`);
+  console.log(`MongoDB URI: ${mongoURI.substring(0, 30)}...`);
 });
+
+module.exports = app;
