@@ -3,22 +3,32 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cart | Chat Point</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <title>My Cart • ChatPoint</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-
   <style>
     :root {
-      --bg: #0f0f1a;
-      --card: rgba(20, 25, 45, 0.7);
-      --text: #e0e7ff;
-      --accent: #ff6b35;
-      --glow: rgba(255, 107, 53, 0.3);
-      --radius: 18px;
-      --success: #34d399;
+      --bg: #000000;
+      --card: rgba(10, 10, 15, 0.88);
+      --border: rgba(0, 255, 200, 0.18);
+
+      /* New Green + Sky Blue Palette */
+      --primary: #00ff9d;        /* Electric Mint Green */
+      --secondary: #00f2ea;      /* Sky Cyan */
+      --accent-glow: rgba(0, 255, 200, 0.5);
+      --secondary-glow: rgba(0, 242, 234, 0.4);
+
+      --text: #e0fffa;
+      --text-muted: #94c9c0;
+      --success: #00ff9d;
+      --danger: #ff4d6d;
+
+      --radius: 24px;
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+      --transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
-    * { margin:0; padding:0; box-sizing:border-box; }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Outfit', sans-serif;
       background: var(--bg);
@@ -26,123 +36,286 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
+
+    /* Futuristic Green + Cyan Glow Background */
     body::before {
       content: '';
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: 
-        radial-gradient(circle at 20% 80%, rgba(255, 107, 53, 0.12), transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(100, 200, 255, 0.08), transparent 50%);
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 15% 80%, rgba(0, 255, 200, 0.25), transparent 50%),
+        radial-gradient(circle at 85% 20%, rgba(0, 242, 234, 0.22), transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(0, 255, 200, 0.1), transparent 70%);
+      pointer-events: none;
       z-index: -1;
+      animation: pulse 12s infinite alternate;
     }
+    @keyframes pulse { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
 
     header {
       padding: 16px 20px;
-      background: rgba(15, 20, 40, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255, 107, 53, 0.2);
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 1000;
     }
-    .brand { font-weight: 800; font-size: 26px; }
-    .brand .chat { 
-      background: linear-gradient(90deg, #ff6b35, #ff8a5b);
+
+    .brand {
+      font-weight: 900;
+      font-size: 30px;
+      letter-spacing: -1px;
+    }
+    .brand .chat {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    .back-btn {
-      font-size: 22px; cursor: pointer; padding: 8px;
-      background: rgba(255, 107, 53, 0.15);
-      border-radius: 50%; transition: 0.3s;
-    }
-    .back-btn:hover { background: var(--accent); color: #000; }
 
-    main { padding: 20px; max-width: 800px; margin: 0 auto; }
+    .back-btn {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: rgba(0, 255, 200, 0.15);
+      border: 2px solid rgba(0, 255, 200, 0.3);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .back-btn:hover {
+      background: var(--primary);
+      color: #000;
+      transform: scale(1.15);
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+
+    .cart-badge {
+      background: var(--primary);
+      color: #000;
+      font-weight: 900;
+      font-size: 14px;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      box-shadow: 0 0 25px var(--accent-glow);
+    }
+
+    main { padding: 20px; max-width: 800px; margin: 0 auto; padding-bottom: 120px; }
 
     .cart-container {
       background: var(--card);
       border-radius: var(--radius);
-      padding: 20px;
-      border: 1px solid rgba(255, 107, 53, 0.2);
-      backdrop-filter: blur(10px);
+      padding: 28px;
+      border: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      box-shadow: var(--shadow);
+      margin-top: 16px;
+      transition: var(--transition);
     }
 
-    .shop-section {
-      margin-bottom: 28px;
-    }
     .shop-name {
-      font-size: 20px; font-weight: 800; color: var(--accent);
-      margin-bottom: 12px; padding-bottom: 8px;
-      border-bottom: 1px dashed rgba(255, 107, 53, 0.3);
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px dashed rgba(0, 255, 200, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .cart-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 14px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      flex-wrap: wrap;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 12px;
+      border-bottom: 1px solid rgba(0, 255, 200, 0.08);
+      border-radius: 16px;
+      transition: var(--transition);
     }
-    .item-left { display: flex; align-items: center; gap: 12px; flex: 1; }
-    .item-name { font-weight: 600; }
-    .item-price { color: var(--accent); font-weight: 900; }
+    .cart-item:hover {
+      background: rgba(0, 255, 200, 0.08);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 25px rgba(0, 255, 200, 0.15);
+    }
+
+    .item-left {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex: 1;
+      min-width: 0;
+    }
+    .item-name {
+      font-weight: 600;
+      font-size: 18px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
     .quantity {
-      display: flex; align-items: center; gap: 10px;
-      background: rgba(255, 107, 53, 0.1); padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(0, 255, 200, 0.15);
+      padding: 12px 18px;
       border-radius: 50px;
+      border: 2px solid rgba(0, 255, 200, 0.35);
+      transition: var(--transition);
     }
+    .quantity:hover {
+      box-shadow: 0 0 30px var(--accent-glow);
+      background: rgba(0, 255, 200, 0.22);
+    }
+
     .qbtn {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: rgba(255, 107, 53, 0.2); color: #fff;
-      border: none; font-weight: bold; cursor: pointer;
-      transition: 0.3s; font-size: 16px;
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: rgba(0, 255, 200, 0.3);
+      color: white;
+      border: none;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: var(--transition);
     }
     .qbtn:hover {
-      background: var(--accent); color: #000;
+      background: var(--primary);
+      color: #000;
+      transform: scale(1.25);
+      box-shadow: 0 0 30px var(--accent-glow);
     }
-    .qty { min-width: 30px; text-align: center; font-weight: 900; color: var(--success); }
+    .qty {
+      min-width: 44px;
+      text-align: center;
+      font-weight: 900;
+      font-size: 20px;
+      color: var(--secondary);
+    }
+
+    .item-price {
+      font-size: 22px;
+      font-weight: 900;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .shop-subtotal {
+      text-align: right;
+      color: var(--text-muted);
+      font-size: 16px;
+      margin-top: 14px;
+      font-weight: 600;
+    }
 
     .total-section {
-      margin-top: 24px; padding-top: 16px;
-      border-top: 2px solid rgba(255, 107, 53, 0.4);
-      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 40px;
+      padding: 28px;
+      background: rgba(0, 255, 200, 0.1);
+      border: 2px dashed var(--primary);
+      border-radius: 20px;
+      text-align: center;
     }
     .grand-total {
-      font-size: 22px; font-weight: 900; color: var(--success);
+      font-size: 36px !important;
+      font-weight: 900;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(0, 255, 200, 0.6);
+      margin-top: 10px;
     }
 
     .actions {
-      margin-top: 24px; display: flex; gap: 12px; justify-content: center;
+      margin-top: 40px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
     }
+
     .btn {
-      padding: 12px 24px; border: none; border-radius: 14px;
-      font-weight: 700; cursor: pointer; transition: 0.3s;
-      font-size: 15px;
+      padding: 20px 44px;
+      border: none;
+      border-radius: 20px;
+      font-weight: 800;
+      font-size: 18px;
+      cursor: pointer;
+      transition: var(--transition);
+      flex: 1;
+      min-width: 180px;
     }
+
     .btn-clear {
-      background: #ef4444; color: #fff;
+      background: var(--danger);
+      color: white;
     }
-    .btn-clear:hover { background: #dc2626; transform: scale(1.05); }
+    .btn-clear:hover {
+      background: #ff1a45;
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(255, 77, 109, 0.5);
+    }
+
     .btn-payment {
-      background: linear-gradient(90deg, #34d399, #10b981);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: #000;
+      font-weight: 900;
+      box-shadow: 0 12px 35px rgba(0, 255, 200, 0.5);
     }
-    .btn-payment:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(52, 211, 153, 0.5); }
+    .btn-payment:hover {
+      transform: translateY(-6px) scale(1.05);
+      box-shadow: 0 25px 50px rgba(0, 255, 200, 0.7);
+    }
 
     .empty-cart {
-      text-align: center; padding: 60px 20px; color: #888;
-      font-size: 18px;
+      text-align: center;
+      padding: 120px 20px;
+      color: #777;
+    }
+    .empty-cart i {
+      font-size: 90px;
+      margin-bottom: 24px;
+      color: var(--primary);
+      opacity: 0.3;
     }
     .empty-cart a {
-      color: var(--accent); text-decoration: none; font-weight: 600;
+      display: inline-block;
+      margin-top: 30px;
+      padding: 18px 40px;
+      background: transparent;
+      border: 3px solid var(--primary);
+      color: var(--primary);
+      border-radius: 20px;
+      font-weight: 800;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .empty-cart a:hover {
+      background: var(--primary);
+      color: #000;
+      transform: scale(1.1);
+      box-shadow: 0 0 40px var(--accent-glow);
     }
 
     @media (max-width: 480px) {
-      .cart-item { flex-direction: column; align-items: flex-start; gap: 10px; }
-      .quantity { margin-top: 8px; }
-      .item-price { align-self: flex-end; }
+      header { padding: 14px 16px; }
+      .brand { font-size: 26px; }
+      main { padding: 16px; }
+      .cart-container { padding: 22px; }
+      .cart-item { flex-direction: column; align-items: flex-start; gap: 18px; }
+      .item-price { align-self: flex-end; font-size: 24px; }
+      .quantity { align-self: flex-start; }
+      .grand-total { font-size: 30px !important; }
+      .actions { flex-direction: column; }
+      .btn { max-width: none; }
     }
   </style>
 </head>
@@ -153,44 +326,47 @@
       <i class="fas fa-arrow-left"></i>
     </div>
     <div class="brand"><span class="chat">Chat</span>Point</div>
-    <div style="font-weight:700; color:var(--accent)">My Cart</div>
+    <div style="display:flex;align-items:center;gap:12px;font-weight:800;color:var(--primary)">
+      My Cart
+      <div class="cart-badge" id="cartBadge">0</div>
+    </div>
   </header>
 
   <main>
-    <div class="cart-container" id="cartContainer">
-      <!-- Items injected by JS -->
-    </div>
+    <div class="cart-container" id="cartContainer"></div>
   </main>
 
   <script>
     const CART_KEY = "chatpoint_cart";
     let cart = JSON.parse(localStorage.getItem(CART_KEY)) || {};
     const container = document.getElementById("cartContainer");
+    const badge = document.getElementById("cartBadge");
 
-    // Save cart to localStorage
     function saveCart() {
       localStorage.setItem(CART_KEY, JSON.stringify(cart));
+      updateBadge();
     }
 
-    // Change quantity
+    function updateBadge() {
+      const total = Object.values(cart).reduce((s, shop) => 
+        s + Object.values(shop).reduce((q, i) => q + i.qty, 0), 0);
+      badge.textContent = total || 0;
+      badge.style.display = total > 0 ? 'grid' : 'none';
+    }
+
     function changeQty(shop, itemName, price, delta) {
       if (!cart[shop]) cart[shop] = {};
       if (!cart[shop][itemName]) cart[shop][itemName] = { qty: 0, price };
-
       const newQty = Math.max(0, cart[shop][itemName].qty + delta);
       cart[shop][itemName].qty = newQty;
-
-      // Remove item if qty = 0
       if (newQty === 0) {
         delete cart[shop][itemName];
         if (Object.keys(cart[shop]).length === 0) delete cart[shop];
       }
-
       saveCart();
       renderCart();
     }
 
-    // Calculate totals (NO DELIVERY)
     function calculateTotals() {
       let items = 0, subtotal = 0;
       for (const shop in cart) {
@@ -203,42 +379,38 @@
       return { items, subtotal };
     }
 
-    // Render full cart
     function renderCart() {
       container.innerHTML = "";
-      const totals = calculateTotals();
-      let hasItems = totals.items > 0;
+      const { items, subtotal } = calculateTotals();
 
-      if (!hasItems) {
+      if (items === 0) {
         container.innerHTML = `
           <div class="empty-cart">
-            <p>Your cart is empty.</p>
-            <p><a href="index.html">Continue Shopping</a></p>
-          </div>
-        `;
+            <i class="fas fa-shopping-bag"></i>
+            <p style="font-size:24px;margin:20px 0;">Your cart is empty</p>
+            <a href="index.html">Explore Menu</a>
+          </div>`;
         return;
       }
 
       for (const shop in cart) {
-        if (Object.keys(cart[shop]).length === 0) continue;
-
         let shopTotal = 0;
         const shopDiv = document.createElement("div");
         shopDiv.className = "shop-section";
 
-        const shopTitle = document.createElement("div");
-        shopTitle.className = "shop-name";
-        shopTitle.textContent = shop;
-        shopDiv.appendChild(shopTitle);
+        const title = document.createElement("div");
+        title.className = "shop-name";
+        title.innerHTML = `<i class="fas fa-store"></i> ${shop}`;
+        shopDiv.appendChild(title);
 
         for (const itemName in cart[shop]) {
           const { qty, price } = cart[shop][itemName];
-          const itemTotal = qty * price;
-          shopTotal += itemTotal;
+          const total = qty * price;
+          shopTotal += total;
 
-          const itemDiv = document.createElement("div");
-          itemDiv.className = "cart-item";
-          itemDiv.innerHTML = `
+          const item = document.createElement("div");
+          item.className = "cart-item";
+          item.innerHTML = `
             <div class="item-left">
               <div class="item-name">${itemName}</div>
               <div class="quantity">
@@ -247,61 +419,45 @@
                 <button class="qbtn" onclick="changeQty('${shop}', '${itemName}', ${price}, 1)">+</button>
               </div>
             </div>
-            <div class="item-price">₹${itemTotal}</div>
+            <div class="item-price">₹${total}</div>
           `;
-          shopDiv.appendChild(itemDiv);
+          shopDiv.appendChild(item);
         }
 
-        // Shop subtotal
-        const subtotal = document.createElement("div");
-        subtotal.style.textAlign = "right";
-        subtotal.style.color = "#a8b8ff";
-        subtotal.style.fontSize = "15px";
-        subtotal.style.marginTop = "8px";
-        subtotal.textContent = `Subtotal: ₹${shopTotal}`;
-        shopDiv.appendChild(subtotal);
-
+        const sub = document.createElement("div");
+        sub.className = "shop-subtotal";
+        sub.textContent = `Subtotal • ₹${shopTotal}`;
+        shopDiv.appendChild(sub);
         container.appendChild(shopDiv);
       }
 
-      // Grand Total (NO DELIVERY)
-      const totalDiv = document.createElement("div");
-      totalDiv.className = "total-section";
-      totalDiv.innerHTML = `
-        <div style="font-weight:800; font-size:18px;">Grand Total</div>
-        <div class="grand-total">₹${totals.subtotal}</div>
+      container.innerHTML += `
+        <div class="total-section">
+          <div style="font-size:20px;opacity:0.9;">Grand Total</div>
+          <div class="grand-total">₹${subtotal}</div>
+        </div>
+        <div class="actions">
+          <button class="btn btn-clear" onclick="clearCart()">Clear Cart</button>
+          <button class="btn btn-payment" onclick="goToPayment()">Proceed to Payment</button>
+        </div>
       `;
-      container.appendChild(totalDiv);
-
-      // Actions
-      const actions = document.createElement("div");
-      actions.className = "actions";
-      actions.innerHTML = `
-        <button class="btn btn-clear" onclick="clearCart()">Clear Cart</button>
-        <button class="btn btn-payment" onclick="goToPayment()">Proceed to Payment</button>
-      `;
-      container.appendChild(actions);
     }
 
-    // Clear entire cart
     function clearCart() {
-      if (confirm("Are you sure you want to clear the cart?")) {
-        localStorage.removeItem(CART_KEY);
-        cart = {};
-        renderCart();
+      if (confirm("Clear all items?")) {
+        cart = {}; localStorage.removeItem(CART_KEY); renderCart();
       }
     }
 
-    // Go to payment
     function goToPayment() {
-      const totals = calculateTotals();
-      localStorage.setItem("orderItemsTotal", totals.items);
-      localStorage.setItem("orderGrandTotal", totals.subtotal);
+      const { items, subtotal } = calculateTotals();
+      localStorage.setItem("orderItemsTotal", items);
+      localStorage.setItem("orderGrandTotal", subtotal);
       window.location.href = "payment.html";
     }
 
-    // Init
     renderCart();
+    updateBadge();
   </script>
 </body>
 </html>
