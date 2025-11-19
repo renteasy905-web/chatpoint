@@ -7,373 +7,188 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
   <style>
-    :root {
-      --bg: #0a0a0a;
-      --card: #111111;
-      --border: #222222;
-      --text: #e0e0e0;
-      --muted: #888888;
-      --accent: #00ff9d;
-      --accent2: #ff2e63;
-      --glow: 0 0 20px rgba(0, 255, 157, 0.3);
-    }
-
+    :root { --bg: #0a0a0a; --card: #111111; --border: #222222; --text: #e0e0e0; --muted: #888888; --accent: #00ff9d; --accent2: #ff2e63; --glow: 0 0 20px rgba(0, 255, 157, 0.3); }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Outfit', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      background-image: 
-        radial-gradient(circle at 20% 80%, rgba(0, 255, 157, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 46, 99, 0.08) 0%, transparent 50%);
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    /* Floating SVG Decorations */
-    .floating-svg {
-      position: absolute;
-      opacity: 0.07;
-      pointer-events: none;
-      animation: float 20s infinite linear;
-      z-index: 0;
-    }
-    @keyframes float {
-      0% { transform: translateY(0) rotate(0deg); }
-      100% { transform: translateY(-100vh) rotate(360deg); }
-    }
-
-    .container {
-      max-width: 480px;
-      margin: 20px auto;
-      padding: 24px;
-      background: var(--card);
-      border-radius: 24px;
-      border: 1px solid var(--border);
-      box-shadow: 0 20px 40px rgba(0,0,0,0.6), var(--glow);
-      position: relative;
-      z-index: 10;
-      backdrop-filter: blur(16px);
-    }
-
-    h2 {
-      font-size: 28px;
-      font-weight: 800;
-      text-align: center;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 24px;
-      position: relative;
-    }
-    h2::after {
-      content: '';
-      position: absolute;
-      bottom: -8px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 4px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      border-radius: 2px;
-    }
-
-    label {
-      display: block;
-      margin-top: 16px;
-      font-weight: 600;
-      font-size: 14px;
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    label i { font-size: 18px; animation: pulse 2s infinite; }
-
-    input[type=text], input[type=tel] {
-      width: 100%;
-      padding: 14px 16px;
-      margin-top: 8px;
-      border-radius: 16px;
-      border: 1px solid #333;
-      background: #1a1a1a;
-      color: white;
-      font-size: 16px;
-      transition: all 0.3s;
-    }
-    input:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: var(--glow);
-      transform: scale(1.02);
-    }
-
-    .radio-group {
-      margin: 24px 0;
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-    }
-    .radio-group label {
-      color: var(--text);
-      font-weight: 500;
-      cursor: pointer;
-      padding: 10px 20px;
-      border-radius: 12px;
-      background: #1a1a1a;
-      transition: 0.3s;
-    }
-    .radio-group input:checked + label {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: black;
-      font-weight: 700;
-      transform: scale(1.05);
-    }
-
-    .shop-section {
-      margin-top: 28px;
-      background: #181818;
-      border-radius: 18px;
-      padding: 16px;
-      border: 1px solid #252525;
-    }
-    .shop-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-    .shop-title i { animation: bounce 2s infinite; }
-
-    .item-line {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      font-size: 15px;
-      border-bottom: 1px dashed #333;
-    }
-    .total-line {
-      display: flex;
-      justify-content: space-between;
-      font-weight: 700;
-      margin-top: 12px;
-      font-size: 17px;
-    }
-
-    .surprise-msg {
-      text-align: center;
-      padding: 16px;
-      background: linear-gradient(135deg, rgba(0,255,157,0.1), rgba(255,46,99,0.1));
-      border: 1px dashed var(--accent);
-      border-radius: 16px;
-      margin: 20px 0;
-      font-weight: 700;
-      color: var(--accent);
-      animation: pulse 2s infinite;
-    }
-
-    button.main-btn {
-      margin-top: 32px;
-      width: 100%;
-      padding: 18px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
-      color: black;
-      font-weight: 800;
-      font-size: 18px;
-      border: none;
-      border-radius: 20px;
-      cursor: pointer;
-      box-shadow: 0 10px 30px rgba(0, 255, 157, 0.4);
-      transition: all 0.4s;
-      position: relative;
-      overflow: hidden;
-    }
-    button.main-btn::before {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-      transition: 0.7s;
-    }
-    button.main-btn:hover::before { left: 100%; }
-    button.main-btn:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 20px 40px rgba(0, 255, 157, 0.6);
-    }
-
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .container { max-width: 480px; margin: 20px auto; padding: 24px; background: var(--card); border-radius: 24px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.6), var(--glow); position: relative; z-index: 10; backdrop-filter: blur(16px); }
+    h2 { font-size: 28px; font-weight: 800; text-align: center; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px; }
+    label { display: block; margin-top: 16px; font-weight: 600; font-size: 14px; color: var(--accent); display: flex; align-items: center; gap: 8px; }
+    input[type=text], input[type=tel] { width: 100%; padding: 14px 16px; margin-top: 8px; border-radius: 16px; border: 1px solid #333; background: #1a1a1a; color: white; font-size: 16px; }
+    input:focus { outline: none; border-color: var(--accent); box-shadow: var(--glow); }
+    .radio-group { margin: 24px 0; display: flex; gap: 20px; justify-content: center; }
+    .radio-group label { color: var(--text); font-weight: 500; cursor: pointer; padding: 10px 20px; border-radius: 12px; background: #1a1a1a; }
+    .radio-group input:checked + label { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: black; font-weight: 700; }
+    .shop-section { margin-top: 28px; background: #181818; border-radius: 18px; padding: 16px; border: 1px solid #252525; }
+    .shop-title { font-size: 18px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .item-line { display: flex; justify-content: space-between; padding: 8px 0; font-size: 15px; border-bottom: 1px dashed #333; }
+    .total-line { display: flex; justify-content: space-between; font-weight: 700; margin-top: 12px; font-size: 17px; }
+    .surprise-msg { text-align: center; padding: 16px; background: linear-gradient(135deg, rgba(0,255,157,0.1), rgba(255,46,99,0.1)); border: 1px dashed var(--accent); border-radius: 16px; margin: 20px 0; font-weight: 700; color: var(--accent); animation: pulse 2s infinite; }
+    button.main-btn { margin-top: 32px; width: 100%; padding: 18px; background: linear-gradient(90deg, var(--accent), var(--accent2)); color: black; font-weight: 800; font-size: 18px; border: none; border-radius: 20px; cursor: pointer; box-shadow: 0 10px 30px rgba(0, 255, 157, 0.4); }
     .error-msg { color: #ff6b6b; text-align: center; margin: 12px 0; }
     .success-msg { color: var(--accent); text-align: center; font-weight: 700; font-size: 18px; }
-
     @keyframes pulse { 0%,100% { opacity: 0.8; } 50% { opacity: 1; } }
-    @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-
-    /* Mobile Optimization */
-    @media (max-width: 480px) {
-      .container { margin: 10px; padding: 20px; border-radius: 20px; }
-      h2 { font-size: 24px; }
-      .radio-group { flex-direction: column; align-items: center; }
-    }
   </style>
 </head>
 <body>
-
-  <!-- Floating Animated SVGs -->
-  <svg class="floating-svg" style="top:10%;left:5%;width:120px" viewBox="0 0 200 200"><path fill="#00ff9d" opacity="0.3" d="M100,20 L120,80 L180,80 L130,120 L150,180 L100,140 L50,180 L70,120 L20,80 L80,80 Z"/></svg>
-  <svg class="floating-svg" style="top:30%;right:10%;width:80px;animation-delay:3s" viewBox="0 0 200 200"><circle fill="#ff2e63" opacity="0.3" cx="100" cy="100" r="80"/></svg>
-  <svg class="floating-svg" style="bottom:20%;left:15%;width:100px;animation-delay:7s" viewBox="0 0 200 200"><polygon fill="#00ff9d" opacity="0.2" points="100,20 140,100 100,180 60,100"/></svg>
-
   <div class="container" id="mainContainer"></div>
 
-<script>
-  const CART_KEY = "chatpoint_cart";
-  const USER_KEY = "chatpoint_user";
-  const API_BASE = window.location.origin;
+  <script>
+    const CART_KEY = "chatpoint_cart";
+    const USER_KEY = "chatpoint_user";
+    const API_BASE = window.location.origin;
 
-  function checkLogin() {
-    const user = JSON.parse(localStorage.getItem(USER_KEY) || "null");
-    if (!user || !user._id) {
-      document.getElementById("mainContainer").innerHTML = `<div style="text-align:center;padding:60px;color:#888"><h3>Login Required</h3><p><a href="login.html" style="color:var(--accent);font-weight:700">Go to Login</a></p></div>`;
-      return null;
+    function checkLogin() {
+      const user = JSON.parse(localStorage.getItem(USER_KEY) || "null");
+      if (!user?._id) {
+        document.getElementById("mainContainer").innerHTML = `<div style="text-align:center;padding:60px;color:#888"><h3>Login Required</h3><p><a href="login.html" style="color:#00ff9d;font-weight:700">Go to Login</a></p></div>`;
+        return null;
+      }
+      return user;
     }
-    return user;
-  }
 
-  function renderForm(user) {
-    document.getElementById("mainContainer").innerHTML = `
-      <h2>Secure Checkout</h2>
-      <label><i class="fas fa-user"></i> Full Name <span style="color:#ff6b6b">*</span></label>
-      <input type="text" id="name" placeholder="John Doe" value="${user.name || ''}" required />
+    function renderForm(user) {
+      document.getElementById("mainContainer").innerHTML = `
+        <h2>Secure Checkout</h2>
+        <label>Full Name <span style="color:#ff6b6b">*</span></label>
+        <input type="text" id="name" placeholder="John Doe" value="${user.name || ''}" required />
 
-      <label><i class="fas fa-phone"></i> Phone Number <span style="color:#ff6b6b">*</span></label>
-      <input type="tel" id="phone" placeholder="9876543210" value="${user.phone || ''}" required />
+        <label>Phone Number <span style="color:#ff6b6b">*</span></label>
+        <input type="tel" id="phone" placeholder="9876543210" value="${user.phone || ''}" required />
 
-      <label><i class="fas fa-map-marker-alt"></i> Delivery Address <span style="color:#ff6b6b">*</span></label>
-      <input type="text" id="address1" placeholder="House no., Street, Area" required />
-      <input type="text" id="address2" placeholder="Apartment, Landmark (optional)" />
+        <label>Delivery Address <span style="color:#ff6b6b">*</span></label>
+        <input type="text" id="address1" placeholder="House no., Street, Area" required />
+        <input type="text" id="address2" placeholder="Landmark (optional)" />
 
-      <div class="radio-group">
-        <input type="radio" id="cod" name="paymentMode" value="COD" checked hidden />
-        <label for="cod"><i class="fas fa-money-bill-wave"></i> Cash on Delivery</label>
+        <div class="radio-group">
+          <input type="radio" id="cod" name="paymentMode" value="COD" checked hidden />
+          <label for="cod">Cash on Delivery</label>
+          <input type="radio" id="online" name="paymentMode" value="Online" hidden />
+          <label for="online">Pay Online</label>
+        </div>
 
-        <input type="radio" id="online" name="paymentMode" value="Online" hidden />
-        <label for="online"><i class="fas fa-credit-card"></i> Pay Online</label>
-      </div>
+        <div id="errorMsg" class="error-msg"></div>
+        <div id="successMsg" class="success-msg"></div>
+        <div id="surpriseMsg"></div>
+        <div id="cartContainer"></div>
 
-      <div id="errorMsg" class="error-msg"></div>
-      <div id="successMsg" class="success-msg"></div>
-      <div id="surpriseMsg"></div>
-      <div id="cartContainer"></div>
+        <button class="main-btn" id="placeOrderBtn">PLACE ORDER NOW</button>
+      `;
+      renderCart();
+      document.getElementById("placeOrderBtn").addEventListener("click", placeOrder);
+    }
 
-      <button class="main-btn" id="placeOrderBtn">
-        <i class="fas fa-lock"></i> PLACE ORDER NOW
-      </button>
-    `;
-    renderCart();
-    document.getElementById("placeOrderBtn").addEventListener("click", placeOrder);
-  }
+    function renderCart() {
+      const cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
+      const container = document.getElementById("cartContainer");
+      const surpriseMsg = document.getElementById("surpriseMsg");
+      container.innerHTML = "";
+      let overallTotal = 0;
 
-  function renderCart() {
-    const cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
-    const container = document.getElementById("cartContainer");
-    const surpriseMsg = document.getElementById("surpriseMsg");
-    container.innerHTML = "";
-    let overallTotal = 0;
-
-    for (const shop in cart) {
-      let shopTotal = 0;
-      const sec = document.createElement("div"); sec.className = "shop-section";
-      const title = document.createElement("div"); title.className = "shop-title";
-      title.innerHTML = `<i class="fas fa-store"></i> ${shop}`;
-      sec.appendChild(title);
-
-      for (const name in cart[shop]) {
-        const it = cart[shop][name];
-        if (it.qty > 0) {
-          const line = document.createElement("div"); line.className = "item-line";
-          line.innerHTML = `<span>${name} × ${it.qty}</span><span style="color:var(--accent)">₹${it.price * it.qty}</span>`;
-          sec.appendChild(line);
-          shopTotal += it.price * it.qty;
+      for (const shop in cart) {
+        let shopTotal = 0;
+        const sec = document.createElement("div"); sec.className = "shop-section";
+        sec.innerHTML = `<div class="shop-title"> ${shop}</div>`;
+        for (const name in cart[shop]) {
+          const it = cart[shop][name];
+          if (it.qty > 0) {
+            sec.innerHTML += `<div class="item-line"><span>${name} × ${it.qty}</span><span style="color:#00ff9d">₹${it.price * it.qty}</span></div>`;
+            shopTotal += it.price * it.qty;
+          }
+        }
+        if (shopTotal > 0) {
+          sec.innerHTML += `<div class="total-line"><span>Subtotal</span><span>₹${shopTotal}</span></div>`;
+          container.appendChild(sec);
+          overallTotal += shopTotal;
         }
       }
 
-      if (shopTotal > 0) {
-        sec.innerHTML += `<div class="total-line"><span>Subtotal</span><span>₹${shopTotal}</span></div>`;
-        container.appendChild(sec);
-        overallTotal += shopTotal;
+      const deliveryCharge = overallTotal >= 50 ? 0 : 30;
+      const grandTotal = overallTotal + deliveryCharge;
+
+      if (overallTotal >= 50) surpriseMsg.innerHTML = `<div class="surprise-msg">FREE DELIVERY UNLOCKED!</div>`;
+
+      container.innerHTML += `
+        <div style="margin-top:20px">
+          <div class="total-line"><span>Items Total</span><span>₹${overallTotal}</span></div>
+          <div class="total-line"><span>Delivery</span><span style="color:${deliveryCharge===0?'#00ff9d':'inherit'}">${deliveryCharge===0?'FREE!':'₹'+deliveryCharge}</span></div>
+          <div class="total-line" style="font-size:20px;color:#00ff9d;padding-top:12px;border-top:2px solid #333">
+            <span>Grand Total</span><span>₹${grandTotal}</span>
+          </div>
+        </div>`;
+    }
+
+    function validateForm() {
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const address1 = document.getElementById("address1").value.trim();
+      const errorMsg = document.getElementById("errorMsg");
+      if (!name || !phone || !address1) return errorMsg.textContent = "Fill all required fields", false;
+      if (!/^\d{10}$/.test(phone)) return errorMsg.textContent = "Valid 10-digit phone required", false;
+      errorMsg.textContent = "";
+      return true;
+    }
+
+    async function placeOrder() {
+      if (!validateForm()) return;
+      if (document.querySelector('input[name="paymentMode"]:checked').value !== "COD") {
+        alert("Online payment coming soon!");
+        return;
+      }
+
+      const user = JSON.parse(localStorage.getItem(USER_KEY));
+      const cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
+      if (Object.keys(cart).length === 0) return document.getElementById("errorMsg").textContent = "Cart is empty!";
+
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const address1 = document.getElementById("address1").value.trim();
+      const address2 = document.getElementById("address2").value.trim();
+
+      const btn = document.getElementById("placeOrderBtn");
+      btn.disabled = true;
+      btn.innerHTML = `Placing Order...`;
+
+      let itemsTotal = 0;
+      for (const shop in cart) {
+        for (const item in cart[shop]) {
+          const it = cart[shop][item];
+          if (it.qty > 0) itemsTotal += it.price * it.qty;
+        }
+      }
+      const deliveryCharge = itemsTotal >= 50 ? 0 : 30;
+      const grandTotal = itemsTotal + deliveryCharge;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/save-order`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user._id,
+            name, phone, address1, address2,
+            cart, itemsTotal, deliveryCharge, grandTotal,
+            paymentMode: "cash"
+          })
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          localStorage.removeItem(CART_KEY);
+          document.getElementById("successMsg").innerHTML = `Order Placed!<br><small>#${data.orderId?.slice(-6)}</small>`;
+          setTimeout(() => location.href = "orders.html", 2000);
+        } else {
+          throw new Error(data.message || "Failed");
+        }
+      } catch (err) {
+        document.getElementById("errorMsg").textContent = "Network error. Try again.";
+        btn.disabled = false;
+        btn.innerHTML = `PLACE ORDER NOW`;
       }
     }
 
-    const deliveryCharge = overallTotal >= 50 ? 0 : 30;
-    const grandTotal = overallTotal + deliveryCharge;
-
-    if (overallTotal >= 50) {
-      surpriseMsg.innerHTML = `<div class="surprise-msg">FREE DELIVERY UNLOCKED!</div>`;
-    }
-
-    const totals = document.createElement("div");
-    totals.style.marginTop = "20px";
-    totals.innerHTML = `
-      <div class="total-line"><span>Items Total</span><span>₹${overallTotal}</span></div>
-      <div class="total-line"><span>Delivery</span><span style="color:${deliveryCharge===0?'var(--accent)':'inherit'}">${deliveryCharge===0?'FREE!':'₹'+deliveryCharge}</span></div>
-      <div class="total-line" style="font-size:20px;color:var(--accent);padding-top:12px;border-top:2px solid #333">
-        <span>Grand Total</span><span>₹${grandTotal}</span>
-      </div>`;
-    container.appendChild(totals);
-  }
-
-  // Rest of your logic (validateForm, placeOrder) remains same — just pasted clean version
-  function validateForm() {
-    const name = document.getElementById("name").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const address1 = document.getElementById("address1").value.trim();
-    const errorMsg = document.getElementById("errorMsg");
-    if (!name || !phone || !address1) return errorMsg.textContent = "Please fill all required fields", false;
-    if (!/^\d{10}$/.test(phone)) return errorMsg.textContent = "Enter valid 10-digit phone", false;
-    errorMsg.textContent = "";
-    return true;
-  }
-
-  async function placeOrder() {
-    if (!validateForm()) return;
-    if (document.querySelector('input[name="paymentMode"]:checked').value !== "COD") {
-      alert("Online payment coming soon!");
-      return;
-    }
-
-    const btn = document.getElementById("placeOrderBtn");
-    btn.disabled = true;
-    btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
-
-    // Simulate success for demo
-    setTimeout(() => {
-      document.getElementById("successMsg").textContent = "Order Placed Successfully!";
-      localStorage.removeItem(CART_KEY);
-      setTimeout(() => location.href = "orders.html", 2000);
-    }, 1500);
-  }
-
-  // Demo Setup
-  window.onload = () => {
-    let user = JSON.parse(localStorage.getItem(USER_KEY));
-    if (!user) {
-      user = { _id: "demo999", name: "Alex Storm", phone: "9876543210" };
-      localStorage.setItem(USER_KEY, JSON.stringify(user));
-    }
-    if (!localStorage.getItem(CART_KEY)) {
-      localStorage.setItem(CART_KEY, JSON.stringify({
-        "Midnight Brew": {
-          "Cold Brew": { price: 89, qty: 2 },
-          "Cheese Burst Sandwich": { price: 129, qty: 1 }
-        }
-      }));
-    }
-    if (checkLogin()) renderForm(user);
-  };
-</script>
+    window.onload = () => {
+      const user = checkLogin();
+      if (user) renderForm(user);
+    };
+  </script>
 </body>
 </html>
