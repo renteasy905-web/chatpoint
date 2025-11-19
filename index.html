@@ -25,116 +25,88 @@
       --glow: rgba(89, 255, 148, 0.35);
     }
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: "Outfit", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-      position: relative;
-    }
+    body { font-family: "Outfit", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; position: relative; }
 
     /* Floating Icons */
-    .floating-icons {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: -1;
-      overflow: hidden;
-    }
-    .icon {
-      position: absolute;
-      font-size: 52px;
-      color: var(--accent);
-      opacity: 0.12;
-      animation: float 12s infinite ease-in-out;
-    }
+    .floating-icons { position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
+    .icon { position: absolute; font-size: 52px; color: var(--accent); opacity: 0.12; animation: float 12s infinite ease-in-out; }
     .icon:nth-child(1) { top: 10%; left: 5%; animation-duration: 14s; }
     .icon:nth-child(2) { top: 70%; left: 80%; animation-duration: 18s; }
     .icon:nth-child(3) { top: 40%; left: 50%; animation-duration: 16s; }
     .icon:nth-child(4) { top: 80%; left: 20%; animation-duration: 20s; }
-    @keyframes float {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-25px) rotate(10deg); }
-    }
+    @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-25px) rotate(10deg); } }
 
-    header {
-      padding: 16px 20px;
-      background: #111;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 200;
-      border-bottom: 1px solid var(--border);
-    }
-    .brand {
-      font-size: 26px;
-      font-weight: 800;
-    }
+    header { padding: 16px 20px; background: #111; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 200; border-bottom: 1px solid var(--border); }
+    .brand { font-size: 26px; font-weight: 800; }
     .brand span { color: var(--accent); }
-    .nav-btn {
-      font-size: 24px;
-      cursor: pointer;
-      padding: 10px;
-      border-radius: 50%;
-      background: #1a1a1a;
-      transition: 0.3s;
-      border: 1px solid var(--border);
-    }
-    .nav-btn:hover {
-      background: var(--accent);
-      color: black;
-    }
+    .nav-btn { font-size: 24px; cursor: pointer; padding: 10px; border-radius: 50%; background: #1a1a1a; transition: 0.3s; border: 1px solid var(--border); }
+    .nav-btn:hover { background: var(--accent); color: black; }
 
-    /* Sidebar */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: -100%;
-      width: 280px;
-      height: 100%;
-      background: #111;
-      padding: 20px;
-      transition: 0.35s;
-      border-right: 1px solid var(--border);
-      z-index: 300;
-    }
+    /* SIDEBAR */
+    .sidebar { position: fixed; top: 0; left: -100%; width: 280px; height: 100%; background: #111; padding: 20px; transition: 0.35s; border-right: 1px solid var(--border); z-index: 300; }
     .sidebar.active { left: 0; }
-    .profile-section {
-      padding: 16px;
-      background: #1b1b1b;
-      border-radius: 12px;
-      text-align: center;
-      border: 1px solid var(--border);
-      margin-bottom: 20px;
-    }
-    .sidebar a {
-      color: #ddd;
-      text-decoration: none;
-      display: block;
-      padding: 12px;
-      border-radius: 12px;
-      margin-top: 10px;
-      transition: 0.3s;
-    }
-    .sidebar a:hover {
-      background: var(--accent);
-      color: black;
-    }
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.55);
-      display: none;
-      z-index: 250;
-    }
+    .profile-section { padding: 16px; background: #1b1b1b; border-radius: 12px; text-align: center; border: 1px solid var(--border); margin-bottom: 20px; }
+    .sidebar a { color: #ddd; text-decoration: none; display: block; padding: 12px; border-radius: 12px; margin-top: 10px; transition: 0.3s; }
+    .sidebar a:hover { background: var(--accent); color: black; }
+    .overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); display: none; z-index: 250; }
     .overlay.active { display: block; }
 
     main { padding: 20px; }
 
-    /* CLEAN SEARCH BAR – NO GREEN BUTTON */
+    /* OFFER SLIDER - BEAUTIFUL & AUTO */
+    .offer-slider {
+      max-width: 540px;
+      margin: 0 auto 24px;
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+      border: 1px solid var(--border);
+    }
+    .slides {
+      display: flex;
+      width: 400%;
+      animation: slide 16s infinite;
+    }
+    .slide {
+      width: 100%;
+      height: 180px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-weight: 800;
+      font-size: 24px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+    }
+    .slide::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(89,255,148,0.4), rgba(255,50,99,0.5));
+    }
+    .slide span {
+      position: relative;
+      z-index: 2;
+      background: rgba(0,0,0,0.5);
+      padding: 12px 24px;
+      border-radius: 16px;
+      backdrop-filter: blur(5px);
+    }
+    @keyframes slide {
+      0%, 22% { transform: translateX(0%); }
+      25%, 47% { transform: translateX(-25%); }
+      50%, 72% { transform: translateX(-50%); }
+      75%, 97% { transform: translateX(-75%); }
+      100% { transform: translateX(0%); }
+    }
+
+    /* CLEAN SEARCH BAR */
     .search-bar {
       max-width: 540px;
       margin: 0 auto 26px;
@@ -164,62 +136,19 @@
       pointer-events: none;
     }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
-    }
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      overflow: hidden;
-      cursor: pointer;
-      transition: 0.4s;
-    }
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 0 25px var(--glow);
-    }
-    .card img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
-    }
-    .info {
-      padding: 14px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .shop-name {
-      color: var(--accent);
-      font-weight: 700;
-      font-size: 18px;
-    }
-    .rating {
-      color: #72ffbc;
-      font-weight: 700;
-    }
-    .desc {
-      padding: 0 16px 16px;
-      font-size: 14px;
-      opacity: 0.8;
-    }
-
-    footer {
-      padding: 18px;
-      text-align: center;
-      color: #999;
-      background: #111;
-      margin-top: 40px;
-      border-top: 1px solid var(--border);
-    }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    .card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; cursor: pointer; transition: 0.4s; }
+    .card:hover { transform: translateY(-8px); box-shadow: 0 0 25px var(--glow); }
+    .card img { width: 100%; height: 180px; object-fit: cover; }
+    .info { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; }
+    .shop-name { color: var(--accent); font-weight: 700; font-size: 18px; }
+    .rating { color: #72ffbc; font-weight: 700; }
+    .desc { padding: 0 16px 16px; font-size: 14px; opacity: 0.8; }
+    footer { padding: 18px; text-align: center; color: #999; background: #111; margin-top: 40px; border-top: 1px solid var(--border); }
   </style>
 </head>
 <body>
 
-  <!-- Floating Icons -->
   <div class="floating-icons">
     <i class="fas fa-pizza-slice icon"></i>
     <i class="fas fa-hamburger icon"></i>
@@ -232,7 +161,6 @@
     <div class="brand"><span>Chat</span>Point</div>
   </header>
 
-  <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="profile-section" id="profileSection"></div>
     <a href="orders.html">My Orders</a>
@@ -242,6 +170,25 @@
   <div class="overlay" id="overlay"></div>
 
   <main>
+
+    <!-- OFFERS & PROMO SLIDER -->
+    <div class="offer-slider">
+      <div class="slides">
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800');">
+          <span>FREE DELIVERY on first order!</span>
+        </div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1606787366850-de6330127bfc?w=800');">
+          <span>NEW: Chat Point Special Combo - Only ₹149</span>
+        </div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a0ae38?w=800');">
+          <span>50% OFF on Pizza Spot - Today Only!</span>
+        </div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800');">
+          <span>Buy 1 Get 1 FREE at Mister Chef!</span>
+        </div>
+      </div>
+    </div>
+
     <!-- Clean Search Bar -->
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Search your favorite shop..." oninput="searchShops()">
@@ -254,15 +201,8 @@
   <footer>© 2025 Chat Point • Made with Passion</footer>
 
   <script>
-    // CHAT POINT FIRST + RENAMED
     const shops = [
-      { 
-        name: "Chat Point", 
-        img: "images/dolphin.png", 
-        rating: 4.9, 
-        desc: "Your favorite hangout – burgers, chats, coffee & vibes!", 
-        items: ["Zinger Burger", "Peri Peri Fries", "Cold Coffee", "Oreo Shake", "Chicken Roll"]
-      },
+      { name: "Chat Point", img: "images/dolphin.png", rating: 4.9, desc: "Your favorite hangout – burgers, chats, coffee & vibes!", items: ["Zinger Burger", "Peri Peri Fries", "Cold Coffee", "Oreo Shake", "Chicken Roll"] },
       { name: "Sangambar Udpi-Hotel", img: "images/sangambar-udpi-hotel.png", rating: 4.6, desc: "Pure vegetarian South Indian meals.", items: ["Masala Dosa", "Idli Vada", "Puri Bhaji", "Filter Coffee"] },
       { name: "Nandini Grand Hotels", img: "images/nandini-grand-hotels.png", rating: 4.7, desc: "Crispy dosas with authentic flavors.", items: ["Plain Dosa", "Ghee Roast", "Onion Uttapam", "Podi Idli"] },
       { name: "Pizza spot", img: "https://images.unsplash.com/photo-1513104890138-7c749659a0ae38?w=500", rating: 4.5, desc: "Loaded pizzas with fresh toppings.", items: ["Margherita", "Pepperoni", "Veggie Supreme", "BBQ Chicken"] },
@@ -274,7 +214,6 @@
     function renderShops(filter = "") {
       const grid = document.getElementById("grid");
       grid.innerHTML = "";
-
       shops
         .filter(shop => shop.name.toLowerCase().includes(filter.toLowerCase()))
         .forEach(shop => {
@@ -284,7 +223,6 @@
             localStorage.setItem("currentShop", JSON.stringify({ name: shop.name, items: shop.items }));
             location.href = `items.html?shop=${encodeURIComponent(shop.name)}`;
           };
-
           card.innerHTML = `
             <img src="${shop.img}" alt="${shop.name}" onerror="this.src='https://via.placeholder.com/300x180?text=${encodeURIComponent(shop.name)}'">
             <div class="info">
@@ -298,8 +236,7 @@
     }
 
     function searchShops() {
-      const query = document.getElementById("searchInput").value.trim();
-      renderShops(query);
+      renderShops(document.getElementById("searchInput").value.trim());
     }
 
     // Sidebar
@@ -316,25 +253,12 @@
       const user = JSON.parse(localStorage.getItem("chatpoint_user") || "null");
       const profile = document.getElementById("profileSection");
       const logoutBtn = document.getElementById("logout");
-
       if (user && user._id) {
-        profile.innerHTML = `
-          <i class="fas fa-user-circle" style="font-size:40px;color:var(--accent)"></i>
-          <div style="font-weight:700;font-size:18px;">${user.name || "User"}</div>
-          <div style="font-size:14px;opacity:0.7;">${user.phone || "N/A"}</div>
-        `;
+        profile.innerHTML = `<i class="fas fa-user-circle" style="font-size:40px;color:var(--accent)"></i><div style="font-weight:700;font-size:18px;">${user.name}</div><div style="font-size:14px;opacity:0.7;">${user.phone}</div>`;
         logoutBtn.style.display = "block";
-        logoutBtn.onclick = () => {
-          localStorage.removeItem("chatpoint_user");
-          location.reload();
-        };
+        logoutBtn.onclick = () => { localStorage.removeItem("chatpoint_user"); location.reload(); };
       } else {
-        profile.innerHTML = `
-          <div style="font-size:15px;">
-            <i class="fas fa-user-circle" style="font-size:40px;color:#888;"></i><br>
-            <a href="login.html" style="color:var(--accent);text-decoration:underline;">Login to see profile</a>
-          </div>
-        `;
+        profile.innerHTML = `<div style="font-size:15px;"><i class="fas fa-user-circle" style="font-size:40px;color:#888;"></i><br><a href="login.html" style="color:var(--accent);text-decoration:underline;">Login to see profile</a></div>`;
         logoutBtn.style.display = "none";
       }
     }
