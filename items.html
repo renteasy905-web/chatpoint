@@ -316,7 +316,40 @@
       "Bekary": [
         { name: "Veg Pizza", price: 170 },
         { name: "Margherita Pizza", price: 160 }
+      ],
+
+      // ============ YOUR BAKERY ADDED HERE ============
+      "Chat Point Bakery": [
+        // Pizzas
+        { name: "Veg Pizza", price: 150 },
+        { name: "Margherita", price: 140 },
+        { name: "Paneer Pizza", price: 200 },
+        { name: "Golden Corn Pizza", price: 209 },
+        { name: "Sweet Corn Pizza", price: 200 },
+        { name: "Baby Corn Pizza", price: 200 },
+        // Burgers
+        { name: "Classic Veg Burger", price: 60 },
+        { name: "Cheese Burger", price: 70 },
+        { name: "Paneer Tandoori Burger", price: 70 },
+        // Sandwiches & Rolls
+        { name: "Cheese Sandwich", price: 60 },
+        { name: "Veg Sandwich", price: 50 },
+        { name: "Veg Roll", price: 30 },
+        { name: "Egg Roll", price: 30 },
+        { name: "Cheese Roll", price: 35 },
+        // Ice Cakes (per kg)
+        { name: "Rasmalai Cake", price: 700 },
+        { name: "Irish Coffee Cake", price: 700 },
+        { name: "Black Forest Cake", price: 600 },
+        { name: "American Nuts Cake", price: 700 },
+        { name: "French Vanilla Cake", price: 650 },
+        { name: "Pineapple Cake", price: 600 },
+        { name: "Strawberry Cake", price: 600 },
+        { name: "Death by Chocolate Cake", price: 650 },
+        { name: "Butterscotch Cake", price: 600 },
+        { name: "Mango Cake", price: 600 }
       ]
+      // ================================================
     };
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -367,71 +400,33 @@
       window.location.href = "cart.html";
     }
 
-    // EXACT IMAGE MAPPING (case-sensitive & extension-sensitive)
+    // Image mapping for your bakery items (add real images later in /images folder)
     const imageMap = {
-      "tomato soup": "Tomato-Soup.jpg",
-      "sweet corn soup": "Sweet-Corn-Soup.jpg",
-      "veg clear soup": "Veg-Clear-Soup.jpg",
-      "hot and sour soup": "Hot-and-Sour-Soup.jpg",
-      "gobi 65": "Gobi-65.jpg",
-      "gobi manchurian": "Gobi-Manchurian.jpg",
-      "mushroom manchurian": "Mushroom-Manchurian.jpg",
-      "paneer manchurian": "Paneer-Manchurian.jpg",
-      "veg manchurian": "Veg-Manchurian.jpg",
-      "plain dosa": "Plain-Dosa.JPG",
-      "masala dosa": "Masala-Dosa.JPG",
-      "benne dosa": "Benne-Dosa.jpg",
-      "benne masala dosa": "Benne-Masala-Dosa.jpg",
-      "mysore masala dosa": "Mysore-Masala-Dosa.jpg",
-      "paneer masala dosa": "Paneer-Masala-Dosa.jpg",
-      "shira": "shira.JPG",
-      "poori": "poori.JPG",
-      "full meals": "full-meals.JPG",
-      "onion dosa": "onion-dosa.JPG",
-      "utappa": "utappa.JPG",
-      "mysore bonda": "mysor-bonda.JPG",
-      "mangalore buns": "mangalore-buns.JPG",
-      "paneer dosa": "paneer-dosa.JPG",
-      "cheese dosa": "chess-dosa.jpg",
-      "chou chou bath": "chou-chou-bath.JPG",
-      "nuggets": "Nuggets.jpg",
-      "french fries": "French-Fries.jpg",
-      "masala fries": "Masala-Fries.jpg",
-      "smiley fries": "Smiley-Fries.jpg",
-      "pizza spot special": "Pizza-Spot-Special.jpg",
-      "burger classic": "Burger-Classic.jpg",
-      "aloo tikki burger": "Aloo-Tikki-Burger.jpg",
-      "paneer burger": "Paneer-Burger.jpg",
-      "double decker burger": "Double-Decker-Burger.jpg",
-      "pizza spot special burger": "Pizza-Spot-Special-Burger.jpg",
+      // existing ones...
+      "veg pizza": "Veg-Pizza.jpg",
       "margherita": "Margherita.jpg",
-      "veggie": "Veggie.jpg",
-      "veggie lover": "Veggie-Lover.jpg",
-      "sweet corn": "Sweet-Corn.jpg",
-      "baby corn": "Baby-Corn.jpg",
-      "tandoori paneer": "Tandoori-Paneer.jpg",
-      "steam momos": "Steam-Momos.jpg",
-      "fried momos": "Fried-Momos.jpg",
-      "kurkure momos": "Kurkure-Momos.jpg",
-      "veg sandwich": "Veg-Sandwich.jpg",
+      "paneer pizza": "Paneer-Pizza.jpg",
+      "golden corn pizza": "Golden-Corn-Pizza.jpg",
+      "sweet corn pizza": "Sweet-Corn-Pizza.jpg",
+      "baby corn pizza": "Baby-Corn-Pizza.jpg",
+      "classic veg burger": "Classic-Veg-Burger.jpg",
+      "cheese burger": "Cheese-Burger.jpg",
+      "paneer tandoori burger": "Paneer-Tandoori-Burger.jpg",
       "cheese sandwich": "Cheese-Sandwich.jpg",
-      "sweet corn sandwich": "Sweet-Corn-Sandwich.jpg",
-      "masala sandwich": "Masala-Sandwich.jpg",
-      "paneer tandoori sandwich": "Paneer-Tandoori-Sandwich.jpg",
-      "club sandwich": "Club-Sandwich.jpg",
-      "pizza spot special sandwich": "Pizza-Spot-Special-Sandwich.jpg",
-      "pav bhaji": "Pav-Bhaji.jpg",
-      "cheese pav bhaji": "Cheese-Pav-Bhaji.jpg",
+      "veg sandwich": "Veg-Sandwich.jpg",
       "veg roll": "Veg-Roll.jpg",
-      "sweet corn roll": "Sweet-Corn-Roll.jpg",
-      "paneer roll": "Paneer-Roll.jpg",
-      "creamy alfredo pasta veg": "Creamy-Alfredo-Pasta-Veg.JPG",
-      "classic burger": "Burger-Classic.jpg",
-      "veg pizza": "Veg-Pizza.JPG",
-      "margherita pizza": "Margherita.jpg",
-      "chocolate truffle cake": "Chocolate-Truffle-Cake.jpg",
-      "red velvet cake": "Red-Velvet-Cake.JPG",
-      "black forest": "Black-Forest.jpg"
+      "egg roll": "Egg-Roll.jpg",
+      "cheese roll": "Cheese-Roll.jpg",
+      "rasmalai cake": "Rasmalai-Cake.jpg",
+      "irish coffee cake": "Irish-Coffee-Cake.jpg",
+      "black forest cake": "Black-Forest-Cake.jpg",
+      "american nuts cake": "American-Nuts-Cake.jpg",
+      "french vanilla cake": "French-Vanilla-Cake.jpg",
+      "pineapple cake": "Pineapple-Cake.jpg",
+      "strawberry cake": "Strawberry-Cake.jpg",
+      "death by chocolate cake": "Death-by-Chocolate-Cake.jpg",
+      "butterscotch cake": "Butterscotch-Cake.jpg",
+      "mango cake": "Mango-Cake.jpg"
     };
 
     function getImagePath(itemName) {
@@ -469,11 +464,15 @@
 
         const desc = document.createElement('div');
         desc.className = 'item-desc';
-        desc.textContent = "Fresh • Chef's Special";
+        if (item.name.toLowerCase().includes("cake")) {
+          desc.textContent = "₹" + item.price + "/kg • Fresh Cream Cake";
+        } else {
+          desc.textContent = "Fresh • Bakery Special";
+        }
 
         const price = document.createElement('div');
         price.className = 'item-price';
-        price.textContent = `₹${item.price}`;
+        price.textContent = item.name.toLowerCase().includes("cake") ? `₹${item.price}/kg` : `₹${item.price}`;
 
         info.appendChild(title);
         info.appendChild(desc);
