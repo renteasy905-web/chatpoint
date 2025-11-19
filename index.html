@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <!-- ZOOM FIXED — NO PINCH ZOOM ON MOBILE -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  
   <title>Chat Point | Food Shops</title>
 
   <!-- PWA -->
@@ -53,7 +56,7 @@
 
     main { padding: 20px; }
 
-    /* OFFER SLIDER - BEAUTIFUL & AUTO */
+    /* OFFER SLIDER */
     .offer-slider {
       max-width: 540px;
       margin: 0 auto 24px;
@@ -106,7 +109,7 @@
       100% { transform: translateX(0%); }
     }
 
-    /* CLEAN SEARCH BAR */
+    /* SEARCH BAR */
     .search-bar {
       max-width: 540px;
       margin: 0 auto 26px;
@@ -181,7 +184,7 @@
           <span>NEW: Chat Point Special Combo - Only ₹200</span>
         </div>
         <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a0ae38?w=800');">
-          <span>Order above 200 Get coco-cola free </span>
+          <span>Order above 200 Get coco-cola free</span>
         </div>
         <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800');">
           <span>Buy 1 Get 1 FREE at FLY PIZZA !</span>
@@ -189,7 +192,7 @@
       </div>
     </div>
 
-    <!-- Clean Search Bar -->
+    <!-- Search Bar -->
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Search your favorite shop..." oninput="searchShops()">
       <i class="fas fa-search"></i>
