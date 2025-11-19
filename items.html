@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Items | Chat Point</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -68,7 +68,6 @@
       gap:12px;
       padding:14px 18px;
       width: 100%;
-      max-width: 100%;
       max-width: var(--max-width);
       margin: 10px auto 0;
       background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.004));
@@ -179,6 +178,7 @@
     .checkout-btn:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(50,224,106,0.22); }
 
     a { color: var(--accent); text-decoration: none; }
+    .center { text-align:center; color:#9aaefc; padding:34px; }
 
     @media (max-width: 980px) {
       .items-grid { grid-template-columns: 1fr 1fr; gap:12px; }
@@ -313,22 +313,160 @@
         { name: "Classic Burger", price: 120 },
         { name: "French Fries", price: 99 }
       ],
-      "Dolphin Hotel": [ /* your full list here - unchanged */ ],
+      "Dolphin Hotel": [
+  { name: "Chicken Tandoori", price: 305 },
+
+  { name: "Kantilal Rice", price: 155 },
+  { name: "Sizwan Fried Rice", price: 165 },
+  { name: "Panner Fried Rice", price: 185 },
+  { name: "Mix Raita", price: 105 },
+  { name: "Bundhi Raita", price: 105 },
+  { name: "Painapal Raita", price: 110 },
+  { name: "Veg Raita", price: 105 },
+
+  { name: "Panner Butter Masala", price: 185 },
+  { name: "Panner Masala", price: 165 },
+  { name: "Panner Tikka Masala", price: 205 },
+  { name: "Panner Kadai", price: 165 },
+  { name: "Panner Kheema", price: 205 },
+  { name: "Panner Kolhapuri", price: 165 },
+  { name: "Panner Sai Kurma", price: 205 },
+  { name: "Panner Kofta", price: 215 },
+  { name: "Panner Hyadrabadi", price: 225 },
+  { name: "Panner Guchi", price: 225 },
+  { name: "Panner Burji", price: 205 },
+  { name: "Palak Panner", price: 165 },
+  { name: "Panner Peshwari", price: 205 },
+  { name: "Plain Palak", price: 145 },
+
+  { name: "Veg Kadai", price: 175 },
+  { name: "Veg Sai Kurma", price: 175 },
+  { name: "Veg Dopyaza", price: 175 },
+  { name: "Veg Makhanwala", price: 175 },
+  { name: "Veg Maharaja", price: 175 },
+  { name: "Veg Rangeela", price: 175 },
+  { name: "Veg Boona", price: 175 },
+  { name: "Veg Tiranga", price: 175 },
+  { name: "Veg Dolphin Special", price: 215 },
+  { name: "Veg Tawa Masala", price: 175 },
+  { name: "Veg Kolhapuri", price: 175 },
+  { name: "Veg Patiyala", price: 175 },
+  { name: "Veg Jaipuri", price: 175 },
+  { name: "Veg Dilruba", price: 175 },
+  { name: "Veg NR Kurma", price: 175 },
+  { name: "Veg Hyadrabadi", price: 175 },
+
+  { name: "Veg Kofta", price: 205 },
+  { name: "Veg Hariyali", price: 215 },
+  { name: "Veg Lajawab", price: 225 },
+  { name: "Veg Pahadi Masala", price: 225 },
+  { name: "Nix Veg", price: 165 },
+  { name: "Veg Paper Masala", price: 165 },
+  { name: "Matki Fry", price: 145 },
+  { name: "Malai Kofta", price: 205 },
+  { name: "Baigan Masala", price: 155 },
+  { name: "Aalu Mutter", price: 155 },
+  { name: "Aalu Gobi Masala", price: 155 },
+  { name: "Dum Aalu Kashmiri", price: 165 },
+  
+  { name: "Green Pice Masala", price: 165 },
+  { name: "Capsicum Masala", price: 155 },
+  { name: "Shenga Bhaji", price: 155 },
+  { name: "Methi Masala", price: 145 },
+  { name: "Menthi Sukka", price: 155 },
+  { name: "Bhendy Fry", price: 155 },
+  { name: "Bhendy Masala", price: 155 },
+  { name: "Tomato Fry", price: 145 },
+  { name: "Special Gravy", price: 125 },
+  { name: "Curd", price: 50 },
+  { name: "Shenga Chatni", price: 55 },
+  { name: "Garlic Fry", price: 105 },
+
+  { name: "Tandoori Roti", price: 45 },
+  { name: "Special Tandoori Roti", price:55 },
+  { name: "Butter Roti", price:50 },
+  { name: "Butter Kulcha", price:55 },
+  { name: "Butter Naan", price:60 },
+  { name: "Plane Naan", price:50 },
+  { name: "Plane Kulcha", price:50 },
+  { name: "Garlic Naan", price:65 },
+  { name: "Jawari Roti", price:40 },
+  { name: "Chapati", price:39 },
+  { name: "Rost Roti", price:40 },
+  { name: "Tawa Parota", price:55 },
+  { name: "Masala Parota", price:100 },
+  { name: "Aalu Parota", price:90 },
+  { name: "Aalu Butter Parota", price:110 },
+
+  { name: "Plane Rice Full", price:100 },
+  { name: "Plane Rice Half", price:70 },
+  { name: "Jeera Rice Full", price:155 },
+  { name: "Jeera Rice Half", price:95 },
+  { name: "Masala Rice Full", price:95 },
+  { name: "Masala Rice Half", price:95 },
+  { name: "Steem Rice", price:120 },
+  { name: "Ghee Rice", price:120 },
+  { name: "Veg Rice", price:120 },
+  { name: "Veg Fried Rice", price:165 },
+  { name: "Onion Fried Rice", price:165 },
+  { name: "Dal Khichadi", price:165 },
+  { name: "Palak Rice", price:185 },
+  { name: "Veg Biriyani", price:185 },
+  { name: "Cord Rice", price:165 },
+
+  { name: "Tomato Soup", price:110 },
+  { name: "Veg Clear Soup", price:110 },
+  { name: "Hot and Sour Soup", price:110 },
+  { name: "Veg Manchow Soup", price:135 },
+  { name: "Sweet Corn Soup", price:110 },
+  { name: "Mushroom Soup", price:135 },
+  { name: "Veg Noodles Soup", price:135 },
+
+  { name: "Papad", price:50 },
+  { name: "Masala Papad", price:65 },
+  { name: "Finger Chips", price:130 },
+  { name: "Finger Veg", price:135 },
+  { name: "Veg Manchurian", price:135 },
+  { name: "Veg 65", price:135 },
+  { name: "Kaju Dry", price:145 },
+  { name: "Gobi 65", price:135 },
+  { name: "Gobi Manchurian", price:135 },
+  { name: "Gobi Chilly", price:135 },
+  { name: "Panner Chilly", price:235 },
+  { name: "Panner 65", price:215 },
+  { name: "Panner Pakoda", price:180 },
+  { name: "Panner French", price:235 },
+  { name: "Panner Golden", price:235 },
+  { name: "Panner Sati", price:305 },
+  { name: "Veg Spring Roll", price:135 },
+  { name: "Veg Sangli Roll", price:135 },
+  { name: "Veg Harabara Kabab", price:215 },
+  { name: "Veg Pakoda", price:205 },
+  { name: "Onion Pakoda", price:135 },
+  { name: "Onion Ring Pakoda", price:135 },
+  { name: "Palak Pakoda", price:135 }
+],
+
+      // ============ YOUR BAKERY ADDED HERE ============
       "Hassanmba iyyangar bakery ": [
+        // Pizzas
         { name: "Veg Pizza", price: 170 },
         { name: "Margherita", price: 150 },
         { name: "Paneer Pizza", price: 220 },
         { name: "Golden Corn Pizza", price: 230 },
         { name: "Sweet Corn Pizza", price: 220 },
         { name: "Baby Corn Pizza", price: 220 },
+        // Burgers
         { name: "Classic Veg Burger", price: 70 },
         { name: "Cheese Burger", price: 80 },
         { name: "Paneer Tandoori Burger", price: 80 },
+        // Sandwiches & Rolls
         { name: "Cheese Sandwich", price: 70 },
         { name: "Veg Sandwich", price: 60 },
         { name: "Veg Roll", price: 35 },
         { name: "Egg Roll", price: 35 },
         { name: "Cheese Roll", price: 40 },
+        // Ice Cakes (per kg)
         { name: "Rasmalai Cake", price: 750 },
         { name: "Irish Coffee Cake", price: 750 },
         { name: "Black Forest Cake", price: 650 },
@@ -338,49 +476,10 @@
         { name: "Strawberry Cake", price: 650 },
         { name: "Death by Chocolate Cake", price: 700 },
         { name: "Butterscotch Cake", price: 650 },
-        { name: "Mango Cake", price: 650 }
+        { name: "Mango Cake", price: 60 }
       ]
+      // ================================================
     };
-
-    // 100% CORRECTED IMAGE MAP - matches your real files
-    const imageMap = {
-      "veg pizza": "Veg-Pizza.JPG",
-      "margherita": "Margherita.jpg",
-      "paneer pizza": "Tandoori-Paneer.jpg",
-      "golden corn pizza": "Sweet-Corn.jpg",
-      "sweet corn pizza": "Sweet-Corn.jpg",
-      "baby corn pizza": "Baby-Corn.jpg",
-      "classic veg burger": "Burger-Classic.jpg",
-      "cheese burger": "Cheese-Sandwich.jpg",
-      "paneer tandoori burger": "Paneer-Burger.jpg",
-      "cheese sandwich": "Cheese-Sandwich.jpg",
-      "veg sandwich": "Veg-Sandwich.jpg",
-      "veg roll": "Veg-Roll.jpg",
-      "egg roll": "Veg-Roll.jpg",
-      "cheese roll": "Veg-Roll.jpg",
-
-      // Cakes
-      "black forest cake": "Black-Forest.jpg",
-      "death by chocolate cake": "Chocolate Truffle Cake.jpg",
-      "rasmalai cake": "bekary.png",
-      "irish coffee cake": "bekary.png",
-      "american nuts cake": "bekary.png",
-      "french vanilla cake": "bekary.png",
-      "pineapple cake": "bekary.png",
-      "strawberry cake": "bekary.png",
-      "butterscotch cake": "bekary.png",
-      "mango cake": "bekary.png"
-    };
-
-    // Smart case-insensitive image finder
-    function getImagePath(itemName) {
-      const key = itemName.toLowerCase().trim();
-      if (imageMap[key]) return `images/${imageMap[key]}`;
-      for (const k in imageMap) {
-        if (key.includes(k) || k.includes(key)) return `images/${imageMap[k]}`;
-      }
-      return `https://via.placeholder.com/600x380/12121b/59FF94?text=${encodeURIComponent(itemName)}`;
-    }
 
     const urlParams = new URLSearchParams(window.location.search);
     const shopName = decodeURIComponent(urlParams.get("shop") || "");
@@ -420,7 +519,7 @@
       if (!cart[shop][itemName]) cart[shop][itemName] = { qty: 0, price };
       cart[shop][itemName].qty = Math.max(0, cart[shop][itemName].qty + delta);
       if (cart[shop][itemName].qty === 0) delete cart[shop][itemName];
-      if (Object.keys(cart[shop]).length === 0) delete cart[shop];
+      if (Object.keys(cart[shop] || {}).length === 0) delete cart[shop];
       saveCart();
       renderItems();
     }
@@ -428,6 +527,111 @@
     function openCartPage() {
       if (!isLoggedIn) { alert("Please login to view cart."); window.location.href = "login.html"; return; }
       window.location.href = "cart.html";
+    }
+
+    // Image mapping for your bakery items (add real images later in /images folder)
+   const imageMap = {
+  // === PIZZA & BURGERS ===
+  "veg pizza": "Veg-Pizza.jpg",
+  "margherita": "Margherita.jpg",
+  "paneer pizza": "Tandoori-Paneer.jpg",
+  "tandoori paneer": "Tandoori-Paneer.jpg",
+  "golden corn pizza": "Sweet-Corn.jpg",
+  "sweet corn pizza": "Sweet-Corn.jpg",
+  "baby corn pizza": "Baby-Corn.jpg",
+  "sweet corn": "Sweet-Corn.jpg",
+  "baby corn": "Baby-Corn.jpg",
+  "veggie": "Veggie.jpg",
+  "veggie lover": "Veggie-Lover.jpg",
+
+  // === BURGERS ===
+  "classic veg burger": "Burger-Classic.jpg",
+  "aloo tikki burger": "Aloo-Tikki-Burger.jpg",
+  "paneer burger": "Paneer-Burger.jpg",
+  "paneer tandoori burger": "Paneer-Burger.jpg",
+  "double decker burger": "Double-Decker-Burger.jpg",
+  "pizza spot special burger": "Pizza-Spot-Special-Burger.jpg",
+  "pizza spot special": "Pizza-Spot-Special.jpg",
+
+  // === SANDWICHES & ROLLS ===
+  "cheese sandwich": "Cheese-Sandwich.jpg",
+  "veg sandwich": "Veg-Sandwich.jpg",
+  "sweet corn sandwich": "Sweet-Corn-Sandwich.jpg",
+  "masala sandwich": "Masala-Sandwich.jpg",
+  "club sandwich": "Club-Sandwich.jpg",
+  "paneer tandoori sandwich": "Paneer-Tandoori-Sandwich.jpg",
+  "pizza spot special sandwich": "Pizza-Spot-Special-Sandwich.jpg",
+  "veg roll": "Veg-Roll.jpg",
+  "sweet corn roll": "Sweet-Corn-Roll.jpg",
+  "paneer roll": "Paneer-Roll.jpg",
+
+  // === MOMOS ===
+  "steam momos": "Steam-Momos.jpg",
+  "fried momos": "Fried-Momos.jpg",
+  "kurkure momos": "Kurkure-Momos.jpg",
+
+  // === FRIES & SIDES ===
+  "french fries": "French-Fries.jpg",
+  "masala fries": "Masala-Fries.jpg",
+  "smiley fries": "Smiley-Fries.jpg",
+  "nuggets": "Nuggets.jpg",
+
+  // === PAV BHAJI ===
+  "pav bhaji": "Pav-Bhaji.jpg",
+  "cheese pav bhaji": "Cheese-Pav-Bhaji.jpg",
+
+  // === CAKES ===
+  "black forest cake": "Black-Forest.jpg",
+  "chocolate truffle cake": "Chocolate Truffle Cake.jpg",
+  "chocolate-truffle cake": "Chocolate-Truffle-Cake.jpg",
+  "death by chocolate cake": "Chocolate Truffle Cake.jpg",
+  "red velvet cake": "Red-Velvet-Cake.JPG",
+
+  // === SOUTH INDIAN BREAKFAST ===
+  "plain dosa": "Plain-Dosa.JPG",
+  "masala dosa": "Masala-Dosa.JPG",
+  "benne dosa": "Benne-Dosa.jpg",
+  "benne masala dosa": "Benne-Masala-Dosa.jpg",
+  "mysore masala dosa": "Mysore-Masala-Dosa.jpg",
+  "paneer masala dosa": "Paneer-Masala-Dosa.jpg",
+  "onion dosa": "onion-dosa.JPG",
+  "paneer dosa": "paneer-dosa.JPG",
+  "cheese dosa": "chess-dosa.jpg",
+  "idli": "Idli.jpg.jpg",
+  "vada": "Vada.JPG",
+  "poori": "poori.JPG",
+  "mysore bonda": "Mysore-Bonda.jpg",
+  "mangalore buns": "mangalore-buns.JPG",
+  "utappa": "utappa.JPG",
+  "chou chou bath": "chou-chou-bath.JPG",
+  "rice bath": "rice-bath.JPG",
+  "shira": "shira.JPG",
+  "full meals": "full-meals.JPG",
+
+  // === SOUPS ===
+  "tomato soup": "Tomato-Soup.jpg",
+  "sweet corn soup": "Sweet-Corn-Soup.jpg",
+  "hot and sour soup": "Hot-and-Sour-Soup.jpg",
+  "veg clear soup": "Veg-Clear-Soup.jpg",
+
+  // === CHINESE / STARTERS ===
+  "gobi 65": "Gobi-65.jpg",
+  "gobi manchurian": "Gobi-Manchurian.jpg",
+  "mushroom manchurian": "Mushroom-Manchurian.jpg",
+  "paneer manchurian": "Paneer-Manchurian.jpg",
+  "veg manchurian": "Veg-Manchurian.jpg",
+
+  // === GRAVY CURRIES (Note: Spelling is "Panner" in your files) ===
+  "panner hyadrabadi": "Panner-Hyadrabadi.jpg",
+  "panner kofta": "Panner-Kofta.jpg",
+  "panner sai kurma": "Panner-Sai-Kurma.jpg",
+
+  // === PASTA ===
+  "creamy alfredo pasta veg": "Creamy-Alfredo-Pasta-Veg.JPG"
+};
+    function getImagePath(itemName) {
+      const key = itemName.toLowerCase();
+      return imageMap[key] ? `images/${imageMap[key]}` : `https://via.placeholder.com/600x380/12121b/59FF94?text=${encodeURIComponent(itemName)}`;
     }
 
     function renderItems() {
@@ -449,7 +653,7 @@
         img.alt = item.name;
         img.loading = 'lazy';
         img.src = imgSrc;
-        img.onerror = () => { img.src = `https://via.placeholder.com/600x380/12121b/59FF94?text=${encodeURIComponent(item.name)}`; };
+        img.onerror = function() { this.src = `https://via.placeholder.com/600x380/12121b/59FF94?text=${encodeURIComponent(item.name)}`; };
 
         const info = document.createElement('div');
         info.className = 'item-info';
@@ -460,13 +664,19 @@
 
         const desc = document.createElement('div');
         desc.className = 'item-desc';
-        desc.textContent = item.name.toLowerCase().includes("cake") ? "₹" + item.price + "/kg • Fresh Cream Cake" : "Fresh • Bakery Special";
+        if (item.name.toLowerCase().includes("cake")) {
+          desc.textContent = "₹" + item.price + "/kg • Fresh Cream Cake";
+        } else {
+          desc.textContent = "Fresh • Bakery Special";
+        }
 
         const price = document.createElement('div');
         price.className = 'item-price';
         price.textContent = item.name.toLowerCase().includes("cake") ? `₹${item.price}/kg` : `₹${item.price}`;
 
-        info.append(title, desc, price);
+        info.appendChild(title);
+        info.appendChild(desc);
+        info.appendChild(price);
 
         const controls = document.createElement('div');
         controls.className = 'quantity';
