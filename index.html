@@ -3,23 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <title>Chat Point | Food Shops</title>
 
-  <!-- PWA ESSENTIALS -->
+  <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon-192.png" type="image/png" />
   <meta name="theme-color" content="#59FF94" />
 
   <!-- FONTS & ICONS -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap"
-    rel="stylesheet"
-  />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <style>
     :root {
@@ -31,13 +24,7 @@
       --border: rgba(89, 255, 148, 0.25);
       --glow: rgba(89, 255, 148, 0.35);
     }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: "Outfit", sans-serif;
       background: var(--bg);
@@ -47,7 +34,7 @@
       position: relative;
     }
 
-    /* FLOATING FOOD ICONS */
+    /* Floating Icons */
     .floating-icons {
       position: fixed;
       inset: 0;
@@ -55,7 +42,6 @@
       z-index: -1;
       overflow: hidden;
     }
-
     .icon {
       position: absolute;
       font-size: 52px;
@@ -63,16 +49,13 @@
       opacity: 0.12;
       animation: float 12s infinite ease-in-out;
     }
-
     .icon:nth-child(1) { top: 10%; left: 5%; animation-duration: 14s; }
     .icon:nth-child(2) { top: 70%; left: 80%; animation-duration: 18s; }
     .icon:nth-child(3) { top: 40%; left: 50%; animation-duration: 16s; }
     .icon:nth-child(4) { top: 80%; left: 20%; animation-duration: 20s; }
-
     @keyframes float {
-      0% { transform: translateY(0px) rotate(0deg); }
+      0%, 100% { transform: translateY(0) rotate(0deg); }
       50% { transform: translateY(-25px) rotate(10deg); }
-      100% { transform: translateY(0px) rotate(0deg); }
     }
 
     header {
@@ -86,16 +69,11 @@
       z-index: 200;
       border-bottom: 1px solid var(--border);
     }
-
     .brand {
       font-size: 26px;
       font-weight: 800;
     }
-
-    .brand span {
-      color: var(--accent);
-    }
-
+    .brand span { color: var(--accent); }
     .nav-btn {
       font-size: 24px;
       cursor: pointer;
@@ -105,12 +83,12 @@
       transition: 0.3s;
       border: 1px solid var(--border);
     }
-
     .nav-btn:hover {
       background: var(--accent);
       color: black;
     }
 
+    /* Sidebar */
     .sidebar {
       position: fixed;
       top: 0;
@@ -123,11 +101,7 @@
       border-right: 1px solid var(--border);
       z-index: 300;
     }
-
-    .sidebar.active {
-      left: 0;
-    }
-
+    .sidebar.active { left: 0; }
     .profile-section {
       padding: 16px;
       background: #1b1b1b;
@@ -136,7 +110,6 @@
       border: 1px solid var(--border);
       margin-bottom: 20px;
     }
-
     .sidebar a {
       color: #ddd;
       text-decoration: none;
@@ -146,12 +119,10 @@
       margin-top: 10px;
       transition: 0.3s;
     }
-
     .sidebar a:hover {
       background: var(--accent);
       color: black;
     }
-
     .overlay {
       position: fixed;
       inset: 0;
@@ -159,51 +130,45 @@
       display: none;
       z-index: 250;
     }
+    .overlay.active { display: block; }
 
-    .overlay.active {
-      display: block;
-    }
+    main { padding: 20px; }
 
-    /* SEARCH BAR */
-    main {
-      padding: 20px;
-    }
-
+    /* CLEAN SEARCH BAR – NO GREEN BUTTON */
     .search-bar {
       max-width: 540px;
       margin: 0 auto 26px;
-      display: flex;
-      border-radius: 50px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: #1a1a1a;
+      position: relative;
     }
-
     .search-bar input {
-      flex: 1;
-      padding: 14px 18px;
-      border: none;
-      background: none;
+      width: 100%;
+      padding: 16px 50px 16px 20px;
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      background: #1a1a1a;
       color: var(--text);
       font-size: 16px;
     }
-
-    .search-bar button {
-      background: var(--accent);
-      border: none;
-      padding: 0 24px;
-      font-weight: 700;
-      cursor: pointer;
-      width: 56px;           /* fixed width so it doesn't shrink */
+    .search-bar input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 15px var(--glow);
+    }
+    .search-bar i {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--accent);
+      font-size: 18px;
+      pointer-events: none;
     }
 
-    /* AUTO GRID RESPONSIVE LAYOUT */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 20px;
     }
-
     .card {
       background: var(--card);
       border-radius: var(--radius);
@@ -212,36 +177,30 @@
       cursor: pointer;
       transition: 0.4s;
     }
-
     .card:hover {
       transform: translateY(-8px);
       box-shadow: 0 0 25px var(--glow);
     }
-
     .card img {
       width: 100%;
       height: 180px;
       object-fit: cover;
     }
-
     .info {
       padding: 14px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-
     .shop-name {
       color: var(--accent);
       font-weight: 700;
       font-size: 18px;
     }
-
     .rating {
       color: #72ffbc;
       font-weight: 700;
     }
-
     .desc {
       padding: 0 16px 16px;
       font-size: 14px;
@@ -253,20 +212,14 @@
       text-align: center;
       color: #999;
       background: #111;
-      margin-top: 20px;
+      margin-top: 40px;
       border-top: 1px solid var(--border);
-    }
-
-    /* FIX HORIZONTAL SCROLL */
-    html, body {
-      max-width: 100%;
-      overflow-x: hidden;
     }
   </style>
 </head>
-
 <body>
-  <!-- FLOATING FOOD ICONS -->
+
+  <!-- Floating Icons -->
   <div class="floating-icons">
     <i class="fas fa-pizza-slice icon"></i>
     <i class="fas fa-hamburger icon"></i>
@@ -279,22 +232,20 @@
     <div class="brand"><span>Chat</span>Point</div>
   </header>
 
-  <!-- SIDEBAR -->
+  <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="profile-section" id="profileSection"></div>
-
     <a href="orders.html">My Orders</a>
     <a href="tel:8088975913">Contact: 8088975913</a>
     <a href="#" id="logout" style="display:none;color:#ff6b6b">Logout</a>
   </div>
-
   <div class="overlay" id="overlay"></div>
 
-  <!-- MAIN CONTENT -->
   <main>
+    <!-- Clean Search Bar -->
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search your favorite shop...">
-      <button onclick="searchShops()"></button>   <!-- Text removed, button stays for functionality -->
+      <input type="text" id="searchInput" placeholder="Search your favorite shop..." oninput="searchShops()">
+      <i class="fas fa-search"></i>
     </div>
 
     <div class="grid" id="grid"></div>
@@ -302,16 +253,22 @@
 
   <footer>© 2025 Chat Point • Made with Passion</footer>
 
-  <!-- APP SCRIPT -->
   <script>
+    // CHAT POINT FIRST + RENAMED
     const shops = [
+      { 
+        name: "Chat Point", 
+        img: "images/dolphin.png", 
+        rating: 4.9, 
+        desc: "Your favorite hangout – burgers, chats, coffee & vibes!", 
+        items: ["Zinger Burger", "Peri Peri Fries", "Cold Coffee", "Oreo Shake", "Chicken Roll"]
+      },
       { name: "Sangambar Udpi-Hotel", img: "images/sangambar-udpi-hotel.png", rating: 4.6, desc: "Pure vegetarian South Indian meals.", items: ["Masala Dosa", "Idli Vada", "Puri Bhaji", "Filter Coffee"] },
       { name: "Nandini Grand Hotels", img: "images/nandini-grand-hotels.png", rating: 4.7, desc: "Crispy dosas with authentic flavors.", items: ["Plain Dosa", "Ghee Roast", "Onion Uttapam", "Podi Idli"] },
-      { name: "Pizza spot", img: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500", rating: 4.5, desc: "Loaded pizzas with fresh toppings.", items: ["Margherita", "Pepperoni", "Veggie Supreme", "BBQ Chicken"] },
+      { name: "Pizza spot", img: "https://images.unsplash.com/photo-1513104890138-7c749659a0ae38?w=500", rating: 4.5, desc: "Loaded pizzas with fresh toppings.", items: ["Margherita", "Pepperoni", "Veggie Supreme", "BBQ Chicken"] },
       { name: "Fly Pizza", img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500", rating: 4.6, desc: "100% veg pizzas, light & tasty.", items: ["Paneer Tikka", "Corn & Cheese", "Farmhouse", "Veg Extravaganza"] },
       { name: "Mister Chef", img: "mister-chef.png", rating: 4.7, desc: "Juicy burgers with secret sauce.", items: ["Classic Burger", "Cheese Blast", "Veg Crunch", "Fries Combo"] },
-      { name: "Bekary", img: "images/Bekary.png", rating: 4.5, desc: "Fresh sandwiches & healthy bites.", items: ["Veg Sandwich", "Grilled Cheese", "Club Sandwich", "Cold Coffee"] },
-      { name: "chat-spot", img: "images/dolphin.png", rating: 4.8, desc: "Tandoori, kebabs & non-veg specials.", items: ["Chicken Tandoori", "Mutton Biryani", "Fish Fry", "Kebab Platter"] }
+      { name: "Bekary", img: "images/Bekary.png", rating: 4.5, desc: "Fresh sandwiches & healthy bites.", items: ["Veg Sandwich", "Grilled Cheese", "Club Sandwich", "Cold Coffee"] }
     ];
 
     function renderShops(filter = "") {
@@ -319,48 +276,37 @@
       grid.innerHTML = "";
 
       shops
-        .filter((shop) =>
-          shop.name.toLowerCase().includes(filter.toLowerCase())
-        )
-        .forEach((shop) => {
+        .filter(shop => shop.name.toLowerCase().includes(filter.toLowerCase()))
+        .forEach(shop => {
           const card = document.createElement("div");
           card.className = "card";
-
           card.onclick = () => {
-            localStorage.setItem(
-              "currentShop",
-              JSON.stringify({ name: shop.name, items: shop.items })
-            );
-            location.href = `items.html?shop=${encodeURIComponent(
-              shop.name
-            )}`;
+            localStorage.setItem("currentShop", JSON.stringify({ name: shop.name, items: shop.items }));
+            location.href = `items.html?shop=${encodeURIComponent(shop.name)}`;
           };
 
           card.innerHTML = `
-            <img src="${shop.img}" alt="${shop.name}" onerror="this.src='https://via.placeholder.com/300x180?text=${encodeURIComponent(
-            shop.name
-          )}'">
+            <img src="${shop.img}" alt="${shop.name}" onerror="this.src='https://via.placeholder.com/300x180?text=${encodeURIComponent(shop.name)}'">
             <div class="info">
               <div class="shop-name">${shop.name}</div>
               <div class="rating"><i class="fas fa-star"></i> ${shop.rating}</div>
             </div>
             <div class="desc">${shop.desc}</div>
           `;
-
           grid.appendChild(card);
         });
     }
 
     function searchShops() {
-      renderShops(document.getElementById("searchInput").value.trim());
+      const query = document.getElementById("searchInput").value.trim();
+      renderShops(query);
     }
 
-    // SIDEBAR FUNCTIONALITY
+    // Sidebar
     document.getElementById("navBtn").onclick = () => {
       document.getElementById("sidebar").classList.add("active");
       document.getElementById("overlay").classList.add("active");
     };
-
     document.getElementById("overlay").onclick = () => {
       document.getElementById("sidebar").classList.remove("active");
       document.getElementById("overlay").classList.remove("active");
@@ -385,7 +331,7 @@
       } else {
         profile.innerHTML = `
           <div style="font-size:15px;">
-            <i class="fas fa-user-circle" style="font-size:40px;color:#888;"></i>
+            <i class="fas fa-user-circle" style="font-size:40px;color:#888;"></i><br>
             <a href="login.html" style="color:var(--accent);text-decoration:underline;">Login to see profile</a>
           </div>
         `;
