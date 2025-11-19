@@ -2,524 +2,170 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Items | Chat Point</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Chat Point | Food Shops</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.png" type="image/png" />
+  <meta name="theme-color" content="#59FF94" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
     :root {
-      --bg: #0f0f14;
-      --card: rgba(18, 20, 28, 0.75);
-      --muted: #9fb3ff;
-      --text: #e6eeff;
-      --accent: #59FF94;
-      --accent-strong: #32E06A;
-      --glow: rgba(89,255,148,0.06);
-      --radius: 16px;
-      --cart-height: 78px;
-      --max-width: 1100px;
-      --transition: 220ms cubic-bezier(.2,.9,.3,1);
+      --bg: #0e0e0e;
+      --card: #1a1a1a;
+      --text: #e8ffe9;
+      --accent: #59ff94;
+      --radius: 18px;
+      --border: rgba(89, 255, 148, 0.25);
+      --glow: rgba(89, 255, 148, 0.35);
     }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html,body { height: 100%; }
-    body {
-      font-family: 'Outfit', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: radial-gradient(800px 400px at 10% 80%, rgba(89,255,148,0.02), transparent 8%),
-                  radial-gradient(700px 300px at 85% 20%, rgba(100,200,255,0.015), transparent 8%),
-                  var(--bg);
-      color: var(--text);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      padding-bottom: var(--cart-height);
-      overflow-x: hidden;
-    }
-
-    .svg-deco {
-      position: fixed;
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.22;
-      filter: drop-shadow(0 18px 40px rgba(0,0,0,0.6));
-      transform-origin: center;
-      will-change: transform, opacity;
-      mix-blend-mode: screen;
-    }
-    @keyframes floatSlow {
-      0% { transform: translateY(30vh) rotate(0deg) scale(.95); opacity:.20; }
-      50% { transform: translateY(-10vh) rotate(180deg) scale(1.04); opacity:.32; }
-      100% { transform: translateY(30vh) rotate(360deg) scale(.95); opacity:.20; }
-    }
-    .svg-deco.d1 { left: 6%; width: 110px; animation: floatSlow 28s linear infinite; }
-    .svg-deco.d2 { left: 24%; width: 84px; animation: floatSlow 22s linear infinite; animation-delay: 3s; opacity:.18 }
-    .svg-deco.d3 { right: 10%; width: 140px; animation: floatSlow 30s linear infinite; animation-delay: 6s; opacity:.16 }
-    .svg-deco.d4 { left: 68%; width: 98px; animation: floatSlow 24s linear infinite; animation-delay: 2s; opacity:.20 }
-    .svg-deco.d5 { right: 30%; width: 74px; animation: floatSlow 26s linear infinite; animation-delay: 8s; opacity:.22 }
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      padding:14px 18px;
-      width: 100%;
-      max-width: var(--max-width);
-      margin: 10px auto 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.004));
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.03);
-      backdrop-filter: blur(6px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.6);
-    }
-    .brand { display:flex; align-items:center; gap:12px; }
-    .back-btn {
-      width:44px;height:44px;border-radius:10px;display:grid;place-items:center;
-      background: rgba(255,255,255,0.02); color: var(--accent);
-      font-size:18px; cursor:pointer; border:1px solid rgba(255,255,255,0.03);
-      transition: all var(--transition);
-    }
-    .back-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(89,255,148,0.06); color: #000; background: linear-gradient(90deg,var(--accent),var(--accent-strong)); }
-    .brand .title { font-weight:800; font-size:22px; color:var(--text); }
-    .brand .title .chat { background: linear-gradient(90deg, #fff, var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-
-    .shop-name { font-weight:700; color:var(--accent); font-size:15px; text-align:right; }
-
-    main { max-width: var(--max-width); margin: 18px auto; padding: 18px; position:relative; z-index:5; }
-    .login-banner {
-      background: linear-gradient(180deg, rgba(89,255,148,0.03), rgba(255,255,255,0.01));
-      border:1px solid rgba(89,255,148,0.08);
-      color:var(--accent);
-      padding:10px 12px;
-      border-radius:12px;
-      margin-bottom:18px;
-      font-weight:700;
-      text-align:center;
-    }
-
-    .items-grid {
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap:18px;
-      align-items:start;
-    }
-
-    .item-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,0.03);
-      transition: transform var(--transition), box-shadow var(--transition);
-      display:flex;
-      flex-direction:column;
-      min-height: 100%;
-    }
-    .item-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 30px var(--glow); border-color: rgba(89,255,148,0.07); }
-
-    .item-img {
-      width:100%; height:190px; object-fit:cover; background:#12121b; display:block;
-    }
-
-    .item-info {
-      padding:14px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      flex:1 1 auto;
-    }
-    .item-name { font-weight:800; font-size:17px; color:var(--text); }
-    .item-desc { color: #a8b8ff; font-size:13px; }
-    .item-price { font-weight:900; font-size:18px; color:var(--accent); }
-
-    .quantity {
-      margin-top:10px;
-      display:flex; gap:10px; align-items:center;
-      background: rgba(255,255,255,0.02); padding:8px 10px; border-radius:999px;
-      justify-content:center;
-    }
-    .qbtn {
-      width:36px;height:36px;border-radius:50%;border:none;font-weight:800;
-      display:grid;place-items:center;cursor:pointer;background:rgba(255,255,255,0.02);
-      color:var(--accent); transition: all var(--transition);
-    }
-    .qbtn:hover { transform: translateY(-3px); background: linear-gradient(90deg,var(--accent),var(--accent-strong)); color:#000; box-shadow: 0 8px 20px rgba(50,224,106,0.12); }
-    .qty { min-width:30px;text-align:center;font-weight:900;color:#bfffd6; }
-
-    .cart-bar {
-      position: fixed;
-      left: 12px; right: 12px; bottom: 12px;
-      height: var(--cart-height);
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.003));
-      border-radius: 14px;
-      padding: 10px 18px;
-      display: none;
-      align-items:center;
-      justify-content:space-between;
-      border:1px solid rgba(255,255,255,0.03);
-      backdrop-filter: blur(8px);
-      z-index: 60;
-      max-width: calc(var(--max-width) + 36px);
-      margin: 0 auto;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-    .cart-info .main { font-weight:900; font-size:16px; color:var(--text); }
-    .cart-info .sub { font-size:12px; color:#b9c7d6; margin-top:3px; }
-    .checkout-btn {
-      background: linear-gradient(90deg, var(--accent), var(--accent-strong));
-      color:#021204; font-weight:900; padding:10px 16px; border-radius:10px; border:none; cursor:pointer;
-      box-shadow: 0 10px 30px rgba(50,224,106,0.14);
-      transition: transform var(--transition), box-shadow var(--transition);
-    }
-    .checkout-btn:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(50,224,106,0.22); }
-
-    a { color: var(--accent); text-decoration: none; }
-    .center { text-align:center; color:#9aaefc; padding:34px; }
-
-    @media (max-width: 980px) {
-      .items-grid { grid-template-columns: 1fr 1fr; gap:12px; }
-      header { margin: 10px 12px; padding:12px; border-radius:10px; }
-      .cart-bar { left: 12px; right: 12px; max-width: none; transform:none; }
-    }
-    @media (max-width: 620px) {
-      .items-grid { grid-template-columns: 1fr; gap:12px; }
-      .item-img { height:160px; }
-      header { padding:10px; flex-direction:row; gap:8px; }
-    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: "Outfit", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; position: relative; }
+    .floating-icons { position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; }
+    .icon { position: absolute; font-size: 52px; color: var(--accent); opacity: 0.12; animation: float 12s infinite ease-in-out; }
+    .icon:nth-child(1) { top: 10%; left: 5%; animation-duration: 14s; }
+    .icon:nth-child(2) { top: 70%; left: 80%; animation-duration: 18s; }
+    .icon:nth-child(3) { top: 40%; left: 50%; animation-duration: 16s; }
+    .icon:nth-child(4) { top: 80%; left: 20%; animation-duration: 20s; }
+    @keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-25px) rotate(10deg); } }
+    header { padding: 16px 20px; background: #111; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 200; border-bottom: 1px solid var(--border); }
+    .brand { font-size: 26px; font-weight: 800; }
+    .brand span { color: var(--accent); }
+    .nav-btn { font-size: 24px; cursor: pointer; padding: 10px; border-radius: 50%; background: #1a1a1a; transition: 0.3s; border: 1px solid var(--border); }
+    .nav-btn:hover { background: var(--accent); color: black; }
+    .sidebar { position: fixed; top: 0; left: -100%; width: 280px; height: 100%; background: #111; padding: 20px; transition: 0.35s; border-right: 1px solid var(--border); z-index: 300; }
+    .sidebar.active { left: 0; }
+    .profile-section { padding: 16px; background: #1b1b1b; border-radius: 12px; text-align: center; border: 1px solid var(--border); margin-bottom: 20px; }
+    .sidebar a { color: #ddd; text-decoration: none; display: block; padding: 12px; border-radius: 12px; margin-top: 10px; transition: 0.3s; }
+    .sidebar a:hover { background: var(--accent); color: black; }
+    .overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.55); display: none; z-index: 250; }
+    .overlay.active { display: block; }
+    main { padding: 20px; }
+    .offer-slider { max-width: 540px; margin: 0 auto 24px; border-radius: 18px; overflow: hidden; position: relative; box-shadow: 0 8px 25px rgba(0,0,0,0.6); border: 1px solid var(--border); }
+    .slides { display: flex; width: 400%; animation: slide 16s infinite; }
+    .slide { width: 100%; height: 180px; background-size: cover; background-position: center; position: relative; display: flex; align-items: center; justify-content: center; color: white; text-align: center; padding: 20px; font-weight: 800; font-size: 24px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+    .slide::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(89,255,148,0.4), rgba(255,50,99,0.5)); }
+    .slide span { position: relative; z-index: 2; background: rgba(0,0,0,0.5); padding: 12px 24px; border-radius: 16px; backdrop-filter: blur(5px); }
+    @keyframes slide { 0%,22%{transform:translateX(0%)} 25%,47%{transform:translateX(-25%)} 50%,72%{transform:translateX(-50%)} 75%,97%{transform:translateX(-75%)} 100%{transform:translateX(0%)} }
+    .search-bar { max-width: 540px; margin: 0 auto 26px; position: relative; }
+    .search-bar input { width: 100%; padding: 16px 50px 16px 20px; border: 1px solid var(--border); border-radius: 50px; background: #1a1a1a; color: var(--text); font-size: 16px; }
+    .search-bar input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 15px var(--glow); }
+    .search-bar i { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); color: var(--accent); font-size: 18px; pointer-events: none; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    .card { background: var(--card); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; cursor: pointer; transition: 0.4s; }
+    .card:hover { transform: translateY(-8px); box-shadow: 0 0 25px var(--glow); }
+    .card img { width: 100%; height: 180px; object-fit: cover; }
+    .info { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; }
+    .shop-name { color: var(--accent); font-weight: 700; font-size: 18px; }
+    .rating { color: #72ffbc; font-weight: 700; }
+    .desc { padding: 0 16px 16px; font-size: 14px; opacity: 0.8; }
+    footer { padding: 18px; text-align: center; color: #999; background: #111; margin-top: 40px; border-top: 1px solid var(--border); }
   </style>
 </head>
 <body>
-
-  <!-- SVG Decorations -->
-  <svg class="svg-deco d1" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#59FF94"/><stop offset="1" stop-color="#32E06A"/></linearGradient></defs><path d="M6 10c6-6 30-6 36 0v28c-6 6-30 6-36 0z" fill="url(#g1)" opacity="0.9"/></svg>
-  <svg class="svg-deco d2" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g2"><stop offset="0" stop-color="#59FF94"/><stop offset="1" stop-color="#9FEFBF"/></linearGradient></defs><circle cx="24" cy="22" r="16" fill="url(#g2)" opacity="0.85"/></svg>
-  <svg class="svg-deco d3" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g3"><stop offset="0" stop-color="#6FEFCD"/><stop offset="1" stop-color="#2ED07E"/></linearGradient></defs><rect x="6" y="8" width="36" height="32" rx="8" fill="url(#g3)" opacity="0.88"/></svg>
-  <svg class="svg-deco d4" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g4"><stop offset="0" stop-color="#59FF94"/><stop offset="1" stop-color="#32E06A"/></linearGradient></defs><path d="M8 36C20 28 28 28 40 36V12C28 20 20 20 8 12z" fill="url(#g4)" opacity="0.82"/></svg>
-  <svg class="svg-deco d5" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g5"><stop offset="0" stop-color="#9FEFBF"/><stop offset="1" stop-color="#32E06A"/></linearGradient></defs><path d="M24 6c8 0 14 6 14 14s-6 14-14 14S10 28 10 20 16 6 24 6z" fill="url(#g5)" opacity="0.76"/></svg>
-
+  <div class="floating-icons">
+    <i class="fas fa-pizza-slice icon"></i>
+    <i class="fas fa-hamburger icon"></i>
+    <i class="fas fa-ice-cream icon"></i>
+    <i class="fas fa-mug-hot icon"></i>
+  </div>
   <header>
-    <div class="brand" style="flex:1">
-      <button class="back-btn" id="backBtn" title="Back" aria-label="Back"><i class="fas fa-arrow-left"></i></button>
-      <div style="margin-left:8px">
-        <div class="title"><span class="chat">Chat</span>Point</div>
-        <div style="font-size:12px;color:#9fb3ff">Sindagi • Food Delivery</div>
+    <div class="nav-btn" id="navBtn"><i class="fas fa-bars"></i></div>
+    <div class="brand"><span>Chat</span>Point</div>
+  </header>
+  <div class="sidebar" id="sidebar">
+    <div class="profile-section" id="profileSection"></div>
+    <a href="orders.html">My Orders</a>
+    <a href="tel:8088975913">Contact: 8088975913</a>
+    <a href="#" id="logout" style="display:none;color:#ff6b6b">Logout</a>
+  </div>
+  <div class="overlay" id="overlay"></div>
+  <main>
+    <div class="offer-slider">
+      <div class="slides">
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800');"><span>FREE DELIVERY On Order above 50!</span></div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1606787366850-de6330127bfc?w=800');"><span>NEW: Chat Point Special Combo - Only ₹200</span></div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1513104890138-7c749659a0ae38?w=800');"><span>Order above 200 Get coco-cola free</span></div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800');"><span>Buy 1 Get 1 FREE at FLY PIZZA !</span></div>
       </div>
     </div>
-    <div style="flex:0 0 auto; text-align:right">
-      <div class="shop-name" id="shopName">Loading...</div>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search your favorite shop..." oninput="searchShops()">
+      <i class="fas fa-search"></i>
     </div>
-  </header>
-
-  <main>
-    <div id="loginBanner" class="login-banner" style="display:none;">Please <a href="login.html">login</a> to add items to cart.</div>
-    <div class="items-grid" id="itemsGrid"></div>
+    <div class="grid" id="grid"></div>
   </main>
-
-  <div class="cart-bar" id="cartBar" role="button" aria-label="Open cart">
-    <div class="cart-info">
-      <div class="main" id="cartText">0 items · ₹0</div>
-      <div class="sub">Tap to view cart</div>
-    </div>
-    <button class="checkout-btn" id="checkoutBtn">Checkout</button>
-  </div>
+  <footer>© 2025 Chat Point • Made with Passion</footer>
 
   <script>
-    const USER_KEY = "chatpoint_user";
-    const rawUser = localStorage.getItem(USER_KEY);
-    let user = null;
-    try { user = JSON.parse(rawUser); } catch(e) { user = null; }
-    const isLoggedIn = user && user._id;
+    const shops = [
+      { name: "Chat Point", img: "images/dolphin.png", rating: 4.9, desc: "Your favorite hangout – burgers, chats, coffee & vibes!", items: ["Zinger Burger", "Peri Peri Fries", "Cold Coffee", "Oreo Shake", "Chicken Roll"] },
+      { name: "Sangambar Udpi-Hotel", img: "images/sangambar-udpi-hotel.png", rating: 4.6, desc: "Pure vegetarian South Indian meals.", items: ["Masala Dosa", "Idli Vada", "Puri Bhaji", "Filter Coffee"] },
+      { name: "Nandini Grand Hotels", img: "images/nandini-grand-hotels.png", rating: 4.7, desc: "Crispy dosas with authentic flavors.", items: ["Plain Dosa", "Ghee Roast", "Onion Uttapam", "Podi Idli"] },
+      { name: "Pizza spot", img: "https://images.unsplash.com/photo-1513104890138-7c749659a0ae38?w=500", rating: 4.5, desc: "Loaded pizzas with fresh toppings.", items: ["Margherita", "Pepperoni", "Veggie Supreme", "BBQ Chicken"] },
+      { name: "Fly Pizza", img: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500", rating: 4.6, desc: "100% veg pizzas, light & tasty.", items: ["Paneer Tikka", "Corn & Cheese", "Farmhouse", "Veg Extravaganza"] },
+      { name: "Mister Chef", img: "mister-chef.png", rating: 4.7, desc: "Juicy burgers with secret sauce.", items: ["Classic Burger", "Cheese Blast", "Veg Crunch", "Fries Combo"] },
+      { name: "Bekary", img: "images/bekary.png", rating: 4.5, desc: "Fresh sandwiches & healthy bites.", items: ["Veg Sandwich", "Grilled Cheese", "Club Sandwich", "Cold Coffee"] }
+      // ← ONLY THIS LINE CHANGED: "Bekary.png" → "bekary.png"
+    ];
 
-    if (!isLoggedIn) {
-      document.getElementById("loginBanner").style.display = "block";
+    function renderShops(filter = "") {
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
+      shops
+        .filter(shop => shop.name.toLowerCase().includes(filter.toLowerCase()))
+        .forEach(shop => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.onclick = () => {
+            localStorage.setItem("currentShop", JSON.stringify({ name: shop.name, items: shop.items }));
+            location.href = `items.html?shop=${encodeURIComponent(shop.name)}`;
+          };
+          card.innerHTML = `
+            <img src="${shop.img}" alt="${shop.name}" onerror="this.src='https://via.placeholder.com/300x180?text=${encodeURIComponent(shop.name)}'">
+            <div class="info">
+              <div class="shop-name">${shop.name}</div>
+              <div class="rating"><i class="fas fa-star"></i> ${shop.rating}</div>
+            </div>
+            <div class="desc">${shop.desc}</div>
+          `;
+          grid.appendChild(card);
+        });
     }
 
-    const shopData = {
-      "7th Wonder (Cake)": [
-        { name: "Chocolate Truffle Cake", price: 380 },
-        { name: "Red Velvet Cake", price: 400 },
-        { name: "Black Forest", price: 350 }
-      ],
-      "Sangambar Udpi-Hotel": [
-        { name: "Tomato Soup", price: 105 },
-        { name: "Sweet Corn Soup", price: 95 },
-        { name: "Veg Clear Soup", price: 95 },
-        { name: "Hot and Sour Soup", price: 105 },
-        { name: "Gobi 65", price: 135 },
-        { name: "Gobi Manchurian", price: 125 },
-        { name: "Mushroom Manchurian", price: 185 },
-        { name: "Paneer Manchurian", price: 205 },
-        { name: "Veg Manchurian", price: 105 },
-        { name: "Plain Dosa", price: 85 },
-        { name: "Masala Dosa", price: 95 },
-        { name: "Benne Dosa", price: 95 },
-        { name: "Benne Masala Dosa", price: 115 },
-        { name: "Mysore Masala Dosa", price: 115 },
-        { name: "Paneer Masala Dosa", price: 115 }
-      ],
-      "Nandini Grand Hotels": [
-        { name: "Shira", price: 35 },
-        { name: "Poori", price: 70 },
-        { name: "Full Meals", price: 95 },
-        { name: "Onion Dosa", price: 75 },
-        { name: "Utappa", price: 75 },
-        { name: "Mysore Bonda", price: 75 },
-        { name: "Mangalore Buns", price: 75 },
-        { name: "Paneer Dosa", price: 80 },
-        { name: "Cheese Dosa", price: 75 },
-        { name: "Chou Chou Bath", price: 70 }
-      ],
-      "Pizza spot": [
-        { name: "Nuggets", price: 85 },
-        { name: "French Fries", price: 95 },
-        { name: "Masala Fries", price: 105 },
-        { name: "Smiley Fries", price: 105 },
-        { name: "Pizza Spot Special", price: 165 },
-        { name: "Burger Classic", price: 85 },
-        { name: "Aloo Tikki Burger", price: 85 },
-        { name: "Paneer Burger", price: 95 },
-        { name: "Double Decker Burger", price: 125 },
-        { name: "Pizza Spot Special Burger", price: 165 },
-        { name: "Margherita", price: 154 },
-        { name: "Veggie", price: 174 },
-        { name: "Veggie Lover", price: 204 },
-        { name: "Sweet Corn", price: 204 },
-        { name: "Baby Corn", price: 224 },
-        { name: "Tandoori Paneer", price: 235 },
-        { name: "Steam Momos", price: 75 },
-        { name: "Fried Momos", price: 85 },
-        { name: "Kurkure Momos", price: 105 },
-        { name: "Veg Sandwich", price: 75 },
-        { name: "Cheese Sandwich", price: 85 },
-        { name: "Sweet Corn Sandwich", price: 85 },
-        { name: "Masala Sandwich", price: 85 },
-        { name: "Paneer Tandoori Sandwich", price: 95 },
-        { name: "Club Sandwich", price: 125 },
-        { name: "Pizza Spot Special Sandwich", price: 145 },
-        { name: "Pav Bhaji", price: 65 },
-        { name: "Cheese Pav Bhaji", price: 85 },
-        { name: "Veg Roll", price: 75 },
-        { name: "Sweet Corn Roll", price: 95 },
-        { name: "Paneer Roll", price: 105 }
-      ],
-      "Fly Pizza": [
-        { name: "Creamy Alfredo Pasta Veg", price: 199 }
-      ],
-      "Mister Chef": [
-        { name: "Classic Burger", price: 120 },
-        { name: "French Fries", price: 99 }
-      ],
-      "Bekary": [
-        { name: "Veg Pizza", price: 170 },
-        { name: "Margherita Pizza", price: 160 }
-      ],
+    function searchShops() {
+      renderShops(document.getElementById("searchInput").value.trim());
+    }
 
-      // ============ YOUR BAKERY ADDED HERE ============
-      "Chat Point Bakery": [
-        // Pizzas
-        { name: "Veg Pizza", price: 150 },
-        { name: "Margherita", price: 140 },
-        { name: "Paneer Pizza", price: 200 },
-        { name: "Golden Corn Pizza", price: 209 },
-        { name: "Sweet Corn Pizza", price: 200 },
-        { name: "Baby Corn Pizza", price: 200 },
-        // Burgers
-        { name: "Classic Veg Burger", price: 60 },
-        { name: "Cheese Burger", price: 70 },
-        { name: "Paneer Tandoori Burger", price: 70 },
-        // Sandwiches & Rolls
-        { name: "Cheese Sandwich", price: 60 },
-        { name: "Veg Sandwich", price: 50 },
-        { name: "Veg Roll", price: 30 },
-        { name: "Egg Roll", price: 30 },
-        { name: "Cheese Roll", price: 35 },
-        // Ice Cakes (per kg)
-        { name: "Rasmalai Cake", price: 700 },
-        { name: "Irish Coffee Cake", price: 700 },
-        { name: "Black Forest Cake", price: 600 },
-        { name: "American Nuts Cake", price: 700 },
-        { name: "French Vanilla Cake", price: 650 },
-        { name: "Pineapple Cake", price: 600 },
-        { name: "Strawberry Cake", price: 600 },
-        { name: "Death by Chocolate Cake", price: 650 },
-        { name: "Butterscotch Cake", price: 600 },
-        { name: "Mango Cake", price: 600 }
-      ]
-      // ================================================
+    document.getElementById("navBtn").onclick = () => {
+      document.getElementById("sidebar").classList.add("active");
+      document.getElementById("overlay").classList.add("active");
+    };
+    document.getElementById("overlay").onclick = () => {
+      document.getElementById("sidebar").classList.remove("active");
+      document.getElementById("overlay").classList.remove("active");
     };
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const shopName = decodeURIComponent(urlParams.get("shop") || "");
-    const shopItems = shopData[shopName] || [];
-
-    const shopNameEl = document.getElementById("shopName");
-    const itemsGrid = document.getElementById("itemsGrid");
-    const cartBar = document.getElementById("cartBar");
-    const cartText = document.getElementById("cartText");
-    const checkoutBtn = document.getElementById("checkoutBtn");
-    const backBtn = document.getElementById("backBtn");
-
-    let cart = {};
-    try { cart = JSON.parse(localStorage.getItem("chatpoint_cart")) || {}; } catch(e) { cart = {}; }
-
-    function saveCart() {
-      localStorage.setItem("chatpoint_cart", JSON.stringify(cart));
-      updateCartBar();
-    }
-
-    function updateCartBar() {
-      let totalItems = 0, totalPrice = 0;
-      for (const shop in cart) {
-        for (const itemName in cart[shop]) {
-          const entry = cart[shop][itemName];
-          totalItems += entry.qty;
-          totalPrice += entry.qty * entry.price;
-        }
+    function loadProfile() {
+      const user = JSON.parse(localStorage.getItem("chatpoint_user") || "null");
+      const profile = document.getElementById("profileSection");
+      const logoutBtn = document.getElementById("logout");
+      if (user && user._id) {
+        profile.innerHTML = `<i class="fas fa-user-circle" style="font-size:40px;color:var(--accent)"></i><div style="font-weight:700;font-size:18px;">${user.name}</div><div style="font-size:14px;opacity:0.7;">${user.phone}</div>`;
+        logoutBtn.style.display = "block";
+        logoutBtn.onclick = () => { localStorage.removeItem("chatpoint_user"); location.reload(); };
+      } else {
+        profile.innerHTML = `<div style="font-size:15px;"><i class="fas fa-user-circle" style="font-size:40px;color:#888;"></i><br><a href="login.html" style="color:var(--accent);text-decoration:underline;">Login to see profile</a></div>`;
+        logoutBtn.style.display = "none";
       }
-      cartText.textContent = `${totalItems} items · ₹${totalPrice}`;
-      cartBar.style.display = totalItems > 0 ? "flex" : "none";
     }
 
-    function changeQty(shop, itemName, price, delta) {
-      if (!isLoggedIn) { alert("Please login to add items to cart."); return; }
-      if (!cart[shop]) cart[shop] = {};
-      if (!cart[shop][itemName]) cart[shop][itemName] = { qty: 0, price };
-      cart[shop][itemName].qty = Math.max(0, cart[shop][itemName].qty + delta);
-      if (cart[shop][itemName].qty === 0) delete cart[shop][itemName];
-      if (Object.keys(cart[shop] || {}).length === 0) delete cart[shop];
-      saveCart();
-      renderItems();
-    }
-
-    function openCartPage() {
-      if (!isLoggedIn) { alert("Please login to view cart."); window.location.href = "login.html"; return; }
-      window.location.href = "cart.html";
-    }
-
-    // Image mapping for your bakery items (add real images later in /images folder)
-    const imageMap = {
-      // existing ones...
-      "veg pizza": "Veg-Pizza.jpg",
-      "margherita": "Margherita.jpg",
-      "paneer pizza": "Paneer-Pizza.jpg",
-      "golden corn pizza": "Golden-Corn-Pizza.jpg",
-      "sweet corn pizza": "Sweet-Corn-Pizza.jpg",
-      "baby corn pizza": "Baby-Corn-Pizza.jpg",
-      "classic veg burger": "Classic-Veg-Burger.jpg",
-      "cheese burger": "Cheese-Burger.jpg",
-      "paneer tandoori burger": "Paneer-Tandoori-Burger.jpg",
-      "cheese sandwich": "Cheese-Sandwich.jpg",
-      "veg sandwich": "Veg-Sandwich.jpg",
-      "veg roll": "Veg-Roll.jpg",
-      "egg roll": "Egg-Roll.jpg",
-      "cheese roll": "Cheese-Roll.jpg",
-      "rasmalai cake": "Rasmalai-Cake.jpg",
-      "irish coffee cake": "Irish-Coffee-Cake.jpg",
-      "black forest cake": "Black-Forest-Cake.jpg",
-      "american nuts cake": "American-Nuts-Cake.jpg",
-      "french vanilla cake": "French-Vanilla-Cake.jpg",
-      "pineapple cake": "Pineapple-Cake.jpg",
-      "strawberry cake": "Strawberry-Cake.jpg",
-      "death by chocolate cake": "Death-by-Chocolate-Cake.jpg",
-      "butterscotch cake": "Butterscotch-Cake.jpg",
-      "mango cake": "Mango-Cake.jpg"
+    window.onload = () => {
+      renderShops();
+      loadProfile();
     };
-
-    function getImagePath(itemName) {
-      const key = itemName.toLowerCase();
-      return imageMap[key] ? `images/${imageMap[key]}` : `https://via.placeholder.com/600x380/12121b/59FF94?text=${encodeURIComponent(itemName)}`;
-    }
-
-    function renderItems() {
-      itemsGrid.innerHTML = "";
-      if (shopItems.length === 0) {
-        itemsGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#9aaeff;padding:40px;font-size:18px;">No items found for this shop.</div>';
-        return;
-      }
-
-      shopItems.forEach((item) => {
-        const qty = (cart[shopName] && cart[shopName][item.name]) ? cart[shopName][item.name].qty : 0;
-        const imgSrc = getImagePath(item.name);
-
-        const card = document.createElement('article');
-        card.className = 'item-card';
-
-        const img = document.createElement('img');
-        img.className = 'item-img';
-        img.alt = item.name;
-        img.loading = 'lazy';
-        img.src = imgSrc;
-        img.onerror = function() { this.src = `https://via.placeholder.com/600x380/12121b/59FF94?text=${encodeURIComponent(item.name)}`; };
-
-        const info = document.createElement('div');
-        info.className = 'item-info';
-
-        const title = document.createElement('div');
-        title.className = 'item-name';
-        title.textContent = item.name;
-
-        const desc = document.createElement('div');
-        desc.className = 'item-desc';
-        if (item.name.toLowerCase().includes("cake")) {
-          desc.textContent = "₹" + item.price + "/kg • Fresh Cream Cake";
-        } else {
-          desc.textContent = "Fresh • Bakery Special";
-        }
-
-        const price = document.createElement('div');
-        price.className = 'item-price';
-        price.textContent = item.name.toLowerCase().includes("cake") ? `₹${item.price}/kg` : `₹${item.price}`;
-
-        info.appendChild(title);
-        info.appendChild(desc);
-        info.appendChild(price);
-
-        const controls = document.createElement('div');
-        controls.className = 'quantity';
-
-        if (isLoggedIn) {
-          const btnMinus = document.createElement('button');
-          btnMinus.className = 'qbtn';
-          btnMinus.innerHTML = '−';
-          btnMinus.onclick = () => changeQty(shopName, item.name, item.price, -1);
-
-          const qtyEl = document.createElement('div');
-          qtyEl.className = 'qty';
-          qtyEl.textContent = qty;
-
-          const btnPlus = document.createElement('button');
-          btnPlus.className = 'qbtn';
-          btnPlus.innerHTML = '+';
-          btnPlus.onclick = () => changeQty(shopName, item.name, item.price, +1);
-
-          controls.append(btnMinus, qtyEl, btnPlus);
-        } else {
-          controls.innerHTML = '<div style="color:#ffb18a;font-size:13px;">Login to add</div>';
-        }
-
-        info.appendChild(controls);
-        card.append(img, info);
-        itemsGrid.appendChild(card);
-      });
-    }
-
-    if (shopName && shopData[shopName]) {
-      shopNameEl.textContent = shopName;
-      renderItems();
-      updateCartBar();
-    } else {
-      shopNameEl.textContent = "Shop Not Found";
-      itemsGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#ff8a8a;padding:40px;">Invalid shop. <a href="index.html">Go back</a></div>';
-    }
-
-    cartBar.addEventListener('click', openCartPage);
-    checkoutBtn.addEventListener('click', (e) => { e.stopPropagation(); openCartPage(); });
-    backBtn.addEventListener('click', () => history.back());
-    updateCartBar();
   </script>
 </body>
 </html>
+
+
