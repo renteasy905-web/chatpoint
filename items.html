@@ -14,7 +14,7 @@
       --card: rgba(18, 20, 28, 0.75);
       --muted: #9fb3ff;
       --text: #e6eeff;
-      --accent: #59FF94;        /* lime-green accent */
+      --accent: #59FF94;
       --accent-strong: #32E06A;
       --glow: rgba(89,255,148,0.06);
       --radius: 16px;
@@ -37,7 +37,6 @@
       overflow-x: hidden;
     }
 
-    /* --- Animated abstract SVGs (type 4: random mixed abstract icons) --- */
     .svg-deco {
       position: fixed;
       pointer-events: none;
@@ -59,7 +58,6 @@
     .svg-deco.d4 { left: 68%; width: 98px; animation: floatSlow 24s linear infinite; animation-delay: 2s; opacity:.20 }
     .svg-deco.d5 { right: 30%; width: 74px; animation: floatSlow 26s linear infinite; animation-delay: 8s; opacity:.22 }
 
-    /* --- Header --- */
     header {
       position: sticky;
       top: 0;
@@ -91,7 +89,6 @@
 
     .shop-name { font-weight:700; color:var(--accent); font-size:15px; text-align:right; }
 
-    /* --- Main layout --- */
     main { max-width: var(--max-width); margin: 18px auto; padding: 18px; position:relative; z-index:5; }
     .login-banner {
       background: linear-gradient(180deg, rgba(89,255,148,0.03), rgba(255,255,255,0.01));
@@ -152,7 +149,6 @@
     .qbtn:hover { transform: translateY(-3px); background: linear-gradient(90deg,var(--accent),var(--accent-strong)); color:#000; box-shadow: 0 8px 20px rgba(50,224,106,0.12); }
     .qty { min-width:30px;text-align:center;font-weight:900;color:#bfffd6; }
 
-    /* --- Cart bar --- */
     .cart-bar {
       position: fixed;
       left: 12px; right: 12px; bottom: 12px;
@@ -181,11 +177,9 @@
     }
     .checkout-btn:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(50,224,106,0.22); }
 
-    /* --- Utilities --- */
     a { color: var(--accent); text-decoration: none; }
     .center { text-align:center; color:#9aaefc; padding:34px; }
 
-    /* --- Responsive --- */
     @media (max-width: 980px) {
       .items-grid { grid-template-columns: 1fr 1fr; gap:12px; }
       header { margin: 10px 12px; padding:12px; border-radius:10px; }
@@ -200,59 +194,28 @@
 </head>
 <body>
 
-  <!-- SVG Decorations (mixed abstract icons, soft floating) -->
-  <svg class="svg-deco d1" viewBox="0 0 48 48" aria-hidden>
-    <defs>
-      <linearGradient id="g1" x1="0" x2="1">
-        <stop offset="0" stop-color="#59FF94"/>
-        <stop offset="1" stop-color="#32E06A"/>
-      </linearGradient>
-    </defs>
-    <path d="M6 10c6-6 30-6 36 0v28c-6 6-30 6-36 0z" fill="url(#g1)" opacity="0.9"/>
-  </svg>
+  <!-- SVG Decorations -->
+  <svg class="svg-deco d1" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#59FF94"/><stop offset="1" stop-color="#32E06A"/></linearGradient></defs><path d="M6 10c6-6 30-6 36 0v28c-6 6-30 6-36 0z" fill="url(#g1)" opacity="0.9"/></svg>
+  <svg class="svg-deco d2" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g2"><stop offset="0" stop-color="#59FF94"/><stop offset="1" stop-color="#9FEFBF"/></linearGradient></defs><circle cx="24" cy="22" r="16" fill="url(#g2)" opacity="0.85"/></svg>
+  <svg class="svg-deco d3" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g3"><stop offset="0" stop-color="#6FEFCD"/><stop offset="1" stop-color="#2ED07E"/></linearGradient></defs><rect x="6" y="8" width="36" height="32" rx="8" fill="url(#g3)" opacity="0.88"/></svg>
+  <svg class="svg-deco d4" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g4"><stop offset="0" stop-color="#59FF94"/><stop offset="1" stop-color="#32E06A"/></linearGradient></defs><path d="M8 36C20 28 28 28 40 36V12C28 20 20 20 8 12z" fill="url(#g4)" opacity="0.82"/></svg>
+  <svg class="svg-deco d5" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g5"><stop offset="0" stop-color="#9FEFBF"/><stop offset="1" stop-color="#32E06A"/></linearGradient></defs><path d="M24 6c8 0 14 6 14 14s-6 14-14 14S10 28 10 20 16 6 24 6z" fill="url(#g5)" opacity="0.76"/></svg>
 
-  <svg class="svg-deco d2" viewBox="0 0 48 48" aria-hidden>
-    <defs><linearGradient id="g2"><stop offset="0" stop-color="#59FF94"/><stop offset="1" stop-color="#9FEFBF"/></linearGradient></defs>
-    <circle cx="24" cy="22" r="16" fill="url(#g2)" opacity="0.85"/>
-  </svg>
-
-  <svg class="svg-deco d3" viewBox="0 0 48 48" aria-hidden>
-    <defs><linearGradient id="g3"><stop offset="0" stop-color="#6FEFCD"/><stop offset="1" stop-color="#2ED07E"/></linearGradient></defs>
-    <rect x="6" y="8" width="36" height="32" rx="8" fill="url(#g3)" opacity="0.88"/>
-  </svg>
-
-  <svg class="svg-deco d4" viewBox="0 0 48 48" aria-hidden>
-    <defs><linearGradient id="g4"><stop offset="0" stop-color="#59FF94"/><stop offset="1" stop-color="#32E06A"/></linearGradient></defs>
-    <path d="M8 36C20 28 28 28 40 36V12C28 20 20 20 8 12z" fill="url(#g4)" opacity="0.82"/>
-  </svg>
-
-  <svg class="svg-deco d5" viewBox="0 0 48 48" aria-hidden>
-    <defs><linearGradient id="g5"><stop offset="0" stop-color="#9FEFBF"/><stop offset="1" stop-color="#32E06A"/></linearGradient></defs>
-    <path d="M24 6c8 0 14 6 14 14s-6 14-14 14S10 28 10 20 16 6 24 6z" fill="url(#g5)" opacity="0.76"/>
-  </svg>
-
-  <!-- Header -->
   <header>
     <div class="brand" style="flex:1">
-      <button class="back-btn" id="backBtn" title="Back" aria-label="Back">
-        <i class="fas fa-arrow-left"></i>
-      </button>
+      <button class="back-btn" id="backBtn" title="Back" aria-label="Back"><i class="fas fa-arrow-left"></i></button>
       <div style="margin-left:8px">
         <div class="title"><span class="chat">Chat</span>Point</div>
         <div style="font-size:12px;color:#9fb3ff">Sindagi • Food Delivery</div>
       </div>
     </div>
-
     <div style="flex:0 0 auto; text-align:right">
       <div class="shop-name" id="shopName">Loading...</div>
     </div>
   </header>
 
   <main>
-    <div id="loginBanner" class="login-banner" style="display:none;">
-      Please <a href="login.html">login</a> to add items to cart.
-    </div>
-
+    <div id="loginBanner" class="login-banner" style="display:none;">Please <a href="login.html">login</a> to add items to cart.</div>
     <div class="items-grid" id="itemsGrid"></div>
   </main>
 
@@ -265,7 +228,6 @@
   </div>
 
   <script>
-    // -------------- USER LOGIN CHECK --------------
     const USER_KEY = "chatpoint_user";
     const rawUser = localStorage.getItem(USER_KEY);
     let user = null;
@@ -276,7 +238,6 @@
       document.getElementById("loginBanner").style.display = "block";
     }
 
-    // -------------- SHOP DATA (kept as original, unchanged) --------------
     const shopData = {
       "7th Wonder (Cake)": [
         { name: "Chocolate Truffle Cake", price: 380 },
@@ -287,51 +248,14 @@
         { name: "Tomato Soup", price: 105 },
         { name: "Sweet Corn Soup", price: 95 },
         { name: "Veg Clear Soup", price: 95 },
-        { name: "Cream Mushroom Soup", price: 95 },
-        { name: "Manchow Soup", price: 105 },
         { name: "Hot and Sour Soup", price: 105 },
-
-        { name: "Papad", price: 85 },
         { name: "Gobi 65", price: 135 },
         { name: "Gobi Manchurian", price: 125 },
         { name: "Mushroom Manchurian", price: 185 },
         { name: "Paneer Manchurian", price: 205 },
-        { name: "Paneer Chilli", price: 195 },
-        { name: "Mushroom Chilli", price: 185 },
-        { name: "Paneer Tikka", price: 205 },
         { name: "Veg Manchurian", price: 105 },
-
-        { name: "Vada Pav (Plate)", price: 65 },
-        { name: "Vada Pav (Single)", price: 45 },
-        { name: "Pani Puri", price: 55 },
-        { name: "Masala Puri", price: 75 },
-        { name: "Belpuri", price: 65 },
-        { name: "Sevpuri", price: 75 },
-        { name: "Dahi Puri", price: 85 },
-        { name: "Single Samosa", price: 45 },
-        { name: "Samosa Masala", price: 65 },
-        { name: "Pav Bhaji", price: 85 },
-        { name: "Extra Pav", price: 20 },
-        { name: "Finger Chips", price: 125 },
-
-        { name: "Idli 2 Pieces", price: 65 },
-        { name: "Vada (Single)", price: 55 },
-        { name: "Curd Vada", price: 85 },
-        { name: "Khara Bath", price: 55 },
-        { name: "Kesari Bath", price: 65 },
-        { name: "Chow Chow Bath", price: 85 },
-        { name: "Rice Bath", price: 75 },
-        { name: "Set Dosa", price: 95 },
-        { name: "Idli Vada ", price: 85 },
-        { name: "Idli Vada ", price: 75 },
-        { name: "Mosar Avalakki", price: 75 },
-        { name: "Buns", price: 55 },
         { name: "Plain Dosa", price: 85 },
         { name: "Masala Dosa", price: 95 },
-        { name: "Onion Utthappa", price: 95 },
-        { name: "Rava Dosa", price: 105 },
-        { name: "Tomato Omelette", price: 105 },
-        { name: "Paper Masala Dosa", price: 135 },
         { name: "Benne Dosa", price: 95 },
         { name: "Benne Masala Dosa", price: 115 },
         { name: "Mysore Masala Dosa", price: 115 },
@@ -339,7 +263,6 @@
       ],
       "Nandini Grand Hotels": [
         { name: "Shira", price: 35 },
-        { name: "Set D20 Dosa", price: 65 },
         { name: "Poori", price: 70 },
         { name: "Full Meals", price: 95 },
         { name: "Onion Dosa", price: 75 },
@@ -356,24 +279,20 @@
         { name: "Masala Fries", price: 105 },
         { name: "Smiley Fries", price: 105 },
         { name: "Pizza Spot Special", price: 165 },
-
         { name: "Burger Classic", price: 85 },
         { name: "Aloo Tikki Burger", price: 85 },
         { name: "Paneer Burger", price: 95 },
         { name: "Double Decker Burger", price: 125 },
         { name: "Pizza Spot Special Burger", price: 165 },
-
         { name: "Margherita", price: 154 },
         { name: "Veggie", price: 174 },
         { name: "Veggie Lover", price: 204 },
         { name: "Sweet Corn", price: 204 },
         { name: "Baby Corn", price: 224 },
         { name: "Tandoori Paneer", price: 235 },
-
         { name: "Steam Momos", price: 75 },
         { name: "Fried Momos", price: 85 },
         { name: "Kurkure Momos", price: 105 },
-
         { name: "Veg Sandwich", price: 75 },
         { name: "Cheese Sandwich", price: 85 },
         { name: "Sweet Corn Sandwich", price: 85 },
@@ -381,45 +300,14 @@
         { name: "Paneer Tandoori Sandwich", price: 95 },
         { name: "Club Sandwich", price: 125 },
         { name: "Pizza Spot Special Sandwich", price: 145 },
-
         { name: "Pav Bhaji", price: 65 },
         { name: "Cheese Pav Bhaji", price: 85 },
-
         { name: "Veg Roll", price: 75 },
         { name: "Sweet Corn Roll", price: 95 },
         { name: "Paneer Roll", price: 105 }
       ],
       "Fly Pizza": [
-        { name: "Delight Burger Veg", price: 99 },
-        { name: "BBQ Burger Veg", price: 109 },
-        { name: "Tandoori Burger Veg", price: 119 },
-        { name: "Makhani Burger Veg", price: 119 },
-        { name: "Paneer Tikka Burger", price: 159 },
-
-        { name: "Chicken Delight Burger", price: 119 },
-        { name: "BBQ Chicken Burger", price: 129 },
-        { name: "Tandoori Chicken Burger", price: 149 },
-        { name: "Chicken Makhani Burger", price: 159 },
-        { name: "Chicken Tikka Burger", price: 169 },
-
-        { name: "Delight Masala Sandwich (Veg)", price: 109 },
-        { name: "Tandoori Paneer Sandwich", price: 119 },
-        { name: "Sauth Grilled Sandwich (Veg)", price: 119 },
-        { name: "Spacial Paneer Sandwich", price: 139 },
-
-        { name: "Delight Chicken Masala Sandwich", price: 129 },
-        { name: "Tandoori Chicken Sandwich", price: 149 },
-        { name: "Sauth Grilled Chicken Sandwich", price: 149 },
-        { name: "Spacial Chicken Sandwich", price: 169 },
-        { name: "Creamy Alfredo Pasta Veg", price: 199 },
-        { name: "Red Sauce Pasta Veg", price: 209 },
-        { name: "White Sauce Pasta Veg", price: 209 },
-        { name: "Peri Peri Pasta Veg", price: 249 },
-
-        { name: "Creamy Chicken Alfredo Pasta", price: 209 },
-        { name: "Red Sauce Chicken Pasta", price: 229 },
-        { name: "White Sauce Chicken Pasta", price: 229 },
-        { name: "Peri Peri Chicken Pasta", price: 269 }
+        { name: "Creamy Alfredo Pasta Veg", price: 199 }
       ],
       "Mister Chef": [
         { name: "Classic Burger", price: 120 },
@@ -427,34 +315,14 @@
       ],
       "Bekary": [
         { name: "Veg Pizza", price: 170 },
-        { name: "Margherita Pizza", price: 160 },
-        { name: "Paneer Pizza", price: 220 },
-        { name: "Golden Corn Pizza", price: 229 },
-        { name: "Sweet Corn Pizza", price: 220 },
-        { name: "Baby Corn Pizza", price: 220 },
-
-        { name: "Classic Veg Burger", price: 80 },
-        { name: "Cheese Burger", price: 90 },
-        { name: "Paneer Tandoori Burger", price: 90 },
-        { name: "Classic Burger", price: 140 },
-
-        { name: "Cheese Sandwich", price: 80 },
-        { name: "Veg Sandwich", price: 70 },
-        { name: "Veg Roll", price: 50 },
-        { name: "Egg Roll", price: 50 },
-        { name: "Cheese Roll", price: 55 }
-      ],
-      "Dolphin": [
-        { name: "Chicken Tandoori", price: 280 }
+        { name: "Margherita Pizza", price: 160 }
       ]
     };
 
-    // -------------- GET SHOP FROM URL --------------
     const urlParams = new URLSearchParams(window.location.search);
     const shopName = decodeURIComponent(urlParams.get("shop") || "");
     const shopItems = shopData[shopName] || [];
 
-    // -------------- DOM ELEMENTS --------------
     const shopNameEl = document.getElementById("shopName");
     const itemsGrid = document.getElementById("itemsGrid");
     const cartBar = document.getElementById("cartBar");
@@ -462,7 +330,6 @@
     const checkoutBtn = document.getElementById("checkoutBtn");
     const backBtn = document.getElementById("backBtn");
 
-    // -------------- CART LOGIC --------------
     let cart = {};
     try { cart = JSON.parse(localStorage.getItem("chatpoint_cart")) || {}; } catch(e) { cart = {}; }
 
@@ -492,7 +359,7 @@
       if (cart[shop][itemName].qty === 0) delete cart[shop][itemName];
       if (Object.keys(cart[shop] || {}).length === 0) delete cart[shop];
       saveCart();
-      renderItems(); // re-render to update visible quantities
+      renderItems();
     }
 
     function openCartPage() {
@@ -500,16 +367,78 @@
       window.location.href = "cart.html";
     }
 
-    // -------------- IMAGE PATH + FALLBACK --------------
+    // EXACT IMAGE MAPPING (case-sensitive & extension-sensitive)
+    const imageMap = {
+      "tomato soup": "Tomato-Soup.jpg",
+      "sweet corn soup": "Sweet-Corn-Soup.jpg",
+      "veg clear soup": "Veg-Clear-Soup.jpg",
+      "hot and sour soup": "Hot-and-Sour-Soup.jpg",
+      "gobi 65": "Gobi-65.jpg",
+      "gobi manchurian": "Gobi-Manchurian.jpg",
+      "mushroom manchurian": "Mushroom-Manchurian.jpg",
+      "paneer manchurian": "Paneer-Manchurian.jpg",
+      "veg manchurian": "Veg-Manchurian.jpg",
+      "plain dosa": "Plain-Dosa.JPG",
+      "masala dosa": "Masala-Dosa.JPG",
+      "benne dosa": "Benne-Dosa.jpg",
+      "benne masala dosa": "Benne-Masala-Dosa.jpg",
+      "mysore masala dosa": "Mysore-Masala-Dosa.jpg",
+      "paneer masala dosa": "Paneer-Masala-Dosa.jpg",
+      "shira": "shira.JPG",
+      "poori": "poori.JPG",
+      "full meals": "full-meals.JPG",
+      "onion dosa": "onion-dosa.JPG",
+      "utappa": "utappa.JPG",
+      "mysore bonda": "mysor-bonda.JPG",
+      "mangalore buns": "mangalore-buns.JPG",
+      "paneer dosa": "paneer-dosa.JPG",
+      "cheese dosa": "chess-dosa.jpg",
+      "chou chou bath": "chou-chou-bath.JPG",
+      "nuggets": "Nuggets.jpg",
+      "french fries": "French-Fries.jpg",
+      "masala fries": "Masala-Fries.jpg",
+      "smiley fries": "Smiley-Fries.jpg",
+      "pizza spot special": "Pizza-Spot-Special.jpg",
+      "burger classic": "Burger-Classic.jpg",
+      "aloo tikki burger": "Aloo-Tikki-Burger.jpg",
+      "paneer burger": "Paneer-Burger.jpg",
+      "double decker burger": "Double-Decker-Burger.jpg",
+      "pizza spot special burger": "Pizza-Spot-Special-Burger.jpg",
+      "margherita": "Margherita.jpg",
+      "veggie": "Veggie.jpg",
+      "veggie lover": "Veggie-Lover.jpg",
+      "sweet corn": "Sweet-Corn.jpg",
+      "baby corn": "Baby-Corn.jpg",
+      "tandoori paneer": "Tandoori-Paneer.jpg",
+      "steam momos": "Steam-Momos.jpg",
+      "fried momos": "Fried-Momos.jpg",
+      "kurkure momos": "Kurkure-Momos.jpg",
+      "veg sandwich": "Veg-Sandwich.jpg",
+      "cheese sandwich": "Cheese-Sandwich.jpg",
+      "sweet corn sandwich": "Sweet-Corn-Sandwich.jpg",
+      "masala sandwich": "Masala-Sandwich.jpg",
+      "paneer tandoori sandwich": "Paneer-Tandoori-Sandwich.jpg",
+      "club sandwich": "Club-Sandwich.jpg",
+      "pizza spot special sandwich": "Pizza-Spot-Special-Sandwich.jpg",
+      "pav bhaji": "Pav-Bhaji.jpg",
+      "cheese pav bhaji": "Cheese-Pav-Bhaji.jpg",
+      "veg roll": "Veg-Roll.jpg",
+      "sweet corn roll": "Sweet-Corn-Roll.jpg",
+      "paneer roll": "Paneer-Roll.jpg",
+      "creamy alfredo pasta veg": "Creamy-Alfredo-Pasta-Veg.JPG",
+      "classic burger": "Burger-Classic.jpg",
+      "veg pizza": "Veg-Pizza.JPG",
+      "margherita pizza": "Margherita.jpg",
+      "chocolate truffle cake": "Chocolate-Truffle-Cake.jpg",
+      "red velvet cake": "Red-Velvet-Cake.JPG",
+      "black forest": "Black-Forest.jpg"
+    };
+
     function getImagePath(itemName) {
-      const slug = itemName
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
-      return `images/${slug}.jpg`;
+      const key = itemName.toLowerCase();
+      return imageMap[key] ? `images/${imageMap[key]}` : `https://via.placeholder.com/600x380/12121b/59FF94?text=${encodeURIComponent(itemName)}`;
     }
 
-    // -------------- RENDER ITEMS (clean, event-listeners) --------------
     function renderItems() {
       itemsGrid.innerHTML = "";
       if (shopItems.length === 0) {
@@ -517,25 +446,20 @@
         return;
       }
 
-      shopItems.forEach((item, idx) => {
+      shopItems.forEach((item) => {
         const qty = (cart[shopName] && cart[shopName][item.name]) ? cart[shopName][item.name].qty : 0;
         const imgSrc = getImagePath(item.name);
 
         const card = document.createElement('article');
         card.className = 'item-card';
 
-        // image
         const img = document.createElement('img');
         img.className = 'item-img';
         img.alt = item.name;
         img.loading = 'lazy';
         img.src = imgSrc;
-        img.onerror = function() {
-          this.onerror = null;
-          this.src = `https://via.placeholder.com/600x380/12121b/ffffff?text=${encodeURIComponent(item.name)}`;
-        };
+        img.onerror = function() { this.src = `https://via.placeholder.com/600x380/12121b/59FF94?text=${encodeURIComponent(item.name)}`; };
 
-        // info wrapper
         const info = document.createElement('div');
         info.className = 'item-info';
 
@@ -555,17 +479,14 @@
         info.appendChild(desc);
         info.appendChild(price);
 
-        // quantity / controls
         const controls = document.createElement('div');
         controls.className = 'quantity';
 
         if (isLoggedIn) {
           const btnMinus = document.createElement('button');
           btnMinus.className = 'qbtn';
-          btnMinus.type = 'button';
-          btnMinus.setAttribute('aria-label','Decrease quantity');
           btnMinus.innerHTML = '−';
-          btnMinus.addEventListener('click', () => changeQty(shopName, item.name, item.price, -1));
+          btnMinus.onclick = () => changeQty(shopName, item.name, item.price, -1);
 
           const qtyEl = document.createElement('div');
           qtyEl.className = 'qty';
@@ -573,34 +494,20 @@
 
           const btnPlus = document.createElement('button');
           btnPlus.className = 'qbtn';
-          btnPlus.type = 'button';
-          btnPlus.setAttribute('aria-label','Increase quantity');
           btnPlus.innerHTML = '+';
-          btnPlus.addEventListener('click', () => changeQty(shopName, item.name, item.price, +1));
+          btnPlus.onclick = () => changeQty(shopName, item.name, item.price, +1);
 
-          controls.appendChild(btnMinus);
-          controls.appendChild(qtyEl);
-          controls.appendChild(btnPlus);
+          controls.append(btnMinus, qtyEl, btnPlus);
         } else {
-          const loginNote = document.createElement('div');
-          loginNote.style.marginTop = '8px';
-          loginNote.style.color = '#ffb18a';
-          loginNote.style.fontSize = '13px';
-          loginNote.style.textAlign = 'center';
-          loginNote.textContent = 'Login to add';
-          controls.appendChild(loginNote);
+          controls.innerHTML = '<div style="color:#ffb18a;font-size:13px;">Login to add</div>';
         }
 
         info.appendChild(controls);
-
-        card.appendChild(img);
-        card.appendChild(info);
+        card.append(img, info);
         itemsGrid.appendChild(card);
       });
     }
 
-    // -------------- INIT / UI WIRING --------------
-    // set header shop name and render
     if (shopName && shopData[shopName]) {
       shopNameEl.textContent = shopName;
       renderItems();
@@ -610,20 +517,10 @@
       itemsGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#ff8a8a;padding:40px;">Invalid shop. <a href="index.html">Go back</a></div>';
     }
 
-    // cart bar click
     cartBar.addEventListener('click', openCartPage);
-    // checkout button stops propagation and opens cart
     checkoutBtn.addEventListener('click', (e) => { e.stopPropagation(); openCartPage(); });
-
-    // back button
     backBtn.addEventListener('click', () => history.back());
-
-    // initial update
     updateCartBar();
-
-    // Accessibility: keyboard support for cart open
-    cartBar.tabIndex = 0;
-    cartBar.addEventListener('keypress', (e) => { if (e.key === 'Enter' || e.key === ' ') openCartPage(); });
   </script>
 </body>
 </html>
