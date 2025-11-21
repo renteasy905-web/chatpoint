@@ -11,23 +11,18 @@
       --bg: #000000;
       --card: rgba(10, 10, 15, 0.88);
       --border: rgba(0, 255, 200, 0.18);
-
-      /* New Green + Sky Blue Palette */
-      --primary: #00ff9d;        /* Electric Mint Green */
-      --secondary: #00f2ea;      /* Sky Cyan */
+      --primary: #00ff9d;
+      --secondary: #00f2ea;
       --accent-glow: rgba(0, 255, 200, 0.5);
       --secondary-glow: rgba(0, 242, 234, 0.4);
-
       --text: #e0fffa;
       --text-muted: #94c9c0;
       --success: #00ff9d;
       --danger: #ff4d6d;
-
       --radius: 24px;
       --shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
       --transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Outfit', sans-serif;
@@ -36,8 +31,6 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
-
-    /* Futuristic Green + Cyan Glow Background */
     body::before {
       content: '';
       position: fixed;
@@ -64,7 +57,6 @@
       top: 0;
       z-index: 1000;
     }
-
     .brand {
       font-weight: 900;
       font-size: 30px;
@@ -75,7 +67,6 @@
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-
     .back-btn {
       width: 48px; height: 48px;
       border-radius: 50%;
@@ -92,7 +83,6 @@
       transform: scale(1.15);
       box-shadow: 0 0 30px var(--accent-glow);
     }
-
     .cart-badge {
       background: var(--primary);
       color: #000;
@@ -106,7 +96,6 @@
     }
 
     main { padding: 20px; max-width: 800px; margin: 0 auto; padding-bottom: 120px; }
-
     .cart-container {
       background: var(--card);
       border-radius: var(--radius);
@@ -117,7 +106,6 @@
       margin-top: 16px;
       transition: var(--transition);
     }
-
     .shop-name {
       font-size: 24px;
       font-weight: 900;
@@ -128,12 +116,15 @@
       display: flex;
       align-items: center;
       gap: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-
     .cart-item {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
+      gap: 16px;
       padding: 20px 12px;
       border-bottom: 1px solid rgba(0, 255, 200, 0.08);
       border-radius: 16px;
@@ -145,12 +136,10 @@
       box-shadow: 0 10px 25px rgba(0, 255, 200, 0.15);
     }
 
-    .item-left {
-      display: flex;
-      align-items: center;
-      gap: 18px;
+    /* Fixed layout: name + quantity + price */
+    .item-info {
       flex: 1;
-      min-width: 0;
+      min-width: 0; /* Allows truncation */
     }
     .item-name {
       font-weight: 600;
@@ -158,8 +147,14 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      max-width: 100%;
     }
-
+    .item-controls {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
     .quantity {
       display: flex;
       align-items: center;
@@ -174,7 +169,6 @@
       box-shadow: 0 0 30px var(--accent-glow);
       background: rgba(0, 255, 200, 0.22);
     }
-
     .qbtn {
       width: 42px; height: 42px;
       border-radius: 50%;
@@ -199,13 +193,15 @@
       font-size: 20px;
       color: var(--secondary);
     }
-
     .item-price {
       font-size: 22px;
       font-weight: 900;
       background: linear-gradient(90deg, var(--primary), var(--secondary));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      flex-shrink: 0;
+      min-width: 100px;
+      text-align: right;
     }
 
     .shop-subtotal {
@@ -215,7 +211,6 @@
       margin-top: 14px;
       font-weight: 600;
     }
-
     .total-section {
       margin-top: 40px;
       padding: 28px;
@@ -233,7 +228,6 @@
       text-shadow: 0 0 30px rgba(0, 255, 200, 0.6);
       margin-top: 10px;
     }
-
     .actions {
       margin-top: 40px;
       display: flex;
@@ -241,7 +235,6 @@
       justify-content: center;
       flex-wrap: wrap;
     }
-
     .btn {
       padding: 20px 44px;
       border: none;
@@ -253,7 +246,6 @@
       flex: 1;
       min-width: 180px;
     }
-
     .btn-clear {
       background: var(--danger);
       color: white;
@@ -263,7 +255,6 @@
       transform: translateY(-5px);
       box-shadow: 0 15px 35px rgba(255, 77, 109, 0.5);
     }
-
     .btn-payment {
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: #000;
@@ -274,7 +265,6 @@
       transform: translateY(-6px) scale(1.05);
       box-shadow: 0 25px 50px rgba(0, 255, 200, 0.7);
     }
-
     .empty-cart {
       text-align: center;
       padding: 120px 20px;
@@ -310,9 +300,9 @@
       .brand { font-size: 26px; }
       main { padding: 16px; }
       .cart-container { padding: 22px; }
-      .cart-item { flex-direction: column; align-items: flex-start; gap: 18px; }
-      .item-price { align-self: flex-end; font-size: 24px; }
-      .quantity { align-self: flex-start; }
+      .cart-item { flex-direction: column; align-items: stretch; gap: 16px; }
+      .item-info, .item-controls, .item-price { text-align: center; }
+      .item-price { align-self: flex-end; font-size: 26px; }
       .grand-total { font-size: 30px !important; }
       .actions { flex-direction: column; }
       .btn { max-width: none; }
@@ -320,7 +310,6 @@
   </style>
 </head>
 <body>
-
   <header>
     <div class="back-btn" onclick="history.back()">
       <i class="fas fa-arrow-left"></i>
@@ -348,7 +337,7 @@
     }
 
     function updateBadge() {
-      const total = Object.values(cart).reduce((s, shop) => 
+      const total = Object.values(cart).reduce((s, shop) =>
         s + Object.values(shop).reduce((q, i) => q + i.qty, 0), 0);
       badge.textContent = total || 0;
       badge.style.display = total > 0 ? 'grid' : 'none';
@@ -401,6 +390,7 @@
         const title = document.createElement("div");
         title.className = "shop-name";
         title.innerHTML = `<i class="fas fa-store"></i> ${shop}`;
+        title.title = shop; // Full shop name on hover
         shopDiv.appendChild(title);
 
         for (const itemName in cart[shop]) {
@@ -410,15 +400,21 @@
 
           const item = document.createElement("div");
           item.className = "cart-item";
+
+          // Fixed layout: name (truncated) → quantity (fixed) → price
           item.innerHTML = `
-            <div class="item-left">
-              <div class="item-name">${itemName}</div>
+            <div class="item-info">
+              <div class="item-name" title="${itemName}">${itemName}</div>
+            </div>
+
+            <div class="item-controls">
               <div class="quantity">
                 <button class="qbtn" onclick="changeQty('${shop}', '${itemName}', ${price}, -1)">−</button>
                 <div class="qty">${qty}</div>
                 <button class="qbtn" onclick="changeQty('${shop}', '${itemName}', ${price}, 1)">+</button>
               </div>
             </div>
+
             <div class="item-price">₹${total}</div>
           `;
           shopDiv.appendChild(item);
@@ -428,6 +424,7 @@
         sub.className = "shop-subtotal";
         sub.textContent = `Subtotal • ₹${shopTotal}`;
         shopDiv.appendChild(sub);
+
         container.appendChild(shopDiv);
       }
 
@@ -445,7 +442,9 @@
 
     function clearCart() {
       if (confirm("Clear all items?")) {
-        cart = {}; localStorage.removeItem(CART_KEY); renderCart();
+        cart = {};
+        localStorage.removeItem(CART_KEY);
+        renderCart();
       }
     }
 
