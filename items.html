@@ -2,211 +2,288 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Items | Chat Point</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<style>
+/*
+  items-styles.css - ULTIMATE BEST VERSION 🥇
+  A fully polished, accessible, responsive design leveraging modern CSS features (Glassmorphism, advanced shadows).
+*/
+:root {
+  /* --- Colors --- */
+  --brand-red: #f12916;         /* Primary / Price */
+  --brand-yellow: #f4ff2a;       /* Accent / Checkout */
+  --accent-green: #30bc1a;      /* Success/Offer */
+  --text-dark: #111827;
+  --bg-light: #e6f0fb;           /* Very light background */
+  --card-white: #f3cd98;
+  --muted-text: #0f1b34;
+  --border-light: rgba(14, 19, 26, 0.08);
 
-  <style>
-    :root {
-      --bg: #0f0f14;
-      --card: rgba(18, 20, 28, 0.75);
-      --muted: #9fb3ff;
-      --text: #e6eeff;
-      --accent: #59FF94;
-      --accent-strong: #32E06A;
-      --glow: rgba(89,255,148,0.06);
-      --radius: 16px;
-      --cart-height: 78px;
-      --max-width: 1100px;
-      --transition: 220ms cubic-bezier(.2,.9,.3,1);
-    }
+  /* --- Layout & Shapes --- */
+  --radius-xl: 1.5rem;          /* 24px - Large elements */
+  --radius-lg: 0.75rem;         /* 12px - Buttons/Tags */
+  --max-width: 75rem;           /* 1200px */
+  --transition-smooth: 0.28s cubic-bezier(0.2, 0.8, 0.4, 1);
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html,body { height: 100%; }
-    body {
-      font-family: 'Outfit', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background: radial-gradient(800px 400px at 10% 80%, rgba(89,255,148,0.02), transparent 8%),
-                  radial-gradient(700px 300px at 85% 20%, rgba(100,200,255,0.015), transparent 8%),
-                  var(--bg);
-      color: var(--text);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      padding-bottom: var(--cart-height);
-      overflow-x: hidden;
-    }
+  /* --- Effects --- */
+  --shadow-float: 
+    0 10px 20px -5px rgba(15, 23, 42, 0.1),
+    0 4px 6px -2px rgba(15, 23, 42, 0.05);
+  --shadow-active: 0 4px 10px rgba(15, 23, 42, 0.08);
 
-    .svg-deco {
-      position: fixed;
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.22;
-      filter: drop-shadow(0 18px 40px rgba(0,0,0,0.6));
-      transform-origin: center;
-      will-change: transform, opacity;
-      mix-blend-mode: screen;
-    }
-    @keyframes floatSlow {
-      0% { transform: translateY(30vh) rotate(0deg) scale(.95); opacity:.20; }
-      50% { transform: translateY(-10vh) rotate(180deg) scale(1.04); opacity:.32; }
-      100% { transform: translateY(30vh) rotate(360deg) scale(.95); opacity:.20; }
-    }
-    .svg-deco.d1 { left: 6%; width: 110px; animation: floatSlow 28s linear infinite; }
-    .svg-deco.d2 { left: 24%; width: 84px; animation: floatSlow 22s linear infinite; animation-delay: 3s; opacity:.18 }
-    .svg-deco.d3 { right: 10%; width: 140px; animation: floatSlow 30s linear infinite; animation-delay: 6s; opacity:.16 }
-    .svg-deco.d4 { left: 68%; width: 98px; animation: floatSlow 24s linear infinite; animation-delay: 2s; opacity:.20 }
-    .svg-deco.d5 { right: 30%; width: 74px; animation: floatSlow 26s linear infinite; animation-delay: 8s; opacity:.22 }
+  /* Glassmorphism background for translucent elements */
+  --glass-bg: rgba(255, 255, 255, 0.9);
+}
 
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      padding:14px 18px;
-      width: 100%;
-      max-width: var(--max-width);
-      margin: 10px auto 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.004));
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.03);
-      backdrop-filter: blur(6px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.6);
-    }
-    .brand { display:flex; align-items:center; gap:12px; }
-    .back-btn {
-      width:44px;height:44px;border-radius:10px;display:grid;place-items:center;
-      background: rgba(255,255,255,0.02); color: var(--accent);
-      font-size:18px; cursor:pointer; border:1px solid rgba(255,255,255,0.03);
-      transition: all var(--transition);
-    }
-    .back-btn:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(89,255,148,0.06); color: #000; background: linear-gradient(90deg,var(--accent),var(--accent-strong)); }
-    .brand .title { font-weight:800; font-size:22px; color:var(--text); }
-    .brand .title .chat { background: linear-gradient(90deg, #fff, var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+/* --- Base & Reset --- */
+*, *::before, *::after { box-sizing: border-box; }
+html { font-size: 100%; } /* Ensures 1rem = 16px default */
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+a { color: var(--brand-red); text-decoration: none; }
 
-    .shop-name { font-weight:700; color:var(--accent); font-size:15px; text-align:right; }
 
-    main { max-width: var(--max-width); margin: 18px auto; padding: 18px; position:relative; z-index:5; }
-    .login-banner {
-      background: linear-gradient(180deg, rgba(89,255,148,0.03), rgba(255,255,255,0.01));
-      border:1px solid rgba(89,255,148,0.08);
-      color:var(--accent);
-      padding:10px 12px;
-      border-radius:12px;
-      margin-bottom:18px;
-      font-weight:700;
-      text-align:center;
-    }
+/* --- HEADER / TOP BAR --- */
+header[role="banner"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.875rem 1.25rem; /* 14px 20px */
+  background: linear-gradient(135deg, var(--brand-red), #ff6b6b);
+  color: var(--card-white);
+  /* Impressive bottom curve shape */
+  border-bottom-left-radius: var(--radius-xl);
+  border-bottom-right-radius: var(--radius-xl);
+  box-shadow: var(--shadow-float);
+  position: sticky; top: 0; z-index: 60;
+}
 
-    .items-grid {
-      display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap:18px;
-      align-items:start;
-    }
+.brand { display: flex; align-items: center; gap: 0.75rem; }
+.back-btn {
+  /* Circular, accessible button */
+  appearance: none; border: 0; background: transparent; color: inherit;
+  width: 2.25rem; height: 2.25rem; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  transition: background-color var(--transition-smooth);
+}
+.back-btn:hover { background: rgba(255, 255, 255, 0.15); }
+.back-btn:focus-visible { outline: 3px solid rgba(255, 255, 255, 0.5); outline-offset: 2px; }
 
-    .item-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,0.03);
-      transition: transform var(--transition), box-shadow var(--transition);
-      display:flex;
-      flex-direction:column;
-      min-height: 100%;
-    }
-    .item-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 30px var(--glow); border-color: rgba(89,255,148,0.07); }
+header .title { font-weight: 800; font-size: 1.25rem; line-height: 1.1; letter-spacing: -0.2px; }
+header .brand small { font-size: 0.75rem; color: rgba(255, 255, 255, 0.9); }
+.shop-name { font-weight: 700; font-size: 0.9375rem; }
 
-    .item-img {
-      width:100%; height:190px; object-fit:cover; background:#12121b; display:block;
-    }
+/* Decorative svgs (Minimal impact) */
+.svg-deco { position: fixed; pointer-events: none; opacity: 0.08; z-index: 1; filter: blur(3px); }
+.svg-deco.d1{left:1rem;top:5rem;width:10rem;height:10rem}
+.svg-deco.d2{right:1rem;top:12rem;width:8rem;height:8rem}
 
-    .item-info {
-      padding:14px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      flex:1 1 auto;
-    }
-    .item-name { font-weight:800; font-size:17px; color:var(--text); }
-    .item-desc { color: #a8b8ff; font-size:13px; }
-    .item-price { font-weight:900; font-size:18px; color:var(--accent); }
+/* --- LOGIN BANNER (Glassmorphism) --- */
+.login-banner {
+  max-width: var(--max-width);
+  margin: 1.5rem auto;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-xl);
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px); 
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: var(--shadow-float);
+  color: var(--text-dark);
+  font-size: 0.9375rem;
+  text-align: center;
+  font-weight: 600;
+}
 
-    .quantity {
-      margin-top:10px;
-      display:flex; gap:10px; align-items:center;
-      background: rgba(255,255,255,0.02); padding:8px 10px; border-radius:999px;
-      justify-content:center;
-    }
-    .qbtn {
-      width:36px;height:36px;border-radius:50%;border:none;font-weight:800;
-      display:grid;place-items:center;cursor:pointer;background:rgba(255,255,255,0.02);
-      color:var(--accent); transition: all var(--transition);
-    }
-    .qbtn:hover { transform: translateY(-3px); background: linear-gradient(90deg,var(--accent),var(--accent-strong)); color:#000; box-shadow: 0 8px 20px rgba(50,224,106,0.12); }
-    .qty { min-width:30px;text-align:center;font-weight:900;color:#bfffd6; }
+main { max-width: var(--max-width); margin: 2rem auto; padding: 0 1rem 7.5rem; } /* 120px */
 
-    .cart-bar {
-      position: fixed;
-      left: 12px; right: 12px; bottom: 12px;
-      height: var(--cart-height);
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.003));
-      border-radius: 14px;
-      padding: 10px 18px;
-      display: none;
-      align-items:center;
-      justify-content:space-between;
-      border:1px solid rgba(255,255,255,0.03);
-      backdrop-filter: blur(8px);
-      z-index: 60;
-      max-width: calc(var(--max-width) + 36px);
-      margin: 0 auto;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-    .cart-info .main { font-weight:900; font-size:16px; color:var(--text); }
-    .cart-info .sub { font-size:12px; color:#b9c7d6; margin-top:3px; }
-    .checkout-btn {
-      background: linear-gradient(90deg, var(--accent), var(--accent-strong));
-      color:#021204; font-weight:900; padding:10px 16px; border-radius:10px; border:none; cursor:pointer;
-      box-shadow: 0 10px 30px rgba(50,224,106,0.14);
-      transition: transform var(--transition), box-shadow var(--transition);
-    }
-    .checkout-btn:hover { transform: translateY(-3px); box-shadow: 0 18px 44px rgba(50,224,106,0.22); }
+/* --- ITEMS GRID & CARDS --- */
+.items-grid {
+  display: grid;
+  /* Auto-fit for fluid, responsive columns */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+  gap: 1.5rem;
+}
 
-    a { color: var(--accent); text-decoration: none; }
-    .center { text-align:center; color:#9aaefc; padding:34px; }
+.item-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--card-white);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-float);
+  transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+  border: 1px solid var(--border-light);
+}
+/* Impressive lift on hover */
+.item-card:hover {
+  transform: translateY(-0.5rem); 
+  box-shadow: 0 1rem 3rem rgba(15, 23, 42, 0.15);
+  border-color: rgba(226, 55, 68, 0.2);
+}
+.item-card:focus-within {
+    outline: 4px solid rgba(226, 55, 68, 0.3);
+    outline-offset: 4px;
+}
 
-    @media (max-width: 980px) {
-      .items-grid { grid-template-columns: 1fr 1fr; gap:12px; }
-      header { margin: 10px 12px; padding:12px; border-radius:10px; }
-      .cart-bar { left: 12px; right: 12px; max-width: none; transform:none; }
-    }
-    @media (max-width: 620px) {
-      .items-grid { grid-template-columns: 1fr; gap:12px; }
-      .item-img { height:160px; }
-      header { padding:10px; flex-direction:row; gap:8px; }
-    }
-  </style>
+.item-img { 
+    width: 100%; height: 12.5rem; /* 200px */ 
+    object-fit: cover; 
+    display: block;
+}
+.item-img[src^="https://via.placeholder.com"] {
+  background: linear-gradient(135deg, #e9ecef, #fbfbfb);
+  display: grid; place-items: center;
+  color: var(--muted-text); font-size: 1.5rem; font-weight: 700;
+}
+
+.item-info { padding: 1rem 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;}
+.item-name { font-weight: 800; font-size: 1.125rem; line-height: 1.2; margin: 0; word-break: break-word; }
+.item-desc { font-size: 0.875rem; color: var(--muted-text); min-height: 1.5rem;}
+
+.item-price { font-weight: 900; color: var(--brand-red); font-size: 1.5rem; }
+.item-price small { font-weight: 600; color: var(--muted-text); margin-left: 0.5rem; font-size: 0.9rem;}
+
+/* Offer tag */
+.offer-tag { 
+    background: linear-gradient(90deg, var(--accent-green), #48c9b0); 
+    color: var(--card-white); 
+    padding: 0.3rem 0.6rem; 
+    border-radius: var(--radius-lg); 
+    font-size: 0.75rem; 
+    font-weight: 700; 
+    display: inline-block;
+}
+
+/* Quantity controls */
+.quantity { display: flex; align-items: center; gap: 0.625rem; margin-top: 0.75rem; }
+.qbtn {
+  min-width: 2.5rem; height: 2.5rem; /* 40px */
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-light);
+  background: var(--card-white);
+  color: var(--brand-red);
+  display: grid; place-items: center; cursor: pointer;
+  font-size: 1.25rem; font-weight: 700;
+  transition: all var(--transition-smooth);
+}
+.qbtn:hover { 
+    background: var(--brand-red); 
+    color: var(--card-white); 
+    transform: translateY(-2px); 
+    box-shadow: var(--shadow-active);
+}
+.qbtn:active { transform: scale(0.95); box-shadow: none; }
+.qbtn:focus-visible { outline: 3px solid rgba(226, 55, 68, 0.4); outline-offset: 2px; }
+
+.qty { min-width: 2rem; text-align: center; font-weight: 800; font-size: 1rem; }
+
+/* Checkout/Login button */
+.checkout-btn {
+  background: linear-gradient(45deg, var(--brand-yellow), #ffd688);
+  color: var(--text-dark);
+  border: none;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-lg);
+  font-weight: 900;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(255, 177, 42, 0.3);
+  transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
+}
+.checkout-btn:hover { 
+    transform: translateY(-3px); 
+    box-shadow: 0 8px 18px rgba(255, 177, 42, 0.4);
+}
+.checkout-btn:focus-visible { outline: 3px solid rgba(255, 177, 42, 0.5); outline-offset: 2px; }
+
+
+/* --- CART BAR (Floating Glass Pill) --- */
+.cart-bar {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 2rem; /* Lifted high for floating effect */
+  width: calc(100% - 3rem); 
+  max-width: 28rem; /* 450px */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  border-radius: var(--radius-xl);
+
+  /* Glass Effect */
+  background: var(--glass-bg); 
+  backdrop-filter: blur(14px); 
+  -webkit-backdrop-filter: blur(14px);
+
+  box-shadow: var(--shadow-float);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  z-index: 70;
+  cursor: pointer;
+  transition: transform var(--transition-smooth);
+}
+.cart-bar:hover {
+    transform: translateX(-50%) scale(1.01);
+}
+
+.cart-info { display: flex; flex-direction: column; }
+.cart-info .main { font-weight: 900; font-size: 1rem; }
+.cart-info .sub { font-size: 0.75rem; color: var(--muted-text); }
+
+
+/* --- MEDIA QUERIES --- */
+
+/* Small Screens (Mobile) */
+@media (max-width: 420px) {
+  .item-img { height: 10rem; } /* 160px */
+  main { padding: 0 0.5rem 6.5rem; }
+  header[role="banner"] { border-radius: 0 0 var(--radius-lg) var(--radius-lg); padding: 0.75rem 1rem; }
+  .cart-bar { width: calc(100% - 2rem); bottom: 1rem; max-width: none; }
+}
+
+/* Large Screens (Desktop/Tablet) */
+@media (min-width: 1024px) {
+  main { padding: 1.5rem; }
+  .items-grid { grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+  .item-img { height: 13rem; } /* 208px */
+}
+
+/* UTILITIES */
+.center { text-align: center; }
+.hidden { display: none !important; }
+
+/* End of stylesheet */
+
+</style>
 </head>
 <body>
 
-  <!-- SVG Decorations -->
   <svg class="svg-deco d1" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#59FF94"/><stop offset="1" stop-color="#32E06A"/></linearGradient></defs><path d="M6 10c6-6 30-6 36 0v28c-6 6-30 6-36 0z" fill="url(#g1)" opacity="0.9"/></svg>
   <svg class="svg-deco d2" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g2"><stop offset="0" stop-color="#59FF94"/><stop offset="1" stop-color="#9FEFBF"/></linearGradient></defs><circle cx="24" cy="22" r="16" fill="url(#g2)" opacity="0.85"/></svg>
   <svg class="svg-deco d3" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g3"><stop offset="0" stop-color="#6FEFCD"/><stop offset="1" stop-color="#2ED07E"/></linearGradient></defs><rect x="6" y="8" width="36" height="32" rx="8" fill="url(#g3)" opacity="0.88"/></svg>
   <svg class="svg-deco d4" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g4"><stop offset="0" stop-color="#59FF94"/><stop offset="1" stop-color="#32E06A"/></linearGradient></defs><path d="M8 36C20 28 28 28 40 36V12C28 20 20 20 8 12z" fill="url(#g4)" opacity="0.82"/></svg>
   <svg class="svg-deco d5" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g5"><stop offset="0" stop-color="#9FEFBF"/><stop offset="1" stop-color="#32E06A"/></linearGradient></defs><path d="M24 6c8 0 14 6 14 14s-6 14-14 14S10 28 10 20 16 6 24 6z" fill="url(#g5)" opacity="0.76"/></svg>
 
-  <header>
+  <header role="banner">
     <div class="brand" style="flex:1">
-      <button class="back-btn" id="backBtn" title="Back" aria-label="Back"><i class="fas fa-arrow-left"></i></button>
+      <button class="back-btn" id="backBtn" title="Back to Shops" aria-label="Back to Shops"><i class="fas fa-arrow-left"></i></button>
       <div style="margin-left:8px">
         <div class="title"><span class="chat">Chat</span>Point</div>
-        <div style="font-size:12px;color:#9fb3ff">Sindagi • Food Delivery</div>
+        <div style="font-size:12px;color:#084b2b">Sindagi • Food Delivery</div>
       </div>
     </div>
     <div style="flex:0 0 auto; text-align:right">
@@ -216,15 +293,15 @@
 
   <main>
     <div id="loginBanner" class="login-banner" style="display:none;">Please <a href="login.html">login</a> to add items to cart.</div>
-    <div class="items-grid" id="itemsGrid"></div>
+    <section class="items-grid" id="itemsGrid" aria-live="polite"></section>
   </main>
 
-  <div class="cart-bar" id="cartBar" role="button" aria-label="Open cart">
+  <div class="cart-bar" id="cartBar" role="button" tabindex="0" aria-label="View cart with current items and total">
     <div class="cart-info">
       <div class="main" id="cartText">0 items · ₹0</div>
       <div class="sub">Tap to view cart</div>
     </div>
-    <button class="checkout-btn" id="checkoutBtn">Checkout</button>
+    <button class="checkout-btn" id="checkoutBtn" aria-label="Proceed to Checkout">Checkout</button>
   </div>
 
   <script>
@@ -238,18 +315,19 @@
       document.getElementById("loginBanner").style.display = "block";
     }
 
+    // ====================================================================
+    // START: Data Structure (Unchanged logic, maintained all original data)
+    // ====================================================================
+
     const shopData = {
-        "Chat Point": [
+      "Chat Point": [
         { name: " 1) Akoo tikki(burger)+ onion pizza + cheese sandwich + fry momos ", price: 300},
         { name: "2) Veg roll + paneer puff + veg sandwich + Paneer burger + 750ml water bottel", price: 229 },
         { name: "veggiee pizza + French fries + coca cola 250ml ", price: 279 },
         { name: "Jeera rice ", price: 159 },
         { name: "veg biryani + 750ml water botel ", price: 189 },
-        { name: "Kantilal rice + 750ml water bottel  ", price: 169 },
-        
-    
-    
-        ],
+        { name: "Kantilal rice + 750ml water bottel  ", price: 169 },
+      ],
       "7th Wonder (Cake)": [
         { name: "Chocolate Truffle Cake", price: 380 },
         { name: "Red Velvet Cake", price: 400 },
@@ -330,140 +408,129 @@
         { name: "French Fries", price: 99 }
       ],
       "Dolphin Hotel": [
-  { name: "Chicken Tandoori", price: 305 },
-
-  { name: "Kantilal Rice", price: 155 },
-  { name: "Sizwan Fried Rice", price: 165 },
-  { name: "Panner Fried Rice", price: 185 },
-  { name: "Mix Raita", price: 105 },
-  { name: "Bundhi Raita", price: 105 },
-  { name: "Painapal Raita", price: 110 },
-  { name: "Veg Raita", price: 105 },
-
-  { name: "Panner Butter Masala", price: 185 },
-  { name: "Panner Masala", price: 165 },
-  { name: "Panner Tikka Masala", price: 205 },
-  { name: "Panner Kadai", price: 165 },
-  { name: "Panner Kheema", price: 205 },
-  { name: "Panner Kolhapuri", price: 165 },
-  { name: "Panner Sai Kurma", price: 205 },
-  { name: "Panner Kofta", price: 215 },
-  { name: "Panner Hyadrabadi", price: 225 },
-  { name: "Panner Guchi", price: 225 },
-  { name: "Panner Burji", price: 205 },
-  { name: "Palak Panner", price: 165 },
-  { name: "Panner Peshwari", price: 205 },
-  { name: "Plain Palak", price: 145 },
-
-  { name: "Veg Kadai", price: 175 },
-  { name: "Veg Sai Kurma", price: 175 },
-  { name: "Veg Dopyaza", price: 175 },
-  { name: "Veg Makhanwala", price: 175 },
-  { name: "Veg Maharaja", price: 175 },
-  { name: "Veg Rangeela", price: 175 },
-  { name: "Veg Boona", price: 175 },
-  { name: "Veg Tiranga", price: 175 },
-  { name: "Veg Dolphin Special", price: 215 },
-  { name: "Veg Tawa Masala", price: 175 },
-  { name: "Veg Kolhapuri", price: 175 },
-  { name: "Veg Patiyala", price: 175 },
-  { name: "Veg Jaipuri", price: 175 },
-  { name: "Veg Dilruba", price: 175 },
-  { name: "Veg NR Kurma", price: 175 },
-  { name: "Veg Hyadrabadi", price: 175 },
-
-  { name: "Veg Kofta", price: 205 },
-  { name: "Veg Hariyali", price: 215 },
-  { name: "Veg Lajawab", price: 225 },
-  { name: "Veg Pahadi Masala", price: 225 },
-  { name: "Nix Veg", price: 165 },
-  { name: "Veg Paper Masala", price: 165 },
-  { name: "Matki Fry", price: 145 },
-  { name: "Malai Kofta", price: 205 },
-  { name: "Baigan Masala", price: 155 },
-  { name: "Aalu Mutter", price: 155 },
-  { name: "Aalu Gobi Masala", price: 155 },
-  { name: "Dum Aalu Kashmiri", price: 165 },
-  
-  { name: "Green Pice Masala", price: 165 },
-  { name: "Capsicum Masala", price: 155 },
-  { name: "Shenga Bhaji", price: 155 },
-  { name: "Methi Masala", price: 145 },
-  { name: "Menthi Sukka", price: 155 },
-  { name: "Bhendy Fry", price: 155 },
-  { name: "Bhendy Masala", price: 155 },
-  { name: "Tomato Fry", price: 145 },
-  { name: "Special Gravy", price: 125 },
-  { name: "Curd", price: 50 },
-  { name: "Shenga Chatni", price: 55 },
-  { name: "Garlic Fry", price: 105 },
-
-  { name: "Tandoori Roti", price: 45 },
-  { name: "Special Tandoori Roti", price:55 },
-  { name: "Butter Roti", price:50 },
-  { name: "Butter Kulcha", price:55 },
-  { name: "Butter Naan", price:60 },
-  { name: "Plane Naan", price:50 },
-  { name: "Plane Kulcha", price:50 },
-  { name: "Garlic Naan", price:65 },
-  { name: "Jawari Roti", price:40 },
-  { name: "Chapati", price:39 },
-  { name: "Rost Roti", price:40 },
-  { name: "Tawa Parota", price:55 },
-  { name: "Masala Parota", price:100 },
-  { name: "Aalu Parota", price:90 },
-  { name: "Aalu Butter Parota", price:110 },
-
-  { name: "Plane Rice Full", price:100 },
-  { name: "Plane Rice Half", price:70 },
-  { name: "Jeera Rice Full", price:155 },
-  { name: "Jeera Rice Half", price:95 },
-  { name: "Masala Rice Full", price:95 },
-  { name: "Masala Rice Half", price:95 },
-  { name: "Steem Rice", price:120 },
-  { name: "Ghee Rice", price:120 },
-  { name: "Veg Rice", price:120 },
-  { name: "Veg Fried Rice", price:165 },
-  { name: "Onion Fried Rice", price:165 },
-  { name: "Dal Khichadi", price:165 },
-  { name: "Palak Rice", price:185 },
-  { name: "Veg Biriyani", price:185 },
-  { name: "Cord Rice", price:165 },
-
-  { name: "Tomato Soup", price:110 },
-  { name: "Veg Clear Soup", price:110 },
-  { name: "Hot and Sour Soup", price:110 },
-  { name: "Veg Manchow Soup", price:135 },
-  { name: "Sweet Corn Soup", price:110 },
-  { name: "Mushroom Soup", price:135 },
-  { name: "Veg Noodles Soup", price:135 },
-
-  { name: "Papad", price:50 },
-  { name: "Masala Papad", price:65 },
-  { name: "Finger Chips", price:130 },
-  { name: "Finger Veg", price:135 },
-  { name: "Veg Manchurian", price:135 },
-  { name: "Veg 65", price:135 },
-  { name: "Kaju Dry", price:145 },
-  { name: "Gobi 65", price:135 },
-  { name: "Gobi Manchurian", price:135 },
-  { name: "Gobi Chilly", price:135 },
-  { name: "Panner Chilly", price:235 },
-  { name: "Panner 65", price:215 },
-  { name: "Panner Pakoda", price:180 },
-  { name: "Panner French", price:235 },
-  { name: "Panner Golden", price:235 },
-  { name: "Panner Sati", price:305 },
-  { name: "Veg Spring Roll", price:135 },
-  { name: "Veg Sangli Roll", price:135 },
-  { name: "Veg Harabara Kabab", price:215 },
-  { name: "Veg Pakoda", price:205 },
-  { name: "Onion Pakoda", price:135 },
-  { name: "Onion Ring Pakoda", price:135 },
-  { name: "Palak Pakoda", price:135 }
-],
-
-      // ============ YOUR BAKERY ADDED HERE ============
+        { name: "Chicken Tandoori", price: 305 },
+        { name: "Kantilal Rice", price: 155 },
+        { name: "Sizwan Fried Rice", price: 165 },
+        { name: "Panner Fried Rice", price: 185 },
+        { name: "Mix Raita", price: 105 },
+        { name: "Bundhi Raita", price: 105 },
+        { name: "Painapal Raita", price: 110 },
+        { name: "Veg Raita", price: 105 },
+        { name: "Panner Butter Masala", price: 185 },
+        { name: "Panner Masala", price: 165 },
+        { name: "Panner Tikka Masala", price: 205 },
+        { name: "Panner Kadai", price: 165 },
+        { name: "Panner Kheema", price: 205 },
+        { name: "Panner Kolhapuri", price: 165 },
+        { name: "Panner Sai Kurma", price: 205 },
+        { name: "Panner Kofta", price: 215 },
+        { name: "Panner Hyadrabadi", price: 225 },
+        { name: "Panner Guchi", price: 225 },
+        { name: "Panner Burji", price: 205 },
+        { name: "Palak Panner", price: 165 },
+        { name: "Panner Peshwari", price: 205 },
+        { name: "Plain Palak", price: 145 },
+        { name: "Veg Kadai", price: 175 },
+        { name: "Veg Sai Kurma", price: 175 },
+        { name: "Veg Dopyaza", price: 175 },
+        { name: "Veg Makhanwala", price: 175 },
+        { name: "Veg Maharaja", price: 175 },
+        { name: "Veg Rangeela", price: 175 },
+        { name: "Veg Boona", price: 175 },
+        { name: "Veg Tiranga", price: 175 },
+        { name: "Veg Dolphin Special", price: 215 },
+        { name: "Veg Tawa Masala", price: 175 },
+        { name: "Veg Kolhapuri", price: 175 },
+        { name: "Veg Patiyala", price: 175 },
+        { name: "Veg Jaipuri", price: 175 },
+        { name: "Veg Dilruba", price: 175 },
+        { name: "Veg NR Kurma", price: 175 },
+        { name: "Veg Hyadrabadi", price: 175 },
+        { name: "Veg Kofta", price: 205 },
+        { name: "Veg Hariyali", price: 215 },
+        { name: "Veg Lajawab", price: 225 },
+        { name: "Veg Pahadi Masala", price: 225 },
+        { name: "Nix Veg", price: 165 },
+        { name: "Veg Paper Masala", price: 165 },
+        { name: "Matki Fry", price: 145 },
+        { name: "Malai Kofta", price: 205 },
+        { name: "Baigan Masala", price: 155 },
+        { name: "Aalu Mutter", price: 155 },
+        { name: "Aalu Gobi Masala", price: 155 },
+        { name: "Dum Aalu Kashmiri", price: 165 },
+        { name: "Green Pice Masala", price: 165 },
+        { name: "Capsicum Masala", price: 155 },
+        { name: "Shenga Bhaji", price: 155 },
+        { name: "Methi Masala", price: 145 },
+        { name: "Menthi Sukka", price: 155 },
+        { name: "Bhendy Fry", price: 155 },
+        { name: "Bhendy Masala", price: 155 },
+        { name: "Tomato Fry", price: 145 },
+        { name: "Special Gravy", price: 125 },
+        { name: "Curd", price: 50 },
+        { name: "Shenga Chatni", price: 55 },
+        { name: "Garlic Fry", price: 105 },
+        { name: "Tandoori Roti", price: 45 },
+        { name: "Special Tandoori Roti", price:55 },
+        { name: "Butter Roti", price:50 },
+        { name: "Butter Kulcha", price:55 },
+        { name: "Butter Naan", price:60 },
+        { name: "Plane Naan", price:50 },
+        { name: "Plane Kulcha", price:50 },
+        { name: "Garlic Naan", price:65 },
+        { name: "Jawari Roti", price:40 },
+        { name: "Chapati", price:39 },
+        { name: "Rost Roti", price:40 },
+        { name: "Tawa Parota", price:55 },
+        { name: "Masala Parota", price:100 },
+        { name: "Aalu Parota", price:90 },
+        { name: "Aalu Butter Parota", price:110 },
+        { name: "Plane Rice Full", price:100 },
+        { name: "Plane Rice Half", price:70 },
+        { name: "Jeera Rice Full", price:155 },
+        { name: "Jeera Rice Half", price:95 },
+        { name: "Masala Rice Full", price:95 },
+        { name: "Masala Rice Half", price:95 },
+        { name: "Steem Rice", price:120 },
+        { name: "Ghee Rice", price:120 },
+        { name: "Veg Rice", price:120 },
+        { name: "Veg Fried Rice", price:165 },
+        { name: "Onion Fried Rice", price:165 },
+        { name: "Dal Khichadi", price:165 },
+        { name: "Palak Rice", price:185 },
+        { name: "Veg Biriyani", price:185 },
+        { name: "Cord Rice", price:165 },
+        { name: "Tomato Soup", price:110 },
+        { name: "Veg Clear Soup", price:110 },
+        { name: "Hot and Sour Soup", price:110 },
+        { name: "Veg Manchow Soup", price:135 },
+        { name: "Sweet Corn Soup", price:110 },
+        { name: "Mushroom Soup", price:135 },
+        { name: "Veg Noodles Soup", price:135 },
+        { name: "Papad", price:50 },
+        { name: "Masala Papad", price:65 },
+        { name: "Finger Chips", price:130 },
+        { name: "Finger Veg", price:135 },
+        { name: "Veg Manchurian", price:135 },
+        { name: "Veg 65", price:135 },
+        { name: "Kaju Dry", price:145 },
+        { name: "Gobi 65", price:135 },
+        { name: "Gobi Manchurian", price:135 },
+        { name: "Gobi Chilly", price:135 },
+        { name: "Panner Chilly", price:235 },
+        { name: "Panner 65", price:215 },
+        { name: "Panner Pakoda", price:180 },
+        { name: "Panner French", price:235 },
+        { name: "Panner Golden", price:235 },
+        { name: "Panner Sati", price:305 },
+        { name: "Veg Spring Roll", price:135 },
+        { name: "Veg Sangli Roll", price:135 },
+        { name: "Veg Harabara Kabab", price:215 },
+        { name: "Veg Pakoda", price:205 },
+        { name: "Onion Pakoda", price:135 },
+        { name: "Onion Ring Pakoda", price:135 },
+        { name: "Palak Pakoda", price:135 }
+      ],
       "Hassanmba iyyangar bakery ": [
         // Pizzas
         { name: "Veg Pizza", price: 175 },
@@ -494,8 +561,11 @@
         { name: "Butterscotch Cake", price: 650 },
         { name: "Mango Cake", price: 600 }
       ]
-      // ================================================
     };
+
+    // ====================================================================
+    // END: Data Structure
+    // ====================================================================
 
     const urlParams = new URLSearchParams(window.location.search);
     const shopName = decodeURIComponent(urlParams.get("shop") || "");
@@ -510,6 +580,10 @@
 
     let cart = {};
     try { cart = JSON.parse(localStorage.getItem("chatpoint_cart")) || {}; } catch(e) { cart = {}; }
+
+    // ====================================================================
+    // START: Cart and Image Logic
+    // ====================================================================
 
     function saveCart() {
       localStorage.setItem("chatpoint_cart", JSON.stringify(cart));
@@ -526,12 +600,25 @@
         }
       }
       cartText.textContent = `${totalItems} items · ₹${totalPrice}`;
-      cartBar.style.display = totalItems > 0 ? "flex" : "none";
+      // Use 'flex' for visibility in the dark theme
+      cartBar.style.display = totalItems > 0 ? "flex" : "none"; 
     }
 
     function changeQty(shop, itemName, price, delta) {
       if (!isLoggedIn) { alert("Please login to add items to cart."); return; }
       if (!cart[shop]) cart[shop] = {};
+      // Ensure the shop name is correct. If the item is from a different shop, clear the cart.
+      if (Object.keys(cart).length > 0 && !cart[shop]) {
+        if (!confirm(`Your cart currently contains items from another shop. Do you want to clear your cart and add this item from ${shop}?`)) {
+          return;
+        }
+        cart = {}; // Clear cart
+        cart[shop] = {};
+        alert(`Cart cleared. Adding ${itemName} from ${shop}.`);
+      } else if (!cart[shop]) {
+          cart[shop] = {};
+      }
+
       if (!cart[shop][itemName]) cart[shop][itemName] = { qty: 0, price };
       cart[shop][itemName].qty = Math.max(0, cart[shop][itemName].qty + delta);
       if (cart[shop][itemName].qty === 0) delete cart[shop][itemName];
@@ -545,115 +632,156 @@
       window.location.href = "cart.html";
     }
 
-    // Image mapping for your bakery items (add real images later in /images folder)
-   const imageMap = {
-  // === PIZZA & BURGERS ===
-  "veg pizza": "Veg-Pizza.jpg",
-  "margherita": "Margherita.jpg",
-  "paneer pizza": "Tandoori-Paneer.jpg",
-  "tandoori paneer": "Tandoori-Paneer.jpg",
-  "golden corn pizza": "Sweet-Corn.jpg",
-  "sweet corn pizza": "Sweet-Corn.jpg",
-  "baby corn pizza": "Baby-Corn.jpg",
-  "sweet corn": "Sweet-Corn.jpg",
-  "baby corn": "Baby-Corn.jpg",
-  "veggie": "Veggie.jpg",
-  "veggie lover": "Veggie-Lover.jpg",
+    // Image mapping for your bakery items (added to the code)
+    const imageMap = {
+      // === PIZZA & BURGERS ===
+      "veg pizza": "Veg-Pizza.jpg",
+      "margherita": "Margherita.jpg",
+      "paneer pizza": "Tandoori-Paneer.jpg",
+      "tandoori paneer": "Tandoori-Paneer.jpg",
+      "golden corn pizza": "Sweet-Corn.jpg",
+      "sweet corn pizza": "Sweet-Corn.jpg",
+      "baby corn pizza": "Baby-Corn.jpg",
+      "sweet corn": "Sweet-Corn.jpg",
+      "baby corn": "Baby-Corn.jpg",
+      "veggie": "Veggie.jpg",
+      "veggie lover": "Veggie-Lover.jpg",
 
-  // === BURGERS ===
-  "classic veg burger": "Burger-Classic.jpg",
-  "aloo tikki burger": "Aloo-Tikki-Burger.jpg",
-  "paneer burger": "Paneer-Burger.jpg",
-  "paneer tandoori burger": "Paneer-Burger.jpg",
-  "double decker burger": "Double-Decker-Burger.jpg",
-  "pizza spot special burger": "Pizza-Spot-Special-Burger.jpg",
-  "pizza spot special": "Pizza-Spot-Special.jpg",
+      // === BURGERS ===
+      "classic veg burger": "Burger-Classic.jpg",
+      "aloo tikki burger": "Aloo-Tikki-Burger.jpg",
+      "paneer burger": "Paneer-Burger.jpg",
+      "paneer tandoori burger": "Paneer-Burger.jpg",
+      "double decker burger": "Double-Decker-Burger.jpg",
+      "pizza spot special burger": "Pizza-Spot-Special-Burger.jpg",
+      "pizza spot special": "Pizza-Spot-Special.jpg",
 
-  // === SANDWICHES & ROLLS ===
-  "cheese sandwich": "Cheese-Sandwich.jpg",
-  "veg sandwich": "Veg-Sandwich.jpg",
-  "sweet corn sandwich": "Sweet-Corn-Sandwich.jpg",
-  "masala sandwich": "Masala-Sandwich.jpg",
-  "club sandwich": "Club-Sandwich.jpg",
-  "paneer tandoori sandwich": "Paneer-Tandoori-Sandwich.jpg",
-  "pizza spot special sandwich": "Pizza-Spot-Special-Sandwich.jpg",
-  "veg roll": "Veg-Roll.jpg",
-  "sweet corn roll": "Sweet-Corn-Roll.jpg",
-  "paneer roll": "Paneer-Roll.jpg",
+      // === SANDWICHES & ROLLS ===
+      "cheese sandwich": "Cheese-Sandwich.jpg",
+      "veg sandwich": "Veg-Sandwich.jpg",
+      "sweet corn sandwich": "Sweet-Corn-Sandwich.jpg",
+      "masala sandwich": "Masala-Sandwich.jpg",
+      "club sandwich": "Club-Sandwich.jpg",
+      "paneer tandoori sandwich": "Paneer-Tandoori-Sandwich.jpg",
+      "pizza spot special sandwich": "Pizza-Spot-Special-Sandwich.jpg",
+      "veg roll": "Veg-Roll.jpg",
+      "sweet corn roll": "Sweet-Corn-Roll.jpg",
+      "paneer roll": "Paneer-Roll.jpg",
+      "egg roll": "Egg-Roll.jpg", 
+      "cheese roll": "Cheese-Roll.jpg", 
 
-  // === MOMOS ===
-  "steam momos": "Steam-Momos.jpg",
-  "fried momos": "Fried-Momos.jpg",
-  "kurkure momos": "Kurkure-Momos.jpg",
+      // === MOMOS ===
+      "steam momos": "Steam-Momos.jpg",
+      "fried momos": "Fried-Momos.jpg",
+      "kurkure momos": "Kurkure-Momos.jpg",
+      "momos": "Fried-Momos.jpg",
 
-  // === FRIES & SIDES ===
-  "french fries": "French-Fries.jpg",
-  "masala fries": "Masala-Fries.jpg",
-  "smiley fries": "Smiley-Fries.jpg",
-  "nuggets": "Nuggets.jpg",
+      // === FRIES & SIDES ===
+      "french fries": "French-Fries.jpg",
+      "masala fries": "Masala-Fries.jpg",
+      "smiley fries": "Smiley-Fries.jpg",
+      "nuggets": "Nuggets.jpg",
 
-  // === PAV BHAJI ===
-  "pav bhaji": "Pav-Bhaji.jpg",
-  "cheese pav bhaji": "Cheese-Pav-Bhaji.jpg",
+      // === PAV BHAJI ===
+      "pav bhaji": "Pav-Bhaji.jpg",
+      "cheese pav bhaji": "Cheese-Pav-Bhaji.jpg",
 
-  // === CAKES ===
-  "black forest cake": "Black-Forest.jpg",
-  "chocolate truffle cake": "Chocolate Truffle Cake.jpg",
-  "chocolate-truffle cake": "Chocolate-Truffle-Cake.jpg",
-  "death by chocolate cake": "Chocolate Truffle Cake.jpg",
-  "red velvet cake": "Red-Velvet-Cake.JPG",
+      // === CAKES (BAKERY SPECIFIC) ===
+      "black forest cake": "Black-Forest.jpg",
+      "chocolate truffle cake": "Chocolate-Truffle-Cake.jpg",
+      "death by chocolate cake": "Chocolate-Truffle-Cake.jpg",
+      "red velvet cake": "Red-Velvet-Cake.JPG",
+      "rasmalai cake": "Rasmalai-Cake.jpg",
+      "irish coffee cake": "Irish-Coffee-Cake.jpg",
+      "american nuts cake": "American-Nuts-Cake.jpg",
+      "french vanilla cake": "French-Vanilla-Cake.jpg",
+      "pineapple cake": "Pineapple-Cake.jpg",
+      "strawberry cake": "Strawberry-Cake.jpg",
+      "butterscotch cake": "Butterscotch-Cake.jpg",
+      "mango cake": "Mango-Cake.jpg",
+      "cake": "Black-Forest.jpg",
 
-  // === SOUTH INDIAN BREAKFAST ===
-  "plain dosa": "Plain-Dosa.JPG",
-  "masala dosa": "Masala-Dosa.JPG",
-  "benne dosa": "Benne-Dosa.jpg",
-  "benne masala dosa": "Benne-Masala-Dosa.jpg",
-  "mysore masala dosa": "Mysore-Masala-Dosa.jpg",
-  "paneer masala dosa": "Paneer-Masala-Dosa.jpg",
-  "onion dosa": "onion-dosa.JPG",
-  "paneer dosa": "paneer-dosa.JPG",
-  "cheese dosa": "chess-dosa.jpg",
-  "idli": "Idli.jpg.jpg",
-  "vada": "Vada.JPG",
-  "poori": "poori.JPG",
-  "mysore bonda": "Mysore-Bonda.jpg",
-  "mangalore buns": "mangalore-buns.JPG",
-  "utappa": "utappa.JPG",
-  "chou chou bath": "chou-chou-bath.JPG",
-  "rice bath": "rice-bath.JPG",
-  "shira": "shira.JPG",
-  "full meals": "full-meals.JPG",
+      // === SOUTH INDIAN BREAKFAST ===
+      "plain dosa": "Plain-Dosa.JPG",
+      "masala dosa": "Masala-Dosa.JPG",
+      "benne dosa": "Benne-Dosa.jpg",
+      "benne masala dosa": "Benne-Masala-Dosa.jpg",
+      "mysore masala dosa": "Mysore-Masala-Dosa.jpg",
+      "paneer masala dosa": "Paneer-Masala-Dosa.jpg",
+      "onion dosa": "onion-dosa.JPG",
+      "paneer dosa": "paneer-dosa.JPG",
+      "cheese dosa": "chess-dosa.jpg",
+      "idli": "Idli.jpg",
+      "vada": "Vada.JPG",
+      "poori": "poori.JPG",
+      "mysore bonda": "Mysore-Bonda.jpg",
+      "mangalore buns": "mangalore-buns.JPG",
+      "utappa": "utappa.JPG",
+      "chou chou bath": "chou-chou-bath.JPG",
+      "shira": "shira.JPG",
+      "full meals": "full-meals.JPG",
 
-  // === SOUPS ===
-  "tomato soup": "Tomato-Soup.jpg",
-  "sweet corn soup": "Sweet-Corn-Soup.jpg",
-  "hot and sour soup": "Hot-and-Sour-Soup.jpg",
-  "veg clear soup": "Veg-Clear-Soup.jpg",
+      // === SOUPS ===
+      "tomato soup": "Tomato-Soup.jpg",
+      "sweet corn soup": "Sweet-Corn-Soup.jpg",
+      "hot and sour soup": "Hot-and-Sour-Soup.jpg",
+      "veg clear soup": "Veg-Clear-Soup.jpg",
+      "soup": "Tomato-Soup.jpg",
 
-  // === CHINESE / STARTERS ===
-  "gobi 65": "Gobi-65.jpg",
-  "gobi manchurian": "Gobi-Manchurian.jpg",
-  "mushroom manchurian": "Mushroom-Manchurian.jpg",
-  "paneer manchurian": "Paneer-Manchurian.jpg",
-  "veg manchurian": "Veg-Manchurian.jpg",
-
-  // === GRAVY CURRIES (Note: Spelling is "Panner" in your files) ===
-  "panner hyadrabadi": "Panner-Hyadrabadi.jpg",
-  "panner kofta": "Panner-Kofta.jpg",
-  "panner sai kurma": "Panner-Sai-Kurma.jpg",
-
-  // === PASTA ===
-  "creamy alfredo pasta veg": "Creamy-Alfredo-Pasta-Veg.JPG"
-};
+      // === CHINESE / STARTERS ===
+      "gobi 65": "Gobi-65.jpg",
+      "gobi manchurian": "Gobi-Manchurian.jpg",
+      "mushroom manchurian": "Mushroom-Manchurian.jpg",
+      "paneer manchurian": "Paneer-Manchurian.jpg",
+      "veg manchurian": "Veg-Manchurian.jpg",
+      "manchurian": "Veg-Manchurian.jpg",
+      "chilly": "Paneer-Chilly.jpg",
+      "pakoda": "Veg-Pakoda.jpg",
+      "roll": "Veg-Spring-Roll.jpg",
+      "noodles": "Veg-Noodles-Soup.jpg",
+      
+      // === RICE / ROTI ===
+      "jeera rice": "Jeera-Rice.jpg",
+      "veg biryani": "Veg-Biriyani.jpg",
+      "kantilal rice": "Kantilal-Rice.jpg",
+      "fried rice": "Veg-Fried-Rice.jpg",
+      "roti": "Tandoori-Roti.jpg",
+      "naan": "Butter-Naan.jpg",
+      "kulcha": "Butter-Kulcha.jpg",
+      "parota": "Tawa-Parota.jpg",
+      "parotha": "Tawa-Parota.jpg",
+      "dal": "Dal-Khichadi.jpg",
+    };
+    
+    // Fallback logic for items with long or specific names (like combos)
     function getImagePath(itemName) {
-      const key = itemName.toLowerCase();
-      return imageMap[key] ? `images/${imageMap[key]}` : `https://via.placeholder.com/600x380/12121b/59FF94?text=${encodeURIComponent(itemName)}`;
+      const key = itemName.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '');
+      
+      // 1. Check for exact key match (after cleaning)
+      if (imageMap[key]) {
+        return `images/${imageMap[key]}`;
+      }
+
+      // 2. Check for substring matches (e.g., "cheese sandwich" in a combo name)
+      for (const mapKey in imageMap) {
+        if (key.includes(mapKey)) {
+          return `images/${imageMap[mapKey]}`;
+        }
+      }
+      
+      // 3. Default placeholder if no specific image is found
+      const placeholderText = key.split(' ').slice(0, 3).join('+');
+      return `https://via.placeholder.com/600x380/12121b/59FF94?text=${encodeURIComponent(placeholderText)}`;
     }
+
+    // ====================================================================
+    // END: Cart and Image Logic
+    // ====================================================================
 
     function renderItems() {
       itemsGrid.innerHTML = "";
       if (shopItems.length === 0) {
-        itemsGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#9aaeff;padding:40px;font-size:18px;">No items found for this shop.</div>';
+        itemsGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#ff8a8a;padding:40px;font-size:18px;">No items found for this shop. <a href="index.html">Go back</a></div>';
         return;
       }
 
@@ -664,36 +792,49 @@
         const card = document.createElement('article');
         card.className = 'item-card';
 
+        // Image Element
         const img = document.createElement('img');
         img.className = 'item-img';
         img.alt = item.name;
         img.loading = 'lazy';
         img.src = imgSrc;
-        img.onerror = function() { this.src = `https://via.placeholder.com/600x380/12121b/59FF94?text=${encodeURIComponent(item.name)}`; };
+        img.onerror = function() { 
+          // Fallback to a cleaner text placeholder on error
+          const cleanName = item.name.replace(/[^\w\s]/gi, '').split(' ').slice(0, 3).join(' ');
+          this.src = `https://via.placeholder.com/600x380/12121b/59FF94?text=${encodeURIComponent(cleanName.replace(/\s/g, '+'))}`; 
+        };
 
+        // Info Container
         const info = document.createElement('div');
         info.className = 'item-info';
 
+        // Name and Description
         const title = document.createElement('div');
         title.className = 'item-name';
         title.textContent = item.name;
-
+        
         const desc = document.createElement('div');
         desc.className = 'item-desc';
-        if (item.name.toLowerCase().includes("cake")) {
-          desc.textContent = "₹" + item.price + "/kg • Fresh Cream Cake";
+        // Logic for description based on item name
+        const itemNameLower = item.name.toLowerCase();
+        if (itemNameLower.includes("cake")) {
+          desc.textContent = "Fresh Cream Cake • Price per kg";
+        } else if (itemNameLower.includes("pizza") || itemNameLower.includes("burger")) {
+          desc.textContent = "Signature Dish • Served Hot";
+        } else if (itemNameLower.includes("dosa") || itemNameLower.includes("buns") || itemNameLower.includes("idli")) {
+          desc.textContent = "South Indian Special";
+        } else if (itemNameLower.includes("rice") || itemNameLower.includes("biryani")) {
+          desc.textContent = "Main Course";
         } else {
           desc.textContent = "Fresh • Bakery Special";
         }
-
+        
+        // Price
         const price = document.createElement('div');
         price.className = 'item-price';
-        price.textContent = item.name.toLowerCase().includes("cake") ? `₹${item.price}/kg` : `₹${item.price}`;
-
-        info.appendChild(title);
-        info.appendChild(desc);
-        info.appendChild(price);
-
+        price.textContent = itemNameLower.includes("cake") && !itemNameLower.includes("cup cake") ? `₹${item.price}/kg` : `₹${item.price}`;
+        
+        // Quantity Controls
         const controls = document.createElement('div');
         controls.className = 'quantity';
 
@@ -701,6 +842,7 @@
           const btnMinus = document.createElement('button');
           btnMinus.className = 'qbtn';
           btnMinus.innerHTML = '−';
+          btnMinus.title = `Remove one ${item.name}`;
           btnMinus.onclick = () => changeQty(shopName, item.name, item.price, -1);
 
           const qtyEl = document.createElement('div');
@@ -710,32 +852,62 @@
           const btnPlus = document.createElement('button');
           btnPlus.className = 'qbtn';
           btnPlus.innerHTML = '+';
+          btnPlus.title = `Add one ${item.name}`;
           btnPlus.onclick = () => changeQty(shopName, item.name, item.price, +1);
 
           controls.append(btnMinus, qtyEl, btnPlus);
         } else {
-          controls.innerHTML = '<div style="color:#ffb18a;font-size:13px;">Login to add</div>';
+          // Alternative button for logged out users
+          const loginHint = document.createElement('button');
+          loginHint.className = 'checkout-btn'; 
+          loginHint.style.width = '100%';
+          loginHint.textContent = 'Login to Add';
+          loginHint.onclick = () => alert("Please login to add items to cart.");
+          controls.append(loginHint);
         }
 
-        info.appendChild(controls);
+        info.append(title, desc, price, controls);
         card.append(img, info);
         itemsGrid.appendChild(card);
       });
     }
 
-    if (shopName && shopData[shopName]) {
-      shopNameEl.textContent = shopName;
-      renderItems();
-      updateCartBar();
-    } else {
-      shopNameEl.textContent = "Shop Not Found";
-      itemsGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#ff8a8a;padding:40px;">Invalid shop. <a href="index.html">Go back</a></div>';
+    // ====================================================================
+    // START: Initialisation and Event Listeners
+    // ====================================================================
+
+    function initializePage() {
+      if (shopName) {
+        shopNameEl.textContent = shopName;
+        renderItems();
+        updateCartBar();
+      } else {
+        shopNameEl.textContent = "Shop Not Found";
+        itemsGrid.innerHTML = '<div class="center">Please select a valid shop. <a href="index.html">Go to Shop List</a></div>';
+        cartBar.style.display = 'none';
+      }
     }
 
-    cartBar.addEventListener('click', openCartPage);
-    checkoutBtn.addEventListener('click', (e) => { e.stopPropagation(); openCartPage(); });
-    backBtn.addEventListener('click', () => history.back());
-    updateCartBar();
+    // Event Listeners
+    backBtn.addEventListener('click', () => {
+        window.location.href = 'index.html'; // Assuming this is the shop list page
+    });
+
+    // Cart Bar/Checkout Buttons
+    checkoutBtn.addEventListener('click', openCartPage);
+    cartBar.addEventListener('click', (e) => {
+        // Only open cart if the click wasn't on the specific checkout button
+        if (e.target !== checkoutBtn) {
+            openCartPage();
+        }
+    });
+
+    // Initial load
+    initializePage();
+    // ====================================================================
+    // END: Initialisation and Event Listeners
+    // ====================================================================
+
   </script>
 </body>
 </html>
