@@ -2,380 +2,310 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>ChatPoint — Login / Signup</title>
-
-  <!-- Fonts & icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
-    :root{
-      --bg:#000000;                 /* pure black */
-      --card: rgba(255,255,255,0.02);
-      --glass: rgba(255,255,255,0.025);
-      --text:#ffffff;
-      --muted:#bfc8d8;
-      --accent-w:#ffffff;           /* white primary accent */
-      --accent-o:#ff6b35;           /* thin orange highlight */
-      --radius:20px;
-      --maxw:520px;
-      --shadow: 0 28px 80px rgba(0,0,0,0.8);
-      --transition:240ms cubic-bezier(.2,.9,.3,1);
+    :root {
+      --bg: #3a3337;
+      --card: #d9e0ae;
+      --text: #1a1a1a;
+      --muted: #666666;
+      --primary: #128e7d;
+      --primary-light: #e9ecec;
+      --radius: 18px;
+      --shadow: 0 16px 48px rgba(0,0,0,0.35);
+      --transition: all 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%;width:100%;font-family:'Outfit',system-ui,-apple-system,"Segoe UI",Roboto,Arial; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale}
-    body{
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', sans-serif;
       background: var(--bg);
-      color:var(--text);
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:20px;
-      overflow-x:hidden;
+      color: var(--text);
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      background-image: 
+        radial-gradient(circle at 20% 80%, rgba(226,55,68,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.03) 0%, transparent 40%),
+        repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.01) 20px, rgba(255,255,255,0.01) 40px);
+      overflow-x: hidden;
     }
 
-    /* Fullscreen subtle background shapes & floating icons */
-    .bg-canvas{
-      position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+    /* Floating Food Icons */
+    .bg-canvas {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
     }
-    .bg-canvas svg{ position:absolute; opacity:0.12; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.7)); mix-blend-mode:screen; will-change: transform, opacity; }
-    .svg-1{ left:6%; top:8%; width:160px; animation:floatA 28s linear infinite; }
-    .svg-2{ left:22%; top:70%; width:110px; animation:floatB 22s linear infinite; animation-delay:3s; opacity:.10; }
-    .svg-3{ right:6%; top:36%; width:180px; animation:floatC 32s linear infinite; animation-delay:5s; opacity:.11; }
-    .svg-4{ left:66%; top:10%; width:100px; animation:floatB 24s linear infinite; animation-delay:1s; opacity:.14; }
-
-    @keyframes floatA { 0%{transform:translateY(28vh)rotate(0) scale(.96)} 50%{transform:translateY(-8vh)rotate(180deg) scale(1.03)} 100%{transform:translateY(28vh)rotate(360deg) scale(.96)} }
-    @keyframes floatB { 0%{transform:translateY(26vh)rotate(0) scale(.95)} 50%{transform:translateY(-6vh)rotate(180deg) scale(1.02)} 100%{transform:translateY(26vh)rotate(360deg) scale(.95)} }
-    @keyframes floatC { 0%{transform:translateY(34vh)rotate(0) scale(.90)} 50%{transform:translateY(-12vh)rotate(180deg) scale(1.06)} 100%{transform:translateY(34vh)rotate(360deg) scale(.90)} }
-
-    /* Container card */
-    .wrap {
-      width:100%;
-      max-width:1100px;
-      display:grid;
-      grid-template-columns: 1fr 420px;
-      gap:28px;
-      align-items:center;
-      z-index:5;
-      position:relative;
+    .bg-canvas svg {
+      position: absolute; opacity: 0.07; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+      mix-blend-mode: soft-light; will-change: transform;
+    }
+    .svg-1 { left: 8%; top: 15%; width: 120px; animation: float 28s infinite linear; }
+    .svg-2 { right: 12%; top: 65%; width: 90px; animation: float 32s infinite linear reverse; animation-delay: 4s; }
+    .svg-3 { left: 18%; top: 70%; width: 140px; animation: float 30s infinite linear; animation-delay: 8s; }
+    .svg-4 { right: 15%; top: 10%; width: 80px; animation: float 26s infinite linear reverse; animation-delay: 2s; }
+    @keyframes float {
+      0%,100% { transform: translateY(20vh) rotate(0deg) scale(0.9); }
+      50% { transform: translateY(-18vh) rotate(180deg) scale(1.1); }
     }
 
-    /* left decorative panel (keeps some shapes) */
-    .panel-left{
-      min-height:520px;
-      border-radius:24px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.003));
-      border:1px solid rgba(255,255,255,0.03);
-      box-shadow:var(--shadow);
-      overflow:hidden;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:28px;
+    .container {
+      width: 100%; max-width: 420px; z-index: 10; position: relative;
     }
-    .panel-left .hero {
-      text-align:center;
-      max-width:420px;
-    }
-    .hero h2{ font-size:36px; margin-bottom:8px; letter-spacing:0.2px; color:var(--accent-w); }
-    .hero p{ color:var(--muted); margin-bottom:8px; }
 
-    /* right form card */
     .card {
-      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.004));
-      border-radius:var(--radius);
-      padding:28px;
-      border:1px solid rgba(255,255,255,0.03);
-      box-shadow:var(--shadow);
-      max-width:var(--maxw);
-      width:100%;
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(0,0,0,0.06);
+      text-align: center;
     }
 
-    /* Title */
-    .brand { display:flex; gap:6px; align-items:baseline; justify-content:flex-start; margin-bottom:6px; }
-    .brand .chat { font-weight:800; font-size:22px; color:var(--accent-w); }
-    .brand .point { font-weight:800; font-size:22px; color:var(--muted); }
+    .brand {
+      display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 20px;
+    }
+    .brand span {
+      font-size: 32px; font-weight: 900; color: var(--primary);
+    }
 
-    .lead { color:var(--muted); margin-bottom:16px; font-size:14px; }
+    .lead {
+      font-size: 22px; font-weight: 700; color: #222; margin-bottom: 24px;
+    }
 
-    /* Forms */
-    form { display:flex; flex-direction:column; gap:12px; }
+    .form-group { margin-bottom: 16px; text-align: left; }
     .input {
-      width:100%;
-      padding:14px 16px;
-      border-radius:12px;
-      background:var(--glass);
-      border:1px solid rgba(255,255,255,0.04);
-      color:var(--text);
-      font-size:15px;
-      outline:none;
-      transition:box-shadow var(--transition), transform var(--transition), border-color var(--transition);
+      width: 100%; padding: 16px 18px; border-radius: 12px;
+      border: 1.5px solid #e0e0e0; background: #fafafa;
+      font-size: 16px; color: var(--text); outline: none;
+      transition: var(--transition);
     }
-    .input::placeholder{ color:rgba(255,255,255,0.45); }
-    .input:focus{ box-shadow: 0 12px 40px rgba(255,255,255,0.02), 0 8px 28px rgba(255,107,53,0.035); border-color: rgba(255,107,53,0.12); transform:translateY(-2px); }
+    .input::placeholder { color: #999; }
+    .input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px var(--primary-light);
+      background: white;
+    }
 
     .btn {
-      padding:12px 14px;
-      border-radius:12px;
-      border: 1px solid rgba(255,255,255,0.06);
-      background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
-      color:var(--accent-w);
-      font-weight:800;
-      cursor:pointer;
-      transition: all var(--transition);
+      width: 100%; padding: 16px; margin-top: 12px;
+      background: var(--primary); color: white;
+      border: none; border-radius: 12px; font-weight: 800; font-size: 17px;
+      cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;
+      transition: var(--transition);
+      box-shadow: 0 8px 24px rgba(226,55,68,0.4);
     }
-    .btn.primary {
-      background: linear-gradient(90deg, var(--accent-w), rgba(255,255,255,0.92));
-      color: black;
-      border: 1px solid rgba(255,255,255,0.06);
-      box-shadow: 0 12px 36px rgba(255,255,255,0.02);
+    .btn:hover { background: #d32f3b; transform: translateY(-3px); box-shadow: 0 16px 32px rgba(226,55,68,0.5); }
+
+    .toggle-text {
+      margin-top: 20px; font-size: 14.5px; color: var(--muted);
     }
-    .btn.primary:hover{ transform: translateY(-4px); box-shadow:0 20px 60px rgba(255,255,255,0.03); }
+    .toggle-text a {
+      color: var(--primary); font-weight: 700; text-decoration: none;
+    }
+    .toggle-text a:hover { color: #c6303c; text-decoration: underline; }
 
-    .muted { color:var(--muted); font-size:14px; text-align:center; margin-top:6px; }
-    .muted a{ color:var(--accent-o); text-decoration:none; font-weight:700; }
-
-    /* Toggle links (login/signup) */
-    .toggle-row { display:flex; gap:12px; justify-content:center; margin-top:8px; }
-    .toggle-row a { color:var(--accent-o); font-weight:700; text-decoration:none; }
-
-    /* Loading overlay */
-    #loadingOverlay { position:fixed; inset:0; background: rgba(0,0,0,0.7); display:none; align-items:center; justify-content:center; z-index:9999; }
-    #loadingOverlay.active { display:flex; }
-    .progress-wrap{ width:80%; max-width:420px; text-align:center; color:var(--text); }
-    .progress-bg{ height:8px; background:rgba(255,255,255,0.03); border-radius:8px; overflow:hidden; margin-bottom:12px; }
-    .progress-bar{ height:100%; width:0%; background: linear-gradient(90deg, var(--accent-w), var(--accent-o)); transition: width 120ms linear; border-radius:8px; }
+    /* Loading Overlay */
+    #loadingOverlay {
+      position: fixed; inset: 0; background: rgba(18,18,18,0.95);
+      backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 9999;
+    }
+    #loadingOverlay.active { display: flex; }
+    .loader {
+      width: 90%; max-width: 400px; text-align: center; color: white;
+    }
+    .progress-bar {
+      height: 10px; background: rgba(255,255,255,0.15); border-radius: 10px; overflow: hidden; margin: 20px 0;
+    }
+    .progress-fill {
+      height: 100%; width: 0%; background: var(--primary); border-radius: 10px; transition: width 0.4s ease;
+    }
 
     /* Responsive */
-    @media (max-width:980px){
-      .wrap{ grid-template-columns: 1fr; padding:16px; gap:18px; }
-      .panel-left { display:none; }
-      .card { padding:20px; }
-    }
-    @media (max-width:480px){
-      .brand .chat, .brand .point { font-size:18px; }
-      .card { padding:16px; border-radius:14px; }
-      .input { padding:12px 12px; border-radius:10px; }
-      .btn { padding:12px; border-radius:10px; }
+    @media (max-width: 480px) {
+      .card { padding: 28px 24px; border-radius: 16px; }
+      .brand span { font-size: 28px; }
+      .lead { font-size: 20px; }
+      .input { padding: 14px 16px; font-size: 16px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- background svgs (food icons, minimal white + orange strokes) -->
+  <!-- Floating Background Icons -->
   <div class="bg-canvas" aria-hidden="true">
-    <!-- pizza -->
-    <svg class="svg-1" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <defs><linearGradient id="gA"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs>
-      <path d="M32 6 L54 46 A26 26 0 0 1 10 46 Z" stroke="url(#gA)" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="26" cy="36" r="2.6" fill="url(#gA)"/>
-      <circle cx="36" cy="34" r="2.6" fill="url(#gA)"/>
-    </svg>
-
-    <!-- burger -->
-    <svg class="svg-2" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <defs><linearGradient id="gB"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs>
-      <rect x="10" y="20" width="44" height="8" rx="4" stroke="url(#gB)" stroke-width="2.6" fill="none"/>
-      <rect x="10" y="32" width="44" height="8" rx="4" stroke="url(#gB)" stroke-width="2.6" fill="none"/>
-    </svg>
-
-    <!-- cup -->
-    <svg class="svg-3" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <defs><linearGradient id="gC"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs>
-      <rect x="18" y="18" width="28" height="26" rx="4" stroke="url(#gC)" stroke-width="2.6" fill="none"/>
-      <path d="M24 18 Q32 8 40 18" stroke="url(#gC)" stroke-width="2.6" fill="none"/>
-    </svg>
-
-    <!-- fries -->
-    <svg class="svg-4" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <defs><linearGradient id="gD"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs>
-      <rect x="20" y="18" width="24" height="8" rx="3" stroke="url(#gD)" stroke-width="2.4" fill="none"/>
-      <rect x="22" y="26" width="3" height="14" fill="url(#gD)"/>
-      <rect x="28" y="26" width="3" height="14" fill="url(#gD)"/>
-      <rect x="34" y="26" width="3" height="14" fill="url(#gD)"/>
-    </svg>
+    <svg class="svg-1" viewBox="0 0 64 64"><defs><linearGradient id="g1"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><path d="M32 6 L54 46 A26 26 0 0 1 10 46 Z" stroke="url(#g1)" stroke-width="3" fill="none"/><circle cx="26" cy="36" r="3" fill="#e23744"/><circle cx="36" cy="34" r="3" fill="#e23744"/></svg>
+    <svg class="svg-2" viewBox="0 0 64 64"><defs><linearGradient id="g2"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><rect x="12" y="20" width="40" height="8" rx="4" stroke="url(#g2)" stroke-width="3" fill="none"/><rect x="12" y="34" width="40" height="8" rx="4" stroke="url(#g2)" stroke-width="3" fill="none"/></svg>
+    <svg class="svg-3" viewBox="0 0 64 64"><defs><linearGradient id="g3"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><rect x="18" y="18" width="28" height="28" rx="6" stroke="url(#g3)" stroke-width="3" fill="none"/><path d="M24 18 Q32 6 40 18" stroke="url(#g3)" stroke-width="3" fill="none"/></svg>
+    <svg class="svg-4" viewBox="0 0 64 64"><defs><linearGradient id="g4"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><rect x="20" y="16" width="24" height="10" rx="4" stroke="url(#g4)" stroke-width="2.8" fill="none"/><rect x="24" y="26" width="4" height="18" fill="#e23744"/><rect x="30" y="26" width="4" height="18" fill="#e23744"/><rect x="36" y="26" width="4" height="18" fill="#e23744"/></svg>
   </div>
 
-  <div class="wrap" role="main">
-    <!-- left hero panel -->
-    <div class="panel-left" aria-hidden="true">
-      <div class="hero">
-        <h2 style="color:var(--accent-w);font-weight:900">ChatPoint</h2>
-        <p style="color:var(--muted);max-width:380px">Fast, local food delivery — crafted for Sindagi. Elegant UI, lightning-fast orders.</p>
-        <p style="color:var(--muted);font-size:13px;margin-top:12px">Secure • Local • Friendly</p>
-      </div>
-    </div>
-
-    <!-- right card with both login + signup (toggle) -->
-    <div class="card" role="region" aria-label="Authentication">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-        <div class="brand"><div class="chat">Chat</div><div class="point">Point</div></div>
+  <div class="container">
+    <div class="card">
+      <div class="brand">
+        <span>Chat</span><span>Point</span>
       </div>
 
-      <!-- LOGIN FORM -->
-      <div id="loginForm" aria-live="polite">
-        <p class="lead">Sign in to your account</p>
-        <form id="fLogin" autocomplete="on" novalidate>
-          <input id="loginPhone" class="input" type="tel" inputmode="numeric" maxlength="10" placeholder="Phone number (10 digits)" required>
-          <input id="loginPassword" class="input" type="password" placeholder="Password" required>
-          <button type="button" class="btn primary" id="btnLogin">Login</button>
-        </form>
-
-        <div class="toggle-row" style="margin-top:12px">
-          <div class="muted">New here? <a href="#" id="showSignup">Create an account</a></div>
+      <!-- Login Form -->
+      <div id="loginForm">
+        <div class="lead">Welcome back!</div>
+        <div class="form-group">
+          <input type="tel" id="loginPhone" class="input" placeholder="Phone number" maxlength="10" inputmode="numeric" required />
+        </div>
+        <div class="form-group">
+          <input type="password" id="loginPassword" class="input" placeholder="Password" required />
+        </div>
+        <button class="btn" id="btnLogin">Login</button>
+        <div class="toggle-text">
+          New to ChatPoint? <a href="#" id="showSignup">Create account</a>
         </div>
       </div>
 
-      <!-- SIGNUP FORM (hidden by default) -->
-      <div id="signupForm" style="display:none; margin-top:6px;" aria-hidden="true">
-        <p class="lead">Create a new account</p>
-        <form id="fSignup" autocomplete="on" novalidate>
-          <input id="signupName" class="input" type="text" placeholder="Full name" required>
-          <input id="signupPhone" class="input" type="tel" inputmode="numeric" maxlength="10" placeholder="Phone number (10 digits)" required>
-          <input id="signupPassword" class="input" type="password" placeholder="Password" required>
-          <button type="button" class="btn primary" id="btnSignup">Sign up</button>
-        </form>
-
-        <div class="toggle-row" style="margin-top:12px">
-          <div class="muted">Already have an account? <a href="#" id="showLogin">Sign in</a></div>
+      <!-- Signup Form -->
+      <div id="signupForm" style="display:none">
+        <div class="lead">Join ChatPoint</div>
+        <div class="form-group">
+          <input type="text" id="signupName" class="input" placeholder="Full name" required />
+        </div>
+        <div class="form-group">
+          <input type="tel" id="signupPhone" class="input" placeholder="Phone number" maxlength="10" inputmode="numeric" required />
+        </div>
+        <div class="form-group">
+          <input type="password" id="signupPassword" class="input" placeholder="Create password" required />
+        </div>
+        <button class="btn" id="btnSignup">Sign Up</button>
+        <div class="toggle-text">
+          Have an account? <a href="#" id="showLogin">Sign in</a>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- loading overlay -->
-  <div id="loadingOverlay" aria-hidden="true" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999;background:rgba(0,0,0,0.7)">
-    <div class="progress-wrap" style="width:80%;max-width:420px;text-align:center">
-      <div class="progress-bg" style="height:8px;background:rgba(255,255,255,0.03);border-radius:8px;overflow:hidden;margin-bottom:12px">
-        <div class="progress-bar" id="progressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent-w),var(--accent-o));border-radius:8px;"></div>
-      </div>
-      <div style="color:var(--text);font-weight:700" id="loadingTimer">0s</div>
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay">
+    <div class="loader">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div id="loaderText">Connecting...</div>
     </div>
   </div>
 
   <script>
-    (function(){
-      const BASE_URL = window.location.origin;
+    const BASE_URL = window.location.origin;
+    const $ = id => document.getElementById(id);
 
-      // Elements
-      const loginForm = document.getElementById('loginForm');
-      const signupForm = document.getElementById('signupForm');
-      const showSignup = document.getElementById('showSignup');
-      const showLogin = document.getElementById('showLogin');
+    // Elements
+    const loginForm = $('loginForm');
+    const signupForm = $('signupForm');
+    const loading = $('loadingOverlay');
+    const progress = $('progressFill');
+    const loaderText = $('loaderText');
 
-      const btnLogin = document.getElementById('btnLogin');
-      const btnSignup = document.getElementById('btnSignup');
+    // Toggle
+    $('showSignup').onclick = e => { e.preventDefault(); loginForm.style.display = 'none'; signupForm.style.display = 'block'; };
+    $('showLogin').onclick = e => { e.preventDefault(); signupForm.style.display = 'none'; loginForm.style.display = 'block'; };
 
-      const loginPhone = document.getElementById('loginPhone');
-      const loginPassword = document.getElementById('loginPassword');
+    // Loading
+    function showLoading() {
+      loading.classList.add('active');
+      let w = 10;
+      const int = setInterval(() => {
+        w = Math.min(w + 7, 94);
+        progress.style.width = w + '%';
+      }, 300);
+      let dots = 0;
+      const textInt = setInterval(() => {
+        loaderText.textContent = 'Connecting' + '.'.repeat((dots++ % 3) + 1);
+      }, 500);
+      return () => { clearInterval(int); clearInterval(textInt); };
+    }
 
-      const signupName = document.getElementById('signupName');
-      const signupPhone = document.getElementById('signupPhone');
-      const signupPassword = document.getElementById('signupPassword');
+    function hideLoading() {
+      progress.style.width = '100%';
+      setTimeout(() => {
+        loading.classList.remove('active');
+        progress.style.width = '0%';
+      }, 500);
+    }
 
-      const loadingOverlay = document.getElementById('loadingOverlay');
-      const progressBar = document.getElementById('progressBar');
-      const loadingTimer = document.getElementById('loadingTimer');
-      let timerInterval = null;
+    const isValidPhone = p => /^\d{10}$/.test(p.trim());
 
-      // Toggle handlers
-      showSignup.addEventListener('click', (e)=>{ e.preventDefault(); loginForm.style.display='none'; signupForm.style.display='block'; signupForm.setAttribute('aria-hidden','false'); loginForm.setAttribute('aria-hidden','true'); window.scrollTo({top:0,behavior:'smooth'}); });
-      showLogin.addEventListener('click', (e)=>{ e.preventDefault(); signupForm.style.display='none'; loginForm.style.display='block'; signupForm.setAttribute('aria-hidden','true'); loginForm.setAttribute('aria-hidden','false'); window.scrollTo({top:0,behavior:'smooth'}); });
+    // Login
+    $('btnLogin').onclick = async () => {
+      const phone = $('loginPhone').value.trim();
+      const pass = $('loginPassword').value;
 
-      // Loading utility
-      function showLoading(){
-        loadingOverlay.style.display = 'flex';
-        loadingOverlay.setAttribute('aria-hidden','false');
-        progressBar.style.width = '6%';
-        let seconds = 0;
-        loadingTimer.textContent = '0s';
-        clearInterval(timerInterval);
-        timerInterval = setInterval(()=>{ seconds++; loadingTimer.textContent = seconds + 's'; progressBar.style.width = Math.min(6 + seconds * 9, 100) + '%'; }, 800);
+      if (!phone || !pass) return alert('Please fill all fields');
+      if (!isValidPhone(phone)) return alert('Enter a valid 10-digit phone number');
+
+      if (phone === '1234567890' && pass === 'admin') {
+        const stop = showLoading();
+        setTimeout(() => { stop(); hideLoading(); location.href = 'delivery.html'; }, 1400);
+        return;
       }
-      function hideLoading(){
-        clearInterval(timerInterval);
-        progressBar.style.width = '100%';
-        setTimeout(()=>{ loadingOverlay.style.display = 'none'; loadingOverlay.setAttribute('aria-hidden','true'); progressBar.style.width = '0%'; }, 300);
-      }
 
-      function validPhone(v){ return /^[0-9]{10}$/.test(v); }
-      function quickAlert(m){ alert(m); }
+      const stop = showLoading();
+      try {
+        const res = await fetch(`${BASE_URL}/api/user/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, password: pass })
+        });
+        const data = await res.json();
+        stop(); hideLoading();
 
-      // Admin fast-track and login
-      btnLogin.addEventListener('click', async () => {
-        const phone = (loginPhone.value||'').trim();
-        const pass = (loginPassword.value||'').trim();
-        if (!phone || !pass) return quickAlert('Please fill all fields');
-        if (!validPhone(phone)) return quickAlert('Enter a valid 10-digit phone number');
-
-        if (phone === '1234567890' && pass === 'admin') {
-          showLoading();
-          setTimeout(()=> { hideLoading(); window.location.href = 'delivery.html'; }, 700);
-          return;
-        }
-
-        showLoading();
-        try {
-          const res = await fetch(`${BASE_URL}/api/user/login`, {
-            method:'POST',
-            headers:{ 'Content-Type':'application/json' },
-            body: JSON.stringify({ phone, password: pass })
-          });
-          const data = await res.json();
-          if (!data || !data.success) { hideLoading(); return quickAlert(data?.message || 'Login failed'); }
+        if (data.success) {
           localStorage.setItem('chatpoint_user', JSON.stringify(data.user));
-          hideLoading();
-          window.location.href = 'index.html';
-        } catch (err) {
-          hideLoading();
-          console.error(err);
-          quickAlert('Network error. Try again.');
+          location.href = 'index.html';
+        } else {
+          alert(data.message || 'Login failed');
         }
-      });
+      } catch {
+        stop(); hideLoading();
+        alert('Network error. Please try again.');
+      }
+    };
 
-      // Signup
-      btnSignup.addEventListener('click', async () => {
-        const name = (signupName.value||'').trim();
-        const phone = (signupPhone.value||'').trim();
-        const pass = (signupPassword.value||'').trim();
-        if (!name || !phone || !pass) return quickAlert('Please fill all fields');
-        if (!validPhone(phone)) return quickAlert('Enter a valid 10-digit phone number');
+    // Signup
+    $('btnSignup').onclick = async () => {
+      const name = $('signupName').value.trim();
+      const phone = $('signupPhone').value.trim();
+      const pass = $('signupPassword').value;
 
-        showLoading();
-        try {
-          const res = await fetch(`${BASE_URL}/api/user/signup`, {
-            method:'POST',
-            headers:{ 'Content-Type':'application/json' },
-            body: JSON.stringify({ name, phone, password: pass })
-          });
-          const data = await res.json();
-          if (!data || !data.success) { hideLoading(); return quickAlert(data?.message || 'Signup failed'); }
-          hideLoading();
-          quickAlert('Signup successful — please login.');
-          // go to login form
-          showLogin.click();
-        } catch (err) {
-          hideLoading();
-          console.error(err);
-          quickAlert('Network error. Try again.');
+      if (!name || !phone || !pass) return alert('Please fill all fields');
+      if (!isValidPhone(phone)) return alert('Enter a valid 10-digit phone number');
+
+      const stop = showLoading();
+      try {
+        const res = await fetch(`${BASE_URL}/api/user/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, phone, password: pass })
+        });
+        const data = await res.json();
+        stop(); hideLoading();
+
+        if (data.success) {
+          alert('Account created successfully! Please login.');
+          $('showLogin').click();
+        } else {
+          alert(data.message || 'Signup failed');
         }
-      });
+      } catch {
+        stop(); hideLoading();
+        alert('Network error. Please try again.');
+      }
+    };
 
-      // Enter key convenience
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-          // if signup is visible, sign up, else login
-          if (signupForm.style.display !== 'none') btnSignup.click();
-          else btnLogin.click();
-        }
-      });
-
-      // small visual tweak for background svgs start positions
-      document.querySelectorAll('.bg-canvas svg').forEach((el,i)=> el.style.transform = `translateY(${6 + i*3}vh)`);
-    })();
+    // Enter key support
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        if (signupForm.style.display !== 'none') $('btnSignup').click();
+        else $('btnLogin').click();
+      }
+    });
   </script>
 </body>
 </html>
