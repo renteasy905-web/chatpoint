@@ -4,910 +4,406 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Items | Chat Point</title>
-
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-<style>
-/*
-  items-styles.css - ULTIMATE BEST VERSION 🥇
-  A fully polished, accessible, responsive design leveraging modern CSS features (Glassmorphism, advanced shadows).
-*/
-:root {
-  /* --- Colors --- */
-  --brand-red: #f12916;         /* Primary / Price */
-  --brand-yellow: #f4ff2a;       /* Accent / Checkout */
-  --accent-green: #30bc1a;      /* Success/Offer */
-  --text-dark: #111827;
-  --bg-light: #e6f0fb;           /* Very light background */
-  --card-white: #f3cd98;
-  --muted-text: #0f1b34;
-  --border-light: rgba(14, 19, 26, 0.08);
-
-  /* --- Layout & Shapes --- */
-  --radius-xl: 1.5rem;          /* 24px - Large elements */
-  --radius-lg: 0.75rem;         /* 12px - Buttons/Tags */
-  --max-width: 75rem;           /* 1200px */
-  --transition-smooth: 0.28s cubic-bezier(0.2, 0.8, 0.4, 1);
-
-  /* --- Effects --- */
-  --shadow-float: 
-    0 10px 20px -5px rgba(15, 23, 42, 0.1),
-    0 4px 6px -2px rgba(15, 23, 42, 0.05);
-  --shadow-active: 0 4px 10px rgba(15, 23, 42, 0.08);
-
-  /* Glassmorphism background for translucent elements */
-  --glass-bg: rgba(255, 255, 255, 0.9);
-}
-
-/* --- Base & Reset --- */
-*, *::before, *::after { box-sizing: border-box; }
-html { font-size: 100%; } /* Ensures 1rem = 16px default */
-body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  background-color: var(--bg-light);
-  color: var(--text-dark);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-a { color: var(--brand-red); text-decoration: none; }
-
-
-/* --- HEADER / TOP BAR --- */
-header[role="banner"] {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.875rem 1.25rem; /* 14px 20px */
-  background: linear-gradient(135deg, var(--brand-red), #ff6b6b);
-  color: var(--card-white);
-  /* Impressive bottom curve shape */
-  border-bottom-left-radius: var(--radius-xl);
-  border-bottom-right-radius: var(--radius-xl);
-  box-shadow: var(--shadow-float);
-  position: sticky; top: 0; z-index: 60;
-}
-
-.brand { display: flex; align-items: center; gap: 0.75rem; }
-.back-btn {
-  /* Circular, accessible button */
-  appearance: none; border: 0; background: transparent; color: inherit;
-  width: 2.25rem; height: 2.25rem; border-radius: 50%;
-  display: grid; place-items: center; cursor: pointer;
-  transition: background-color var(--transition-smooth);
-}
-.back-btn:hover { background: rgba(255, 255, 255, 0.15); }
-.back-btn:focus-visible { outline: 3px solid rgba(255, 255, 255, 0.5); outline-offset: 2px; }
-
-header .title { font-weight: 800; font-size: 1.25rem; line-height: 1.1; letter-spacing: -0.2px; }
-header .brand small { font-size: 0.75rem; color: rgba(255, 255, 255, 0.9); }
-.shop-name { font-weight: 700; font-size: 0.9375rem; }
-
-/* Decorative svgs (Minimal impact) */
-.svg-deco { position: fixed; pointer-events: none; opacity: 0.08; z-index: 1; filter: blur(3px); }
-.svg-deco.d1{left:1rem;top:5rem;width:10rem;height:10rem}
-.svg-deco.d2{right:1rem;top:12rem;width:8rem;height:8rem}
-
-/* --- LOGIN BANNER (Glassmorphism) --- */
-.login-banner {
-  max-width: var(--max-width);
-  margin: 1.5rem auto;
-  padding: 1rem 1.5rem;
-  border-radius: var(--radius-xl);
-  background: var(--glass-bg);
-  backdrop-filter: blur(10px); 
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: var(--shadow-float);
-  color: var(--text-dark);
-  font-size: 0.9375rem;
-  text-align: center;
-  font-weight: 600;
-}
-
-main { max-width: var(--max-width); margin: 2rem auto; padding: 0 1rem 7.5rem; } /* 120px */
-
-/* --- ITEMS GRID & CARDS --- */
-.items-grid {
-  display: grid;
-  /* Auto-fit for fluid, responsive columns */
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-  gap: 1.5rem;
-}
-
-.item-card {
-  display: flex;
-  flex-direction: column;
-  background: var(--card-white);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  box-shadow: var(--shadow-float);
-  transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
-  border: 1px solid var(--border-light);
-}
-/* Impressive lift on hover */
-.item-card:hover {
-  transform: translateY(-0.5rem); 
-  box-shadow: 0 1rem 3rem rgba(15, 23, 42, 0.15);
-  border-color: rgba(226, 55, 68, 0.2);
-}
-.item-card:focus-within {
-    outline: 4px solid rgba(226, 55, 68, 0.3);
-    outline-offset: 4px;
-}
-
-.item-img { 
-    width: 100%; height: 12.5rem; /* 200px */ 
-    object-fit: cover; 
-    display: block;
-}
-.item-img[src^="https://via.placeholder.com"] {
-  background: linear-gradient(135deg, #e9ecef, #fbfbfb);
-  display: grid; place-items: center;
-  color: var(--muted-text); font-size: 1.5rem; font-weight: 700;
-}
-
-.item-info { padding: 1rem 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;}
-.item-name { font-weight: 800; font-size: 1.125rem; line-height: 1.2; margin: 0; word-break: break-word; }
-.item-desc { font-size: 0.875rem; color: var(--muted-text); min-height: 1.5rem;}
-
-.item-price { font-weight: 900; color: var(--brand-red); font-size: 1.5rem; }
-.item-price small { font-weight: 600; color: var(--muted-text); margin-left: 0.5rem; font-size: 0.9rem;}
-
-/* Offer tag */
-.offer-tag { 
-    background: linear-gradient(90deg, var(--accent-green), #48c9b0); 
-    color: var(--card-white); 
-    padding: 0.3rem 0.6rem; 
-    border-radius: var(--radius-lg); 
-    font-size: 0.75rem; 
-    font-weight: 700; 
-    display: inline-block;
-}
-
-/* Quantity controls */
-.quantity { display: flex; align-items: center; gap: 0.625rem; margin-top: 0.75rem; }
-.qbtn {
-  min-width: 2.5rem; height: 2.5rem; /* 40px */
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
-  background: var(--card-white);
-  color: var(--brand-red);
-  display: grid; place-items: center; cursor: pointer;
-  font-size: 1.25rem; font-weight: 700;
-  transition: all var(--transition-smooth);
-}
-.qbtn:hover { 
-    background: var(--brand-red); 
-    color: var(--card-white); 
-    transform: translateY(-2px); 
-    box-shadow: var(--shadow-active);
-}
-.qbtn:active { transform: scale(0.95); box-shadow: none; }
-.qbtn:focus-visible { outline: 3px solid rgba(226, 55, 68, 0.4); outline-offset: 2px; }
-
-.qty { min-width: 2rem; text-align: center; font-weight: 800; font-size: 1rem; }
-
-/* Checkout/Login button */
-.checkout-btn {
-  background: linear-gradient(45deg, var(--brand-yellow), #ffd688);
-  color: var(--text-dark);
-  border: none;
-  padding: 0.75rem 1.25rem;
-  border-radius: var(--radius-lg);
-  font-weight: 900;
-  cursor: pointer;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 10px rgba(255, 177, 42, 0.3);
-  transition: transform var(--transition-smooth), box-shadow var(--transition-smooth);
-}
-.checkout-btn:hover { 
-    transform: translateY(-3px); 
-    box-shadow: 0 8px 18px rgba(255, 177, 42, 0.4);
-}
-.checkout-btn:focus-visible { outline: 3px solid rgba(255, 177, 42, 0.5); outline-offset: 2px; }
-
-
-/* --- CART BAR (Floating Glass Pill) --- */
-.cart-bar {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: 2rem; /* Lifted high for floating effect */
-  width: calc(100% - 3rem); 
-  max-width: 28rem; /* 450px */
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.875rem 1.25rem;
-  border-radius: var(--radius-xl);
-
-  /* Glass Effect */
-  background: var(--glass-bg); 
-  backdrop-filter: blur(14px); 
-  -webkit-backdrop-filter: blur(14px);
-
-  box-shadow: var(--shadow-float);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  z-index: 70;
-  cursor: pointer;
-  transition: transform var(--transition-smooth);
-}
-.cart-bar:hover {
-    transform: translateX(-50%) scale(1.01);
-}
-
-.cart-info { display: flex; flex-direction: column; }
-.cart-info .main { font-weight: 900; font-size: 1rem; }
-.cart-info .sub { font-size: 0.75rem; color: var(--muted-text); }
-
-
-/* --- MEDIA QUERIES --- */
-
-/* Small Screens (Mobile) */
-@media (max-width: 420px) {
-  .item-img { height: 10rem; } /* 160px */
-  main { padding: 0 0.5rem 6.5rem; }
-  header[role="banner"] { border-radius: 0 0 var(--radius-lg) var(--radius-lg); padding: 0.75rem 1rem; }
-  .cart-bar { width: calc(100% - 2rem); bottom: 1rem; max-width: none; }
-}
-
-/* Large Screens (Desktop/Tablet) */
-@media (min-width: 1024px) {
-  main { padding: 1.5rem; }
-  .items-grid { grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-  .item-img { height: 13rem; } /* 208px */
-}
-
-/* UTILITIES */
-.center { text-align: center; }
-.hidden { display: none !important; }
-
-/* End of stylesheet */
-
-</style>
+  <style>
+    :root {
+      --brand-red: #f12916; --brand-yellow: #f4ff2a; --accent-green: #30bc1a;
+      --text-dark: #111827; --bg-light: #e6f0fb; --card-white: #f3cd98;
+      --muted-text: #0f1b34; --border-light: rgba(14,19,26,0.08);
+      --radius-xl: 1.5rem; --radius-lg: 0.75rem; --max-width: 75rem;
+      --transition: 0.28s cubic-bezier(0.2,0.8,0.4,1);
+      --shadow: 0 10px 20px -5px rgba(15,23,42,0.1), 0 4px 6px -2px rgba(15,23,42,0.05);
+    }
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg-light); color: var(--text-dark); padding-bottom: 7.5rem; min-height: 100vh; }
+    header[role="banner"] {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      padding: 0.875rem 1.25rem; background: linear-gradient(135deg, var(--brand-red), #ff6b6b);
+      color: white; border-bottom-left-radius: var(--radius-xl); border-bottom-right-radius: var(--radius-xl);
+      box-shadow: var(--shadow); position: sticky; top: 0; z-index: 60;
+    }
+    .back-btn { background: transparent; border: 0; color: inherit; width: 2.25rem; height: 2.25rem; border-radius: 50%; display: grid; place-items: center; cursor: pointer; }
+    .back-btn:hover { background: rgba(255,255,255,0.15); }
+    .title { font-weight: 800; font-size: 1.25rem; }
+    .shop-name { font-weight: 700; font-size: 0.9375rem; }
+    .login-banner { max-width: var(--max-width); margin: 1.5rem auto; padding: 1rem 1.5rem; border-radius: var(--radius-xl);
+      background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); box-shadow: var(--shadow); text-align: center; font-weight: 600; }
+    main { max-width: var(--max-width); margin: 2rem auto; padding: 0 1rem; }
+    .items-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .item-card { background: var(--card-white); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow);
+      border: 1px solid var(--border-light); transition: transform var(--transition), box-shadow var(--transition); }
+    .item-card:hover { transform: translateY(-0.5rem); box-shadow: 0 1rem 3rem rgba(15,23,42,0.15); }
+    .item-img { width: 100%; height: 12.5rem; object-fit: cover; background: #f0f0f0; }
+    .item-info { padding: 1rem 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .item-name { font-weight: 800; font-size: 1.125rem; word-break: break-word; }
+    .item-desc { font-size: 0.875rem; color: var(--muted-text); }
+    .item-price { font-weight: 900; color: var(--brand-red); font-size: 1.5rem; }
+    .quantity { display: flex; align-items: center; gap: 0.625rem; margin-top: 0.75rem; }
+    .qbtn { min-width: 2.5rem; height: 2.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-light);
+      background: white; color: var(--brand-red); font-size: 1.25rem; font-weight: 700; cursor: pointer;
+      display: grid; place-items: center; transition: all var(--transition); }
+    .qbtn:hover { background: var(--brand-red); color: white; transform: translateY(-2px); }
+    .qty { min-width: 2rem; text-align: center; font-weight: 800; }
+    .cart-bar {
+      position: fixed; left: 50%; transform: translateX(-50%); bottom: 2rem; width: calc(100% - 3rem); max-width: 28rem;
+      padding: 0.875rem 1.25rem; background: rgba(255,255,255,0.9); backdrop-filter: blur(14px); border-radius: var(--radius-xl);
+      box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: space-between;
+      z-index: 70; cursor: pointer;
+    }
+    .checkout-btn {
+      background: linear-gradient(45deg, var(--brand-yellow), #ffd688); color: #000; border: none;
+      padding: 0.75rem 1.25rem; border-radius: var(--radius-lg); font-weight: 900; cursor: pointer;
+      box-shadow: 0 4px 10px rgba(255,177,42,0.3); transition: transform var(--transition);
+    }
+    .checkout-btn:hover { transform: translateY(-3px); }
+    @media (max-width: 420px) { .item-img { height: 10rem; } .cart-bar { width: calc(100% - 2rem); bottom: 1rem; } }
+  </style>
 </head>
 <body>
 
-  <svg class="svg-deco d1" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#59FF94"/><stop offset="1" stop-color="#32E06A"/></linearGradient></defs><path d="M6 10c6-6 30-6 36 0v28c-6 6-30 6-36 0z" fill="url(#g1)" opacity="0.9"/></svg>
-  <svg class="svg-deco d2" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g2"><stop offset="0" stop-color="#59FF94"/><stop offset="1" stop-color="#9FEFBF"/></linearGradient></defs><circle cx="24" cy="22" r="16" fill="url(#g2)" opacity="0.85"/></svg>
-  <svg class="svg-deco d3" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g3"><stop offset="0" stop-color="#6FEFCD"/><stop offset="1" stop-color="#2ED07E"/></linearGradient></defs><rect x="6" y="8" width="36" height="32" rx="8" fill="url(#g3)" opacity="0.88"/></svg>
-  <svg class="svg-deco d4" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g4"><stop offset="0" stop-color="#59FF94"/><stop offset="1" stop-color="#32E06A"/></linearGradient></defs><path d="M8 36C20 28 28 28 40 36V12C28 20 20 20 8 12z" fill="url(#g4)" opacity="0.82"/></svg>
-  <svg class="svg-deco d5" viewBox="0 0 48 48" aria-hidden><defs><linearGradient id="g5"><stop offset="0" stop-color="#9FEFBF"/><stop offset="1" stop-color="#32E06A"/></linearGradient></defs><path d="M24 6c8 0 14 6 14 14s-6 14-14 14S10 28 10 20 16 6 24 6z" fill="url(#g5)" opacity="0.76"/></svg>
-
   <header role="banner">
     <div class="brand" style="flex:1">
-      <button class="back-btn" id="backBtn" title="Back to Shops" aria-label="Back to Shops"><i class="fas fa-arrow-left"></i></button>
+      <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i></button>
       <div style="margin-left:8px">
-        <div class="title"><span class="chat">Chat</span>Point</div>
-        <div style="font-size:12px;color:#084b2b">Sindagi • Food Delivery</div>
+        <div class="title"><span style="color:#f4ff2a">Chat</span>Point</div>
+        <div style="font-size:12px;color:#fff8">Sindagi • Food Delivery</div>
       </div>
     </div>
-    <div style="flex:0 0 auto; text-align:right">
-      <div class="shop-name" id="shopName">Loading...</div>
-    </div>
+    <div class="shop-name" id="shopName">Loading...</div>
   </header>
 
   <main>
     <div id="loginBanner" class="login-banner" style="display:none;">Please <a href="login.html">login</a> to add items to cart.</div>
-    <section class="items-grid" id="itemsGrid" aria-live="polite"></section>
+    <section class="items-grid" id="itemsGrid"></section>
   </main>
 
-  <div class="cart-bar" id="cartBar" role="button" tabindex="0" aria-label="View cart with current items and total">
+  <div class="cart-bar" id="cartBar" style="display:none">
     <div class="cart-info">
       <div class="main" id="cartText">0 items · ₹0</div>
       <div class="sub">Tap to view cart</div>
     </div>
-    <button class="checkout-btn" id="checkoutBtn" aria-label="Proceed to Checkout">Checkout</button>
+    <button class="checkout-btn" id="checkoutBtn">Checkout</button>
   </div>
 
   <script>
-    const USER_KEY = "chatpoint_user";
-    const rawUser = localStorage.getItem(USER_KEY);
-    let user = null;
-    try { user = JSON.parse(rawUser); } catch(e) { user = null; }
+    const user = JSON.parse(localStorage.getItem("chatpoint_user") || "null");
     const isLoggedIn = user && user._id;
-
-    if (!isLoggedIn) {
-      document.getElementById("loginBanner").style.display = "block";
-    }
-
-    // ====================================================================
-    // START: Data Structure (Unchanged logic, maintained all original data)
-    // ====================================================================
+    if (!isLoggedIn) document.getElementById("loginBanner").style.display = "block";
 
     const shopData = {
       "Chat Point": [
-        { name: " 1) Akoo tikki(burger)+ onion pizza + cheese sandwich + fry momos ", price: 300},
-        { name: "2) Veg roll + paneer puff + veg sandwich + Paneer burger + 750ml water bottel", price: 229 },
-        { name: "veggiee pizza + French fries + coca cola 250ml ", price: 279 },
-        { name: "Jeera rice ", price: 159 },
-        { name: "veg biryani + 750ml water botel ", price: 189 },
-        { name: "Kantilal rice + 750ml water bottel  ", price: 169 },
+        { name: "1) Akoo tikki(burger)+ onion pizza + cheese sandwich + fry momos", price: 300, image: "Aloo-Tikki-Burger.jpg" },
+        { name: "2) Veg roll + paneer puff + veg sandwich + Paneer burger + 750ml water bottel", price: 229, image: "Paneer-Burger.jpg" },
+        { name: "veggiee pizza + French fries + coca cola 250ml", price: 279, image: "Veggie-Lover.jpg" },
+        { name: "Jeera rice", price: 159, image: "Jeera-Rice.jpg" },
+        { name: "veg biryani + 750ml water botel", price: 189, image: "Veg-Biriyani.jpg" },
+        { name: "Kantilal rice + 750ml water bottel", price: 169, image: "Kantilal-Rice.jpg" }
       ],
       "7th Wonder (Cake)": [
-        { name: "Chocolate Truffle Cake", price: 380 },
-        { name: "Red Velvet Cake", price: 400 },
-        { name: "Black Forest", price: 350 }
+        { name: "Chocolate Truffle Cake", price: 380, image: "Chocolate-Truffle-Cake.jpg" },
+        { name: "Red Velvet Cake", price: 400, image: "Red-Velvet-Cake.JPG" },
+        { name: "Black Forest", price: 350, image: "Black-Forest.jpg" }
       ],
       "Sangambar Udpi-Hotel": [
-        { name: "Tomato Soup", price: 105 },
-        { name: "Sweet Corn Soup", price: 95 },
-        { name: "Veg Clear Soup", price: 95 },
-        { name: "Hot and Sour Soup", price: 105 },
-        { name: "Gobi 65", price: 135 },
-        { name: "Gobi Manchurian", price: 125 },
-        { name: "Mushroom Manchurian", price: 185 },
-        { name: "Paneer Manchurian", price: 205 },
-        { name: "Veg Manchurian", price: 105 },
-        { name: "Plain Dosa", price: 85 },
-        { name: "Masala Dosa", price: 95 },
-        { name: "Benne Dosa", price: 95 },
-        { name: "Benne Masala Dosa", price: 115 },
-        { name: "Mysore Masala Dosa", price: 115 },
-        { name: "Paneer Masala Dosa", price: 115 }
+        { name: "Plain Dosa", price: 85, image: "Plain-Dosa.JPG" },
+        { name: "Masala Dosa", price: 95, image: "Masala-Dosa.JPG" },
+        { name: "Benne Dosa", price: 95, image: "Benne-Dosa.jpg" },
+        { name: "Benne Masala Dosa", price: 115, image: "Benne-Masala-Dosa.jpg" },
+        { name: "Mysore Masala Dosa", price: 115, image: "Mysore-Masala-Dosa.jpg" },
+        { name: "Paneer Masala Dosa", price: 115, image: "Paneer-Masala-Dosa.jpg" },
+        { name: "Tomato Soup", price: 105, image: "Tomato-Soup.jpg" },
+        { name: "Sweet Corn Soup", price: 95, image: "Sweet-Corn-Soup.jpg" },
+        { name: "Veg Clear Soup", price: 95, image: "Veg-Clear-Soup.jpg" },
+        { name: "Hot and Sour Soup", price: 105, image: "Hot-and-Sour-Soup.jpg" },
+        { name: "Gobi 65", price: 135, image: "Gobi-65.jpg" },
+        { name: "Gobi Manchurian", price: 125, image: "Gobi-Manchurian.jpg" },
+        { name: "Mushroom Manchurian", price: 185, image: "Mushroom-Manchurian.jpg" },
+        { name: "Paneer Manchurian", price: 205, image: "Paneer-Manchurian.jpg" },
+        { name: "Veg Manchurian", price: 105, image: "Veg-Manchurian.jpg" }
+       
       ],
       "Nandi Grand Hotels": [
-        { name: "Shira", price: 35 },
-        { name: "Poori", price: 70 },
-        { name: "Full Meals", price: 95 },
-        { name: "Onion Dosa", price: 75 },
-        { name: "Utappa", price: 75 },
-        { name: "Mysore Bonda", price: 75 },
-        { name: "Mangalore Buns", price: 75 },
-        { name: "Paneer Dosa", price: 80 },
-        { name: "Cheese Dosa", price: 75 },
-        { name: "Chou Chou Bath", price: 70 }
+        { name: "Shira", price: 35, image: "shira.JPG" },
+        { name: "Poori", price: 70, image: "poori.JPG" },
+        { name: "Full Meals", price: 95, image: "full-meals.JPG" },
+        { name: "Onion Dosa", price: 75, image: "onion-dosa.JPG" },
+        { name: "Utappa", price: 75, image: "utappa.JPG" },
+        { name: "Mysore Bonda", price: 75, image: "Mysore-Bonda.jpg" },
+        { name: "Mangalore Buns", price: 75, image: "mangalore-buns.JPG" },
+        { name: "Paneer Dosa", price: 80, image: "paneer-dosa.JPG" },
+        { name: "Cheese Dosa", price: 75, image: "chess-dosa.jpg" },
+        { name: "Chou Chou Bath", price: 70, image: "chou-chou-bath.JPG" }
       ],
       "Pizza spot": [
-        { name: "Nuggets", price: 85 },
-        { name: "French Fries", price: 95 },
-        { name: "Masala Fries", price: 105 },
-        { name: "Smiley Fries", price: 105 },
-        { name: "Pizza Spot Special", price: 165 },
-        { name: "Burger Classic", price: 85 },
-        { name: "Aloo Tikki Burger", price: 85 },
-        { name: "Paneer Burger", price: 95 },
-        { name: "Double Decker Burger", price: 125 },
-        { name: "Pizza Spot Special Burger", price: 165 },
-        { name: "Margherita", price: 154 },
-        { name: "Veggie", price: 174 },
-        { name: "Veggie Lover", price: 274 },
-        { name: "Sweet Corn", price: 245 },
-        { name: "Baby Corn", price: 224 },
-        { name: "Tandoori Paneer", price: 235 },
-        { name: "Steam Momos", price: 75 },
-        { name: "Fried Momos", price: 85 },
-        { name: "Kurkure Momos", price: 105 },
-        { name: "Veg Sandwich", price: 75 },
-        { name: "Cheese Sandwich", price: 85 },
-        { name: "Sweet Corn Sandwich", price: 85 },
-        { name: "mushroom Sandwich", price: 85 },
-        { name: "Paneer Tandoori Sandwich", price: 95 },
-        { name: "Club Sandwich", price: 125 },
-        { name: "Pizza Spot Special Sandwich", price: 145 },
-        { name: "Pav Bhaji", price: 65 },
-        { name: "Cheese Pav Bhaji", price: 85 },
-        { name: "Veg Roll", price: 75 },
-        { name: "Sweet Corn Roll", price: 95 },
-        { name: "Paneer Roll", price: 105 }
+        { name: "Nuggets", price: 85, image: "Nuggets.jpg" },
+        { name: "French Fries", price: 95, image: "French-Fries.jpg" },
+        { name: "Masala Fries", price: 105, image: "Masala-Fries.jpg" },
+        { name: "Smiley Fries", price: 105, image: "Smiley-Fries.jpg" },
+        { name: "Pizza Spot Special", price: 165, image: "Pizza-Spot-Special.jpg" },
+        { name: "Burger Classic", price: 85, image: "Burger-Classic.jpg" },
+        { name: "Aloo Tikki Burger", price: 85, image: "Aloo-Tikki-Burger.jpg" },
+        { name: "Paneer Burger", price: 95, image: "Paneer-Burger.jpg" },
+        { name: "Double Decker Burger", price: 125, image: "Double-Decker-Burger.jpg" },
+        { name: "Pizza Spot Special Burger", price: 165, image: "Pizza-Spot-Special-Burger.jpg" },
+        { name: "Margherita", price: 154, image: "Margherita.jpg" },
+        { name: "Veggie", price: 174, image: "Veggie.jpg" },
+        { name: "Veggie Lover", price: 274, image: "Veggie-Lover.jpg" },
+        { name: "Sweet Corn", price: 245, image: "Sweet-Corn.jpg" },
+        { name: "Baby Corn", price: 224, image: "Baby-Corn.jpg" },
+        { name: "Tandoori Paneer", price: 235, image: "Tandoori-Paneer.jpg" },
+        { name: "Steam Momos", price: 75, image: "Steam-Momos.jpg" },
+        { name: "Fried Momos", price: 85, image: "Fried-Momos.jpg" },
+        { name: "Kurkure Momos", price: 105, image: "Kurkure-Momos.jpg" },
+        { name: "Veg Sandwich", price: 75, image: "Veg-Sandwich.jpg" },
+        { name: "Cheese Sandwich", price: 85, image: "Cheese-Sandwich.jpg" },
+        { name: "Sweet Corn Sandwich", price: 85, image: "Sweet-Corn-Sandwich.jpg" },
+        { name: "Paneer Tandoori Sandwich", price: 95, image: "Paneer-Tandoori-Sandwich.jpg" },
+        { name: "Club Sandwich", price: 125, image: "Club-Sandwich.jpg" },
+        { name: "Pizza Spot Special Sandwich", price: 145, image: "Pizza-Spot-Special-Sandwich.jpg" },
+        { name: "Pav Bhaji", price: 65, image: "Pav-Bhaji.jpg" },
+        { name: "Cheese Pav Bhaji", price: 85, image: "Cheese-Pav-Bhaji.jpg" },
+        { name: "Veg Roll", price: 75, image: "Veg-Roll.jpg" },
+        { name: "Sweet Corn Roll", price: 95, image: "Sweet-Corn-Roll.jpg" },
+        { name: "Paneer Roll", price: 105, image: "Paneer-Roll.jpg" }
       ],
       "Fly Pizza": [
-        { name: "Margharita pizza ", price: 155 },
-        { name: "Corn cheese", price: 179 },
-        { name: "Corn cheese big ", price: 339 },
-        { name: "paneer Tikka", price: 269 },
-        { name: "Veggie lovers", price: 189 },
-        { name: "Fly special", price:360 },
+        { name: "Margharita pizza", price: 155, image: "Margherita.jpg" },
+        { name: "Corn cheese", price: 179, image: "Sweet-Corn.jpg" },
+        { name: "Corn cheese big", price: 339, image: "Sweet-Corn.jpg" },
+        { name: "paneer Tikka", price: 269, image: "Tandoori-Paneer.jpg" },
+        { name: "Veggie lovers", price: 189, image: "Veggie-Lover.jpg" },
+        { name: "Fly special", price: 360, image: "Pizza-Spot-Special.jpg" }
       ],
-      "Mister Chef": [
-        { name: "Classic Burger", price: 120 },
-        { name: "French Fries", price: 99 }
-      ],
+     "Mister Chef": [
+  { name: "VEG-Sandwiich", price: 60, image: "VEG-Sandwiich.jpg" },
+  { name: "Cheese-Sandwiich", price: 70, image: "Cheese-Sandwiich.jpg" },
+  { name: "Sweet Corn-Sandwiich", price: 70, image: "Sweet Corn-Sandwiich.jpg" },
+  { name: "MushRoom-Sandwiich", price: 75, image: "MushRoom-Sandwiich.jpg" },
+  { name: "Paneer-Sandwiich", price: 80, image: "Paneer-Sandwiich.jpg" },
+  { name: "Nuggets", price: 70, image: "Nuggets.jpg" },
+  { name: "french-Frics", price: 95, image: "french-Frics.jpg" },
+  { name: "masala-Frics", price: 95, image: "Masala-Fries.jpg" },
+  { name: "Classic-Burger", price: 70, image: "Classic-Burger.jpg" },
+  { name: "Aloo Tikki-burger", price: 80, image: "Aloo-Tikki-Burger.jpg" },
+  { name: "paneer-burger", price: 99, image: "Paneer-Burger.jpg" },
+  { name: "Chees-burger", price: 99, image: "Chees-burger.jpg" },
+  { name: "Double Decker-burger", price: 119, image: "Double Decker-burger.jpg" },
+  { name: "Margherita-Pizza", price: 155, image: "Margherita-Pizza.jpg" },
+  { name: "Veggie-burger", price: 169, image: "Veggie-burger.jpg" }
+],
       "Dolphin Hotel": [
-        { name: "Chicken Tandoori", price: 305 },
-        { name: "Kantilal Rice", price: 155 },
-        { name: "Sizwan Fried Rice", price: 165 },
-        { name: "Panner Fried Rice", price: 185 },
-        { name: "Mix Raita", price: 105 },
-        { name: "Bundhi Raita", price: 105 },
-        { name: "Painapal Raita", price: 110 },
-        { name: "Veg Raita", price: 105 },
-        { name: "Panner Butter Masala", price: 185 },
-        { name: "Panner Masala", price: 165 },
-        { name: "Panner Tikka Masala", price: 205 },
-        { name: "Panner Kadai", price: 165 },
-        { name: "Panner Kheema", price: 205 },
-        { name: "Panner Kolhapuri", price: 165 },
-        { name: "Panner Sai Kurma", price: 205 },
-        { name: "Panner Kofta", price: 215 },
-        { name: "Panner Hyadrabadi", price: 225 },
-        { name: "Panner Guchi", price: 225 },
-        { name: "Panner Burji", price: 205 },
-        { name: "Palak Panner", price: 165 },
-        { name: "Panner Peshwari", price: 205 },
-        { name: "Plain Palak", price: 145 },
-        { name: "Veg Kadai", price: 175 },
-        { name: "Veg Sai Kurma", price: 175 },
-        { name: "Veg Dopyaza", price: 175 },
-        { name: "Veg Makhanwala", price: 175 },
-        { name: "Veg Maharaja", price: 175 },
-        { name: "Veg Rangeela", price: 175 },
-        { name: "Veg Boona", price: 175 },
-        { name: "Veg Tiranga", price: 175 },
-        { name: "Veg Dolphin Special", price: 215 },
-        { name: "Veg Tawa Masala", price: 175 },
-        { name: "Veg Kolhapuri", price: 175 },
-        { name: "Veg Patiyala", price: 175 },
-        { name: "Veg Jaipuri", price: 175 },
-        { name: "Veg Dilruba", price: 175 },
-        { name: "Veg NR Kurma", price: 175 },
-        { name: "Veg Hyadrabadi", price: 175 },
-        { name: "Veg Kofta", price: 205 },
-        { name: "Veg Hariyali", price: 215 },
-        { name: "Veg Lajawab", price: 225 },
-        { name: "Veg Pahadi Masala", price: 225 },
-        { name: "Nix Veg", price: 165 },
-        { name: "Veg Paper Masala", price: 165 },
-        { name: "Matki Fry", price: 145 },
-        { name: "Malai Kofta", price: 205 },
-        { name: "Baigan Masala", price: 155 },
-        { name: "Aalu Mutter", price: 155 },
-        { name: "Aalu Gobi Masala", price: 155 },
-        { name: "Dum Aalu Kashmiri", price: 165 },
-        { name: "Green Pice Masala", price: 165 },
-        { name: "Capsicum Masala", price: 155 },
-        { name: "Shenga Bhaji", price: 155 },
-        { name: "Methi Masala", price: 145 },
-        { name: "Menthi Sukka", price: 155 },
-        { name: "Bhendy Fry", price: 155 },
-        { name: "Bhendy Masala", price: 155 },
-        { name: "Tomato Fry", price: 145 },
-        { name: "Special Gravy", price: 125 },
-        { name: "Curd", price: 50 },
-        { name: "Shenga Chatni", price: 55 },
-        { name: "Garlic Fry", price: 105 },
-        { name: "Tandoori Roti", price: 45 },
-        { name: "Special Tandoori Roti", price:55 },
-        { name: "Butter Roti", price:50 },
-        { name: "Butter Kulcha", price:55 },
-        { name: "Butter Naan", price:60 },
-        { name: "Plane Naan", price:50 },
-        { name: "Plane Kulcha", price:50 },
-        { name: "Garlic Naan", price:65 },
-        { name: "Jawari Roti", price:40 },
-        { name: "Chapati", price:39 },
-        { name: "Rost Roti", price:40 },
-        { name: "Tawa Parota", price:55 },
-        { name: "Masala Parota", price:100 },
-        { name: "Aalu Parota", price:90 },
-        { name: "Aalu Butter Parota", price:110 },
-        { name: "Plane Rice Full", price:100 },
-        { name: "Plane Rice Half", price:70 },
-        { name: "Jeera Rice Full", price:155 },
-        { name: "Jeera Rice Half", price:95 },
-        { name: "Masala Rice Full", price:95 },
-        { name: "Masala Rice Half", price:95 },
-        { name: "Steem Rice", price:120 },
-        { name: "Ghee Rice", price:120 },
-        { name: "Veg Rice", price:120 },
-        { name: "Veg Fried Rice", price:165 },
-        { name: "Onion Fried Rice", price:165 },
-        { name: "Dal Khichadi", price:165 },
-        { name: "Palak Rice", price:185 },
-        { name: "Veg Biriyani", price:185 },
-        { name: "Cord Rice", price:165 },
-        { name: "Tomato Soup", price:110 },
-        { name: "Veg Clear Soup", price:110 },
-        { name: "Hot and Sour Soup", price:110 },
-        { name: "Veg Manchow Soup", price:135 },
-        { name: "Sweet Corn Soup", price:110 },
-        { name: "Mushroom Soup", price:135 },
-        { name: "Veg Noodles Soup", price:135 },
-        { name: "Papad", price:50 },
-        { name: "Masala Papad", price:65 },
-        { name: "Finger Chips", price:130 },
-        { name: "Finger Veg", price:135 },
-        { name: "Veg Manchurian", price:135 },
-        { name: "Veg 65", price:135 },
-        { name: "Kaju Dry", price:145 },
-        { name: "Gobi 65", price:135 },
-        { name: "Gobi Manchurian", price:135 },
-        { name: "Gobi Chilly", price:135 },
-        { name: "Panner Chilly", price:235 },
-        { name: "Panner 65", price:215 },
-        { name: "Panner Pakoda", price:180 },
-        { name: "Panner French", price:235 },
-        { name: "Panner Golden", price:235 },
-        { name: "Panner Sati", price:305 },
-        { name: "Veg Spring Roll", price:135 },
-        { name: "Veg Sangli Roll", price:135 },
-        { name: "Veg Harabara Kabab", price:215 },
-        { name: "Veg Pakoda", price:205 },
-        { name: "Onion Pakoda", price:135 },
-        { name: "Onion Ring Pakoda", price:135 },
-        { name: "Palak Pakoda", price:135 }
-      ],
-      "Hassanmba iyyangar bakery ": [
-        // Pizzas
-        { name: "Veg Pizza", price: 175 },
-        { name: "Margherita", price: 165 },
-        { name: "Paneer Pizza", price: 225 },
-        { name: "Golden Corn Pizza", price: 235 },
-        { name: "Sweet Corn Pizza", price: 225 },
-        { name: "Baby Corn Pizza", price: 225 },
-        // Burgers
-        { name: "Classic Veg Burger", price: 75 },
-        { name: "Cheese Burger", price: 85 },
-        { name: "Paneer Tandoori Burger", price: 85 },
-        // Sandwiches & Rolls
-        { name: "Cheese Sandwich", price: 75 },
-        { name: "Veg Sandwich", price: 66 },
-        { name: "Veg Roll", price: 35 },
-        { name: "Egg Roll", price: 35 },
-        { name: "Cheese Roll", price: 40 },
-        // Ice Cakes (per kg)
-        { name: "Rasmalai Cake", price: 750 },
-        { name: "Irish Coffee Cake", price: 750 },
-        { name: "Black Forest Cake", price: 650 },
-        { name: "American Nuts Cake", price: 750 },
-        { name: "French Vanilla Cake", price: 700 },
-        { name: "Pineapple Cake", price: 650 },
-        { name: "Strawberry Cake", price: 650 },
-        { name: "Death by Chocolate Cake", price: 700 },
-        { name: "Butterscotch Cake", price: 650 },
-        { name: "Mango Cake", price: 600 }
+  { name: "Chicken Tandoori", price: 305, image: "https://media.istockphoto.com/id/1141608264/photo/tandoori-chicken.jpg?s=612x612&w=0&k=20&c=Smoked+and+Spicy+Tandoori+Chicken+Grilling+with+Smoke" },
+  { name: "Kantilal Rice", price: 155, image: "https://media.istockphoto.com/id/1141608264/photo/indian-food.jpg?s=612x612&w=0&k=20&c=Indian+Food+with+Rice" },
+  { name: "Sizwan Fried Rice", price: 165, image: "https://media.istockphoto.com/id/1141608264/photo/schezwan-fried-rice.jpg?s=612x612&w=0&k=20&c=Schezwan+Fried+Rice" },
+  { name: "Panner Fried Rice", price: 185, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-fried-rice.jpg?s=612x612&w=0&k=20&c=Paneer+Fried+Rice" },
+  { name: "Mix Raita", price: 105, image: "https://media.istockphoto.com/id/1141608264/photo/mix-raita.jpg?s=612x612&w=0&k=20&c=Mix+Raita+Indian+Yogurt" },
+  { name: "Bundhi Raita", price: 105, image: "https://media.istockphoto.com/id/1141608264/photo/boondi-raita.jpg?s=612x612&w=0&k=20&c=Boondi+Raita" },
+  { name: "Painapal Raita", price: 110, image: "https://media.istockphoto.com/id/1141608264/photo/pineapple-raita.jpg?s=612x612&w=0&k=20&c=Pineapple+Raita" },
+  { name: "Veg Raita", price: 105, image: "https://media.istockphoto.com/id/1141608264/photo/veg-raita.jpg?s=612x612&w=0&k=20&c=Veg+Raita" },
+  { name: "Panner Butter Masala", price: 185, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-butter-masala.jpg?s=612x612&w=0&k=20&c=Paneer+Butter+Masala" },
+  { name: "Panner Masala", price: 165, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-masala.jpg?s=612x612&w=0&k=20&c=Paneer+Masala" },
+  { name: "Panner Tikka Masala", price: 205, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-tikka-masala.jpg?s=612x612&w=0&k=20&c=Paneer+Tikka+Masala" },
+  { name: "Panner Kadai", price: 165, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-kadai.jpg?s=612x612&w=0&k=20&c=Paneer+Kadai" },
+  { name: "Panner Kheema", price: 205, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-keema.jpg?s=612x612&w=0&k=20&c=Paneer+Keema" },
+  { name: "Panner Kolhapuri", price: 165, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-kolhapuri.jpg?s=612x612&w=0&k=20&c=Paneer+Kolhapuri" },
+  { name: "Panner Sai Kurma", price: 205, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-saag-kurma.jpg?s=612x612&w=0&k=20&c=Paneer+Saag+Kurma" },
+  { name: "Panner Kofta", price: 215, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-kofta.jpg?s=612x612&w=0&k=20&c=Paneer+Kofta" },
+  { name: "Panner Hyadrabadi", price: 225, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-hyderabadi.jpg?s=612x612&w=0&k=20&c=Paneer+Hyderabadi" },
+  { name: "Panner Guchi", price: 225, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-gucci.jpg?s=612x612&w=0&k=20&c=Paneer+Gucci" },
+  { name: "Panner Burji", price: 205, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-bhurji.jpg?s=612x612&w=0&k=20&c=Paneer+Bhurji" },
+  { name: "Palak Panner", price: 165, image: "https://media.istockphoto.com/id/1141608264/photo/palak-paneer.jpg?s=612x612&w=0&k=20&c=Palak+Paneer" },
+  { name: "Panner Peshwari", price: 205, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-peshwari.jpg?s=612x612&w=0&k=20&c=Paneer+Peshwari" },
+  { name: "Plain Palak", price: 145, image: "https://media.istockphoto.com/id/1141608264/photo/plain-palak.jpg?s=612x612&w=0&k=20&c=Plain+Palak" },
+  { name: "Veg Kadai", price: 175, image: "https://media.istockphoto.com/id/1141608264/photo/veg-kadai.jpg?s=612x612&w=0&k=20&c=Veg+Kadai" },
+  { name: "Veg Sai Kurma", price: 175, image: "https://media.istockphoto.com/id/1141608264/photo/veg-saag-kurma.jpg?s=612x612&w=0&k=20&c=Veg+Saag+Kurma" },
+  { name: "Veg Dopyaza", price: 175, image: "https://media.istockphoto.com/id/1141608264/photo/veg-dopiaza.jpg?s=612x612&w=0&k=20&c=Veg+Dopiaza" },
+  { name: "Veg Makhanwala", price: 175, image: "https://media.istockphoto.com/id/1141608264/photo/veg-makhani.jpg?s=612x612&w=0&k=20&c=Veg+Makhani" },
+  { name: "Veg Maharaja", price: 175, image: "https://media.istockphoto.com/id/1141608264/photo/veg-maharaja-curry.jpg?s=612x612&w=0&k=20&c=Veg+Maharaja+Curry" },
+  { name: "Veg Rangeela", price: 175, image: "https://media.istockphoto.com/id/1141608264/photo/veg-rangeela-curry.jpg?s=612x612&w=0&k=20&c=Veg+Rangeela+Curry" },
+  { name: "Veg Boona", price: 175, image: "https://media.istockphoto.com/id/1141608264/photo/veg-boona-curry.jpg?s=612x612&w=0&k=20&c=Veg+Boona+Curry" },
+  { name: "Veg Tiranga", price: 175, image: "https://media.istockphoto.com/id/1141608264/photo/veg-tiranga-curry.jpg?s=612x612&w=0&k=20&c=Veg+Tiranga+Curry" },
+  { name: "Veg Dolphin Special", price: 215, image: "https://media.istockphoto.com/id/1141608264/photo/veg-special-curry.jpg?s=612x612&w=0&k=20&c=Veg+Special+Curry" },
+  { name: "Veg Tawa Masala", price: 175, image: "https://media.istockphoto.com/id/1141608264/photo/veg-tawa-masala.jpg?s=612x612&w=0&k=20&c=Veg+Tawa+Masala" },
+  { name: "Veg Kolhapuri", price: 175, image: "https://media.istockphoto.com/id/1141608264/photo/veg-kolhapuri.jpg?s=612x612&w=0&k=20&c=Veg+Kolhapuri" },
+  { name: "Veg Patiyala", price: 175, image: "https://media.istockphoto.com/id/1141608264/photo/veg-patiala-curry.jpg?s=612x612&w=0&k=20&c=Veg+Patiala+Curry" },
+  { name: "Veg Jaipuri", price: 175, image: "https://media.istockphoto.com/id/1141608264/photo/veg-jaipuri.jpg?s=612x612&w=0&k=20&c=Veg+Jaipuri" },
+  { name: "Veg Dilruba", price: 175, image: "https://media.istockphoto.com/id/1141608264/photo/veg-dilruba-curry.jpg?s=612x612&w=0&k=20&c=Veg+Dilruba+Curry" },
+  { name: "Veg NR Kurma", price: 175, image: "https://media.istockphoto.com/id/1141608264/photo/veg-kurma.jpg?s=612x612&w=0&k=20&c=Veg+Kurma" },
+  { name: "Veg Hyadrabadi", price: 175, image: "https://media.istockphoto.com/id/1141608264/photo/veg-hyderabadi-curry.jpg?s=612x612&w=0&k=20&c=Veg+Hyderabadi+Curry" },
+  { name: "Veg Kofta", price: 205, image: "https://media.istockphoto.com/id/1141608264/photo/veg-kofta.jpg?s=612x612&w=0&k=20&c=Veg+Kofta" },
+  { name: "Veg Hariyali", price: 215, image: "https://media.istockphoto.com/id/1141608264/photo/veg-hariyali-curry.jpg?s=612x612&w=0&k=20&c=Veg+Hariyali+Curry" },
+  { name: "Veg Lajawab", price: 225, image: "https://media.istockphoto.com/id/1141608264/photo/veg-lajawab-curry.jpg?s=612x612&w=0&k=20&c=Veg+Lajawab+Curry" },
+  { name: "Veg Pahadi Masala", price: 225, image: "https://media.istockphoto.com/id/1141608264/photo/veg-pahadi-masala.jpg?s=612x612&w=0&k=20&c=Veg+Pahadi+Masala" },
+  { name: "Nix Veg", price: 165, image: "https://media.istockphoto.com/id/1141608264/photo/nix-veg-curry.jpg?s=612x612&w=0&k=20&c=Nix+Veg+Curry" },
+  { name: "Veg Paper Masala", price: 165, image: "https://media.istockphoto.com/id/1141608264/photo/veg-paper-masala.jpg?s=612x612&w=0&k=20&c=Veg+Paper+Masala" },
+  { name: "Matki Fry", price: 145, image: "https://media.istockphoto.com/id/1141608264/photo/matki-fry.jpg?s=612x612&w=0&k=20&c=Matki+Fry" },
+  { name: "Malai Kofta", price: 205, image: "https://media.istockphoto.com/id/1141608264/photo/malai-kofta.jpg?s=612x612&w=0&k=20&c=Malai+Kofta" },
+  { name: "Baigan Masala", price: 155, image: "https://media.istockphoto.com/id/1141608264/photo/baingan-masala.jpg?s=612x612&w=0&k=20&c=Baingan+Masala" },
+  { name: "Aalu Mutter", price: 155, image: "https://media.istockphoto.com/id/1141608264/photo/aloo-matar.jpg?s=612x612&w=0&k=20&c=Aloo+Matar" },
+  { name: "Aalu Gobi Masala", price: 155, image: "https://media.istockphoto.com/id/1141608264/photo/aloo-gobi-masala.jpg?s=612x612&w=0&k=20&c=Aloo+Gobi+Masala" },
+  { name: "Dum Aalu Kashmiri", price: 165, image: "https://media.istockphoto.com/id/1141608264/photo/dum-aloo-kashmiri.jpg?s=612x612&w=0&k=20&c=Dum+Aloo+Kashmiri" },
+  { name: "Green Pice Masala", price: 165, image: "https://media.istockphoto.com/id/1141608264/photo/green-peas-masala.jpg?s=612x612&w=0&k=20&c=Green+Peas+Masala" },
+  { name: "Capsicum Masala", price: 155, image: "https://media.istockphoto.com/id/1141608264/photo/capsicum-masala.jpg?s=612x612&w=0&k=20&c=Capsicum+Masala" },
+  { name: "Shenga Bhaji", price: 155, image: "https://media.istockphoto.com/id/1141608264/photo/shenga-bhaji-drumstick-curry.jpg?s=612x612&w=0&k=20&c=Shenga+Bhaji+Drumstick+Curry" },
+  { name: "Methi Masala", price: 145, image: "https://media.istockphoto.com/id/1141608264/photo/methi-masala.jpg?s=612x612&w=0&k=20&c=Methi+Masala" },
+  { name: "Menthi Sukka", price: 155, image: "https://media.istockphoto.com/id/1141608264/photo/menthi-sukka-methi-dry.jpg?s=612x612&w=0&k=20&c=Menthi+Sukka+Methi+Dry" },
+  { name: "Bhendy Fry", price: 155, image: "https://media.istockphoto.com/id/1141608264/photo/bhindi-fry-okra-fry.jpg?s=612x612&w=0&k=20&c=Bhindi+Fry+Okra+Fry" },
+  { name: "Bhendy Masala", price: 155, image: "https://media.istockphoto.com/id/1141608264/photo/bhindi-masala.jpg?s=612x612&w=0&k=20&c=Bhindi+Masala" },
+  { name: "Tomato Fry", price: 145, image: "https://media.istockphoto.com/id/1141608264/photo/tomato-fry.jpg?s=612x612&w=0&k=20&c=Tomato+Fry" },
+  { name: "Special Gravy", price: 125, image: "https://media.istockphoto.com/id/1141608264/photo/special-gravy-indian.jpg?s=612x612&w=0&k=20&c=Special+Gravy+Indian" },
+  { name: "Curd", price: 50, image: "https://media.istockphoto.com/id/1141608264/photo/curd-plain-yogurt.jpg?s=612x612&w=0&k=20&c=Curd+Plain+Yogurt" },
+  { name: "Shenga Chatni", price: 55, image: "https://media.istockphoto.com/id/1141608264/photo/shenga-chutney-drumstick-chutney.jpg?s=612x612&w=0&k=20&c=Shenga+Chutney+Drumstick+Chutney" },
+  { name: "Garlic Fry", price: 105, image: "https://media.istockphoto.com/id/1141608264/photo/garlic-fry-indian.jpg?s=612x612&w=0&k=20&c=Garlic+Fry+Indian" },
+  { name: "Tandoori Roti", price: 45, image: "https://media.istockphoto.com/id/1141608264/photo/tandoori-roti.jpg?s=612x612&w=0&k=20&c=Tandoori+Roti" },
+  { name: "Special Tandoori Roti", price: 55, image: "https://media.istockphoto.com/id/1141608264/photo/special-tandoori-roti.jpg?s=612x612&w=0&k=20&c=Special+Tandoori+Roti" },
+  { name: "Butter Roti", price: 50, image: "https://media.istockphoto.com/id/1141608264/photo/butter-roti.jpg?s=612x612&w=0&k=20&c=Butter+Roti" },
+  { name: "Butter Kulcha", price: 55, image: "https://media.istockphoto.com/id/1141608264/photo/butter-kulcha.jpg?s=612x612&w=0&k=20&c=Butter+Kulcha" },
+  { name: "Butter Naan", price: 60, image: "https://media.istockphoto.com/id/1141608264/photo/butter-naan.jpg?s=612x612&w=0&k=20&c=Butter+Naan" },
+  { name: "Plane Naan", price: 50, image: "https://media.istockphoto.com/id/1141608264/photo/plain-naan.jpg?s=612x612&w=0&k=20&c=Plain+Naan" },
+  { name: "Plane Kulcha", price: 50, image: "https://media.istockphoto.com/id/1141608264/photo/plain-kulcha.jpg?s=612x612&w=0&k=20&c=Plain+Kulcha" },
+  { name: "Garlic Naan", price: 65, image: "https://media.istockphoto.com/id/1141608264/photo/garlic-naan.jpg?s=612x612&w=0&k=20&c=Garlic+Naan" },
+  { name: "Jawari Roti", price: 40, image: "https://media.istockphoto.com/id/1141608264/photo/jowar-roti.jpg?s=612x612&w=0&k=20&c=Jowar+Roti" },
+  { name: "Chapati", price: 39, image: "https://media.istockphoto.com/id/1141608264/photo/chapati-roti.jpg?s=612x612&w=0&k=20&c=Chapati+Roti" },
+  { name: "Rost Roti", price: 40, image: "https://media.istockphoto.com/id/1141608264/photo/roti.jpg?s=612x612&w=0&k=20&c=Roti" },
+  { name: "Tawa Parota", price: 55, image: "https://media.istockphoto.com/id/1141608264/photo/tawa-paratha.jpg?s=612x612&w=0&k=20&c=Tawa+Paratha" },
+  { name: "Masala Parota", price: 100, image: "https://media.istockphoto.com/id/1141608264/photo/masala-paratha.jpg?s=612x612&w=0&k=20&c=Masala+Paratha" },
+  { name: "Aalu Parota", price: 90, image: "https://media.istockphoto.com/id/1141608264/photo/aloo-paratha.jpg?s=612x612&w=0&k=20&c=Aloo+Paratha" },
+  { name: "Aalu Butter Parota", price: 110, image: "https://media.istockphoto.com/id/1141608264/photo/aloo-butter-paratha.jpg?s=612x612&w=0&k=20&c=Aloo+Butter+Paratha" },
+  { name: "Plane Rice Full", price: 100, image: "https://media.istockphoto.com/id/1141608264/photo/plain-rice-indian.jpg?s=612x612&w=0&k=20&c=Plain+Rice+Indian" },
+  { name: "Plane Rice Half", price: 70, image: "https://media.istockphoto.com/id/1141608264/photo/plain-rice-indian.jpg?s=612x612&w=0&k=20&c=Plain+Rice+Indian" },
+  { name: "Jeera Rice Full", price: 155, image: "https://media.istockphoto.com/id/1141608264/photo/jeera-rice.jpg?s=612x612&w=0&k=20&c=Jeera+Rice" },
+  { name: "Jeera Rice Half", price: 95, image: "https://media.istockphoto.com/id/1141608264/photo/jeera-rice.jpg?s=612x612&w=0&k=20&c=Jeera+Rice" },
+  { name: "Masala Rice Full", price: 95, image: "https://media.istockphoto.com/id/1141608264/photo/masala-rice.jpg?s=612x612&w=0&k=20&c=Masala+Rice" },
+  { name: "Masala Rice Half", price: 95, image: "https://media.istockphoto.com/id/1141608264/photo/masala-rice.jpg?s=612x612&w=0&k=20&c=Masala+Rice" },
+  { name: "Steem Rice", price: 120, image: "https://media.istockphoto.com/id/1141608264/photo/steamed-rice.jpg?s=612x612&w=0&k=20&c=Steamed+Rice" },
+  { name: "Ghee Rice", price: 120, image: "https://media.istockphoto.com/id/1141608264/photo/ghee-rice.jpg?s=612x612&w=0&k=20&c=Ghee+Rice" },
+  { name: "Veg Rice", price: 120, image: "https://media.istockphoto.com/id/1141608264/photo/veg-rice.jpg?s=612x612&w=0&k=20&c=Veg+Rice" },
+  { name: "Veg Fried Rice", price: 165, image: "https://media.istockphoto.com/id/1141608264/photo/veg-fried-rice.jpg?s=612x612&w=0&k=20&c=Veg+Fried+Rice" },
+  { name: "Onion Fried Rice", price: 165, image: "https://media.istockphoto.com/id/1141608264/photo/onion-fried-rice.jpg?s=612x612&w=0&k=20&c=Onion+Fried+Rice" },
+  { name: "Dal Khichadi", price: 165, image: "https://media.istockphoto.com/id/1141608264/photo/dal-khichdi.jpg?s=612x612&w=0&k=20&c=Dal+Khichdi" },
+  { name: "Palak Rice", price: 185, image: "https://media.istockphoto.com/id/1141608264/photo/palak-rice-spinach-rice.jpg?s=612x612&w=0&k=20&c=Palak+Rice+Spinach+Rice" },
+  { name: "Veg Biriyani", price: 185, image: "https://media.istockphoto.com/id/1141608264/photo/veg-biryani.jpg?s=612x612&w=0&k=20&c=Veg+Biryani" },
+  { name: "Cord Rice", price: 165, image: "https://media.istockphoto.com/id/1141608264/photo/coconut-rice.jpg?s=612x612&w=0&k=20&c=Coconut+Rice" },
+  { name: "Tomato Soup", price: 110, image: "https://media.istockphoto.com/id/1141608264/photo/tomato-soup-indian.jpg?s=612x612&w=0&k=20&c=Tomato+Soup+Indian" },
+  { name: "Veg Clear Soup", price: 110, image: "https://media.istockphoto.com/id/1141608264/photo/veg-clear-soup.jpg?s=612x612&w=0&k=20&c=Veg+Clear+Soup" },
+  { name: "Hot and Sour Soup", price: 110, image: "https://media.istockphoto.com/id/1141608264/photo/hot-and-sour-soup.jpg?s=612x612&w=0&k=20&c=Hot+and+Sour+Soup" },
+  { name: "Veg Manchow Soup", price: 135, image: "https://media.istockphoto.com/id/1141608264/photo/veg-manchow-soup.jpg?s=612x612&w=0&k=20&c=Veg+Manchow+Soup" },
+  { name: "Sweet Corn Soup", price: 110, image: "https://media.istockphoto.com/id/1141608264/photo/sweet-corn-soup.jpg?s=612x612&w=0&k=20&c=Sweet+Corn+Soup" },
+  { name: "Mushroom Soup", price: 135, image: "https://media.istockphoto.com/id/1141608264/photo/mushroom-soup.jpg?s=612x612&w=0&k=20&c=Mushroom+Soup" },
+  { name: "Veg Noodles Soup", price: 135, image: "https://media.istockphoto.com/id/1141608264/photo/veg-noodles-soup.jpg?s=612x612&w=0&k=20&c=Veg+Noodles+Soup" },
+  { name: "Papad", price: 50, image: "https://media.istockphoto.com/id/1141608264/photo/papad-indian.jpg?s=612x612&w=0&k=20&c=Papad+Indian" },
+  { name: "Masala Papad", price: 65, image: "https://media.istockphoto.com/id/1141608264/photo/masala-papad.jpg?s=612x612&w=0&k=20&c=Masala+Papad" },
+  { name: "Finger Chips", price: 130, image: "https://media.istockphoto.com/id/1141608264/photo/french-fries-finger-chips.jpg?s=612x612&w=0&k=20&c=French+Fries+Finger+Chips" },
+  { name: "Finger Veg", price: 135, image: "https://media.istockphoto.com/id/1141608264/photo/finger-veg.jpg?s=612x612&w=0&k=20&c=Finger+Veg" },
+  { name: "Veg Manchurian", price: 135, image: "https://media.istockphoto.com/id/1141608264/photo/veg-manchurian.jpg?s=612x612&w=0&k=20&c=Veg+Manchurian" },
+  { name: "Veg 65", price: 135, image: "https://media.istockphoto.com/id/1141608264/photo/veg-65-starter.jpg?s=612x612&w=0&k=20&c=Veg+65+Starter" },
+  { name: "Kaju Dry", price: 145, image: "https://media.istockphoto.com/id/1141608264/photo/kaju-dry-cashew-nuts.jpg?s=612x612&w=0&k=20&c=Kaju+Dry+Cashew+Nuts" },
+  { name: "Gobi 65", price: 135, image: "https://media.istockphoto.com/id/1141608264/photo/gobi-65-cauliflower-starter.jpg?s=612x612&w=0&k=20&c=Gobi+65+Cauliflower+Starter" },
+  { name: "Gobi Manchurian", price: 135, image: "https://media.istockphoto.com/id/1141608264/photo/gobi-manchurian.jpg?s=612x612&w=0&k=20&c=Gobi+Manchurian" },
+  { name: "Gobi Chilly", price: 135, image: "https://media.istockphoto.com/id/1141608264/photo/gobi-chilli.jpg?s=612x612&w=0&k=20&c=Gobi+Chilli" },
+  { name: "Panner Chilly", price: 235, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-chilli.jpg?s=612x612&w=0&k=20&c=Paneer+Chilli" },
+  { name: "Panner 65", price: 215, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-65.jpg?s=612x612&w=0&k=20&c=Paneer+65" },
+  { name: "Panner Pakoda", price: 180, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-pakora.jpg?s=612x612&w=0&k=20&c=Paneer+Pakora" },
+  { name: "Panner French", price: 235, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-french-fries.jpg?s=612x612&w=0&k=20&c=Paneer+French+Fries" },
+  { name: "Panner Golden", price: 235, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-golden-fry.jpg?s=612x612&w=0&k=20&c=Paneer+Golden+Fry" },
+  { name: "Panner Sati", price: 305, image: "https://media.istockphoto.com/id/1141608264/photo/paneer-sati-starter.jpg?s=612x612&w=0&k=20&c=Paneer+Sati+Starter" },
+  { name: "Veg Spring Roll", price: 135, image: "https://media.istockphoto.com/id/1141608264/photo/veg-spring-roll.jpg?s=612x612&w=0&k=20&c=Veg+Spring+Roll" },
+  { name: "Veg Sangli Roll", price: 135, image: "https://media.istockphoto.com/id/1141608264/photo/veg-roll.jpg?s=612x612&w=0&k=20&c=Veg+Roll" },
+  { name: "Veg Harabara Kabab", price: 215, image: "https://media.istockphoto.com/id/1141608264/photo/veg-hara-bhara-kebab.jpg?s=612x612&w=0&k=20&c=Veg+Hara+Bhara+Kabab" },
+  { name: "Veg Pakoda", price: 205, image: "https://media.istockphoto.com/id/1141608264/photo/veg-pakoda.jpg?s=612x612&w=0&k=20&c=Veg+Pakoda" },
+  { name: "Onion Pakoda", price: 135, image: "https://media.istockphoto.com/id/1141608264/photo/onion-pakoda.jpg?s=612x612&w=0&k=20&c=Onion+Pakoda" },
+  { name: "Onion Ring Pakoda", price: 135, image: "https://media.istockphoto.com/id/1141608264/photo/onion-ring-pakoda.jpg?s=612x612&w=0&k=20&c=Onion+Ring+Pakoda" },
+  { name: "Palak Pakoda", price: 135, image: "https://media.istockphoto.com/id/1141608264/photo/palak-pakoda-spinach-fritters.jpg?s=612x612&w=0&k=20&c=Palak+Pakoda+Spinach+Fritters" }
+],
+      "Hassanmba iyyangar bakery": [
+        { name: "Veg Pizza", price: 175, image: "Veg-Pizza.jpg" },
+        { name: "Margherita", price: 165, image: "Margherita.jpg" },
+        { name: "Paneer Pizza", price: 225, image: "Tandoori-Paneer.jpg" },
+        { name: "Golden Corn Pizza", price: 235, image: "Sweet-Corn.jpg" },
+        { name: "Sweet Corn Pizza", price: 225, image: "Sweet-Corn.jpg" },
+        { name: "Baby Corn Pizza", price: 225, image: "Baby-Corn.jpg" },
+        { name: "Classic Veg Burger", price: 75, image: "Burger-Classic.jpg" },
+        { name: "Cheese Burger", price: 85, image: "Paneer-Burger.jpg" },
+        { name: "Paneer Tandoori Burger", price: 85, image: "Paneer-Burger.jpg" },
+        { name: "Cheese Sandwich", price: 75, image: "Cheese-Sandwich.jpg" },
+        { name: "Veg Sandwich", price: 66, image: "Veg-Sandwich.jpg" },
+        { name: "Veg Roll", price: 35, image: "Veg-Roll.jpg" },
+        { name: "Egg Roll", price: 35, image: "Egg-Roll.jpg" },
+        { name: "Cheese Roll", price: 40, image: "Cheese-Roll.jpg" },
+        { name: "Rasmalai Cake", price: 750, image: "Rasmalai-Cake.jpg" },
+        { name: "Irish Coffee Cake", price: 750, image: "Irish-Coffee-Cake.jpg" },
+        { name: "Black Forest Cake", price: 650, image: "Black-Forest.jpg" },
+        { name: "American Nuts Cake", price: 750, image: "American-Nuts-Cake.jpg" },
+        { name: "French Vanilla Cake", price: 700, image: "French-Vanilla-Cake.jpg" },
+        { name: "Pineapple Cake", price: 650, image: "Pineapple-Cake.jpg" },
+        { name: "Strawberry Cake", price: 650, image: "Strawberry-Cake.jpg" },
+        { name: "Death by Chocolate Cake", price: 700, image: "Chocolate-Truffle-Cake.jpg" },
+        { name: "Butterscotch Cake", price: 650, image: "Butterscotch-Cake.jpg" },
+        { name: "Mango Cake", price: 600, image: "Mango-Cake.jpg" }
       ]
     };
 
-    // ====================================================================
-    // END: Data Structure
-    // ====================================================================
-
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(location.search);
     const shopName = decodeURIComponent(urlParams.get("shop") || "");
     const shopItems = shopData[shopName] || [];
-
-    const shopNameEl = document.getElementById("shopName");
-    const itemsGrid = document.getElementById("itemsGrid");
-    const cartBar = document.getElementById("cartBar");
-    const cartText = document.getElementById("cartText");
-    const checkoutBtn = document.getElementById("checkoutBtn");
-    const backBtn = document.getElementById("backBtn");
-
-    let cart = {};
-    try { cart = JSON.parse(localStorage.getItem("chatpoint_cart")) || {}; } catch(e) { cart = {}; }
-
-    // ====================================================================
-    // START: Cart and Image Logic
-    // ====================================================================
+    let cart = JSON.parse(localStorage.getItem("chatpoint_cart") || "{}");
 
     function saveCart() {
       localStorage.setItem("chatpoint_cart", JSON.stringify(cart));
       updateCartBar();
     }
-
     function updateCartBar() {
-      let totalItems = 0, totalPrice = 0;
-      for (const shop in cart) {
-        for (const itemName in cart[shop]) {
-          const entry = cart[shop][itemName];
-          totalItems += entry.qty;
-          totalPrice += entry.qty * entry.price;
-        }
+      let items = 0, total = 0;
+      for (const s in cart) for (const i in cart[s]) {
+        items += cart[s][i].qty;
+        total += cart[s][i].qty * cart[s][i].price;
       }
-      cartText.textContent = `${totalItems} items · ₹${totalPrice}`;
-      // Use 'flex' for visibility in the dark theme
-      cartBar.style.display = totalItems > 0 ? "flex" : "none"; 
+      document.getElementById("cartText").textContent = `${items} items · ₹${total}`;
+      document.getElementById("cartBar").style.display = items > 0 ? "flex" : "none";
     }
-
-    function changeQty(shop, itemName, price, delta) {
-      if (!isLoggedIn) { alert("Please login to add items to cart."); return; }
+    function changeQty(shop, name, price, delta) {
+      if (!isLoggedIn) return alert("Please login first!");
       if (!cart[shop]) cart[shop] = {};
-      // Ensure the shop name is correct. If the item is from a different shop, clear the cart.
-      if (Object.keys(cart).length > 0 && !cart[shop]) {
-        if (!confirm(`Your cart currently contains items from another shop. Do you want to clear your cart and add this item from ${shop}?`)) {
-          return;
-        }
-        cart = {}; // Clear cart
-        cart[shop] = {};
-        alert(`Cart cleared. Adding ${itemName} from ${shop}.`);
-      } else if (!cart[shop]) {
-          cart[shop] = {};
-      }
-
-      if (!cart[shop][itemName]) cart[shop][itemName] = { qty: 0, price };
-      cart[shop][itemName].qty = Math.max(0, cart[shop][itemName].qty + delta);
-      if (cart[shop][itemName].qty === 0) delete cart[shop][itemName];
-      if (Object.keys(cart[shop] || {}).length === 0) delete cart[shop];
+      if (!cart[shop][name]) cart[shop][name] = {qty: 0, price};
+      cart[shop][name].qty = Math.max(0, cart[shop][name].qty + delta);
+      if (cart[shop][name].qty === 0) delete cart[shop][name];
+      if (Object.keys(cart[shop]).length === 0) delete cart[shop];
       saveCart();
       renderItems();
     }
-
-    function openCartPage() {
-      if (!isLoggedIn) { alert("Please login to view cart."); window.location.href = "login.html"; return; }
-      window.location.href = "cart.html";
-    }
-
-    // Image mapping for your bakery items (added to the code)
-    const imageMap = {
-      // === PIZZA & BURGERS ===
-      "veg pizza": "Veg-Pizza.jpg",
-      "margherita": "Margherita.jpg",
-      "paneer pizza": "Tandoori-Paneer.jpg",
-      "tandoori paneer": "Tandoori-Paneer.jpg",
-      "golden corn pizza": "Sweet-Corn.jpg",
-      "sweet corn pizza": "Sweet-Corn.jpg",
-      "baby corn pizza": "Baby-Corn.jpg",
-      "sweet corn": "Sweet-Corn.jpg",
-      "baby corn": "Baby-Corn.jpg",
-      "veggie": "Veggie.jpg",
-      "veggie lover": "Veggie-Lover.jpg",
-
-      // === BURGERS ===
-      "classic veg burger": "Burger-Classic.jpg",
-      "aloo tikki burger": "Aloo-Tikki-Burger.jpg",
-      "paneer burger": "Paneer-Burger.jpg",
-      "paneer tandoori burger": "Paneer-Burger.jpg",
-      "double decker burger": "Double-Decker-Burger.jpg",
-      "pizza spot special burger": "Pizza-Spot-Special-Burger.jpg",
-      "pizza spot special": "Pizza-Spot-Special.jpg",
-
-      // === SANDWICHES & ROLLS ===
-      "cheese sandwich": "Cheese-Sandwich.jpg",
-      "veg sandwich": "Veg-Sandwich.jpg",
-      "sweet corn sandwich": "Sweet-Corn-Sandwich.jpg",
-      "masala sandwich": "Masala-Sandwich.jpg",
-      "club sandwich": "Club-Sandwich.jpg",
-      "paneer tandoori sandwich": "Paneer-Tandoori-Sandwich.jpg",
-      "pizza spot special sandwich": "Pizza-Spot-Special-Sandwich.jpg",
-      "veg roll": "Veg-Roll.jpg",
-      "sweet corn roll": "Sweet-Corn-Roll.jpg",
-      "paneer roll": "Paneer-Roll.jpg",
-      "egg roll": "Egg-Roll.jpg", 
-      "cheese roll": "Cheese-Roll.jpg", 
-
-      // === MOMOS ===
-      "steam momos": "Steam-Momos.jpg",
-      "fried momos": "Fried-Momos.jpg",
-      "kurkure momos": "Kurkure-Momos.jpg",
-      "momos": "Fried-Momos.jpg",
-
-      // === FRIES & SIDES ===
-      "french fries": "French-Fries.jpg",
-      "masala fries": "Masala-Fries.jpg",
-      "smiley fries": "Smiley-Fries.jpg",
-      "nuggets": "Nuggets.jpg",
-
-      // === PAV BHAJI ===
-      "pav bhaji": "Pav-Bhaji.jpg",
-      "cheese pav bhaji": "Cheese-Pav-Bhaji.jpg",
-
-      // === CAKES (BAKERY SPECIFIC) ===
-      "black forest cake": "Black-Forest.jpg",
-      "chocolate truffle cake": "Chocolate-Truffle-Cake.jpg",
-      "death by chocolate cake": "Chocolate-Truffle-Cake.jpg",
-      "red velvet cake": "Red-Velvet-Cake.JPG",
-      "rasmalai cake": "Rasmalai-Cake.jpg",
-      "irish coffee cake": "Irish-Coffee-Cake.jpg",
-      "american nuts cake": "American-Nuts-Cake.jpg",
-      "french vanilla cake": "French-Vanilla-Cake.jpg",
-      "pineapple cake": "Pineapple-Cake.jpg",
-      "strawberry cake": "Strawberry-Cake.jpg",
-      "butterscotch cake": "Butterscotch-Cake.jpg",
-      "mango cake": "Mango-Cake.jpg",
-      "cake": "Black-Forest.jpg",
-
-      // === SOUTH INDIAN BREAKFAST ===
-      "plain dosa": "Plain-Dosa.JPG",
-      "masala dosa": "Masala-Dosa.JPG",
-      "benne dosa": "Benne-Dosa.jpg",
-      "benne masala dosa": "Benne-Masala-Dosa.jpg",
-      "mysore masala dosa": "Mysore-Masala-Dosa.jpg",
-      "paneer masala dosa": "Paneer-Masala-Dosa.jpg",
-      "onion dosa": "onion-dosa.JPG",
-      "paneer dosa": "paneer-dosa.JPG",
-      "cheese dosa": "chess-dosa.jpg",
-      "idli": "Idli.jpg",
-      "vada": "Vada.JPG",
-      "poori": "poori.JPG",
-      "mysore bonda": "Mysore-Bonda.jpg",
-      "mangalore buns": "mangalore-buns.JPG",
-      "utappa": "utappa.JPG",
-      "chou chou bath": "chou-chou-bath.JPG",
-      "shira": "shira.JPG",
-      "full meals": "full-meals.JPG",
-
-      // === SOUPS ===
-      "tomato soup": "Tomato-Soup.jpg",
-      "sweet corn soup": "Sweet-Corn-Soup.jpg",
-      "hot and sour soup": "Hot-and-Sour-Soup.jpg",
-      "veg clear soup": "Veg-Clear-Soup.jpg",
-      "soup": "Tomato-Soup.jpg",
-
-      // === CHINESE / STARTERS ===
-      "gobi 65": "Gobi-65.jpg",
-      "gobi manchurian": "Gobi-Manchurian.jpg",
-      "mushroom manchurian": "Mushroom-Manchurian.jpg",
-      "paneer manchurian": "Paneer-Manchurian.jpg",
-      "veg manchurian": "Veg-Manchurian.jpg",
-      "manchurian": "Veg-Manchurian.jpg",
-      "chilly": "Paneer-Chilly.jpg",
-      "pakoda": "Veg-Pakoda.jpg",
-      "roll": "Veg-Spring-Roll.jpg",
-      "noodles": "Veg-Noodles-Soup.jpg",
-      
-      // === RICE / ROTI ===
-      "jeera rice": "Jeera-Rice.jpg",
-      "veg biryani": "Veg-Biriyani.jpg",
-      "kantilal rice": "Kantilal-Rice.jpg",
-      "fried rice": "Veg-Fried-Rice.jpg",
-      "roti": "Tandoori-Roti.jpg",
-      "naan": "Butter-Naan.jpg",
-      "kulcha": "Butter-Kulcha.jpg",
-      "parota": "Tawa-Parota.jpg",
-      "parotha": "Tawa-Parota.jpg",
-      "dal": "Dal-Khichadi.jpg",
-    };
-    
-    // Fallback logic for items with long or specific names (like combos)
-    function getImagePath(itemName) {
-      const key = itemName.toLowerCase().trim().replace(/[^a-z0-9\s]/g, '');
-      
-      // 1. Check for exact key match (after cleaning)
-      if (imageMap[key]) {
-        return `images/${imageMap[key]}`;
-      }
-
-      // 2. Check for substring matches (e.g., "cheese sandwich" in a combo name)
-      for (const mapKey in imageMap) {
-        if (key.includes(mapKey)) {
-          return `images/${imageMap[mapKey]}`;
-        }
-      }
-      
-      // 3. Default placeholder if no specific image is found
-      const placeholderText = key.split(' ').slice(0, 3).join('+');
-      return `https://via.placeholder.com/600x380/12121b/59FF94?text=${encodeURIComponent(placeholderText)}`;
-    }
-
-    // ====================================================================
-    // END: Cart and Image Logic
-    // ====================================================================
-
     function renderItems() {
-      itemsGrid.innerHTML = "";
-      if (shopItems.length === 0) {
-        itemsGrid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#ff8a8a;padding:40px;font-size:18px;">No items found for this shop. <a href="index.html">Go back</a></div>';
-        return;
-      }
-
-      shopItems.forEach((item) => {
+      const grid = document.getElementById("itemsGrid");
+      grid.innerHTML = "";
+      shopItems.forEach(item => {
         const qty = (cart[shopName] && cart[shopName][item.name]) ? cart[shopName][item.name].qty : 0;
-        const imgSrc = getImagePath(item.name);
-
-        const card = document.createElement('article');
-        card.className = 'item-card';
-
-        // Image Element
-        const img = document.createElement('img');
-        img.className = 'item-img';
-        img.alt = item.name;
-        img.loading = 'lazy';
-        img.src = imgSrc;
-        img.onerror = function() { 
-          // Fallback to a cleaner text placeholder on error
-          const cleanName = item.name.replace(/[^\w\s]/gi, '').split(' ').slice(0, 3).join(' ');
-          this.src = `https://via.placeholder.com/600x380/12121b/59FF94?text=${encodeURIComponent(cleanName.replace(/\s/g, '+'))}`; 
-        };
-
-        // Info Container
-        const info = document.createElement('div');
-        info.className = 'item-info';
-
-        // Name and Description
-        const title = document.createElement('div');
-        title.className = 'item-name';
-        title.textContent = item.name;
-        
-        const desc = document.createElement('div');
-        desc.className = 'item-desc';
-        // Logic for description based on item name
-        const itemNameLower = item.name.toLowerCase();
-        if (itemNameLower.includes("cake")) {
-          desc.textContent = "Fresh Cream Cake • Price per kg";
-        } else if (itemNameLower.includes("pizza") || itemNameLower.includes("burger")) {
-          desc.textContent = "Signature Dish • Served Hot";
-        } else if (itemNameLower.includes("dosa") || itemNameLower.includes("buns") || itemNameLower.includes("idli")) {
-          desc.textContent = "South Indian Special";
-        } else if (itemNameLower.includes("rice") || itemNameLower.includes("biryani")) {
-          desc.textContent = "Main Course";
-        } else {
-          desc.textContent = "Fresh • Bakery Special";
-        }
-        
-        // Price
-        const price = document.createElement('div');
-        price.className = 'item-price';
-        price.textContent = itemNameLower.includes("cake") && !itemNameLower.includes("cup cake") ? `₹${item.price}/kg` : `₹${item.price}`;
-        
-        // Quantity Controls
-        const controls = document.createElement('div');
-        controls.className = 'quantity';
-
-        if (isLoggedIn) {
-          const btnMinus = document.createElement('button');
-          btnMinus.className = 'qbtn';
-          btnMinus.innerHTML = '−';
-          btnMinus.title = `Remove one ${item.name}`;
-          btnMinus.onclick = () => changeQty(shopName, item.name, item.price, -1);
-
-          const qtyEl = document.createElement('div');
-          qtyEl.className = 'qty';
-          qtyEl.textContent = qty;
-
-          const btnPlus = document.createElement('button');
-          btnPlus.className = 'qbtn';
-          btnPlus.innerHTML = '+';
-          btnPlus.title = `Add one ${item.name}`;
-          btnPlus.onclick = () => changeQty(shopName, item.name, item.price, +1);
-
-          controls.append(btnMinus, qtyEl, btnPlus);
-        } else {
-          // Alternative button for logged out users
-          const loginHint = document.createElement('button');
-          loginHint.className = 'checkout-btn'; 
-          loginHint.style.width = '100%';
-          loginHint.textContent = 'Login to Add';
-          loginHint.onclick = () => alert("Please login to add items to cart.");
-          controls.append(loginHint);
-        }
-
-        info.append(title, desc, price, controls);
-        card.append(img, info);
-        itemsGrid.appendChild(card);
+        const card = document.createElement("article");
+        card.className = "item-card";
+        card.innerHTML = `
+          <img src="images/${item.image}" alt="${item.name}" class="item-img" loading="lazy"
+               onerror="this.src='https://via.placeholder.com/600x380/f3cd98/f12916?text=${encodeURIComponent(item.name.split(' ').slice(0,3).join(' '))}'">
+          <div class="item-info">
+            <div class="item-name">${item.name}</div>
+            <div class="item-desc">${item.name.toLowerCase().includes("cake") ? "Fresh Cream • Per kg" : "Homemade Special"}</div>
+            <div class="item-price">₹${item.price}${item.name.toLowerCase().includes("cake") ? "/kg" : ""}</div>
+            <div class="quantity">
+              <button class="qbtn" onclick="changeQty('${shopName}','${item.name.replace(/'/g, "\\'")}',${item.price},-1)">−</button>
+              <div class="qty">${qty}</div>
+              <button class="qbtn" onclick="changeQty('${shopName}','${item.name.replace(/'/g, "\\'")}',${item.price},1)">+</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
       });
     }
 
-    // ====================================================================
-    // START: Initialisation and Event Listeners
-    // ====================================================================
+    document.getElementById("shopName").textContent = shopName || "Shop Not Found";
+    if (shopItems.length) renderItems();
+    updateCartBar();
 
-    function initializePage() {
-      if (shopName) {
-        shopNameEl.textContent = shopName;
-        renderItems();
-        updateCartBar();
-      } else {
-        shopNameEl.textContent = "Shop Not Found";
-        itemsGrid.innerHTML = '<div class="center">Please select a valid shop. <a href="index.html">Go to Shop List</a></div>';
-        cartBar.style.display = 'none';
-      }
-    }
-
-    // Event Listeners
-    backBtn.addEventListener('click', () => {
-        window.location.href = 'index.html'; // Assuming this is the shop list page
-    });
-
-    // Cart Bar/Checkout Buttons
-    checkoutBtn.addEventListener('click', openCartPage);
-    cartBar.addEventListener('click', (e) => {
-        // Only open cart if the click wasn't on the specific checkout button
-        if (e.target !== checkoutBtn) {
-            openCartPage();
-        }
-    });
-
-    // Initial load
-    initializePage();
-    // ====================================================================
-    // END: Initialisation and Event Listeners
-    // ====================================================================
-
+    document.getElementById("backBtn").onclick = () => history.back();
+    document.getElementById("cartBar").onclick = () => location.href = "cart.html";
+    document.getElementById("checkoutBtn").onclick = e => { e.stopPropagation(); location.href = "cart.html"; };
   </script>
 </body>
 </html>
