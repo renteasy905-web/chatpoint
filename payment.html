@@ -7,24 +7,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
   <style>
-    :root { --bg: #0a0a0a; --card: #111111; --border: #222222; --text: #e0e0e0; --accent: #00ff9d; --accent2: #ff2e63; --glow: 0 0 20px rgba(0,255,157,0.3); }
+    :root { --bg: #0a0a0a; --card: #111111; --accent: #00ff9d; --accent2: #ff2e63; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-    .container { max-width: 480px; margin: 20px auto; padding: 24px; background: var(--card); border-radius: 24px; border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.6), var(--glow); }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg); color: #e0e0e0; min-height: 100vh; }
+    .container { max-width: 480px; margin: 20px auto; padding: 24px; background: var(--card); border-radius: 24px; border: 1px solid #333; }
     h2 { font-size: 28px; font-weight: 800; text-align: center; background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px; }
-    label { display: block; margin-top: 16px; font-weight: 600; font-size: 14px; color: var(--accent); }
-    input { width: 100%; padding: 14px 16px; margin-top: 8px; border-radius: 16px; border: 1px solid #333; background: #1a1a1a; color: white; font-size: 16px; }
-    input:focus { outline: none; border-color: var(--accent); box-shadow: var(--glow); }
-    .radio-group { margin: 24px 0; display: flex; gap: 20px; justify-content: center; }
-    .radio-group label { padding: 10px 20px; border-radius: 12px; background: #1a1a1a; cursor: pointer; }
-    .radio-group input:checked + label { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: black; font-weight: 700; }
-    .shop-section { margin-top: 28px; background: #181818; border-radius: 18px; padding: 16px; border: 1px solid #252525; }
-    .item-line { display: flex; justify-content: space-between; padding: 8px 0; font-size: 15px; border-bottom: 1px dashed #333; }
-    .total-line { display: flex; justify-content: space-between; font-weight: 700; margin-top: 12px; font-size: 17px; }
-    button.main-btn, .wa-btn { margin-top: 20px; width: 100%; padding: 18px; background: #25D366; color: white; font-weight: 800; font-size: 18px; border: none; border-radius: 20px; cursor: pointer; box-shadow: 0 10px 30px rgba(37,211,102,0.4); display: flex; align-items: center; justify-content: center; gap: 12px; }
-    .wa-btn i { font-size: 24px; }
-    .success-msg { color: var(--accent); text-align: center; font-weight: 700; font-size: 20px; margin: 20px 0; }
-    .note { text-align: center; font-size: 13px; color: #888; margin: 10px 0; }
+    input { width: 100%; padding: 14px; margin: 8px 0; border-radius: 16px; border: 1px solid #333; background: #1a1a1a; color: white; }
+    button { margin-top: 32px; width: 100%; padding: 18px; background: linear-gradient(90deg, var(--accent), var(--accent2)); color: black; font-weight: 800; font-size: 18px; border: none; border-radius: 20px; cursor: pointer; }
+    .success { color: var(--accent); text-align: center; font-size: 20px; margin: 20px 0; }
   </style>
 </head>
 <body>
@@ -35,35 +25,26 @@
     const USER_KEY = "chatpoint_user";
     const API_BASE = window.location.origin;
 
-    // YOUR TWO NUMBERS (both will receive the WhatsApp message)
-    const ADMIN_NUMBERS = ["8088975913", "9632367397"];
+    // YOUR NUMBERS — FIRST ONE WILL OPEN FIRST
+    const PRIMARY   = "9632367397";   // ← Opens first
+    const BACKUP    = "8088975913";   // ← Opens second
 
     window.onload = () => {
       const user = JSON.parse(localStorage.getItem(USER_KEY) || "null");
-      if (!user?._id) {
-        document.getElementById("mainContainer").innerHTML = `<div style="text-align:center;padding:60px"><h3>Login Required</h3><a href="login.html" style="color:#00ff9d;font-weight:700">Go to Login</a></div>`;
-        return;
-      }
+      if (!user?._id) return document.body.innerHTML = `<div style="text-align:center;padding:100px"><h3>Login Required</h3><a href="login.html" style="color:#00ff9d">Go to Login</a></div>`;
       renderForm(user);
     };
 
     function renderForm(user) {
       document.getElementById("mainContainer").innerHTML = `
         <h2>Secure Checkout</h2>
-        <label>Full Name *</label>
-        <input type="text" id="name" value="${user.name || ''}" required />
-        <label>Phone Number *</label>
-        <input type="tel" id="phone" value="${user.phone || ''}" required />
-        <label>Delivery Address *</label>
-        <input type="text" id="address1" placeholder="House no., Street, Area" required />
+        <input type="text" id="name" placeholder="Full Name *" value="${user.name||''}" required />
+        <input type="tel" id="phone" placeholder="Phone Number *" value="${user.phone||''}" required />
+        <input type="text" id="address1" placeholder="Full Address *" required />
         <input type="text" id="address2" placeholder="Landmark (optional)" />
-        <div class="radio-group">
-          <input type="radio" id="cod" name="paymentMode" value="COD" checked hidden /><label for="cod">Cash on Delivery</label>
-        </div>
-        <div id="errorMsg" style="color:#ff6b6b;text-align:center;margin:12px 0"></div>
-        <div id="successMsg"></div>
-        <div id="cartContainer"></div>
-        <button class="main-btn" id="placeOrderBtn">PLACE ORDER NOW</button>
+        <div id="cartContainer" style="margin:28px 0"></div>
+        <button id="placeOrderBtn">PLACE ORDER NOW</button>
+        <div id="status" class="success"></div>
       `;
       renderCart();
       document.getElementById("placeOrderBtn").onclick = placeOrder;
@@ -71,33 +52,19 @@
 
     function renderCart() {
       const cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
-      const container = document.getElementById("cartContainer");
-      container.innerHTML = "";
-      let total = 0;
+      let html = "", total = 0;
       for (const shop in cart) {
-        let shopTotal = 0;
-        const sec = document.createElement("div"); sec.className = "shop-section";
-        sec.innerHTML = `<div style="font-weight:700;color:#00ff9d;margin-bottom:8px"> ${shop}</div>`;
-        for (const name in cart[shop]) {
-          const it = cart[shop][name];
+        for (const item in cart[shop]) {
+          const it = cart[shop][item];
           if (it.qty > 0) {
-            sec.innerHTML += `<div class="item-line"><span>${name} × ${it.qty}</span><span style="color:#00ff9d">₹${it.price * it.qty}</span></div>`;
-            shopTotal += it.price * it.qty;
+            html += `<div style="padding:8px 0;border-bottom:1px dashed #333"><strong>${item}</strong> × ${it.qty} — ₹${it.price*it.qty}</div>`;
+            total += it.price * it.qty;
           }
-        }
-        if (shopTotal > 0) {
-          sec.innerHTML += `<div class="total-line"><span>Subtotal</span><span>₹${shopTotal}</span></div>`;
-          container.appendChild(sec);
-          total += shopTotal;
         }
       }
       const del = total >= 50 ? 0 : 30;
-      const grand = total + del;
-      container.innerHTML += `
-        <div style="margin-top:20px;padding-top:12px;border-top:2px solid #333">
-          <div class="total-line"><span>Delivery</span><span style="color:${del===0?'#00ff9d':'inherit'}">${del===0?'FREE!':'₹'+del}</span></div>
-          <div class="total-line" style="font-size:20px;color:#00ff9d"><span>Grand Total</span><span>₹${grand}</span></div>
-        </div>`;
+      html += `<div style="margin-top:15px;font-size:18px"><strong>Total: ₹${total + del} (${del===0?'Free':del} delivery)</strong></div>`;
+      document.getElementById("cartContainer").innerHTML = html;
     }
 
     async function placeOrder() {
@@ -105,60 +72,55 @@
       const phone = document.getElementById("phone").value.trim();
       const address1 = document.getElementById("address1").value.trim();
       const address2 = document.getElementById("address2").value.trim();
+
       if (!name || !phone || !address1 || !/^\d{10}$/.test(phone)) {
-        document.getElementById("errorMsg").textContent = "Please fill all required fields correctly";
+        alert("Please fill all fields correctly");
         return;
       }
 
+      const btn = document.getElementById("placeOrderBtn");
+      btn.disabled = true;
+      btn.textContent = "Saving Order...";
+
+      // Save to your backend (keeps working even if WhatsApp fails)
+      try {
+        const cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
+        await fetch(`${API_BASE}/api/save-order`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId: JSON.parse(localStorage.getItem(USER_KEY))._id, name, phone, address1, address2, cart, paymentMode: "cash" })
+        });
+        localStorage.removeItem(CART_KEY);
+      } catch(e) {}
+
+      // Build order text
       const cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
-      if (Object.keys(cart).length === 0) return alert("Cart is empty!");
-
-      document.getElementById("placeOrderBtn").disabled = true;
-      document.getElementById("placeOrderBtn").textContent = "Placing Order...";
-
-      let itemsList = "";
+      let items = "";
       let total = 0;
       for (const shop in cart) {
         for (const item in cart[shop]) {
           const it = cart[shop][item];
           if (it.qty > 0) {
-            itemsList += `${item} (${shop}) × ${it.qty}\n`;
+            items += `${item} (${shop}) × ${it.qty}\n`;
             total += it.price * it.qty;
           }
         }
       }
       const del = total >= 50 ? 0 : 30;
-      const grand = total + del;
-
-      // Save order to your backend
-      try {
-        const res = await fetch(`${API_BASE}/api/save-order`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userId: JSON.parse(localStorage.getItem(USER_KEY))._id, name, phone, address1, address2, cart, itemsTotal: total, deliveryCharge: del, grandTotal: grand, paymentMode: "cash" })
-        });
-        const data = await res.json();
-        if (!data.success) throw 0;
-        localStorage.removeItem(CART_KEY);
-      } catch { }
-
-      // Build WhatsApp message exactly as you wanted
-      const message = `Hello! I have an order\n\n${itemsList}\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2?', '+address2:''}\nTotal: ₹${grand} (${del===0?'Free Delivery':'₹'+del+' Delivery'})\n\nKindly accept my order and reach us fast!`;
+      const message = `Hello! I have an order\n\n${items}\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2?', '+address2:''}\nTotal: ₹${total+del} (${del===0?'Free Delivery':'₹'+del+' Delivery'})\n\nKindly accept my order and reach us fast!`;
 
       const encoded = encodeURIComponent(message);
 
-      // Show success + WhatsApp button
-      document.getElementById("mainContainer").innerHTML = `
-        <div class="success-msg">Order Placed Successfully!</div>
-        <div class="note">Tap below to send order details on WhatsApp</div>
-        <a href="https://wa.me/91${ADMIN_NUMBERS[0]}?text=${encoded}" class="wa-btn" target="_blank">
-          <i class="fab fa-whatsapp"></i> Send on WhatsApp (Primary)
-        </a>
-        <a href="https://wa.me/91${ADMIN_NUMBERS[1]}?text=${encoded}" class="wa-btn" style="background:#128C7E;margin-top:12px;" target="_blank">
-          <i class="fab fa-whatsapp"></i> Send on WhatsApp (Backup)
-        </a>
-        <div class="note" style="margin-top:20px;">Order already saved — you can close this page</div>
-      `;
+      document.getElementById("status").innerHTML = "Order placed! Opening WhatsApp...";
+
+      // OPEN WHATSAPP AUTOMATICALLY — FIRST PRIMARY, THEN BACKUP
+      setTimeout(() => window.location.href = `https://wa.me/91${PRIMARY}?text=${encoded}`, 500);
+      setTimeout(() => window.location.href = `https://wa.me/91${BACKUP}?text=${encoded}`, 1500);
+
+      // Final success message
+      setTimeout(() => {
+        document.getElementById("status").innerHTML = "Order Sent! Thank you ❤️<br><small>You can close this page</small>";
+      }, 3000);
     }
   </script>
 </body>
