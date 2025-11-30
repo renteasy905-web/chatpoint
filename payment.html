@@ -183,7 +183,7 @@
           localStorage.removeItem(CART_KEY);
 
           // SUCCESS — NOW AUTO OPEN WHATSAPP
-          const message = `Hello! I have an order\n\n${itemsList}\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2?', '+address2:''}\nTotal: ₹${grandTotal} (${deliveryCharge===0?'Free Delivery':'₹'+deliveryCharge+' Delivery'})\n\nKindly accept my order and reach us fast!`;
+          const message = `Hello! I have an order\n\n${itemsList}\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2?', '+address2:''}\nTotal: ₹${grandTotal} (${deliveryCharge===0?'Free Delivery':'₹'+deliveryCharge+' Delivery'})\n\n Accept my order and reach us fast!`;
           const encoded = encodeURIComponent(message);
 
           document.getElementById("successMsg").innerHTML = `Order Placed! Sending on WhatsApp...`;
