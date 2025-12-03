@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Items | Chat Point</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --brand-red: #f12916; --brand-yellow: #f4ff2a; --accent-green: #30bc1a;
+      --text-dark: #111827; --bg-light: #e6f0fb; --card-white: #f3cd98;
+      --muted-text: #0f1b34; --border-light: rgba(14,19,26,0.08);
+      --radius-xl: 1.5rem; --radius-lg: 0.75rem; --max-width: 75rem;
+      --transition: 0.28s cubic-bezier(0.2,0.8,0.4,1);
+      --shadow: 0 10px 20px -5px rgba(15,23,42,0.1), 0 4px 6px -2px rgba(15,23,42,0.05);
+    }
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body { font-family: 'Outfit', sans-serif; background: var(--bg-light); color: var(--text-dark); padding-bottom: 7.5rem; min-height: 100vh; }
+    header[role="banner"] {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      padding: 0.875rem 1.25rem; background: linear-gradient(135deg, var(--brand-red), #ff6b6b);
+      color: white; border-bottom-left-radius: var(--radius-xl); border-bottom-right-radius: var(--radius-xl);
+      box-shadow: var(--shadow); position: sticky; top: 0; z-index: 60;
+    }
+    .back-btn { background: transparent; border: 0; color: inherit; width: 2.25rem; height: 2.25rem; border-radius: 50%; display: grid; place-items: center; cursor: pointer; }
+    .back-btn:hover { background: rgba(255,255,255,0.15); }
+    .title { font-weight: 800; font-size: 1.25rem; }
+    .shop-name { font-weight: 700; font-size: 0.9375rem; }
+    .login-banner { max-width: var(--max-width); margin: 1.5rem auto; padding: 1rem 1.5rem; border-radius: var(--radius-xl);
+      background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); box-shadow: var(--shadow); text-align: center; font-weight: 600; }
+    main { max-width: var(--max-width); margin: 2rem auto; padding: 0 1rem; }
+    .items-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .item-card { background: var(--card-white); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow);
+      border: 1px solid var(--border-light); transition: transform var(--transition), box-shadow var(--transition); }
+    .item-card:hover { transform: translateY(-0.5rem); box-shadow: 0 1rem 3rem rgba(15,23,42,0.15); }
+    .item-img { width: 100%; height: 12.5rem; object-fit: cover; background: #f0f0f0; }
+    .item-info { padding: 1rem 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .item-name { font-weight: 800; font-size: 1.125rem; word-break: break-word; }
+    .item-desc { font-size: 0.875rem; color: var(--muted-text); }
+    .item-price { font-weight: 900; color: var(--brand-red); font-size: 1.5rem; }
+    .quantity { display: flex; align-items: center; gap: 0.625rem; margin-top: 0.75rem; }
+    .qbtn { min-width: 2.5rem; height: 2.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-light);
+      background: white; color: var(--brand-red); font-size: 1.25rem; font-weight: 700; cursor: pointer;
+      display: grid; place-items: center; transition: all var(--transition); }
+    .qbtn:hover { background: var(--brand-red); color: white; transform: translateY(-2px); }
+    .qty { min-width: 2rem; text-align: center; font-weight: 800; }
+    .cart-bar {
+      position: fixed; left: 50%; transform: translateX(-50%); bottom: 2rem; width: calc(100% - 3rem); max-width: 28rem;
+      padding: 0.875rem 1.25rem; background: rgba(255,255,255,0.9); backdrop-filter: blur(14px); border-radius: var(--radius-xl);
+      box-shadow: var(--shadow); border: 1px solid rgba(255,255,255,0.5); display: flex; align-items: center; justify-content: space-between;
+      z-index: 70; cursor: pointer;
+    }
+    .checkout-btn {
+      background: linear-gradient(45deg, var(--brand-yellow), #ffd688); color: #000; border: none;
+      padding: 0.75rem 1.25rem; border-radius: var(--radius-lg); font-weight: 900; cursor: pointer;
+      box-shadow: 0 4px 10px rgba(255,177,42,0.3); transition: transform var(--transition);
+    }
+    .checkout-btn:hover { transform: translateY(-3px); }
+    .loading { text-align: center; padding: 4rem; color: #666; font-size: 1.1rem; }
+    @media (max-width: 420px) { .item-img { height: 10rem; } .cart-bar { width: calc(100% - 2rem); bottom: 1rem; } }
+  </style>
+</head>
+<body>
+
+  <header role="banner">
+    <div class="brand" style="flex:1">
+      <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i></button>
+      <div style="margin-left:8px">
+        <div class="title"><span style="color:#f4ff2a">Chat</span>Point</div>
+        <div style="font-size:12px;color:#fff8">Sindagi • Food Delivery</div>
+      </div>
+    </div>
+    <div class="shop-name" id="shopName">Loading...</div>
+  </header>
+
+  <main>
+    <div id="loginBanner" class="login-banner" style="display:none;">
+      Please <a href="login.html" style="color:var(--brand-red);text-decoration:underline">login</a> to add items to cart.
+    </div>
+    <div id="loading" class="loading">Loading delicious items...</div>
+    <section class="items-grid" id="itemsGrid" style="display:none"></section>
+  </main>
+
+  <div class="cart-bar" id="cartBar" style="display:none" onclick="location.href='cart.html'">
+    <div class="cart-info">
+      <div class="main" id="cartText">0 items · ₹0</div>
+      <div class="sub">Tap to view cart</div>
+    </div>
+    <button class="checkout-btn" id="checkoutBtn" onclick="event.stopPropagation(); location.href='cart.html'">Checkout</button>
+  </div>
+
+  <script>
+    const API = ""; // Your backend URL (e.g. https://chatpoint-backend.onrender.com)
+
+    const user = JSON.parse(localStorage.getItem("chatpoint_user") || "null");
+    const isLoggedIn = user && user._id;
+    if (!isLoggedIn) document.getElementById("loginBanner").style.display = "block";
+
+    let currentShop = null;
+    let cart = JSON.parse(localStorage.getItem("chatpoint_cart") || "{}");
+
+    // Get shop name from URL
+    const urlParams = new URLSearchParams(location.search);
+    const shopNameFromUrl = decodeURIComponent(urlParams.get("shop") || "");
+
+    async function loadShopAndItems() {
+      try {
+        const res = await fetch(`${API}/api/shops`);
+        const data = await res.json();
+        if (!data.success) throw new Error("Failed to load shops");
+
+        const shop = data.shops.find(s => s.shopName === shopNameFromUrl);
+        if (!shop) {
+          document.getElementById("loading").innerHTML = "<p style='color:red'>Shop not found!</p>";
+          return;
+        }
+
+        currentShop = shop;
+        document.getElementById("shopName").textContent = shop.shopName;
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("itemsGrid").style.display = "grid";
+
+        renderItems(shop.items || []);
+        updateCartBar();
+      } catch (err) {
+        document.getElementById("loading").innerHTML = "<p style='color:red'>Failed to load items. Please try again.</p>";
+      }
+    }
+
+    function renderItems(items) {
+      const grid = document.getElementById("itemsGrid");
+      grid.innerHTML = "";
+
+      if (items.length === 0) {
+        grid.innerHTML = "<p style='grid-column:1/-1;text-align:center;padding:3rem;color:#888'>No items available yet!</p>";
+        return;
+      }
+
+      items.forEach(item => {
+        const qty = (cart[currentShop.shopName] && cart[currentShop.shopName][item.name]) 
+                    ? cart[currentShop.shopName][item.name].qty : 0;
+
+        const card = document.createElement("article");
+        card.className = "item-card";
+        card.innerHTML = `
+          <img src="${item.imageUrl || 'https://via.placeholder.com/600x380/f3cd98/f12916?text=' + encodeURIComponent(item.name.split(' ').slice(0,3).join(' '))}" 
+               alt="${item.name}" class="item-img" loading="lazy">
+          <div class="item-info">
+            <div class="item-name">${item.name}</div>
+            <div class="item-desc">${item.description || "Fresh & Delicious"}</div>
+            <div class="item-price">₹${item.price}</div>
+            <div class="quantity">
+              <button class="qbtn" onclick="changeQty('${currentShop.shopName}', '${item.name.replace(/'/g, "\\'")}', ${item.price}, -1)">−</button>
+              <div class="qty">${qty}</div>
+              <button class="qbtn" onclick="changeQty('${currentShop.shopName}', '${item.name.replace(/'/g, "\\'")}', ${item.price}, 1)">+</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function changeQty(shopName, itemName, price, delta) {
+      if (!isLoggedIn) {
+        alert("Please login first!");
+        location.href = "login.html";
+        return;
+      }
+
+      if (!cart[shopName]) cart[shopName] = {};
+      if (!cart[shopName][itemName]) cart[shopName][itemName] = { qty: 0, price };
+
+      cart[shopName][itemName].qty = Math.max(0, cart[shopName][itemName].qty + delta);
+      if (cart[shopName][itemName].qty === 0) delete cart[shopName][itemName];
+      if (Object.keys(cart[shopName]).length === 0) delete cart[shopName];
+
+      localStorage.setItem("chatpoint_cart", JSON.stringify(cart));
+      updateCartBar();
+      renderItems(currentShop.items);
+    }
+
+    function updateCartBar() {
+      let totalItems = 0, totalPrice = 0;
+      for (const shop in cart) {
+        for (const item in cart[shop]) {
+          totalItems += cart[shop][item].qty;
+          totalPrice += cart[shop][item].qty * cart[shop][item].price;
+        }
+      }
+      document.getElementById("cartText").textContent = `${totalItems} items · ₹${totalPrice}`;
+      document.getElementById("cartBar").style.display = totalItems > 0 ? "flex" : "none";
+    }
+
+    // Back button
+    document.getElementById("backBtn").onclick = () => history.back();
+
+    // Load everything
+    loadShopAndItems();
+  </script>
+</body>
+</html>
