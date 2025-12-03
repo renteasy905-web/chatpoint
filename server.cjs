@@ -62,7 +62,7 @@ const Order = mongoose.model("Order", new mongoose.Schema({
   deliveryCharge: Number,
   address: { name: String, phone: String, line1: String, line2: String },
   paymentMethod: { type: String, default: "cash" },
-  status: { type: String, default: "pending" },
+  status: { type: String, default: "pending" }, // pending, confirmed, delivered, cancelled
   date: { type: Date, default: Date.now },
 }, { timestamps: true }));
 
@@ -89,22 +89,26 @@ app.post("/api/user/signup", async (req, res) => {
   }
 });
 
-// Login with Hash
+// Login
 app.post("/api/user/login", async (req, res) => {
   try {
     const { phone, password } = req.body;
     const hash = crypto.createHash('sha256').update(password).digest('hex');
     const user = await User.findOne({ phone, password: hash });
+
     if (!user) return res.status(401).json({ success: false, message: "Invalid credentials" });
 
-    res.json({ success: true, user: { _id: user._id, name: user.name, phone: user.phone } });
+    res.json({
+      success: true,
+      user: { _id: user._id, name: user.name, phone: user.phone }
+    });
   } catch (e) {
     console.error("LOGIN ERROR:", e.message);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
-// FIXED & BULLETPROOF SAVE ORDER
+// Save Order
 app.post("/api/save-order", async (req, res) => {
   try {
     const { userId, name, phone, address1, address2, cart, itemsTotal, deliveryCharge = 30, grandTotal, paymentMode = "cash" } = req.body;
@@ -141,6 +145,7 @@ app.post("/api/save-order", async (req, res) => {
 
     await order.save();
     console.log("ORDER SAVED:", order._id);
+
     res.json({ success: true, orderId: order._id, message: "Order placed!" });
   } catch (e) {
     console.error("SAVE ORDER ERROR:", e.message);
@@ -148,6 +153,7 @@ app.post("/api/save-order", async (req, res) => {
   }
 });
 
+// Get Shops
 app.get("/api/shops", async (req, res) => {
   try {
     const shops = await Shop.find({ type: "shop" }).sort({ date: -1 }).lean();
@@ -157,44 +163,68 @@ app.get("/api/shops", async (req, res) => {
   }
 });
 
+// Delivery Portal: Get pending + confirmed orders
 app.get("/api/delivery-orders", async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 50;
-    const orders = await Order.find({ status: "pending" }).sort({ date: -1 }).limit(limit).lean();
+    const orders = await Order.find({
+      status: { $in: ["pending", "confirmed"] }  // Show both pending & confirmed
+    })
+    .sort({ date: -1 })
+    .limit(limit)
+    .lean();
+
     res.json({ success: true, orders });
   } catch (e) {
+    console.error(e);
     res.status(500).json({ success: false });
   }
 });
 
+// Update Order Status (Now supports "confirmed")
 app.post("/api/update-order-status", async (req, res) => {
   try {
     const { orderId, status } = req.body;
-    if (!orderId || !["delivered", "cancelled"].includes(status))
-      return res.status(400).json({ success: false, message: "Invalid" });
 
-    const order = await Order.findByIdAndUpdate(orderId, { status }, { new: true }).lean();
-    if (!order) return res.status(404).json({ success: false, message: "Not found" });
+    if (!orderId || !["confirmed", "delivered", "cancelled"].includes(status)) {
+      return res.status(400).json({ success: false, message: "Invalid status" });
+    }
+
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      { status },
+      { new: true }
+    ).lean();
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
 
     res.json({ success: true, order });
   } catch (e) {
+    console.error("UPDATE STATUS ERROR:", e);
     res.status(500).json({ success: false });
   }
 });
 
+// Customer: My Orders
 app.get("/api/my-orders", async (req, res) => {
   try {
     const userId = req.headers["x-user-id"];
     if (!userId) return res.status(400).json({ success: false, message: "No user" });
 
-    const orders = await Order.find({ userId }).sort({ date: -1 }).lean();
+    const orders = await Order.find({ userId })
+      .sort({ date: -1 })
+      .lean();
+
     res.json({ success: true, orders });
   } catch (e) {
+    console.error(e);
     res.status(500).json({ success: false });
   }
 });
 
-// ============================== SERVE STATIC ==============================
+// ============================== SERVE STATIC FILES ==============================
 app.use('/icons', express.static(path.join(__dirname, 'icons')));
 app.use(express.static(__dirname));
 
@@ -208,7 +238,8 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// ============================== START ==============================
+// ============================== START SERVER ==============================
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`ChatPoint Backend LIVE on port ${PORT}`);
+  console.log(`http://localhost:${PORT}`);
 });
