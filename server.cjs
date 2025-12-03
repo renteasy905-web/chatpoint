@@ -5,24 +5,41 @@ const cors = require("cors");
 const path = require("path");
 const bodyParser = require("body-parser");
 const crypto = require("crypto");
+const multer = require("multer");
+const fs = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// ==================== CREATE ICONS FOLDER & MULTER SETUP ====================
+if (!fs.existsSync("./icons")) {
+  fs.mkdirSync("./icons");
+}
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "icons/"),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, Date.now() + "-" + Math.round(Math.random() * 1E9) + ext);
+  }
+});
+const upload = multer({ storage });
 
-// ---------- MIDDLEWARE ----------
+// ==================== MIDDLEWARE ====================
 app.use(cors({ origin: "*", credentials: true }));
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.raw({ type: "application/octet-stream", limit: "50mb" }));
-
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
   next();
 });
 
-// ---------- MONGODB ----------
+// Serve static files (images, html, etc.)
+app.use('/icons', express.static(path.join(__dirname, 'icons')));
+app.use(express.static(__dirname));
+
+// ==================== MONGODB CONNECTION ====================
 const mongoURI = process.env.MONGODB_URI;
 if (!mongoURI) {
   console.error("FATAL: MONGODB_URI missing in env!");
@@ -39,11 +56,11 @@ mongoose.connect(mongoURI, {
     process.exit(1);
   });
 
-// ---------- MODELS ----------
+// ==================== MODELS ====================
 const User = mongoose.model("User", new mongoose.Schema({
   name: String,
   phone: { type: String, required: true, unique: true },
-  password: String, // hashed
+  password: String,
 }, { timestamps: true }));
 
 const Shop = mongoose.model("Shop", new mongoose.Schema({
@@ -51,7 +68,12 @@ const Shop = mongoose.model("Shop", new mongoose.Schema({
   ownerName: String,
   mobile: String,
   shopName: String,
-  items: [{ name: String, price: Number, description: String, imageUrl: [String] }],
+  items: [{
+    name: String,
+    price: Number,
+    description: String,
+    imageUrl: [String]
+  }],
   date: { type: Date, default: Date.now },
 }));
 
@@ -64,11 +86,11 @@ const Order = mongoose.model("Order", new mongoose.Schema({
   deliveryCharge: Number,
   address: { name: String, phone: String, line1: String, line2: String },
   paymentMethod: { type: String, default: "cash" },
-  status: { type: String, default: "pending" }, // pending, confirmed, delivered, cancelled
+  status: { type: String, default: "pending" },
   date: { type: Date, default: Date.now },
 }, { timestamps: true }));
 
-// ============================== API ROUTES ==============================
+// ==================== ROUTES ====================
 
 // Signup
 app.post("/api/user/signup", async (req, res) => {
@@ -76,14 +98,11 @@ app.post("/api/user/signup", async (req, res) => {
     const { name, phone, password } = req.body;
     if (!name || !phone || !password || password.length < 4)
       return res.status(400).json({ success: false, message: "Invalid data" });
-
     const exists = await User.findOne({ phone });
     if (exists) return res.status(400).json({ success: false, message: "Phone already registered" });
-
     const hash = crypto.createHash('sha256').update(password).digest('hex');
     const user = new User({ name, phone, password: hash });
     await user.save();
-
     res.json({ success: true, message: "Signup successful" });
   } catch (e) {
     console.error("SIGNUP ERROR:", e.message);
@@ -97,9 +116,7 @@ app.post("/api/user/login", async (req, res) => {
     const { phone, password } = req.body;
     const hash = crypto.createHash('sha256').update(password).digest('hex');
     const user = await User.findOne({ phone, password: hash });
-
     if (!user) return res.status(401).json({ success: false, message: "Invalid credentials" });
-
     res.json({
       success: true,
       user: { _id: user._id, name: user.name, phone: user.phone }
@@ -114,13 +131,11 @@ app.post("/api/user/login", async (req, res) => {
 app.post("/api/save-order", async (req, res) => {
   try {
     const { userId, name, phone, address1, address2, cart, itemsTotal, deliveryCharge = 30, grandTotal, paymentMode = "cash" } = req.body;
-
     if (!userId || !name || !phone || !address1 || !cart || grandTotal === undefined)
       return res.status(400).json({ success: false, message: "Missing data" });
 
     const items = [];
     let shopName = null;
-
     for (const shop in cart) {
       for (const itemName in cart[shop]) {
         const it = cart[shop][itemName];
@@ -130,7 +145,6 @@ app.post("/api/save-order", async (req, res) => {
         }
       }
     }
-
     if (items.length === 0) return res.status(400).json({ success: false, message: "Cart empty" });
     if (!shopName) return res.status(400).json({ success: false, message: "No shop found" });
 
@@ -144,10 +158,8 @@ app.post("/api/save-order", async (req, res) => {
       address: { name, phone, line1: address1, line2: address2 || "" },
       paymentMethod: paymentMode,
     });
-
     await order.save();
     console.log("ORDER SAVED:", order._id);
-
     res.json({ success: true, orderId: order._id, message: "Order placed!" });
   } catch (e) {
     console.error("SAVE ORDER ERROR:", e.message);
@@ -155,27 +167,25 @@ app.post("/api/save-order", async (req, res) => {
   }
 });
 
-// Get Shops
+// Get All Shops
 app.get("/api/shops", async (req, res) => {
   try {
     const shops = await Shop.find({ type: "shop" }).sort({ date: -1 }).lean();
     res.json({ success: true, shops });
   } catch (e) {
+    console.error(e);
     res.status(500).json({ success: false });
   }
 });
 
-// ACTIVE ORDERS: Only pending + confirmed (for live view)
+// Active Orders (Delivery Panel)
 app.get("/api/delivery-orders", async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 50;
-    const orders = await Order.find({
-      status: { $in: ["pending", "confirmed"] }
-    })
+    const orders = await Order.find({ status: { $in: ["pending", "confirmed"] } })
       .sort({ date: -1 })
       .limit(limit)
       .lean();
-
     res.json({ success: true, orders });
   } catch (e) {
     console.error(e);
@@ -183,58 +193,40 @@ app.get("/api/delivery-orders", async (req, res) => {
   }
 });
 
-// NEW: ALL ORDERS (including delivered & cancelled) — for history + filters
+// All Orders (History)
 app.get("/api/all-delivery-orders", async (req, res) => {
   try {
-    const orders = await Order.find({})
-      .sort({ date: -1 })
-      .limit(1000) // increase if needed
-      .lean();
-
+    const orders = await Order.find({}).sort({ date: -1 }).limit(1000).lean();
     res.json({ success: true, orders });
   } catch (e) {
-    console.error("ALL ORDERS ERROR:", e);
-    res.status(500).json({ success: false, message: "Failed to fetch all orders" });
-  }
-});
-
-// Update Order Status (confirmed, delivered, cancelled)
-app.post("/api/update-order-status", async (req, res) => {
-  try {
-    const { orderId, status } = req.body;
-
-    if (!orderId || !["confirmed", "delivered", "cancelled"].includes(status)) {
-      return res.status(400).json({ success: false, message: "Invalid status" });
-    }
-
-    const order = await Order.findByIdAndUpdate(
-      orderId,
-      { status },
-      { new: true }
-    ).lean();
-
-    if (!order) {
-      return res.status(404).json({ success: false, message: "Order not found" });
-    }
-
-    console.log(`Order ${orderId} → ${status}`);
-    res.json({ success: true, order });
-  } catch (e) {
-    console.error("UPDATE STATUS ERROR:", e);
+    console.error(e);
     res.status(500).json({ success: false });
   }
 });
 
-// Customer: My Orders
+// Update Order Status
+app.post("/api/update-order-status", async (req, res) => {
+  try {
+    const { orderId, status } = req.body;
+    if (!orderId || !["confirmed", "delivered", "cancelled"].includes(status)) {
+      return res.status(400).json({ success: false, message: "Invalid status" });
+    }
+    const order = await Order.findByIdAndUpdate(orderId, { status }, { new: true }).lean();
+    if (!order) return res.status(404).json({ success: false, message: "Order not found" });
+    console.log(`Order ${orderId} → ${status}`);
+    res.json({ success: true, order });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false });
+  }
+});
+
+// My Orders (Customer)
 app.get("/api/my-orders", async (req, res) => {
   try {
     const userId = req.headers["x-user-id"];
     if (!userId) return res.status(400).json({ success: false, message: "No user" });
-
-    const orders = await Order.find({ userId })
-      .sort({ date: -1 })
-      .lean();
-
+    const orders = await Order.find({ userId }).sort({ date: -1 }).lean();
     res.json({ success: true, orders });
   } catch (e) {
     console.error(e);
@@ -242,11 +234,53 @@ app.get("/api/my-orders", async (req, res) => {
   }
 });
 
-// ============================== SERVE STATIC FILES ==============================
-app.use('/icons', express.static(path.join(__dirname, 'icons')));
-app.use(express.static(__dirname));
+// ==================== ADMIN PANEL ROUTES ====================
 
-["privacy", "delivery", "orders", "items", "cart", "payment", "login"].forEach(page => {
+// Add New Shop
+app.post("/api/admin/add-shop", async (req, res) => {
+  try {
+    const { shopName, ownerName, mobile } = req.body;
+    if (!shopName) return res.status(400).json({ success: false, message: "Shop name required" });
+
+    const shop = new Shop({ shopName, ownerName, mobile, items: [] });
+    await shop.save();
+    res.json({ success: true, shop });
+  } catch (e) {
+    console.error("Add shop error:", e);
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
+
+// Add Item with Images
+app.post("/api/admin/add-item", upload.array("images", 10), async (req, res) => {
+  try {
+    const { shopId, name, price, description } = req.body;
+    if (!shopId || !name || !price) {
+      return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    const imageUrls = req.files ? req.files.map(file => `/icons/${file.filename}`) : [];
+
+    const shop = await Shop.findById(shopId);
+    if (!shop) return res.status(404).json({ success: false, message: "Shop not found" });
+
+    shop.items.push({
+      name,
+      price: parseFloat(price),
+      description: description || "",
+      imageUrl: imageUrls
+    });
+
+    await shop.save();
+    res.json({ success: true, message: "Item added successfully!" });
+  } catch (e) {
+    console.error("Add item error:", e);
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
+
+// ==================== SERVE HTML PAGES ====================
+["privacy", "delivery", "orders", "items", "cart", "payment", "login", "admin"].forEach(page => {
   app.get(`/${page}.html`, (req, res) => {
     res.sendFile(path.join(__dirname, `${page}.html`));
   });
@@ -256,9 +290,9 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// ============================== START SERVER ==============================
+// ==================== START SERVER ====================
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`ChatPoint Backend LIVE on port ${PORT}`);
-  console.log(`http://localhost:${PORT}`);
+  console.log(`Admin Panel → http://localhost:${PORT}/admin.html`);
   console.log(`Delivery Portal → http://localhost:${PORT}/delivery.html`);
 });
