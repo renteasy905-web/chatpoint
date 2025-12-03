@@ -11,52 +11,39 @@ const fs = require("fs");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ==================== CREATE ICONS FOLDER & MULTER SETUP ====================
-if (!fs.existsSync("./icons")) {
-  fs.mkdirSync("./icons");
+// =============== CREATE UPLOAD FOLDER + MULTER ===============
+if (!fs.existsSync("icons")) {
+  fs.mkdirSync("icons", { recursive: true });
 }
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "icons/"),
   filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, Date.now() + "-" + Math.round(Math.random() * 1E9) + ext);
-  }
+    const uniqueName = Date.now() + "-" + Math.round(Math.random() * 1e9) + path.extname(file.originalname);
+    cb(null, uniqueName);
+  },
 });
 const upload = multer({ storage });
 
-// ==================== MIDDLEWARE ====================
+// =============== MIDDLEWARE ===============
 app.use(cors({ origin: "*", credentials: true }));
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.raw({ type: "application/octet-stream", limit: "50mb" }));
-app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
-  next();
-});
-
-// Serve static files (images, html, etc.)
-app.use('/icons', express.static(path.join(__dirname, 'icons')));
 app.use(express.static(__dirname));
+app.use("/icons", express.static(path.join(__dirname, "icons")));
 
-// ==================== MONGODB CONNECTION ====================
-const mongoURI = process.env.MONGODB_URI;
-if (!mongoURI) {
-  console.error("FATAL: MONGODB_URI missing in env!");
-  process.exit(1);
-}
-
-mongoose.connect(mongoURI, {
+// =============== MONGO DB ===============
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-  .then(() => console.log("MongoDB Atlas connected"))
+  .then(() => console.log("MongoDB Connected"))
   .catch(err => {
-    console.error("MongoDB failed:", err.message);
+    console.error("MongoDB Error:", err);
     process.exit(1);
   });
 
-// ==================== MODELS ====================
+// =============== MODELS ===============
 const User = mongoose.model("User", new mongoose.Schema({
   name: String,
   phone: { type: String, required: true, unique: true },
@@ -65,9 +52,9 @@ const User = mongoose.model("User", new mongoose.Schema({
 
 const Shop = mongoose.model("Shop", new mongoose.Schema({
   type: { type: String, default: "shop" },
+  shopName: String,
   ownerName: String,
   mobile: String,
-  shopName: String,
   items: [{
     name: String,
     price: Number,
@@ -78,7 +65,7 @@ const Shop = mongoose.model("Shop", new mongoose.Schema({
 }));
 
 const Order = mongoose.model("Order", new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  userId: mongoose.Schema.Types.ObjectId,
   user: { name: String, phone: String },
   shop: String,
   items: [{ name: String, price: Number, quantity: Number }],
@@ -88,211 +75,134 @@ const Order = mongoose.model("Order", new mongoose.Schema({
   paymentMethod: { type: String, default: "cash" },
   status: { type: String, default: "pending" },
   date: { type: Date, default: Date.now },
-}, { timestamps: true }));
+}));
 
-// ==================== ROUTES ====================
-
-// Signup
+// =============== ROUTES ===============
+// Signup & Login (unchanged)
 app.post("/api/user/signup", async (req, res) => {
   try {
     const { name, phone, password } = req.body;
-    if (!name || !phone || !password || password.length < 4)
-      return res.status(400).json({ success: false, message: "Invalid data" });
+    if (!name || !phone || !password) return res.status(400).json({ success: false });
     const exists = await User.findOne({ phone });
     if (exists) return res.status(400).json({ success: false, message: "Phone already registered" });
-    const hash = crypto.createHash('sha256').update(password).digest('hex');
+    const hash = crypto.createHash("sha256").update(password).digest("hex");
     const user = new User({ name, phone, password: hash });
     await user.save();
-    res.json({ success: true, message: "Signup successful" });
-  } catch (e) {
-    console.error("SIGNUP ERROR:", e.message);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ success: false }); }
 });
 
-// Login
 app.post("/api/user/login", async (req, res) => {
   try {
     const { phone, password } = req.body;
-    const hash = crypto.createHash('sha256').update(password).digest('hex');
+    const hash = crypto.createHash("sha256").update(password).digest("hex");
     const user = await User.findOne({ phone, password: hash });
-    if (!user) return res.status(401).json({ success: false, message: "Invalid credentials" });
-    res.json({
-      success: true,
-      user: { _id: user._id, name: user.name, phone: user.phone }
-    });
-  } catch (e) {
-    console.error("LOGIN ERROR:", e.message);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
+    if (!user) return res.status(401).json({ success: false, message: "Wrong credentials" });
+    res.json({ success: true, user: { _id: user._id, name: user.name, phone: user.phone } });
+  } catch (e) { res.status(500).json({ success: false }); }
 });
 
-// Save Order
 app.post("/api/save-order", async (req, res) => {
   try {
-    const { userId, name, phone, address1, address2, cart, itemsTotal, deliveryCharge = 30, grandTotal, paymentMode = "cash" } = req.body;
-    if (!userId || !name || !phone || !address1 || !cart || grandTotal === undefined)
-      return res.status(400).json({ success: false, message: "Missing data" });
-
-    const items = [];
-    let shopName = null;
+    const { userId, name, phone, address1, address2, cart, grandTotal } = req.body;
+    let items = [], shopName = null;
     for (const shop in cart) {
-      for (const itemName in cart[shop]) {
-        const it = cart[shop][itemName];
-        if (it.qty > 0) {
-          items.push({ name: itemName, price: it.price, quantity: it.qty });
+      for (const item in cart[shop]) {
+        if (cart[shop][item].qty > 0) {
+          items.push({ name: item, price: cart[shop][item].price, quantity: cart[shop][item].qty });
           if (!shopName) shopName = shop;
         }
       }
     }
-    if (items.length === 0) return res.status(400).json({ success: false, message: "Cart empty" });
-    if (!shopName) return res.status(400).json({ success: false, message: "No shop found" });
-
+    if (items.length === 0) return res.status(400).json({ success: false });
     const order = new Order({
-      userId,
-      user: { name, phone },
-      shop: shopName,
-      items,
-      totalAmount: grandTotal,
-      deliveryCharge,
-      address: { name, phone, line1: address1, line2: address2 || "" },
-      paymentMethod: paymentMode,
+      userId, user: { name, phone }, shop: shopName, items,
+      totalAmount: grandTotal, deliveryCharge: 30,
+      address: { name, phone, line1: address1, line2: address2 || "" }
     });
     await order.save();
-    console.log("ORDER SAVED:", order._id);
-    res.json({ success: true, orderId: order._id, message: "Order placed!" });
-  } catch (e) {
-    console.error("SAVE ORDER ERROR:", e.message);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
+    res.json({ success: true, orderId: order._id });
+  } catch (e) { res.status(500).json({ success: false }); }
 });
 
-// Get All Shops
 app.get("/api/shops", async (req, res) => {
   try {
     const shops = await Shop.find({ type: "shop" }).sort({ date: -1 }).lean();
     res.json({ success: true, shops });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false });
-  }
+  } catch (e) { res.status(500).json({ success: false }); }
 });
 
-// Active Orders (Delivery Panel)
 app.get("/api/delivery-orders", async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 50;
-    const orders = await Order.find({ status: { $in: ["pending", "confirmed"] } })
-      .sort({ date: -1 })
-      .limit(limit)
-      .lean();
+    const orders = await Order.find({ status: { $in: ["pending", "confirmed"] } }).sort({ date: -1 }).limit(50).lean();
     res.json({ success: true, orders });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false });
-  }
+  } catch (e) { res.status(500).json({ success: false }); }
 });
 
-// All Orders (History)
 app.get("/api/all-delivery-orders", async (req, res) => {
   try {
     const orders = await Order.find({}).sort({ date: -1 }).limit(1000).lean();
     res.json({ success: true, orders });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false });
-  }
+  } catch (e) { res.status(500).json({ success: false }); }
 });
 
-// Update Order Status
 app.post("/api/update-order-status", async (req, res) => {
   try {
     const { orderId, status } = req.body;
-    if (!orderId || !["confirmed", "delivered", "cancelled"].includes(status)) {
-      return res.status(400).json({ success: false, message: "Invalid status" });
-    }
-    const order = await Order.findByIdAndUpdate(orderId, { status }, { new: true }).lean();
-    if (!order) return res.status(404).json({ success: false, message: "Order not found" });
-    console.log(`Order ${orderId} → ${status}`);
-    res.json({ success: true, order });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false });
-  }
+    if (!["confirmed", "delivered", "cancelled"].includes(status)) return res.status(400).json({ success: false });
+    await Order.findByIdAndUpdate(orderId, { status });
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ success: false }); }
 });
 
-// My Orders (Customer)
 app.get("/api/my-orders", async (req, res) => {
   try {
     const userId = req.headers["x-user-id"];
-    if (!userId) return res.status(400).json({ success: false, message: "No user" });
     const orders = await Order.find({ userId }).sort({ date: -1 }).lean();
     res.json({ success: true, orders });
+  } catch (e) { res.status(500).json({ success: false }); }
+});
+
+// =============== ADMIN ROUTES ===============
+app.post("/api/admin/add-shop", async (req, res) => {
+  try {
+    const { shopName, ownerName, mobile } = req.body;
+    if (!shopName) return res.status(400).json({ success: false });
+    const shop = new Shop({ shopName, ownerName, mobile, items: [] });
+    await shop.save();
+    res.json({ success: true, shop });
+  } catch (e) { res.status(500).json({ success: false }); }
+});
+
+app.post("/api/admin/add-item", upload.array("images", 10), async (req, res) => {
+  try {
+    const { shopId, name, price, description } = req.body;
+    if (!shopId || !name || !price) return res.status(400).json({ success: false });
+
+    const imageUrls = req.files ? req.files.map(f => `/icons/${f.filename}`) : [];
+
+    await Shop.updateOne(
+      { _id: shopId },
+      { $push: { items: { name, price: parseFloat(price), description: description || "", imageUrl: imageUrls } } }
+    );
+    res.json({ success: true });
   } catch (e) {
     console.error(e);
     res.status(500).json({ success: false });
   }
 });
 
-// ==================== ADMIN PANEL ROUTES ====================
-
-// Add New Shop
-app.post("/api/admin/add-shop", async (req, res) => {
-  try {
-    const { shopName, ownerName, mobile } = req.body;
-    if (!shopName) return res.status(400).json({ success: false, message: "Shop name required" });
-
-    const shop = new Shop({ shopName, ownerName, mobile, items: [] });
-    await shop.save();
-    res.json({ success: true, shop });
-  } catch (e) {
-    console.error("Add shop error:", e);
-    res.status(500).json({ success: false, message: e.message });
-  }
-});
-
-// Add Item with Images
-app.post("/api/admin/add-item", upload.array("images", 10), async (req, res) => {
-  try {
-    const { shopId, name, price, description } = req.body;
-    if (!shopId || !name || !price) {
-      return res.status(400).json({ success: false, message: "Missing required fields" });
-    }
-
-    const imageUrls = req.files ? req.files.map(file => `/icons/${file.filename}`) : [];
-
-    const shop = await Shop.findById(shopId);
-    if (!shop) return res.status(404).json({ success: false, message: "Shop not found" });
-
-    shop.items.push({
-      name,
-      price: parseFloat(price),
-      description: description || "",
-      imageUrl: imageUrls
-    });
-
-    await shop.save();
-    res.json({ success: true, message: "Item added successfully!" });
-  } catch (e) {
-    console.error("Add item error:", e);
-    res.status(500).json({ success: false, message: e.message });
-  }
-});
-
-// ==================== SERVE HTML PAGES ====================
-["privacy", "delivery", "orders", "items", "cart", "payment", "login", "admin"].forEach(page => {
-  app.get(`/${page}.html`, (req, res) => {
-    res.sendFile(path.join(__dirname, `${page}.html`));
+// =============== SERVE PAGES ===============
+const pages = ["index", "privacy", "delivery", "orders", "items", "cart", "payment", "login", "admin"];
+pages.forEach(p => {
+  app.get(`/${p === "index" ? "" : p + ".html"}`, (req, res) => {
+    res.sendFile(path.join(__dirname, `${p}.html`));
   });
 });
+app.get("*", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// ==================== START SERVER ====================
+// =============== START SERVER ===============
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`ChatPoint Backend LIVE on port ${PORT}`);
-  console.log(`Admin Panel → http://localhost:${PORT}/admin.html`);
-  console.log(`Delivery Portal → http://localhost:${PORT}/delivery.html`);
+  console.log(`ChatPoint LIVE on port ${PORT}`);
+  console.log(`Admin Panel → https://your-site.onrender.com/admin.html`);
 });
