@@ -9,6 +9,47 @@ const crypto = require("crypto");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// ==================== ADMIN ROUTES ====================
+
+// Admin: Add Shop
+app.post("/api/admin/add-shop", async (req, res) => {
+  try {
+    const { shopName, ownerName, mobile } = req.body;
+    if (!shopName) return res.status(400).json({ success: false, message: "Shop name required" });
+    const shop = new Shop({ shopName, ownerName, mobile, items: [] });
+    await shop.save();
+    res.json({ success: true, shop });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
+
+// Admin: Add Item with Image Upload
+app.post("/api/admin/add-item", upload.array("images", 10), async (req, res) => {
+  try {
+    const { shopId, name, price, description } = req.body;
+    if (!shopId || !name || !price) return res.status(400).json({ success: false });
+
+    const imageUrls = req.files ? req.files.map(f => `/icons/${f.filename}`) : [];
+
+    const shop = await Shop.findById(shopId);
+    if (!shop) return res.status(404).json({ success: false, message: "Shop not found" });
+
+    shop.items.push({
+      name,
+      price: parseFloat(price),
+      description: description || "",
+      imageUrl: imageUrls
+    });
+    await shop.save();
+
+    res.json({ success: true, item: shop.items[shop.items.length - 1] });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false });
+  }
+});
+
 // ---------- MIDDLEWARE ----------
 app.use(cors({ origin: "*", credentials: true }));
 app.use(bodyParser.json({ limit: "10mb" }));
