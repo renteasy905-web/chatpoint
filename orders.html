@@ -4,11 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Orders | Chat Point</title>
-
-  <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
   <style>
     :root {
       --bg1: #071021;
@@ -30,62 +27,72 @@
     }
     .container{max-width:700px;margin:auto;}
     h1{text-align:center;margin-bottom:24px;color:var(--accent-fresh);font-weight:700;}
-
     .login-prompt{text-align:center;padding:60px 20px;color:#aaa;font-size:18px;}
     .login-prompt a{color:var(--accent-warm);text-decoration:none;font-weight:600;}
 
     .order-card{
-      background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:16px;
-      border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(10px);
-      transition:transform .2s ease;
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:18px;
+      margin-bottom:16px;
+      border:1px solid rgba(255,255,255,.08);
+      backdrop-filter:blur(10px);
+      transition:transform .2s ease, box-shadow .2s ease;
     }
-    .order-card:hover{transform:translateY(-2px);}
-    .order-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-weight:600;}
-    .order-id{color:var(--accent-fresh);font-size:14px;}
+    .order-card:hover{transform:translateY(-3px); box-shadow:0 10px 25px rgba(0,0,0,0.3);}
+
+    .order-header{
+      display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-weight:600;
+    }
+    .order-id{color:var(--accent-fresh);font-size:15px;}
     .order-date{font-size:13px;color:var(--muted);}
-    .status{padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;}
-    .status.pending{background:#ffeb3b33;color:#ffc107;}
-    .status.delivered{background:#4caf5033;color:#4caf50;}
-    .status.cancelled{background:#f4433633;color:#f44336;}
 
-    .items-list{margin:12px 0;padding-left:8px;border-left:2px solid var(--accent-warm);}
-    .item-line{display:flex;justify-content:space-between;font-size:14px;padding:4px 0;}
-    .total-line{display:flex;justify-content:space-between;font-weight:700;margin-top:10px;
-                padding-top:10px;border-top:1px dashed rgba(255,255,255,.2);}
+    .status{
+      padding:6px 14px;border-radius:30px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;
+    }
+    .status.pending{background:#ffeb3b33;color:#fbbf24;}
+    .status.confirmed{background:#3b82f633;color:#60a5fa;}
+    .status.delivered{background:#10b98133;color:#34d399;}
+    .status.cancelled{background:#ef444433;color:#f87171;}
 
-    .address{margin-top:12px;font-size:14px;color:var(--muted);}
+    .items-list{margin:14px 0;padding-left:10px;border-left:3px solid var(--accent-warm);}
+    .item-line{display:flex;justify-content:space-between;font-size:14.5px;padding:5px 0;color:#e2e8f0;}
+    .total-line{
+      display:flex;justify-content:space-between;font-weight:700;font-size:18px;margin-top:14px;
+      padding-top:12px;border-top:1px dashed rgba(255,255,255,.2);color:var(--accent-fresh);
+    }
+    .address{margin-top:14px;font-size:14px;color:var(--muted);line-height:1.5;}
+    .address strong{color:var(--accent-fresh);}
 
-    .empty-state{text-align:center;padding:60px 20px;color:var(--muted);font-size:18px;}
-    .empty-state i{font-size:48px;margin-bottom:16px;color:#555;}
+    .empty-state{text-align:center;padding:80px 20px;color:var(--muted);font-size:19px;}
+    .empty-state i{font-size:60px;margin-bottom:20px;color:#444;}
     .back-btn{
       display:block;width:100%;max-width:300px;margin:30px auto 0;
-      padding:12px;background:linear-gradient(90deg,var(--accent-fresh),var(--accent-warm));
+      padding:14px;background:linear-gradient(90deg,var(--accent-fresh),var(--accent-warm));
       color:#000;font-weight:700;text-align:center;border-radius:14px;
-      text-decoration:none;font-size:16px;
+      text-decoration:none;font-size:17px;transition:0.3s;
     }
-    .loading{text-align:center;color:#aaa;padding:20px;}
-    .error-box{background:#7f1d1d33;color:#fca5a5;padding:16px;border-radius:12px;margin:16px 0;font-size:14px;}
+    .back-btn:hover{transform:scale(1.05);}
+
+    .loading{text-align:center;color:#aaa;padding:30px;font-size:18px;}
+    .error-box{background:#7f1d1d33;color:#fca5a5;padding:18px;border-radius:12px;margin:16px 0;font-size:15px;text-align:center;}
   </style>
 </head>
 <body>
-
 <div class="container">
   <h1>My Orders</h1>
-  <div id="ordersContainer"></div>
+  <div id="ordersContainer">
+    <p class="loading"><i class="fas fa-spinner fa-spin"></i> Loading your orders…</p>
+  </div>
 </div>
 
 <script>
-  /* ==================== CONFIG ==================== */
-  const USER_KEY   = 'chatpoint_user';
-  const CACHE_KEY  = 'my-orders-cache';
-  const POLL_MS    = 30_000;
-
-  // FIXED: Use full origin (Render-safe)
+  const USER_KEY = 'chatpoint_user';
+  const CACHE_KEY = 'my-orders-cache';
+  const POLL_MS = 30_000;
   const API_BASE = window.location.origin;
-
   const $ = s => document.querySelector(s);
 
-  /* ==================== HELPERS ==================== */
   const getUser = () => {
     try { return JSON.parse(localStorage.getItem(USER_KEY)); }
     catch { return null; }
@@ -101,7 +108,6 @@
     set: data => { try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch {} }
   };
 
-  /* ==================== RENDER ORDER ==================== */
   const renderOrder = order => {
     const itemsHtml = order.items.map(i => `
       <div class="item-line">
@@ -110,9 +116,7 @@
       </div>`).join('');
 
     const status = order.status.toLowerCase();
-
-    // FIXED: totalAmount already includes delivery
-    const grand = order.totalAmount.toFixed(2);
+    const statusText = order.status.charAt(0).toUpperCase() + order.status.slice(1);
 
     return `
       <div class="order-card">
@@ -120,20 +124,20 @@
           <div class="order-id">Order #${order._id.slice(-6)}</div>
           <div class="order-date">${formatDate(order.date)}</div>
         </div>
-        <div class="status ${status}">${order.status.toUpperCase()}</div>
+        <div class="status ${status}">${statusText}</div>
         <div class="items-list">${itemsHtml}</div>
         <div class="total-line">
           <span>Grand Total</span>
-          <span style="color:var(--accent-fresh)">₹${grand}</span>
+          <span>₹${order.totalAmount.toFixed(2)}</span>
         </div>
         <div class="address">
-          <strong>Delivery:</strong> ${order.address.name}, ${order.address.phone}<br>
+          <strong>Delivery Address:</strong><br>
+          ${order.address.name} • ${order.address.phone}<br>
           ${order.address.line1}${order.address.line2 ? ', ' + order.address.line2 : ''}
         </div>
       </div>`;
   };
 
-  /* ==================== FETCH ORDERS ==================== */
   const fetchOrders = async (useCache = true) => {
     const container = $('#ordersContainer');
     const user = getUser();
@@ -151,8 +155,6 @@
       const cached = cache.get();
       if (cached?.orders?.length) {
         container.innerHTML = cached.orders.map(renderOrder).join('');
-      } else {
-        container.innerHTML = `<p class="loading"><i class="fas fa-spinner fa-spin"></i> Loading orders…</p>`;
       }
     }
 
@@ -161,26 +163,20 @@
         headers: { 'x-user-id': user._id }
       });
 
-      const text = await res.text();
+      if (!res.ok) throw new Error("Server error");
 
-      if (text.trim().startsWith('<!') || text.includes('<html')) {
-        throw new Error(`Backend not found. Check ${API_BASE}/api/my-orders`);
-      }
-
-      let data;
-      try { data = JSON.parse(text); }
-      catch (e) { throw new Error(`Invalid JSON: ${e.message}`); }
+      const data = await res.json();
 
       if (!data.success || !Array.isArray(data.orders)) {
-        throw new Error(data.message || "No orders found");
+        throw new Error(data.message || "Failed to load orders");
       }
 
       if (data.orders.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
-            <i class="fas fa-box-open"></i>
+            <i class="fas fa-shopping-bag"></i>
             <p>No orders yet.</p>
-            <a href="index.html" class="back-btn">Shop Now</a>
+            <a href="index.html" class="back-btn">Start Shopping</a>
           </div>`;
         cache.set(data);
         return;
@@ -190,18 +186,17 @@
       cache.set(data);
 
     } catch (err) {
-      console.error('Fetch error:', err);
+      console.error(err);
       container.innerHTML = `
         <div class="error-box">
           <strong>Failed to load orders</strong><br><br>
-          ${err.message}
-          <br><br>
-          <a href="orders.html" style="color:var(--accent-warm);text-decoration:underline;">Retry</a>
+          ${err.message}<br><br>
+          <a href="orders.html" style="color:var(--accent-warm);text-decoration:underline;">Tap to Retry</a>
         </div>`;
     }
   };
 
-  /* ==================== POLLING ==================== */
+  // Auto refresh every 30 seconds
   let pollTimer;
   const startPolling = () => {
     clearInterval(pollTimer);
@@ -210,12 +205,10 @@
     }, POLL_MS);
   };
 
-  /* ==================== START ==================== */
   document.addEventListener('DOMContentLoaded', () => {
     fetchOrders(true);
     startPolling();
   });
 </script>
-
 </body>
 </html>
