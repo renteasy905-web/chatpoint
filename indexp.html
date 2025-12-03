@@ -184,7 +184,7 @@
         const card = document.createElement("div"); card.className = "card";
         card.onclick = () => {
           localStorage.setItem("currentShop", JSON.stringify(shop));
-          location.href = `items.html?shop=${encodeURIComponent(shop.shopName)}`;
+          location.href = `itemsp.html?shop=${encodeURIComponent(shop.shopName)}`;
         };
 
         const img = document.createElement("img");
