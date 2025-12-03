@@ -68,7 +68,7 @@ const Order = mongoose.model("Order", new mongoose.Schema({
 
 // ============================== API ROUTES ==============================
 
-// Signup + Password Hashing
+// Signup
 app.post("/api/user/signup", async (req, res) => {
   try {
     const { name, phone, password } = req.body;
@@ -163,16 +163,16 @@ app.get("/api/shops", async (req, res) => {
   }
 });
 
-// Delivery Portal: Get pending + confirmed orders
+// ACTIVE ORDERS: Only pending + confirmed (for live view)
 app.get("/api/delivery-orders", async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 50;
     const orders = await Order.find({
-      status: { $in: ["pending", "confirmed"] }  // Show both pending & confirmed
+      status: { $in: ["pending", "confirmed"] }
     })
-    .sort({ date: -1 })
-    .limit(limit)
-    .lean();
+      .sort({ date: -1 })
+      .limit(limit)
+      .lean();
 
     res.json({ success: true, orders });
   } catch (e) {
@@ -181,7 +181,22 @@ app.get("/api/delivery-orders", async (req, res) => {
   }
 });
 
-// Update Order Status (Now supports "confirmed")
+// NEW: ALL ORDERS (including delivered & cancelled) — for history + filters
+app.get("/api/all-delivery-orders", async (req, res) => {
+  try {
+    const orders = await Order.find({})
+      .sort({ date: -1 })
+      .limit(1000) // increase if needed
+      .lean();
+
+    res.json({ success: true, orders });
+  } catch (e) {
+    console.error("ALL ORDERS ERROR:", e);
+    res.status(500).json({ success: false, message: "Failed to fetch all orders" });
+  }
+});
+
+// Update Order Status (confirmed, delivered, cancelled)
 app.post("/api/update-order-status", async (req, res) => {
   try {
     const { orderId, status } = req.body;
@@ -200,6 +215,7 @@ app.post("/api/update-order-status", async (req, res) => {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
 
+    console.log(`Order ${orderId} → ${status}`);
     res.json({ success: true, order });
   } catch (e) {
     console.error("UPDATE STATUS ERROR:", e);
@@ -242,4 +258,5 @@ app.get('*', (req, res) => {
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`ChatPoint Backend LIVE on port ${PORT}`);
   console.log(`http://localhost:${PORT}`);
+  console.log(`Delivery Portal → http://localhost:${PORT}/delivery.html`);
 });
