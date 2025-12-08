@@ -58,6 +58,8 @@
       border: none; padding: 0.75rem 1.25rem; border-radius: var(--radius-lg); font-weight: 900;
       cursor: pointer; box-shadow: 0 4px 10px rgba(255,177,42,0.3); transition: transform var(--transition); }
     .checkout-btn:hover { transform: translateY(-3px); }
+    .login-banner { max-width: var(--max-width); margin: 1.5rem auto; padding: 1rem 1.5rem; border-radius: var(--radius-xl);
+      background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); box-shadow: var(--shadow); text-align: center; font-weight: 600; }
     @media (max-width: 420px) { .item-img { height: 10rem; } }
   </style>
 </head>
@@ -75,7 +77,7 @@
   </header>
 
   <main>
-    <div id="loginBanner" class="login-banner" style="display:none; max-width: var(--max-width); margin: 1.5rem auto; padding: 1rem 1.5rem; border-radius: var(--radius-xl); background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); box-shadow: var(--shadow); text-align: center; font-weight: 600;">
+    <div id="loginBanner" class="login-banner" style="display:none;">
       Please <a href="login.html">login</a> to add items to cart.
     </div>
     <section class="items-grid" id="itemsGrid"></section>
@@ -94,7 +96,7 @@
     const isLoggedIn = user && user._id;
     if (!isLoggedIn) document.getElementById("loginBanner").style.display = "block";
 
-    const DISCOUNT = 5; // ₹5 OFF on every single item
+    const DISCOUNT = 5; // ₹5 OFF on every item
 
     const shopData = {
       "Chat Point": [
@@ -222,7 +224,7 @@
         { name: "Butterscotch Cake", price: 650, image: "Butterscotch-Cake.jpg" },
         { name: "Mango Cake", price: 600, image: "Mango-Cake.jpg" }
       ]
-      // Dolphin Hotel removed to save space — you can paste it back if needed
+      // Add "Dolphin Hotel" here if you want — I removed it to keep file small
     };
 
     const urlParams = new URLSearchParams(location.search);
@@ -230,13 +232,18 @@
     const shopItems = shopData[shopName] || [];
     let cart = JSON.parse(localStorage.getItem("chatpoint_cart") || "{}");
 
-    function saveCart() { localStorage.setItem("chatpoint_cart", JSON.stringify(cart)); updateCartBar(); }
+    function saveCart() {
+      localStorage.setItem("chatpoint_cart", JSON.stringify(cart));
+      updateCartBar();
+    }
+
     function updateCartBar() {
       let items = 0, total = 0;
-      for (const s in cart) for (const i in cart[s]) {
-        const price = cart[s][i].price - DISCOUNT;
-        items += cart[s][i].qty;
-        total += cart[s][i].qty * price;
+      for (const s in cart) {
+        for (const i in cart[s]) {
+          items += cart[s][i].qty;
+          total += cart[s][i].qty * cart[s][i].price; // price is already discounted
+        }
       }
       document.getElementById("cartText").textContent = `${items} items · ₹${total}`;
       document.getElementById("cartBar").style.display = items > 0 ? "flex" : "none";
@@ -244,33 +251,42 @@
 
     function changeQty(shop, name, originalPrice, delta) {
       if (!isLoggedIn) return alert("Please login first!");
+
       if (!cart[shop]) cart[shop] = {};
-      if (!cart[shop][name]) cart[shop][name] = {qty: 0, price: originalPrice};
+
+      if (!cart[shop][name]) {
+        cart[shop][name] = { qty: 0, price: originalPrice - DISCOUNT };
+      }
+
       cart[shop][name].qty = Math.max(0, cart[shop][name].qty + delta);
+
       if (cart[shop][name].qty === 0) delete cart[shop][name];
       if (Object.keys(cart[shop]).length === 0) delete cart[shop];
-      saveCart(); renderItems();
+
+      saveCart();
+      renderItems();
     }
 
     function renderItems() {
       const grid = document.getElementById("itemsGrid");
       grid.innerHTML = "";
+
       shopItems.forEach(item => {
         const originalPrice = item.price;
-        const newPrice = originalPrice - DISCOUNT;
+        const discountedPrice = originalPrice - DISCOUNT;
         const qty = (cart[shopName] && cart[shopName][item.name]) ? cart[shopName][item.name].qty : 0;
 
         const card = document.createElement("article");
         card.className = "item-card";
         card.innerHTML = `
           <img src="images/${item.image}" alt="${item.name}" class="item-img" loading="lazy"
-               onerror="this.src='https://via.placeholder.com/600x380/f appointing3cd98/f12916?text=${encodeURIComponent(item.name.split(' ').slice(0,3).join(' '))}'">
+               onerror="this.src='https://via.placeholder.com/600x380/f3cd98/f12916?text=${encodeURIComponent(item.name.split(' ').slice(0,3).join(' '))}'">
           <div class="item-info">
             <div class="item-name">${item.name}</div>
             <div class="item-desc">${item.name.toLowerCase().includes("cake") ? "Fresh Cream • Per kg" : "Homemade Special"}</div>
             <div class="price-container">
               <div class="old-price">₹${originalPrice}</div>
-              <div class="new-price">₹${newPrice}</div>
+              <div class="new-price">₹${discountedPrice}</div>
               <div class="discount-badge">-₹5 OFF</div>
             </div>
             <div class="quantity">
