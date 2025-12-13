@@ -64,7 +64,6 @@
   </style>
 </head>
 <body>
-
   <header role="banner">
     <div class="brand" style="flex:1">
       <button class="back-btn" id="backBtn"><i class="fas fa-arrow-left"></i></button>
@@ -75,14 +74,12 @@
     </div>
     <div class="shop-name" id="shopName">Loading...</div>
   </header>
-
   <main>
     <div id="loginBanner" class="login-banner" style="display:none;">
       Please <a href="login.html">login</a> to add items to cart.
     </div>
     <section class="items-grid" id="itemsGrid"></section>
   </main>
-
   <div class="cart-bar" id="cartBar" style="display:none">
     <div class="cart-info">
       <div class="main" id="cartText">0 items · ₹0</div>
@@ -90,7 +87,6 @@
     </div>
     <button class="checkout-btn" id="checkoutBtn">Checkout</button>
   </div>
-
   <script>
     const user = JSON.parse(localStorage.getItem("chatpoint_user") || "null");
     const isLoggedIn = user && user._id;
@@ -198,7 +194,7 @@
         { name: "Margherita-Pizza", price: 155, image: "Margherita-Pizza.jpg" },
         { name: "Veggie-burger", price: 169, image: "Veggie-burger.jpg" }
       ],
-      "Hassanmba iyyangar bakery": [
+      "Hassanmba iyyangar bakery": [  // Standardized key
         { name: "Veg Pizza", price: 175, image: "Veg-Pizza.jpg" },
         { name: "Margherita", price: 165, image: "Margherita.jpg" },
         { name: "Paneer Pizza", price: 225, image: "Tandoori-Paneer.jpg" },
@@ -224,12 +220,25 @@
         { name: "Butterscotch Cake", price: 650, image: "Butterscotch-Cake.jpg" },
         { name: "Mango Cake", price: 600, image: "Mango-Cake.jpg" }
       ]
-      // Add "Dolphin Hotel" here if you want — I removed it to keep file small
     };
 
+    // Improved shop name matching (case-insensitive, flexible)
     const urlParams = new URLSearchParams(location.search);
-    const shopName = decodeURIComponent(urlParams.get("shop") || "");
-    const shopItems = shopData[shopName] || [];
+    let requestedShop = decodeURIComponent(urlParams.get("shop") || "").trim();
+    let shopName = requestedShop;
+    let shopItems = shopData[shopName] || [];
+
+    if (!shopItems || shopItems.length === 0) {
+      const lowerRequested = requestedShop.toLowerCase().replace(/\s+/g, ' ');
+      for (const key in shopData) {
+        if (key.toLowerCase().replace(/\s+/g, ' ') === lowerRequested) {
+          shopName = key;
+          shopItems = shopData[key];
+          break;
+        }
+      }
+    }
+
     let cart = JSON.parse(localStorage.getItem("chatpoint_cart") || "{}");
 
     function saveCart() {
@@ -242,7 +251,7 @@
       for (const s in cart) {
         for (const i in cart[s]) {
           items += cart[s][i].qty;
-          total += cart[s][i].qty * cart[s][i].price; // price is already discounted
+          total += cart[s][i].qty * cart[s][i].price;
         }
       }
       document.getElementById("cartText").textContent = `${items} items · ₹${total}`;
@@ -251,18 +260,13 @@
 
     function changeQty(shop, name, originalPrice, delta) {
       if (!isLoggedIn) return alert("Please login first!");
-
       if (!cart[shop]) cart[shop] = {};
-
       if (!cart[shop][name]) {
         cart[shop][name] = { qty: 0, price: originalPrice - DISCOUNT };
       }
-
       cart[shop][name].qty = Math.max(0, cart[shop][name].qty + delta);
-
       if (cart[shop][name].qty === 0) delete cart[shop][name];
       if (Object.keys(cart[shop]).length === 0) delete cart[shop];
-
       saveCart();
       renderItems();
     }
@@ -270,12 +274,10 @@
     function renderItems() {
       const grid = document.getElementById("itemsGrid");
       grid.innerHTML = "";
-
       shopItems.forEach(item => {
         const originalPrice = item.price;
         const discountedPrice = originalPrice - DISCOUNT;
         const qty = (cart[shopName] && cart[shopName][item.name]) ? cart[shopName][item.name].qty : 0;
-
         const card = document.createElement("article");
         card.className = "item-card";
         card.innerHTML = `
@@ -300,8 +302,16 @@
       });
     }
 
+    // Set shop name in header
     document.getElementById("shopName").textContent = shopName || "Shop Not Found";
-    if (shopItems.length) renderItems();
+
+    // Render items if found
+    if (shopItems.length) {
+      renderItems();
+    } else {
+      document.getElementById("itemsGrid").innerHTML = "<p style='text-align:center;grid-column:1/-1;font-size:1.2rem;color:#666;'>No items found for this shop.</p>";
+    }
+
     updateCartBar();
 
     document.getElementById("backBtn").onclick = () => history.back();
