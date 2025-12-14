@@ -70,6 +70,14 @@
     }
     .card:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(0,0,0,.5); }
 
+    .user-card {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.2rem; background: var(--card-bg); border-radius: 0.75rem;
+      margin-bottom: 0.8rem; border: 1px solid var(--border);
+      transition: all .2s;
+    }
+    .user-card:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,.4); }
+
     .btn {
       display: inline-flex; align-items: center; gap: .4rem; padding: .6rem 1.2rem;
       border: none; border-radius: .5rem; font-weight: 600; cursor: pointer;
@@ -82,15 +90,9 @@
     .btn-danger { background: var(--danger); color: white; }
     .btn-danger:hover { background: #dc2626; }
     .btn-whatsapp {
-      background: var(--whatsapp); color: white; font-size: 0.85rem; padding: .5rem .9rem;
+      background: var(--whatsapp); color: white; font-size: 0.85rem; padding: .5rem 1rem;
     }
     .btn-whatsapp:hover { background: #128C7E; }
-
-    .user-card {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 1rem; background: var(--card-bg); border-radius: 0.75rem;
-      margin-bottom: 0.8rem; border: 1px solid var(--border);
-    }
 
     .badge {
       display: inline-block; padding: .3rem .8rem; font-size: .8rem;
@@ -163,7 +165,7 @@
 
     <div id="loading">
       <div class="loader"></div>
-      <p style="text-align:center; color:#94a3b8;">Loading...</p>
+      <p style="text-align:center; color:#94a3b8;">Loading data...</p>
     </div>
 
     <div id="orders-container"></div>
@@ -215,7 +217,7 @@ Hurry, offer valid for limited time! ⏳
 Team Chatpoint ❤️`);
 
     function sendWhatsApp(phone) {
-      if (!phone) return alert("No phone number available");
+      if (!phone || phone === 'N/A') return alert("No phone number available");
       let cleaned = phone.replace(/\D/g, '');
       if (cleaned.startsWith('0')) cleaned = '91' + cleaned.slice(1);
       else if (!cleaned.startsWith('91')) cleaned = '91' + cleaned;
@@ -261,12 +263,10 @@ Team Chatpoint ❤️`);
               <strong style="font-size:1.1rem;">Order #${order._id.slice(-6)}</strong>
               <span style="margin-left:0.5rem; font-size:0.8rem; color:#94a3b8;">${new Date(order.date).toLocaleString()}</span>
             </div>
-            <div style="padding:0.3rem 0.8rem; border-radius:0.4rem; font-size:0.8rem; font-weight:700;">
-              ${order.status === 'pending' ? '<span style="background:#451a03;color:#fcd34d;padding:0.3rem 0.8rem;border-radius:0.4rem;">Pending</span>' :
-                order.status === 'confirmed' ? '<span style="background:var(--confirmed);color:var(--confirmed-light);padding:0.3rem 0.8rem;border-radius:0.4rem;">Confirmed</span>' :
-                order.status === 'delivered' ? '<span style="background:#064e3b;color:#6ee7b7;padding:0.3rem 0.8rem;border-radius:0.4rem;">Delivered</span>' :
-                '<span style="background:#7f1d1d;color:#fca5a5;padding:0.3rem 0.8rem;border-radius:0.4rem;">Cancelled</span>'}
-            </div>
+            <div>${order.status === 'pending' ? '<span class="badge badge-pending">Pending</span>' :
+                  order.status === 'confirmed' ? '<span class="badge badge-confirmed">Confirmed</span>' :
+                  order.status === 'delivered' ? '<span class="badge badge-delivered">Delivered</span>' :
+                  '<span class="badge badge-cancelled">Cancelled</span>'}</div>
           </div>
           <div style="font-size:0.9rem; line-height:1.6;">
             <p><strong>Customer:</strong> ${order.user.name} (${order.user.phone})
@@ -286,13 +286,18 @@ Team Chatpoint ❤️`);
 
     const renderUsersList = () => {
       if (allUsers.length === 0) {
-        return '<div class="empty"><p>No registered users found.</p></div>';
+        return `<div class="empty">
+          <svg class="icon"><use href="#i-users"/></svg>
+          <p>No registered users found yet.</p>
+        </div>`;
       }
-      return allUsers.map((user, index) => `
+      // Sort users by name
+      const sortedUsers = [...allUsers].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      return sortedUsers.map((user, index) => `
         <div class="user-card">
           <div>
             <strong>${index + 1}. ${user.name || 'N/A'}</strong><br>
-            <span style="color:#94a3b8;">${user.phone || 'No phone'}</span>
+            <span style="color:#94a3b8; font-size:0.9rem;">${user.phone || 'No phone'}</span>
           </div>
           <button class="btn btn-whatsapp" onclick="sendWhatsApp('${user.phone}')">
             ${icon('whatsapp')} Send Msg
@@ -302,6 +307,7 @@ Team Chatpoint ❤️`);
     };
 
     const applyView = () => {
+      loadingEl.style.display = 'none';
       if (currentFilter === 'users') {
         ordersContainer.style.display = 'none';
         usersContainer.style.display = 'block';
@@ -310,15 +316,13 @@ Team Chatpoint ❤️`);
       } else {
         usersContainer.style.display = 'none';
         ordersContainer.style.display = 'block';
-        ordersContainer.innerHTML = allOrders
-          .filter(order => {
-            if (currentFilter === 'all') return true;
-            if (currentFilter === 'active') return ['pending', 'confirmed'].includes(order.status);
-            return order.status === currentFilter;
-          })
-          .map(renderOrderCard)
-          .join('');
-        emptyEl.classList.toggle('hidden', allOrders.length > 0);
+        const filteredOrders = allOrders.filter(order => {
+          if (currentFilter === 'all') return true;
+          if (currentFilter === 'active') return ['pending', 'confirmed'].includes(order.status);
+          return order.status === currentFilter;
+        });
+        ordersContainer.innerHTML = filteredOrders.map(renderOrderCard).join('') || '<div class="empty"><p>No orders in this category.</p></div>';
+        emptyEl.classList.toggle('hidden', filteredOrders.length > 0);
       }
     };
 
@@ -342,14 +346,15 @@ Team Chatpoint ❤️`);
         }
 
         if (usersData.users && Array.isArray(usersData.users)) {
-          allUsers = usersData.users;
+          allUsers = usersData.users; // This includes ALL old and new users from MongoDB
+        } else {
+          allUsers = [];
         }
 
         applyView();
       } catch (e) {
         console.error("Fetch error:", e);
-      } finally {
-        loadingEl.style.display = 'none';
+        loadingEl.innerHTML = '<p style="text-align:center; color:#ef4444;">Error loading data. Retrying...</p>';
       }
     };
 
@@ -363,13 +368,14 @@ Team Chatpoint ❤️`);
       });
     });
 
-    // Order status update
+    // Order status updates
     ordersContainer.addEventListener('click', async e => {
       const btn = e.target.closest('button[data-action]');
       if (!btn || btn.disabled) return;
 
       const orderId = btn.dataset.id;
       const newStatus = btn.dataset.action;
+      const oldText = btn.textContent.trim();
       btn.disabled = true;
       btn.innerHTML = 'Updating...';
 
@@ -386,9 +392,9 @@ Team Chatpoint ❤️`);
           applyView();
         }
       } catch (err) {
-        alert('Update failed');
+        alert('Update failed. Check connection.');
+        btn.innerHTML = oldText;
         btn.disabled = false;
-        btn.innerHTML = ['confirmed','delivered','cancelled'].find(s => btn.classList.contains(`btn-${s === 'confirmed' ? 'primary' : s === 'delivered' ? 'success' : 'danger'}`)) || 'Action';
       }
     });
 
@@ -399,7 +405,7 @@ Team Chatpoint ❤️`);
       }
     });
 
-    // Initial load and auto-refresh
+    // Start fetching
     fetchData();
     setInterval(fetchData, REFRESH_INTERVAL);
   </script>
