@@ -15,8 +15,11 @@
   .card { border: none; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
   .btn-primary { background: #667eea; border: none; }
   .btn-success { background: #28a745; }
+  .btn-whatsapp { background: #25D366; border: none; color: white; }
+  .btn-whatsapp:hover { background: #128C7E; }
   .preview-img { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; margin: 5px; border: 2px solid #667eea; }
   h1 { color: white; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+  .user-card { background: white; border-radius: 10px; padding: 12px; margin-bottom: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
   </style>
 </head>
 <body>
@@ -48,8 +51,8 @@
       </div>
     </div>
 
-    <!-- Add Item -->
-    <div class="card">
+    <!-- Add New Item -->
+    <div class="card mb-4">
       <div class="card-header bg-success text-white">
         <h4><i class="fas fa-utensils"></i> Add New Item</h4>
       </div>
@@ -78,22 +81,80 @@
               <button type="submit" class="btn btn-success w-100">Add</button>
             </div>
           </div>
-
           <div id="imagePreview" class="mt-3"></div>
         </form>
       </div>
     </div>
 
-    <!-- Success Message -->
-    <div id="successAlert" class="alert alert-success mt-4 d-none" role="alert">
+    <!-- Registered Users -->
+    <div class="card">
+      <div class="card-header text-white" style="background: #764ba2;">
+        <h4><i class="fas fa-users"></i> Registered Users</h4>
+      </div>
+      <div class="card-body">
+        <div id="usersList">
+          <p class="text-center text-muted">Loading users...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Alert -->
+    <div id="successAlert" class="alert alert-success mt-4 d-none position-fixed top-50 start-50 translate-middle" style="z-index: 1050;" role="alert">
       <i class="fas fa-check-circle"></i> <span id="successMsg"></span>
     </div>
   </div>
 
   <script>
-    const API = "" ; // works on same domain
+    const API = "";
+    const welcomeMessage = encodeURIComponent(`🌟 Welcome to Chatpoint! 🌟
+Thank you for choosing us! 😊
+✅ Our services are 100% end-to-end safe, super fast & genuine
+✅ Trusted by 100+ happy people
+✅ Successfully serving 150+ customers and growing! 🎉
+Special Launch Offer for You! 🔥
+🛒 Order above ₹250 → Get 1000ml bottle FREE! 🆓
+🚚 Order above ₹69 → FREE Delivery (No delivery charges)
+💰 Order above ₹49 → No GST + No handling fee
+🎁 Extra 5% OFF on ALL items!
+Shop now 👉 chatpoint.shop
+Hurry, offer valid for limited time! ⏳
+Team Chatpoint ❤️`);
 
-    // Load shops
+    function sendWhatsApp(phone) {
+      if (!phone) return alert("No phone number");
+      let cleaned = phone.replace(/\D/g, '');
+      if (cleaned.startsWith('0')) cleaned = '91' + cleaned.slice(1);
+      else if (!cleaned.startsWith('91')) cleaned = '91' + cleaned;
+      window.open(`https://wa.me/${cleaned}?text=${welcomeMessage}`, '_blank');
+    }
+
+    async function loadUsers() {
+      try {
+        const res = await fetch(API + "/api/admin/users");
+        const data = await res.json();
+        const container = document.getElementById("usersList");
+        if (data.users && data.users.length > 0) {
+          container.innerHTML = data.users.map((user, i) => `
+            <div class="user-card d-flex justify-content-between align-items-center">
+              <div>
+                <strong>${i + 1}. ${user.name || 'No Name'}</strong><br>
+                <small class="text-muted">${user.phone}</small>
+              </div>
+              <button class="btn btn-whatsapp btn-sm" onclick="sendWhatsApp('${user.phone}')">
+                <i class="fab fa-whatsapp"></i> Send Msg
+              </button>
+            </div>
+          `).join('');
+        } else {
+          container.innerHTML = '<p class="text-center text-muted">No users registered yet.</p>';
+        }
+      } catch (err) {
+        document.getElementById("usersList").innerHTML = '<p class="text-center text-danger">Error loading users</p>';
+        console.error(err);
+      }
+    }
+
+    // Existing functions (shops, add shop, add item, etc.)
     async function loadShops() {
       const res = await fetch(API + "/api/shops");
       const data = await res.json();
@@ -107,12 +168,10 @@
       });
     }
 
-    // Add Shop
     document.getElementById("shopForm").onsubmit = async (e) => {
       e.preventDefault();
       const shopName = document.getElementById("shopName").value.trim();
       if (!shopName) return alert("Shop name required!");
-
       const res = await fetch(API + "/api/admin/add-shop", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -130,11 +189,10 @@
       } else alert("Error: " + (json.message || "Failed"));
     };
 
-    // Image Preview
     document.getElementById("itemImages").onchange = (e) => {
       const preview = document.getElementById("imagePreview");
       preview.innerHTML = "";
-      [...e.target.files].forEach(file => {
+      [...e.target.files].slice(0, 10).forEach(file => {
         const img = document.createElement("img");
         img.src = URL.createObjectURL(file);
         img.className = "preview-img";
@@ -142,25 +200,21 @@
       });
     };
 
-    // Add Item
     document.getElementById("itemForm").onsubmit = async (e) => {
       e.preventDefault();
       const shopId = document.getElementById("shopSelect").value;
       const name = document.getElementById("itemName").value.trim();
       const price = document.getElementById("itemPrice").value;
       if (!shopId || !name || !price) return alert("Fill all required fields!");
-
       const formData = new FormData();
       formData.append("shopId", shopId);
       formData.append("name", name);
       formData.append("price", price);
       formData.append("description", document.getElementById("itemDesc").value);
-
       const files = document.getElementById("itemImages").files;
-      for (let i = 0; i < files.length; i++) {
+      for (let i = 0; i < Math.min(files.length, 10); i++) {
         formData.append("images", files[i]);
       }
-
       const res = await fetch(API + "/api/admin/add-item", {
         method: "POST",
         body: formData
@@ -182,8 +236,9 @@
       setTimeout(() => alert.classList.add("d-none"), 4000);
     }
 
-    // Load shops on page load
+    // Load everything on start
     loadShops();
+    loadUsers();
   </script>
 </body>
 </html>
