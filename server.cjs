@@ -23,6 +23,7 @@ const storage = multer.diskStorage({
     cb(null, uniqueName);
   },
 });
+
 const upload = multer({ storage });
 
 // =============== MIDDLEWARE ===============
@@ -78,7 +79,7 @@ const Order = mongoose.model("Order", new mongoose.Schema({
 }));
 
 // =============== ROUTES ===============
-// Signup & Login (unchanged)
+// Signup & Login
 app.post("/api/user/signup", async (req, res) => {
   try {
     const { name, phone, password } = req.body;
@@ -178,9 +179,7 @@ app.post("/api/admin/add-item", upload.array("images", 10), async (req, res) => 
   try {
     const { shopId, name, price, description } = req.body;
     if (!shopId || !name || !price) return res.status(400).json({ success: false });
-
     const imageUrls = req.files ? req.files.map(f => `/icons/${f.filename}`) : [];
-
     await Shop.updateOne(
       { _id: shopId },
       { $push: { items: { name, price: parseFloat(price), description: description || "", imageUrl: imageUrls } } }
@@ -192,6 +191,17 @@ app.post("/api/admin/add-item", upload.array("images", 10), async (req, res) => 
   }
 });
 
+// NEW ROUTE: Get all registered users (name + phone only, no password)
+app.get("/api/admin/users", async (req, res) => {
+  try {
+    const users = await User.find({}, { name: 1, phone: 1, _id: 0 }).sort({ createdAt: -1 });
+    res.json({ users });
+  } catch (e) {
+    console.error("Error fetching users:", e);
+    res.status(500).json({ success: false, message: "Failed to fetch users" });
+  }
+});
+
 // =============== SERVE PAGES ===============
 const pages = ["index", "privacy", "delivery", "orders", "items", "cart", "payment", "login", "admin"];
 pages.forEach(p => {
@@ -199,6 +209,7 @@ pages.forEach(p => {
     res.sendFile(path.join(__dirname, `${p}.html`));
   });
 });
+
 app.get("*", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
 // =============== START SERVER ===============
