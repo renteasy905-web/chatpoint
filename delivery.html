@@ -163,7 +163,6 @@
     const bigAlert = $('#bigAlert');
     const loudSound = $('#loudSound');
 
-    // WhatsApp Message Templates
     const welcomeMessage = encodeURIComponent(`🌟 Welcome to Chatpoint! 🌟
 Thank you for choosing us! 😊
 ✅ Our services are 100% end-to-end safe, super fast & genuine
@@ -205,6 +204,26 @@ You can always visit us again at chatpoint.shop 🌐`);
       setTimeout(() => bigAlert.style.display = 'none', 10000);
     };
 
+    const updateOrderStatus = async (orderId, newStatus) => {
+      try {
+        const res = await fetch(`${API_BASE}/api/update-order-status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId, status: newStatus })
+        });
+        const result = await res.json();
+        if (result.success) {
+          const order = allOrders.find(o => o._id === orderId);
+          if (order) order.status = newStatus;
+          return true;
+        }
+      } catch (err) {
+        console.error("Status update failed:", err);
+        alert("Failed to update status. Try again.");
+        return false;
+      }
+    };
+
     const renderOrderCard = order => {
       const itemsHtml = order.items.map(i => `
         <div style="display:flex;justify-content:space-between;font-size:0.9rem;color:#cbd5e1;margin-top:0.4rem;">
@@ -217,15 +236,15 @@ You can always visit us again at chatpoint.shop 🌐`);
       if (order.status === 'pending') {
         actions = `
           <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
-            <button class="btn btn-primary" data-action="confirm-msg" data-name="${order.user.name}" data-phone="${order.user.phone}">Confirm</button>
-            <button class="btn btn-success" data-action="delivered-msg" data-phone="${order.user.phone}">Delivered</button>
-            <button class="btn btn-danger" data-action="cancel" data-id="${order._id}">Cancel</button>
+            <button class="btn btn-primary" data-id="${order._id}" data-action="confirm" data-name="${order.user.name}" data-phone="${order.user.phone}">Confirm</button>
+            <button class="btn btn-success" data-id="${order._id}" data-action="delivered" data-phone="${order.user.phone}">Delivered</button>
+            <button class="btn btn-danger" data-id="${order._id}" data-action="cancel">Cancel</button>
           </div>`;
       } else if (order.status === 'confirmed') {
         actions = `
           <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
-            <button class="btn btn-success" data-action="delivered-msg" data-phone="${order.user.phone}">Delivered</button>
-            <button class="btn btn-danger" data-action="cancel" data-id="${order._id}">Cancel</button>
+            <button class="btn btn-success" data-id="${order._id}" data-action="delivered" data-phone="${order.user.phone}">Delivered</button>
+            <button class="btn btn-danger" data-id="${order._id}" data-action="cancel">Cancel</button>
           </div>`;
       }
 
@@ -294,7 +313,6 @@ You can always visit us again at chatpoint.shop 🌐`);
         });
         ordersContainer.innerHTML = filtered.length ? filtered.map(renderOrderCard).join('') : '<div class="empty"><p>No orders here.</p></div>';
       }
-      emptyEl.classList.toggle('hidden', currentFilter !== 'users' || allUsers.length > 0);
     };
 
     const fetchData = async () => {
@@ -324,46 +342,41 @@ You can always visit us again at chatpoint.shop 🌐`);
       }
     };
 
-    // Tab switching
-    $$('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        $('.filter-btn.active')?.classList.remove('active');
-        btn.classList.add('active');
-        currentFilter = btn.dataset.filter;
-        applyView();
-      });
-    });
-
-    // Action buttons (Confirm/Delivered with WhatsApp + Cancel with API)
+    // Handle all button clicks
     document.addEventListener('click', async e => {
       const btn = e.target.closest('button[data-action]');
       if (!btn) return;
 
       const action = btn.dataset.action;
+      const orderId = btn.dataset.id;
       const phone = btn.dataset.phone;
       const name = btn.dataset.name;
-      const orderId = btn.dataset.id;
 
-      if (action === 'confirm-msg' && phone && name) {
-        openWhatsApp(phone, confirmMessage(name));
-        // Optional: auto-update status after message
-        // await updateStatus(orderId, 'confirmed');
-      } else if (action === 'delivered-msg' && phone) {
-        openWhatsApp(phone, deliveredMessage);
-        // Optional: auto-update status
-        // await updateStatus(orderId, 'delivered');
+      btn.disabled = true;
+      const oldText = btn.innerHTML;
+      btn.innerHTML = 'Processing...';
+
+      if (action === 'confirm' && orderId && phone && name) {
+        const success = await updateOrderStatus(orderId, 'confirmed');
+        if (success) {
+          openWhatsApp(phone, confirmMessage(name));
+          applyView(); // Refresh view
+        }
+      } else if (action === 'delivered' && orderId && phone) {
+        const success = await updateOrderStatus(orderId, 'delivered');
+        if (success) {
+          openWhatsApp(phone, deliveredMessage);
+          applyView();
+        }
       } else if (action === 'cancel' && orderId) {
         if (confirm('Cancel this order?')) {
-          try {
-            await fetch(`${API_BASE}/api/update-order-status`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ orderId, status: 'cancelled' })
-            });
-            fetchData();
-          } catch (err) { alert('Cancel failed'); }
+          const success = await updateOrderStatus(orderId, 'cancelled');
+          if (success) applyView();
         }
       }
+
+      btn.innerHTML = oldText;
+      btn.disabled = false;
     });
 
     $('#logoutBtn').onclick = () => {
