@@ -4,8 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Delivery Portal | ChatPoint</title>
-
-  <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
@@ -18,20 +16,11 @@
       --primary: #3b82f6;
       --success: #10b981;
       --danger: #ef4444;
-      --confirmed: #1e40af;
-      --confirmed-light: #93c5fd;
       --whatsapp: #25D366;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding-bottom: 100px;
-    }
-
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 100px; }
     .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
 
     .header {
@@ -62,7 +51,6 @@
       background: var(--primary); color: white;
       box-shadow: 0 0 15px rgba(59,130,246,0.5);
     }
-    .filter-btn:hover:not(.active) { background: #475569; }
 
     .card {
       background: var(--card-bg); border-radius: 0.75rem;
@@ -70,7 +58,14 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.3);
       transition: transform 0.2s;
     }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(0,0,0,0.5); }
+    .card:hover { transform: translateY(-4px); }
+
+    .user-card {
+      background: var(--card-bg); border-radius: 0.75rem;
+      padding: 1rem; margin-bottom: 0.8rem;
+      display: flex; justify-content: space-between; align-items: center;
+      border: 1px solid var(--border);
+    }
 
     .btn {
       padding: 0.6rem 1.2rem; border: none; border-radius: 0.5rem;
@@ -79,20 +74,18 @@
       transition: all 0.2s;
     }
     .btn-primary { background: var(--primary); color: white; }
-    .btn-primary:hover { background: #2563eb; }
     .btn-success { background: var(--success); color: white; }
-    .btn-success:hover { background: #059669; }
     .btn-danger { background: var(--danger); color: white; }
-    .btn-danger:hover { background: #dc2626; }
+    .btn-whatsapp { background: var(--whatsapp); color: white; padding: 0.5rem 1rem; font-size: 0.85rem; }
 
     .badge {
       padding: 0.3rem 0.8rem; font-size: 0.8rem; border-radius: 0.4rem;
-      font-weight: 700; letter-spacing: 0.5px;
+      font-weight: 700;
     }
     .badge-pending { background: #451a03; color: #fcd34d; }
-    .badge-confirmed { background: var(--confirmed); color: var(--confirmed-light); }
-    .badge-delivered { background: #064e3b; color: #6ee7b7; }
-    .badge-cancelled { background: #7f1d1d; color: #fca5a5; }
+    .badge-confirmed { background: var(--primary); color: white; }
+    .badge-delivered { background: var(--success); color: white; }
+    .badge-cancelled { background: var(--danger); color: white; }
 
     .loader {
       border: 5px solid #1e293b; border-top: 5px solid var(--primary);
@@ -101,42 +94,20 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .empty {
-      text-align: center; color: var(--text-muted); padding: 3rem 1rem;
-      font-size: 1.1rem;
-    }
-    .empty .icon { width: 4rem; height: 4rem; opacity: 0.3; margin-bottom: 1rem; }
-
+    .empty { text-align: center; color: var(--text-muted); padding: 3rem; font-size: 1.1rem; }
     .new-order-alert {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(239, 68, 68, 0.98); color: white; z-index: 99999;
       display: none; flex-direction: column; justify-content: center; align-items: center;
-      font-size: 4rem; font-weight: 900; text-align: center; letter-spacing: 3px;
-      animation: flash 0.8s infinite alternate; backdrop-filter: blur(5px);
+      font-size: 4rem; font-weight: 900; animation: flash 0.8s infinite alternate;
+      backdrop-filter: blur(5px);
     }
-    @keyframes flash {
-      from { background: rgba(239, 68, 68, 0.98); }
-      to { background: rgba(220, 38, 38, 1); }
-    }
-    .new-order-alert small { font-size: 2rem; margin-top: 2rem; font-weight: 600; }
-
-    .flex { display: flex; }
-    .justify-between { justify-content: space-between; }
-    .items-center { align-items: center; }
-    .gap-2 { gap: 0.5rem; }
-    .mt-3 { margin-top: 0.75rem; }
-    .mt-4 { margin-top: 1rem; }
-    .text-lg { font-size: 1.125rem; }
-    .text-sm { font-size: 0.875rem; }
-    .text-gray-300 { color: #cbd5e1; }
-    .text-gray-500 { color: #94a3b8; }
-    .font-bold { font-weight: bold; }
-    .text-xl { font-size: 1.25rem; }
+    @keyframes flash { from { background: rgba(239, 68, 68, 0.98); } to { background: rgba(220, 38, 38, 1); } }
+    .new-order-alert small { font-size: 2rem; margin-top: 2rem; }
   </style>
 </head>
 <body>
 
-  <!-- Full Screen New Order Alert -->
   <div id="bigAlert" class="new-order-alert">
     <div>NEW ORDER!</div>
     <small>Check the portal now!</small>
@@ -145,9 +116,7 @@
   <div class="container">
     <div class="header">
       <h1>Delivery Portal</h1>
-      <button id="logoutBtn" class="logout-btn">
-        <i class="fas fa-sign-out-alt"></i> Logout
-      </button>
+      <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
 
     <div class="filter-tabs">
@@ -155,18 +124,19 @@
       <button class="filter-btn" data-filter="delivered">Delivered</button>
       <button class="filter-btn" data-filter="cancelled">Cancelled</button>
       <button class="filter-btn" data-filter="all">All Orders</button>
+      <button class="filter-btn" data-filter="users">Users</button>
     </div>
 
     <div id="loading">
       <div class="loader"></div>
-      <p style="text-align:center; color:#94a3b8;">Loading orders...</p>
+      <p style="text-align:center; color:#94a3b8;">Loading...</p>
     </div>
 
     <div id="orders-container"></div>
+    <div id="users-container" style="display:none;"></div>
 
     <div id="empty" class="empty hidden">
-      <svg class="icon"><use href="#i-truck"/></svg>
-      <p>No orders in this category right now.</p>
+      <p>No items in this section.</p>
     </div>
 
     <div style="text-align:center; color:#64748b; font-size:0.85rem; margin-top:2rem;">
@@ -174,41 +144,58 @@
     </div>
   </div>
 
-  <!-- Icons SVG Sprite -->
-  <svg id="icon-sprite" style="display:none;">
-    <symbol id="i-truck" viewBox="0 0 24 24">
-      <path d="M18 7h-3V4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h1.5a2.5 2.5 0 0 0 5 0h3a2.5 2.5 0 0 0 5 0H21a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1zm-2 9h-2v-2h2v2zm-5 0h-2v-2h2v2zm-5 0H4V9h2v7zm0-9H4V5h2v3zm5 0H9V5h2v3zm5 0h-2V5h2v3z"/>
-    </symbol>
-  </svg>
-
-  <!-- Loud Alarm Sound -->
   <audio id="loudSound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" preload="auto"></audio>
 
   <script>
     const API_BASE = window.location.origin;
     const REFRESH_INTERVAL = 5000;
     let allOrders = [];
+    let allUsers = [];
     let currentFilter = 'active';
     let previousPendingCount = 0;
 
     const $ = s => document.querySelector(s);
     const $$ = s => document.querySelectorAll(s);
-
     const ordersContainer = $('#orders-container');
+    const usersContainer = $('#users-container');
     const loadingEl = $('#loading');
     const emptyEl = $('#empty');
     const bigAlert = $('#bigAlert');
     const loudSound = $('#loudSound');
 
-    const badge = status => {
-      const badges = {
-        pending: '<span class="badge badge-pending">Pending</span>',
-        confirmed: '<span class="badge badge-confirmed">Confirmed</span>',
-        delivered: '<span class="badge badge-delivered">Delivered</span>',
-        cancelled: '<span class="badge badge-cancelled">Cancelled</span>'
-      };
-      return badges[status] || badges.pending;
-    };
+    // WhatsApp Message Templates
+    const welcomeMessage = encodeURIComponent(`🌟 Welcome to Chatpoint! 🌟
+Thank you for choosing us! 😊
+✅ Our services are 100% end-to-end safe, super fast & genuine
+✅ Trusted by 100+ happy people
+✅ Successfully serving 150+ customers and growing! 🎉
+Special Launch Offer for You! 🔥
+🛒 Order above ₹250 → Get 1000ml bottle FREE! 🆓
+🚚 Order above ₹69 → FREE Delivery (No delivery charges)
+💰 Order above ₹49 → No GST + No handling fee
+🎁 Extra 5% OFF on ALL items!
+Shop now 👉 chatpoint.shop
+Hurry, offer valid for limited time! ⏳
+Team Chatpoint ❤️`);
+
+    const confirmMessage = (name) => encodeURIComponent(`Hi ${name}! 😊
+Thank you so much for your order on ChatPoint Shop! ❤️
+We've received it successfully and it's being processed right now. 🚀
+You'll get shipping updates soon! 📦
+Shop more at: https://chatpoint.shop
+Thanks for choosing us! 🌟`);
+
+    const deliveredMessage = encodeURIComponent(`We’re excited to let you know that your order from ChatPoint has just been delivered. 
+Enjoy your meal, and thank you for choosing us! 🍽️🚀
+You can always visit us again at chatpoint.shop 🌐`);
+
+    function openWhatsApp(phone, message) {
+      if (!phone) return alert("No phone number");
+      let cleaned = phone.replace(/\D/g, '');
+      if (cleaned.startsWith('0')) cleaned = '91' + cleaned.slice(1);
+      else if (!cleaned.startsWith('91')) cleaned = '91' + cleaned;
+      window.open(`https://wa.me/${cleaned}?text=${message}`, '_blank');
+    }
 
     const showBigAlert = () => {
       bigAlert.style.display = 'flex';
@@ -219,151 +206,175 @@
     };
 
     const renderOrderCard = order => {
-      const itemsHtml = order.items.map(item => `
-        <div class="flex justify-between text-sm text-gray-300 mt-1">
-          <span>${item.name} × ${item.quantity}</span>
-          <span>₹${(item.price * item.quantity).toFixed(2)}</span>
+      const itemsHtml = order.items.map(i => `
+        <div style="display:flex;justify-content:space-between;font-size:0.9rem;color:#cbd5e1;margin-top:0.4rem;">
+          <span>${i.name} × ${i.quantity}</span>
+          <span>₹${(i.price * i.quantity).toFixed(2)}</span>
         </div>
       `).join('');
 
       let actions = '';
       if (order.status === 'pending') {
         actions = `
-          <div class="flex gap-2 mt-4 flex-wrap">
-            <button class="btn btn-primary" data-id="${order._id}" data-action="confirmed">Confirm</button>
-            <button class="btn btn-success" data-id="${order._id}" data-action="delivered">Delivered</button>
-            <button class="btn btn-danger" data-id="${order._id}" data-action="cancelled">Cancel</button>
+          <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
+            <button class="btn btn-primary" data-action="confirm-msg" data-name="${order.user.name}" data-phone="${order.user.phone}">Confirm</button>
+            <button class="btn btn-success" data-action="delivered-msg" data-phone="${order.user.phone}">Delivered</button>
+            <button class="btn btn-danger" data-action="cancel" data-id="${order._id}">Cancel</button>
           </div>`;
       } else if (order.status === 'confirmed') {
         actions = `
-          <div class="flex gap-2 mt-4 flex-wrap">
-            <button class="btn btn-success" data-id="${order._id}" data-action="delivered">Delivered</button>
-            <button class="btn btn-danger" data-id="${order._id}" data-action="cancelled">Cancel</button>
+          <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
+            <button class="btn btn-success" data-action="delivered-msg" data-phone="${order.user.phone}">Delivered</button>
+            <button class="btn btn-danger" data-action="cancel" data-id="${order._id}">Cancel</button>
           </div>`;
       }
 
-      return `
-        <div class="card" data-status="${order.status}">
-          <div class="flex justify-between items-center mb-3">
-            <div>
-              <strong class="text-lg">Order #${order._id.slice(-6)}</strong>
-              <span class="ml-2 text-xs text-gray-500">${new Date(order.date).toLocaleString()}</span>
-            </div>
-            ${badge(order.status)}
-          </div>
+      const statusBadge = {
+        pending: '<span class="badge badge-pending">Pending</span>',
+        confirmed: '<span class="badge badge-confirmed">Confirmed</span>',
+        delivered: '<span class="badge badge-delivered">Delivered</span>',
+        cancelled: '<span class="badge badge-cancelled">Cancelled</span>'
+      }[order.status] || '<span class="badge badge-pending">Pending</span>';
 
-          <div class="text-sm space-y-2">
+      return `
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem;">
+            <div>
+              <strong style="font-size:1.1rem;">Order #${order._id.slice(-6)}</strong>
+              <span style="margin-left:0.5rem;font-size:0.8rem;color:#94a3b8;">${new Date(order.date).toLocaleString()}</span>
+            </div>
+            ${statusBadge}
+          </div>
+          <div style="font-size:0.9rem;line-height:1.6;">
             <p><strong>Customer:</strong> ${order.user.name} (${order.user.phone})</p>
             <p><strong>Address:</strong> ${order.address.line1}${order.address.line2 ? ', ' + order.address.line2 : ''}</p>
             <p><strong>Shop:</strong> ${order.shop || 'N/A'}</p>
           </div>
-
-          <div class="mt-3">${itemsHtml}</div>
-
-          <div class="flex justify-between font-bold text-xl mt-3 text-white">
+          <div style="margin-top:0.8rem;">${itemsHtml}</div>
+          <div style="display:flex;justify-content:space-between;font-weight:bold;font-size:1.25rem;margin-top:0.8rem;color:white;">
             <span>Grand Total</span>
             <span>₹${order.totalAmount?.toFixed(2) || '0.00'}</span>
           </div>
-
           ${actions}
         </div>
       `;
     };
 
-    const renderOrders = () => {
-      const filtered = allOrders.filter(order => {
-        if (currentFilter === 'all') return true;
-        if (currentFilter === 'active') return ['pending', 'confirmed'].includes(order.status);
-        return order.status === currentFilter;
-      });
-
-      ordersContainer.innerHTML = filtered.length > 0
-        ? filtered.map(renderOrderCard).join('')
-        : '<div class="empty"><p>No orders in this category.</p></div>';
-
-      emptyEl.classList.toggle('hidden', filtered.length > 0);
+    const renderUsers = () => {
+      if (allUsers.length === 0) {
+        usersContainer.innerHTML = '<div class="empty"><p>No registered users yet.</p></div>';
+        return;
+      }
+      usersContainer.innerHTML = allUsers.map((user, i) => `
+        <div class="user-card">
+          <div>
+            <strong>${i+1}. ${user.name || 'No Name'}</strong><br>
+            <small style="color:#94a3b8;">${user.phone}</small>
+          </div>
+          <button class="btn btn-whatsapp" onclick="openWhatsApp('${user.phone}', welcomeMessage)">
+            <i class="fab fa-whatsapp"></i> Send Msg
+          </button>
+        </div>
+      `).join('');
     };
 
-    const fetchOrders = async () => {
+    const applyView = () => {
+      loadingEl.style.display = 'none';
+      if (currentFilter === 'users') {
+        ordersContainer.style.display = 'none';
+        usersContainer.style.display = 'block';
+        renderUsers();
+      } else {
+        usersContainer.style.display = 'none';
+        ordersContainer.style.display = 'block';
+        const filtered = allOrders.filter(o => {
+          if (currentFilter === 'all') return true;
+          if (currentFilter === 'active') return ['pending', 'confirmed'].includes(o.status);
+          return o.status === currentFilter;
+        });
+        ordersContainer.innerHTML = filtered.length ? filtered.map(renderOrderCard).join('') : '<div class="empty"><p>No orders here.</p></div>';
+      }
+      emptyEl.classList.toggle('hidden', currentFilter !== 'users' || allUsers.length > 0);
+    };
+
+    const fetchData = async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/all-delivery-orders?t=${Date.now()}`, { cache: 'no-store' });
-        const data = await res.json();
+        const [ordersRes, usersRes] = await Promise.all([
+          fetch(`${API_BASE}/api/all-delivery-orders?t=${Date.now()}`, { cache: 'no-store' }),
+          fetch(`${API_BASE}/api/admin/users?t=${Date.now()}`, { cache: 'no-store' })
+        ]);
 
-        if (data.success && Array.isArray(data.orders)) {
-          const pendingCount = data.orders.filter(o => o.status === 'pending').length;
+        const ordersData = await ordersRes.json();
+        const usersData = await usersRes.json();
 
-          if (pendingCount > previousPendingCount && pendingCount > 0) {
-            showBigAlert();
-          }
-          previousPendingCount = pendingCount;
-
-          allOrders = data.orders.sort((a, b) => new Date(b.date) - new Date(a.date));
-          renderOrders();
+        if (ordersData.success && Array.isArray(ordersData.orders)) {
+          const pending = ordersData.orders.filter(o => o.status === 'pending').length;
+          if (pending > previousPendingCount && pending > 0) showBigAlert();
+          previousPendingCount = pending;
+          allOrders = ordersData.orders.sort((a, b) => new Date(b.date) - new Date(a.date));
         }
+
+        if (usersData.users && Array.isArray(usersData.users)) {
+          allUsers = usersData.users;
+        }
+
+        applyView();
       } catch (err) {
-        console.error("Fetch error:", err);
-        ordersContainer.innerHTML = '<p class="text-center text-danger">Failed to load orders. Retrying...</p>';
-      } finally {
-        loadingEl.style.display = 'none';
+        console.error(err);
       }
     };
 
-    // Filter Tabs
+    // Tab switching
     $$('.filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         $('.filter-btn.active')?.classList.remove('active');
         btn.classList.add('active');
         currentFilter = btn.dataset.filter;
-        renderOrders();
+        applyView();
       });
     });
 
-    // Update Order Status
-    ordersContainer.addEventListener('click', async e => {
-      const btn = e.target.closest('[data-action]');
+    // Action buttons (Confirm/Delivered with WhatsApp + Cancel with API)
+    document.addEventListener('click', async e => {
+      const btn = e.target.closest('button[data-action]');
       if (!btn) return;
 
+      const action = btn.dataset.action;
+      const phone = btn.dataset.phone;
+      const name = btn.dataset.name;
       const orderId = btn.dataset.id;
-      const newStatus = btn.dataset.action;
-      const oldText = btn.innerHTML;
 
-      btn.disabled = true;
-      btn.innerHTML = 'Updating...';
-
-      try {
-        const res = await fetch(`${API_BASE}/api/update-order-status`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId, status: newStatus })
-        });
-        const result = await res.json();
-
-        if (result.success) {
-          const order = allOrders.find(o => o._id === orderId);
-          if (order) order.status = newStatus;
-          renderOrders();
-        } else {
-          alert('Update failed');
+      if (action === 'confirm-msg' && phone && name) {
+        openWhatsApp(phone, confirmMessage(name));
+        // Optional: auto-update status after message
+        // await updateStatus(orderId, 'confirmed');
+      } else if (action === 'delivered-msg' && phone) {
+        openWhatsApp(phone, deliveredMessage);
+        // Optional: auto-update status
+        // await updateStatus(orderId, 'delivered');
+      } else if (action === 'cancel' && orderId) {
+        if (confirm('Cancel this order?')) {
+          try {
+            await fetch(`${API_BASE}/api/update-order-status`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ orderId, status: 'cancelled' })
+            });
+            fetchData();
+          } catch (err) { alert('Cancel failed'); }
         }
-      } catch (err) {
-        alert('Network error');
-      } finally {
-        btn.innerHTML = oldText;
-        btn.disabled = false;
       }
     });
 
-    // Logout
-    $('#logoutBtn').addEventListener('click', () => {
-      if (confirm('Logout from delivery portal?')) {
+    $('#logoutBtn').onclick = () => {
+      if (confirm('Logout?')) {
         localStorage.clear();
         location.href = 'login.html';
       }
-    });
+    };
 
-    // Start
-    fetchOrders();
-    setInterval(fetchOrders, REFRESH_INTERVAL);
+    fetchData();
+    setInterval(fetchData, REFRESH_INTERVAL);
   </script>
 </body>
 </html>
