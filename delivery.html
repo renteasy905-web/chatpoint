@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Delivery Portal | ChatPoint</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
   <style>
     :root {
       --bg: #0f172a;
@@ -18,30 +17,25 @@
       --danger: #ef4444;
       --whatsapp: #25D366;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 100px; }
     .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
-
     .header {
       position: sticky; top: 0; background: var(--bg); z-index: 10;
       padding: 1rem 0; border-bottom: 2px solid var(--border);
       display: flex; justify-content: space-between; align-items: center;
     }
-
     .logout-btn {
       background: var(--danger); color: white; padding: 0.6rem 1.2rem;
       border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer;
       display: flex; align-items: center; gap: 0.4rem; font-size: 0.95rem;
     }
     .logout-btn:hover { background: #dc2626; }
-
     .filter-tabs {
       display: flex; gap: 0.8rem; margin: 1.5rem 0; flex-wrap: wrap;
       overflow-x: auto; padding-bottom: 0.5rem;
     }
     .filter-tabs::-webkit-scrollbar { display: none; }
-
     .filter-btn {
       padding: 0.7rem 1.4rem; border: none; border-radius: 0.6rem;
       background: #334155; color: var(--text-muted); font-weight: 600;
@@ -51,7 +45,6 @@
       background: var(--primary); color: white;
       box-shadow: 0 0 15px rgba(59,130,246,0.5);
     }
-
     .card {
       background: var(--card-bg); border-radius: 0.75rem;
       padding: 1.5rem; margin-bottom: 1rem; border: 1px solid var(--border);
@@ -59,14 +52,12 @@
       transition: transform 0.2s;
     }
     .card:hover { transform: translateY(-4px); }
-
     .user-card {
       background: var(--card-bg); border-radius: 0.75rem;
       padding: 1rem; margin-bottom: 0.8rem;
       display: flex; justify-content: space-between; align-items: center;
       border: 1px solid var(--border);
     }
-
     .btn {
       padding: 0.6rem 1.2rem; border: none; border-radius: 0.5rem;
       font-weight: 600; cursor: pointer; font-size: 0.9rem;
@@ -77,7 +68,6 @@
     .btn-success { background: var(--success); color: white; }
     .btn-danger { background: var(--danger); color: white; }
     .btn-whatsapp { background: var(--whatsapp); color: white; padding: 0.5rem 1rem; font-size: 0.85rem; }
-
     .badge {
       padding: 0.3rem 0.8rem; font-size: 0.8rem; border-radius: 0.4rem;
       font-weight: 700;
@@ -86,14 +76,12 @@
     .badge-confirmed { background: var(--primary); color: white; }
     .badge-delivered { background: var(--success); color: white; }
     .badge-cancelled { background: var(--danger); color: white; }
-
     .loader {
       border: 5px solid #1e293b; border-top: 5px solid var(--primary);
       border-radius: 50%; width: 40px; height: 40px;
       animation: spin 1s linear infinite; margin: 2rem auto;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
-
     .empty { text-align: center; color: var(--text-muted); padding: 3rem; font-size: 1.1rem; }
     .new-order-alert {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -107,18 +95,15 @@
   </style>
 </head>
 <body>
-
   <div id="bigAlert" class="new-order-alert">
     <div>NEW ORDER!</div>
     <small>Check the portal now!</small>
   </div>
-
   <div class="container">
     <div class="header">
       <h1>Delivery Portal</h1>
       <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
-
     <div class="filter-tabs">
       <button class="filter-btn active" data-filter="active">Active Orders</button>
       <button class="filter-btn" data-filter="delivered">Delivered</button>
@@ -126,26 +111,20 @@
       <button class="filter-btn" data-filter="all">All Orders</button>
       <button class="filter-btn" data-filter="users">Users</button>
     </div>
-
     <div id="loading">
       <div class="loader"></div>
       <p style="text-align:center; color:#94a3b8;">Loading...</p>
     </div>
-
     <div id="orders-container"></div>
     <div id="users-container" style="display:none;"></div>
-
     <div id="empty" class="empty hidden">
       <p>No items in this section.</p>
     </div>
-
     <div style="text-align:center; color:#64748b; font-size:0.85rem; margin-top:2rem;">
       Auto-refresh every 5 seconds • New orders trigger full-screen alert
     </div>
   </div>
-
   <audio id="loudSound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" preload="auto"></audio>
-
   <script>
     const API_BASE = window.location.origin;
     const REFRESH_INTERVAL = 5000;
@@ -153,13 +132,11 @@
     let allUsers = [];
     let currentFilter = 'active';
     let previousPendingCount = 0;
-
     const $ = s => document.querySelector(s);
     const $$ = s => document.querySelectorAll(s);
     const ordersContainer = $('#orders-container');
     const usersContainer = $('#users-container');
     const loadingEl = $('#loading');
-    const emptyEl = $('#empty');
     const bigAlert = $('#bigAlert');
     const loudSound = $('#loudSound');
 
@@ -184,7 +161,7 @@ You'll get shipping updates soon! 📦
 Shop more at: https://chatpoint.shop
 Thanks for choosing us! 🌟`);
 
-    const deliveredMessage = encodeURIComponent(`We’re excited to let you know that your order from ChatPoint has just been delivered. 
+    const deliveredMessage = encodeURIComponent(`We’re excited to let you know that your order from ChatPoint has just been delivered.
 Enjoy your meal, and thank you for choosing us! 🍽️🚀
 You can always visit us again at chatpoint.shop 🌐`);
 
@@ -212,14 +189,10 @@ You can always visit us again at chatpoint.shop 🌐`);
           body: JSON.stringify({ orderId, status: newStatus })
         });
         const result = await res.json();
-        if (result.success) {
-          const order = allOrders.find(o => o._id === orderId);
-          if (order) order.status = newStatus;
-          return true;
-        }
+        return result.success === true;
       } catch (err) {
         console.error("Status update failed:", err);
-        alert("Failed to update status. Try again.");
+        alert("Failed to update status. Check network or server.");
         return false;
       }
     };
@@ -233,18 +206,20 @@ You can always visit us again at chatpoint.shop 🌐`);
       `).join('');
 
       let actions = '';
+      const commonAttrs = `data-id="${order._id}" data-phone="${order.user.phone}" data-name="${order.user.name}"`;
+
       if (order.status === 'pending') {
         actions = `
           <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
-            <button class="btn btn-primary" data-id="${order._id}" data-action="confirm" data-name="${order.user.name}" data-phone="${order.user.phone}">Confirm</button>
-            <button class="btn btn-success" data-id="${order._id}" data-action="delivered" data-phone="${order.user.phone}">Delivered</button>
-            <button class="btn btn-danger" data-id="${order._id}" data-action="cancel">Cancel</button>
+            <button class="btn btn-primary" ${commonAttrs} data-action="confirm">Confirm</button>
+            <button class="btn btn-success" ${commonAttrs} data-action="delivered">Delivered</button>
+            <button class="btn btn-danger" ${commonAttrs} data-action="cancel">Cancel</button>
           </div>`;
       } else if (order.status === 'confirmed') {
         actions = `
           <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
-            <button class="btn btn-success" data-id="${order._id}" data-action="delivered" data-phone="${order.user.phone}">Delivered</button>
-            <button class="btn btn-danger" data-id="${order._id}" data-action="cancel">Cancel</button>
+            <button class="btn btn-success" ${commonAttrs} data-action="delivered">Delivered</button>
+            <button class="btn btn-danger" ${commonAttrs} data-action="cancel">Cancel</button>
           </div>`;
       }
 
@@ -321,7 +296,6 @@ You can always visit us again at chatpoint.shop 🌐`);
           fetch(`${API_BASE}/api/all-delivery-orders?t=${Date.now()}`, { cache: 'no-store' }),
           fetch(`${API_BASE}/api/admin/users?t=${Date.now()}`, { cache: 'no-store' })
         ]);
-
         const ordersData = await ordersRes.json();
         const usersData = await usersRes.json();
 
@@ -331,18 +305,26 @@ You can always visit us again at chatpoint.shop 🌐`);
           previousPendingCount = pending;
           allOrders = ordersData.orders.sort((a, b) => new Date(b.date) - new Date(a.date));
         }
-
         if (usersData.users && Array.isArray(usersData.users)) {
           allUsers = usersData.users;
         }
-
         applyView();
       } catch (err) {
-        console.error(err);
+        console.error("Fetch error:", err);
       }
     };
 
-    // Handle all button clicks
+    // Handle filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        applyView();
+      });
+    });
+
+    // Main click handler for action buttons
     document.addEventListener('click', async e => {
       const btn = e.target.closest('button[data-action]');
       if (!btn) return;
@@ -352,30 +334,43 @@ You can always visit us again at chatpoint.shop 🌐`);
       const phone = btn.dataset.phone;
       const name = btn.dataset.name;
 
+      if (!orderId) return;
+
       btn.disabled = true;
-      const oldText = btn.innerHTML;
+      const originalText = btn.innerHTML;
       btn.innerHTML = 'Processing...';
 
-      if (action === 'confirm' && orderId && phone && name) {
-        const success = await updateOrderStatus(orderId, 'confirmed');
+      let success = false;
+
+      if (action === 'confirm') {
+        success = await updateOrderStatus(orderId, 'confirmed');
         if (success) {
           openWhatsApp(phone, confirmMessage(name));
-          applyView(); // Refresh view
         }
-      } else if (action === 'delivered' && orderId && phone) {
-        const success = await updateOrderStatus(orderId, 'delivered');
+      } else if (action === 'delivered') {
+        success = await updateOrderStatus(orderId, 'delivered');
         if (success) {
           openWhatsApp(phone, deliveredMessage);
-          applyView();
         }
-      } else if (action === 'cancel' && orderId) {
-        if (confirm('Cancel this order?')) {
-          const success = await updateOrderStatus(orderId, 'cancelled');
-          if (success) applyView();
+      } else if (action === 'cancel') {
+        if (!confirm('Cancel this order?')) {
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+          return;
         }
+        success = await updateOrderStatus(orderId, 'cancelled');
       }
 
-      btn.innerHTML = oldText;
+      if (success) {
+        // Update local data
+        const order = allOrders.find(o => o._id === orderId);
+        if (order) order.status = action === 'confirm' ? 'confirmed' : action === 'delivered' ? 'delivered' : 'cancelled';
+        btn.innerHTML = 'Success!';
+        setTimeout(() => applyView(), 800); // Refresh view after short delay
+      } else {
+        btn.innerHTML = originalText;
+      }
+
       btn.disabled = false;
     });
 
@@ -386,6 +381,7 @@ You can always visit us again at chatpoint.shop 🌐`);
       }
     };
 
+    // Initial load
     fetchData();
     setInterval(fetchData, REFRESH_INTERVAL);
   </script>
