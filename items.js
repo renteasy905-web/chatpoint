@@ -1,3 +1,5 @@
+// items.js
+
 // Check login status
 const user = JSON.parse(localStorage.getItem("chatpoint_user") || "null");
 const isLoggedIn = user && user._id;
@@ -8,7 +10,7 @@ if (!isLoggedIn) {
 // ₹5 OFF on every item
 const DISCOUNT = 5;
 
-// All shops with items
+// Shop data (same as before)
 const shopData = {
   "Chat Point": [
     { name: "Akoo tikki(burger)+ onion pizza + cheese sandwich + fry momos", price: 300, image: "Aloo-Tikki-Burger.jpg" },
@@ -142,7 +144,6 @@ const shopData = {
 const urlParams = new URLSearchParams(location.search);
 let requestedShop = decodeURIComponent(urlParams.get("shop") || "").trim();
 
-// Normalize and find correct shop name
 let shopName = null;
 let shopItems = [];
 
@@ -193,8 +194,9 @@ function changeQty(shop, name, originalPrice, delta) {
 function renderItems() {
   const grid = document.getElementById("itemsGrid");
   grid.innerHTML = "";
+
   if (shopItems.length === 0) {
-    grid.innerHTML = "<p style='text-align:center;grid-column:1/-1;font-size:1.2rem;color:#666;'>No items found for this shop.</p>";
+    grid.innerHTML = "<p style='text-align:center;grid-column:1/-1;font-size:1.2rem;color:#666;margin:3rem 0;'>No items found for this shop.</p>";
     return;
   }
 
@@ -205,29 +207,93 @@ function renderItems() {
 
     const card = document.createElement("article");
     card.className = "item-card";
+
     card.innerHTML = `
-      <img src="images/${item.image}" alt="${item.name}" class="item-img" loading="lazy"
-           onerror="this.src='https://via.placeholder.com/600x380/f3cd98/f12916?text=${encodeURIComponent(item.name.substring(0, 20))}'">
       <div class="item-info">
         <div class="item-name">${item.name}</div>
         <div class="item-desc">${item.name.toLowerCase().includes("cake") ? "Fresh Cream • Per kg" : "Homemade Special"}</div>
-        <div class="price-container">
-          <div class="old-price">₹${originalPrice}</div>
-          <div class="new-price">₹${discountedPrice}</div>
-          <div class="discount-badge">-₹5 OFF</div>
-        </div>
-        <div class="quantity">
-          <button class="qbtn" onclick="changeQty('${shopName}', '${item.name.replace(/'/g, "\\'")}', ${originalPrice}, -1)">−</button>
-          <div class="qty">${qty}</div>
-          <button class="qbtn" onclick="changeQty('${shopName}', '${item.name.replace(/'/g, "\\'")}', ${originalPrice}, 1)">+</button>
-        </div>
+      </div>
+      <div class="price-container">
+        <img src="images/${item.image}" alt="${item.name}" class="item-img" loading="lazy"
+             onerror="this.src='https://via.placeholder.com/120x120/f3cd98/f12916?text=${encodeURIComponent(item.name.substring(0, 12))}'">
+        <div class="new-price">₹${discountedPrice}</div>
+        <div class="old-price">₹${originalPrice}</div>
+        <div class="discount-badge">-₹5 OFF</div>
+      </div>
+      <div class="quantity" style="display: ${qty > 0 ? 'flex' : 'none'};">
+        <div class="qty">${qty}</div>
       </div>
     `;
+
+    // Swipe functionality
+    let startX = 0;
+    let currentTranslate = 0;
+    let isDragging = false;
+
+    card.addEventListener("touchstart", e => {
+      startX = e.touches[0].clientX;
+      isDragging = true;
+    });
+
+    card.addEventListener("touchmove", e => {
+      if (!isDragging) return;
+      const currentX = e.touches[0].clientX;
+      const diffX = currentX - startX;
+      currentTranslate = diffX;
+      card.style.transform = `translateX(${diffX}px)`;
+      card.style.transition = "none";
+    });
+
+    card.addEventListener("touchend", () => {
+      if (!isDragging) return;
+      card.style.transition = "transform 0.3s ease";
+
+      if (currentTranslate > 60) {
+        // Swipe right → Add
+        changeQty(shopName, item.name, originalPrice, 1);
+      } else if (currentTranslate < -60) {
+        // Swipe left → Remove
+        changeQty(shopName, item.name, originalPrice, -1);
+      }
+
+      // Reset position
+      card.style.transform = "translateX(0)";
+      currentTranslate = 0;
+      isDragging = false;
+    });
+
+    // Mouse support (for desktop testing)
+    card.addEventListener("mousedown", e => {
+      startX = e.clientX;
+      isDragging = true;
+    });
+    card.addEventListener("mousemove", e => {
+      if (!isDragging) return;
+      const diffX = e.clientX - startX;
+      card.style.transform = `translateX(${diffX}px)`;
+      card.style.transition = "none";
+    });
+    card.addEventListener("mouseup", () => {
+      if (!isDragging) return;
+      card.style.transition = "transform 0.3s ease";
+      if (currentTranslate > 60) changeQty(shopName, item.name, originalPrice, 1);
+      else if (currentTranslate < -60) changeQty(shopName, item.name, originalPrice, -1);
+      card.style.transform = "translateX(0)";
+      isDragging = false;
+    });
+    card.addEventListener("mouseleave", () => {
+      if (isDragging) {
+        card.style.transition = "transform 0.3s ease";
+        card.style.transform = "translateX(0)";
+        isDragging = false;
+      }
+    });
+
     grid.appendChild(card);
   });
 }
 
-// Init
+// Initialize
 document.getElementById("shopName").textContent = shopName || "Shop Not Found";
 renderItems();
 updateCartBar();
@@ -235,4 +301,36 @@ updateCartBar();
 // Navigation
 document.getElementById("backBtn").onclick = () => history.back();
 document.getElementById("cartBar").onclick = () => location.href = "cart.html";
-document.getElementById("checkoutBtn").onclick = e => { e.stopPropagation(); location.href = "cart.html"; };
+document.getElementById("checkoutBtn").onclick = e => {
+  e.stopPropagation();
+  location.href = "cart.html";
+};
+
+// Demo overlay animation on first load
+window.addEventListener("load", () => {
+  const demoOverlay = document.getElementById("demoOverlay");
+  const demoCard = document.getElementById("demoCard");
+
+  if (localStorage.getItem("swipeDemoSeen")) {
+    demoOverlay.style.display = "none";
+    return;
+  }
+
+  // Animate demo card
+  setTimeout(() => demoCard.style.transform = "translateX(80px)", 1200);
+  setTimeout(() => demoCard.style.transform = "translateX(0px)", 2400);
+  setTimeout(() => demoCard.style.transform = "translateX(-80px)", 3600);
+  setTimeout(() => demoCard.style.transform = "translateX(0px)", 4800);
+
+  // Auto hide after 8 seconds or on button click
+  const hideDemo = () => {
+    demoOverlay.style.opacity = "0";
+    setTimeout(() => {
+      demoOverlay.style.display = "none";
+      localStorage.setItem("swipeDemoSeen", "true");
+    }, 500);
+  };
+
+  setTimeout(hideDemo, 8000);
+  demoOverlay.querySelector("button").onclick = hideDemo;
+});
