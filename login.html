@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>ChatPoint — Login / Signup</title>
+  <link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- Fixes favicon 404 error -->
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
@@ -33,7 +34,6 @@
         repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.01) 20px, rgba(255,255,255,0.01) 40px);
       overflow-x: hidden;
     }
-    /* Floating Food Icons */
     .bg-canvas {
       position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
     }
@@ -49,9 +49,7 @@
       0%,100% { transform: translateY(20vh) rotate(0deg) scale(0.9); }
       50% { transform: translateY(-18vh) rotate(180deg) scale(1.1); }
     }
-    .container {
-      width: 100%; max-width: 420px; z-index: 10; position: relative;
-    }
+    .container { width: 100%; max-width: 420px; z-index: 10; position: relative; }
     .card {
       background: var(--card);
       border-radius: var(--radius);
@@ -60,15 +58,9 @@
       border: 1px solid rgba(0,0,0,0.06);
       text-align: center;
     }
-    .brand {
-      display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 20px;
-    }
-    .brand span {
-      font-size: 32px; font-weight: 900; color: var(--primary);
-    }
-    .lead {
-      font-size: 22px; font-weight: 700; color: #222; margin-bottom: 24px;
-    }
+    .brand { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 20px; }
+    .brand span { font-size: 32px; font-weight: 900; color: var(--primary); }
+    .lead { font-size: 22px; font-weight: 700; color: #222; margin-bottom: 24px; }
     .form-group { margin-bottom: 16px; text-align: left; }
     .input {
       width: 100%; padding: 16px 18px; border-radius: 12px;
@@ -76,7 +68,6 @@
       font-size: 16px; color: var(--text); outline: none;
       transition: var(--transition);
     }
-    .input::placeholder { color: #999; }
     .input:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 4px var(--primary-light);
@@ -90,183 +81,142 @@
       transition: var(--transition);
       box-shadow: 0 8px 24px rgba(226,55,68,0.4);
     }
-    .btn:hover { background: #d32f3b; transform: translateY(-3px); box-shadow: 0 16px 32px rgba(226,55,68,0.5); }
-    .toggle-text {
-      margin-top: 20px; font-size: 14.5px; color: var(--muted);
-    }
-    .toggle-text a {
-      color: var(--primary); font-weight: 700; text-decoration: none;
-    }
+    .btn:hover { background: #d32f3b; transform: translateY(-3px); }
+    .toggle-text { margin-top: 20px; font-size: 14.5px; color: var(--muted); }
+    .toggle-text a { color: var(--primary); font-weight: 700; text-decoration: none; }
     .toggle-text a:hover { color: #c6303c; text-decoration: underline; }
-    /* Loading Overlay */
     #loadingOverlay {
       position: fixed; inset: 0; background: rgba(18,18,18,0.95);
       backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 9999;
     }
     #loadingOverlay.active { display: flex; }
-    .loader {
-      width: 90%; max-width: 400px; text-align: center; color: white;
-    }
-    .progress-bar {
-      height: 10px; background: rgba(255,255,255,0.15); border-radius: 10px; overflow: hidden; margin: 20px 0;
-    }
-    .progress-fill {
-      height: 100%; width: 0%; background: var(--primary); border-radius: 10px; transition: width 0.4s ease;
-    }
-    /* Responsive */
+    .loader { width: 90%; max-width: 400px; text-align: center; color: white; }
+    .progress-bar { height: 10px; background: rgba(255,255,255,0.15); border-radius: 10px; overflow: hidden; margin: 20px 0; }
+    .progress-fill { height: 100%; width: 0%; background: var(--primary); border-radius: 10px; transition: width 0.4s ease; }
     @media (max-width: 480px) {
       .card { padding: 28px 24px; border-radius: 16px; }
       .brand span { font-size: 28px; }
       .lead { font-size: 20px; }
-      .input { padding: 14px 16px; font-size: 16px; }
     }
   </style>
 </head>
 <body>
-  <!-- Floating Background Icons -->
   <div class="bg-canvas" aria-hidden="true">
     <svg class="svg-1" viewBox="0 0 64 64"><defs><linearGradient id="g1"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><path d="M32 6 L54 46 A26 26 0 0 1 10 46 Z" stroke="url(#g1)" stroke-width="3" fill="none"/><circle cx="26" cy="36" r="3" fill="#e23744"/><circle cx="36" cy="34" r="3" fill="#e23744"/></svg>
     <svg class="svg-2" viewBox="0 0 64 64"><defs><linearGradient id="g2"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><rect x="12" y="20" width="40" height="8" rx="4" stroke="url(#g2)" stroke-width="3" fill="none"/><rect x="12" y="34" width="40" height="8" rx="4" stroke="url(#g2)" stroke-width="3" fill="none"/></svg>
     <svg class="svg-3" viewBox="0 0 64 64"><defs><linearGradient id="g3"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><rect x="18" y="18" width="28" height="28" rx="6" stroke="url(#g3)" stroke-width="3" fill="none"/><path d="M24 18 Q32 6 40 18" stroke="url(#g3)" stroke-width="3" fill="none"/></svg>
     <svg class="svg-4" viewBox="0 0 64 64"><defs><linearGradient id="g4"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><rect x="20" y="16" width="24" height="10" rx="4" stroke="url(#g4)" stroke-width="2.8" fill="none"/><rect x="24" y="26" width="4" height="18" fill="#e23744"/><rect x="30" y="26" width="4" height="18" fill="#e23744"/><rect x="36" y="26" width="4" height="18" fill="#e23744"/></svg>
   </div>
+
   <div class="container">
     <div class="card">
-      <div class="brand">
-        <span>Chat</span><span>Point</span>
-      </div>
-      <!-- Login Form -->
+      <div class="brand"><span>Chat</span><span>Point</span></div>
+
       <div id="loginForm">
         <div class="lead">Welcome back!</div>
-        <div class="form-group">
-          <input type="tel" id="loginPhone" class="input" placeholder="Phone number" maxlength="10" inputmode="numeric" required />
-        </div>
-        <div class="form-group">
-          <input type="password" id="loginPassword" class="input" placeholder="Password" required />
-        </div>
+        <div class="form-group"><input type="tel" id="loginPhone" class="input" placeholder="Phone number" maxlength="10" inputmode="numeric" /></div>
+        <div class="form-group"><input type="password" id="loginPassword" class="input" placeholder="Password" /></div>
         <button class="btn" id="btnLogin">Login</button>
-        <div class="toggle-text">
-          New to ChatPoint? <a href="#" id="showSignup">Create account</a>
-        </div>
+        <div class="toggle-text">New to ChatPoint? <a href="#" id="showSignup">Create account</a></div>
       </div>
-      <!-- Signup Form -->
+
       <div id="signupForm" style="display:none">
         <div class="lead">Join ChatPoint</div>
-        <div class="form-group">
-          <input type="text" id="signupName" class="input" placeholder="Full name" required />
-        </div>
-        <div class="form-group">
-          <input type="tel" id="signupPhone" class="input" placeholder="Phone number" maxlength="10" inputmode="numeric" required />
-        </div>
-        <div class="form-group">
-          <input type="password" id="signupPassword" class="input" placeholder="Create password" required />
-        </div>
+        <div class="form-group"><input type="text" id="signupName" class="input" placeholder="Full name" /></div>
+        <div class="form-group"><input type="tel" id="signupPhone" class="input" placeholder="Phone number" maxlength="10" inputmode="numeric" /></div>
+        <div class="form-group"><input type="password" id="signupPassword" class="input" placeholder="Create password" /></div>
         <button class="btn" id="btnSignup">Sign Up</button>
-        <div class="toggle-text">
-          Have an account? <a href="#" id="showLogin">Sign in</a>
-        </div>
+        <div class="toggle-text">Have an account? <a href="#" id="showLogin">Sign in</a></div>
       </div>
     </div>
   </div>
-  <!-- Loading Overlay -->
+
   <div id="loadingOverlay">
     <div class="loader">
       <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
       <div id="loaderText">Connecting...</div>
     </div>
   </div>
+
   <script>
-    const BASE_URL = window.location.origin;
     const $ = id => document.getElementById(id);
-    // Elements
     const loginForm = $('loginForm');
     const signupForm = $('signupForm');
     const loading = $('loadingOverlay');
     const progress = $('progressFill');
     const loaderText = $('loaderText');
-    // Toggle
+
     $('showSignup').onclick = e => { e.preventDefault(); loginForm.style.display = 'none'; signupForm.style.display = 'block'; };
     $('showLogin').onclick = e => { e.preventDefault(); signupForm.style.display = 'none'; loginForm.style.display = 'block'; };
-    // Loading
+
     function showLoading() {
       loading.classList.add('active');
       let w = 10;
-      const int = setInterval(() => {
-        w = Math.min(w + 7, 94);
-        progress.style.width = w + '%';
-      }, 300);
+      const int = setInterval(() => { w = Math.min(w + 7, 94); progress.style.width = w + '%'; }, 300);
       let dots = 0;
-      const textInt = setInterval(() => {
-        loaderText.textContent = 'Connecting' + '.'.repeat((dots++ % 3) + 1);
-      }, 500);
+      const textInt = setInterval(() => { loaderText.textContent = 'Connecting' + '.'.repeat((dots++ % 3) + 1); }, 500);
       return () => { clearInterval(int); clearInterval(textInt); };
     }
+
     function hideLoading() {
       progress.style.width = '100%';
-      setTimeout(() => {
-        loading.classList.remove('active');
-        progress.style.width = '0%';
-      }, 500);
+      setTimeout(() => { loading.classList.remove('active'); progress.style.width = '0%'; }, 500);
     }
-    const isValidPhone = p => /^\d{10}$/.test(p);
-    // Login
-    $('btnLogin').onclick = async () => {
-      const phone = $('loginPhone').value.trim();
-      const pass = $('loginPassword').value;
-      if (!phone || !pass) return alert('Please fill all fields');
-      if (!isValidPhone(phone)) return alert('Enter a valid 10-digit phone number');
-      if (phone === '1234567890' && pass === 'admin') {
-        const stop = showLoading();
-        setTimeout(() => { stop(); hideLoading(); location.href = 'delivery.html'; }, 1400);
-        return;
-      }
-      const stop = showLoading();
-      try {
-        const res = await fetch(`${BASE_URL}/api/user/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, password: pass })
-        });
-        const data = await res.json();
-        stop(); hideLoading();
-        if (data.success) {
-          localStorage.setItem('chatpoint_user', JSON.stringify(data.user));
-          location.href = 'index.html';
-        } else {
-          alert(data.message || 'Login failed');
-        }
-      } catch {
-        stop(); hideLoading();
-        alert('Network error. Please try again.');
-      }
-    };
-    // Signup
-    $('btnSignup').onclick = async () => {
+
+    const isValidPhone = p => /^\d{10}$/.test(p.trim());
+
+    // Fake Signup (saves to localStorage)
+    $('btnSignup').onclick = () => {
       const name = $('signupName').value.trim();
       const phone = $('signupPhone').value.trim();
       const pass = $('signupPassword').value;
+
       if (!name || !phone || !pass) return alert('Please fill all fields');
-      if (!isValidPhone(phone)) return alert('Enter a valid 10-digit phone number');
+      if (!isValidPhone(phone)) return alert('Enter valid 10-digit phone');
+
+      const users = JSON.parse(localStorage.getItem('chatpoint_users') || '[]');
+      if (users.find(u => u.phone === phone)) return alert('Phone already registered');
+
+      const newUser = { _id: Date.now(), name, phone, password: pass };
+      users.push(newUser);
+      localStorage.setItem('chatpoint_users', JSON.stringify(users));
+      localStorage.setItem('chatpoint_user', JSON.stringify(newUser));
+
       const stop = showLoading();
-      try {
-        const res = await fetch(`${BASE_URL}/api/user/signup`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, phone, password: pass })
-        });
-        const data = await res.json();
+      setTimeout(() => {
         stop(); hideLoading();
-        if (data.success) {
-          alert('Account created successfully! Please login.');
-          $('showLogin').click();
-        } else {
-          alert(data.message || 'Signup failed');
-        }
-      } catch {
-        stop(); hideLoading();
-        alert('Network error. Please try again.');
-      }
+        alert('Account created! Welcome ' + name);
+        location.href = 'index.html';
+      }, 1200);
     };
+
+    // Fake Login
+    $('btnLogin').onclick = () => {
+      const phone = $('loginPhone').value.trim();
+      const pass = $('loginPassword').value;
+
+      if (!phone || !pass) return alert('Please fill all fields');
+      if (!isValidPhone(phone)) return alert('Enter valid 10-digit phone');
+
+      // Demo admin login
+      if (phone === '1234567890' && pass === 'admin') {
+        const demoUser = { _id: 'admin1', name: 'Admin User', phone: '1234567890' };
+        localStorage.setItem('chatpoint_user', JSON.stringify(demoUser));
+        const stop = showLoading();
+        setTimeout(() => { stop(); hideLoading(); location.href = 'index.html'; }, 1200);
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('chatpoint_users') || '[]');
+      const user = users.find(u => u.phone === phone && u.password === pass);
+
+      if (!user) return alert('Invalid phone or password');
+
+      localStorage.setItem('chatpoint_user', JSON.stringify(user));
+      const stop = showLoading();
+      setTimeout(() => { stop(); hideLoading(); location.href = 'index.html'; }, 1200);
+    };
+
     // Enter key support
     document.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
