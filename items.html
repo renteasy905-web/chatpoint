@@ -15,7 +15,7 @@
       --text-dark: #111827;
       --bg-light: #e6f0fb;
       --card-white: #ffffff;
-      --muted-text: #666;
+      --muted-text: #888;
       --border-light: rgba(14,19,26,0.08);
       --radius-xl: 1.5rem;
       --radius-lg: 0.75rem;
@@ -42,22 +42,34 @@
       box-shadow: var(--shadow); border: 1px solid var(--border-light);
       display: flex; align-items: center; padding: 1rem; gap: 1rem;
       transition: var(--transition); height: 160px; position: relative; user-select: none;
+      touch-action: pan-y; /* Prevents shaking - allows vertical scroll */
     }
     .item-card:hover { transform: translateY(-4px); }
-    .item-img { width: 120px; height: 120px; object-fit: cover; border-radius: var(--radius-lg); flex-shrink: 0; }
-    .item-info { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
-    .item-name { font-weight: 700; font-size: 1rem; line-height: 1.3; word-break: break-word; overflow-wrap: anywhere; }
-    .item-desc { font-size: 0.8125rem; color: var(--muted-text); }
-    .price-container { text-align: center; }
-    .new-price { font-weight: 900; color: var(--brand-red); font-size: 1.4rem; }
-    .old-price { font-size: 0.875rem; color: #888; text-decoration: line-through; }
-    .discount-badge { background: var(--brand-red); color: white; font-size: 0.75rem; font-weight: 700;
-      padding: 0.25rem 0.5rem; border-radius: 0.5rem; display: inline-block; margin-top: 0.25rem; }
+    .item-img { 
+      width: 120px; height: 120px; object-fit: cover; border-radius: var(--radius-lg); flex-shrink: 0; 
+      align-self: center; /* Centers image vertically */
+    }
+    .item-info { 
+      flex: 1; display: flex; flex-direction: column; gap: 0.6rem; min-width: 0; 
+      justify-content: center; /* Centers content vertically */
+    }
+    .item-name { 
+      font-weight: 700; font-size: 1rem; line-height: 1.3; 
+      word-break: break-word; overflow-wrap: anywhere; color: var(--text-dark);
+    }
+    .price-container { text-align: right; align-self: center; }
+    .new-price { font-weight: 900; color: var(--brand-red); font-size: 1.5rem; }
+    .old-price { font-size: 0.95rem; color: var(--muted-text); text-decoration: line-through; }
+    .discount-badge { 
+      background: var(--brand-red); color: white; font-size: 0.75rem; font-weight: 700;
+      padding: 0.25rem 0.5rem; border-radius: 0.5rem; display: inline-block; margin-top: 0.25rem; 
+    }
     .quantity {
-      position: absolute; bottom: 0.75rem; left: 0.75rem;
-      background: rgba(48,188,26,0.15); color: var(--accent-green);
-      font-weight: 800; padding: 0.375rem 0.875rem; border-radius: var(--radius-lg);
-      font-size: 1rem;
+      position: absolute; bottom: 1rem; right: 1rem; /* Moved to bottom-right */
+      background: var(--accent-green); color: white;
+      width: 44px; height: 44px; border-radius: 50%; 
+      display: grid; place-items: center; font-weight: 800; font-size: 1.1rem;
+      box-shadow: 0 4px 12px rgba(48,188,26,0.4);
     }
     .cart-bar { position: fixed; left: 50%; transform: translateX(-50%); bottom: 2rem;
       width: calc(100% - 3rem); max-width: 28rem; padding: 0.875rem 1.25rem;
@@ -70,20 +82,11 @@
     .checkout-btn:hover { transform: translateY(-3px); }
     .login-banner { max-width: 75rem; margin: 1.5rem auto; padding: 1rem 1.5rem; border-radius: var(--radius-xl);
       background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); box-shadow: var(--shadow); text-align: center; font-weight: 600; }
-    /* Demo Overlay */
-    #demoOverlay {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 1.5rem; color: white; text-align: center; padding: 2rem; transition: opacity 0.5s;
-    }
-    #demoCard { transition: transform 0.6s ease; }
-    .demo-text { font-size: 1.125rem; font-weight: 600; }
-    .demo-arrow { font-size: 2.5rem; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0%,100% { opacity: 0.7; } 50% { opacity: 1; } }
     @media (max-width: 480px) {
       .item-card { height: 150px; }
       .item-img { width: 100px; height: 100px; }
-      .item-name { font-size: 0.95rem; }
+      .new-price { font-size: 1.4rem; }
+      .quantity { width: 40px; height: 40px; font-size: 1rem; }
     }
   </style>
 </head>
@@ -114,41 +117,17 @@
     <button class="checkout-btn" id="checkoutBtn">Checkout</button>
   </div>
 
-  <!-- Demo Overlay -->
-  <div id="demoOverlay">
-    <div class="demo-text">Swipe right → Add / Increase</div>
-    <div class="demo-arrow">→</div>
-    <div id="demoCard" class="item-card">
-      <div class="item-info">
-        <div class="item-name">Demo Item</div>
-        <div class="item-desc">Try swiping me!</div>
-      </div>
-      <div class="price-container">
-        <div style="width:110px;height:110px;background:#ccc;border-radius:0.75rem;"></div>
-        <div class="new-price">₹99</div>
-      </div>
-    </div>
-    <div class="demo-arrow">←</div>
-    <div class="demo-text">Swipe left → Decrease / Remove</div>
-    <button style="background:var(--brand-red);color:white;padding:0.75rem 1.5rem;border:none;border-radius:0.75rem;font-weight:700;cursor:pointer;">
-      Got it!
-    </button>
-  </div>
-
   <script>
-    // Full JS inside HTML (no external file)
+    // Full JS with all items
 
-    // Check login status
     const user = JSON.parse(localStorage.getItem("chatpoint_user") || "null");
     const isLoggedIn = user && user._id;
     if (!isLoggedIn) {
       document.getElementById("loginBanner").style.display = "block";
     }
 
-    // ₹5 OFF on every item
     const DISCOUNT = 5;
 
-    // ALL SHOPS WITH ALL ITEMS
     const shopData = {
       "Chat Point": [
         { name: "Akoo tikki(burger)+ onion pizza + cheese sandwich + fry momos", price: 300, image: "Aloo-Tikki-Burger.jpg" },
@@ -278,7 +257,6 @@
       ]
     };
 
-    // Get shop from URL
     const urlParams = new URLSearchParams(location.search);
     let requestedShop = decodeURIComponent(urlParams.get("shop") || "").trim();
 
@@ -348,7 +326,6 @@
         card.innerHTML = `
           <div class="item-info">
             <div class="item-name">${item.name}</div>
-            <div class="item-desc">${item.name.toLowerCase().includes("cake") ? "Fresh Cream • Per kg" : "Homemade Special"}</div>
           </div>
           <div class="price-container">
             <img src="images/${item.image}" alt="${item.name}" class="item-img" loading="lazy"
@@ -357,113 +334,54 @@
             <div class="old-price">₹${originalPrice}</div>
             <div class="discount-badge">-₹5 OFF</div>
           </div>
-          <div class="quantity" style="display: ${qty > 0 ? 'flex' : 'none'};">
-            <div class="qty">${qty}</div>
+          <div class="quantity" style="display: ${qty > 0 ? 'grid' : 'none'};">
+            ${qty}
           </div>
         `;
 
-        // Swipe functionality
+        // Swipe functionality - fixed shaking
         let startX = 0;
-        let currentTranslate = 0;
         let isDragging = false;
 
         card.addEventListener("touchstart", e => {
           startX = e.touches[0].clientX;
           isDragging = true;
-        });
+          card.style.transition = "none";
+        }, { passive: true });
 
         card.addEventListener("touchmove", e => {
           if (!isDragging) return;
-          const currentX = e.touches[0].clientX;
-          const diffX = currentX - startX;
-          currentTranslate = diffX;
+          e.preventDefault(); // Only prevent when swiping horizontally
+          const diffX = e.touches[0].clientX - startX;
           card.style.transform = `translateX(${diffX}px)`;
-          card.style.transition = "none";
-        });
+        }, { passive: false });
 
         card.addEventListener("touchend", () => {
           if (!isDragging) return;
+          const diffX = parseFloat(card.style.transform.match(/translateX\((.*)px\)/)?.[1] || 0);
           card.style.transition = "transform 0.3s ease";
-          if (currentTranslate > 60) {
+
+          if (diffX > 60) {
             changeQty(shopName, item.name, originalPrice, 1);
-          } else if (currentTranslate < -60) {
+          } else if (diffX < -60) {
             changeQty(shopName, item.name, originalPrice, -1);
           }
-          card.style.transform = "translateX(0)";
-          currentTranslate = 0;
-          isDragging = false;
-        });
 
-        // Mouse support
-        card.addEventListener("mousedown", e => {
-          startX = e.clientX;
-          isDragging = true;
-        });
-        card.addEventListener("mousemove", e => {
-          if (!isDragging) return;
-          const diffX = e.clientX - startX;
-          card.style.transform = `translateX(${diffX}px)`;
-          card.style.transition = "none";
-        });
-        card.addEventListener("mouseup", () => {
-          if (!isDragging) return;
-          card.style.transition = "transform 0.3s ease";
-          if (currentTranslate > 60) changeQty(shopName, item.name, originalPrice, 1);
-          else if (currentTranslate < -60) changeQty(shopName, item.name, originalPrice, -1);
           card.style.transform = "translateX(0)";
           isDragging = false;
-        });
-        card.addEventListener("mouseleave", () => {
-          if (isDragging) {
-            card.style.transition = "transform 0.3s ease";
-            card.style.transform = "translateX(0)";
-            isDragging = false;
-          }
         });
 
         grid.appendChild(card);
       });
     }
 
-    // Initialize
     document.getElementById("shopName").textContent = shopName || "Shop Not Found";
     renderItems();
     updateCartBar();
 
-    // Navigation
     document.getElementById("backBtn").onclick = () => history.back();
     document.getElementById("cartBar").onclick = () => location.href = "cart.html";
-    document.getElementById("checkoutBtn").onclick = e => {
-      e.stopPropagation();
-      location.href = "cart.html";
-    };
-
-    // Demo overlay
-    window.addEventListener("load", () => {
-      const demoOverlay = document.getElementById("demoOverlay");
-      const demoCard = document.getElementById("demoCard");
-
-      if (localStorage.getItem("swipeDemoSeen")) {
-        demoOverlay.style.display = "none";
-        return;
-      }
-
-      setTimeout(() => demoCard.style.transform = "translateX(80px)", 1200);
-      setTimeout(() => demoCard.style.transform = "translateX(0px)", 2400);
-      setTimeout(() => demoCard.style.transform = "translateX(-80px)", 3600);
-      setTimeout(() => demoCard.style.transform = "translateX(0px)", 4800);
-
-      const hideDemo = () => {
-        demoOverlay.style.opacity = "0";
-        setTimeout(() => {
-          demoOverlay.style.display = "none";
-          localStorage.setItem("swipeDemoSeen", "true");
-        }, 500);
-      };
-
-      setTimeout(hideDemo, 8000);
-      demoOverlay.querySelector("button").onclick = hideDemo;
-    });
+    document.getElementById("checkoutBtn").onclick = e => { e.stopPropagation(); location.href = "cart.html"; };
   </script>
 </body>
 </html>
