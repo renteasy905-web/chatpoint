@@ -166,11 +166,11 @@
     <script>
         const CART_KEY = "chatpoint_cart";
         const USER_KEY = "chatpoint_user";
-        const API_BASE = "https://chatpoint1.onrender.com"; // Your backend URL
+        const API_BASE = "https://chatpoint1.onrender.com";
 
         // YOUR TWO WHATSAPP NUMBERS
-        const PRIMARY = "9632367397";   // Primary
-        const BACKUP  = "8088975913";   // Backup
+        const PRIMARY = "9632367397";
+        const BACKUP  = "8088975913";
 
         function checkLogin() {
             const user = JSON.parse(localStorage.getItem(USER_KEY) || "null");
@@ -311,7 +311,7 @@
             btn.innerHTML = "Saving Order...";
 
             const orderData = {
-                userId: user._id,
+                userId: String(user._id),  // ← FIXED: Convert to string to avoid 400 error
                 name,
                 phone,
                 address: {
@@ -345,7 +345,7 @@
                     saveSuccess = true;
                     document.getElementById("successMsg").innerHTML = "Order Saved! Opening WhatsApp...";
                 } else {
-                    throw new Error(data.message || "Invalid response");
+                    throw new Error(data.message || "Save failed");
                 }
             } catch (err) {
                 console.error("Save failed:", err);
@@ -353,7 +353,6 @@
                 setTimeout(() => document.getElementById("errorMsg").textContent = "", 6000);
             }
 
-            // Always clear cart and open WhatsApp
             localStorage.removeItem(CART_KEY);
 
             let itemsList = "";
@@ -369,7 +368,6 @@
             setTimeout(() => window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, '_blank'), 800);
             setTimeout(() => window.open(`https://wa.me/91${BACKUP}?text=${encoded}`, '_blank'), 1800);
 
-            // Fallback links
             setTimeout(() => {
                 document.getElementById("successMsg").innerHTML += `
                     <br><small>If WhatsApp didn't open:
