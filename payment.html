@@ -224,6 +224,12 @@
             let overallTotal = 0;
             let itemsArray = [];
 
+            // Assume single shop for simplicity - use first shop name or "Chat Point"
+            let shopName = "Chat Point"; // Default or extract from cart if multiple
+            if (Object.keys(cart).length > 0) {
+                shopName = Object.keys(cart)[0];
+            }
+
             for (const shop in cart) {
                 let shopTotal = 0;
                 const sec = document.createElement("div");
@@ -234,7 +240,7 @@
                     if (it.qty > 0) {
                         sec.innerHTML += `<div class="item-line"><span>${name} × ${it.qty}</span><span style="color:#00ff9d">₹${it.price * it.qty}</span></div>`;
                         shopTotal += it.price * it.qty;
-                        itemsArray.push({ name, quantity: it.qty, price: it.price });
+                        itemsArray.push({ name, price: it.price, quantity: it.qty });
                     }
                 }
                 if (shopTotal > 0) {
@@ -260,7 +266,7 @@
                     </div>
                 </div>`;
 
-            window.tempOrderData = { itemsArray, overallTotal, deliveryCharge, grandTotal };
+            window.tempOrderData = { itemsArray, overallTotal, deliveryCharge, grandTotal, shopName };
         }
 
         function validateForm() {
@@ -289,12 +295,7 @@
             }
 
             const user = JSON.parse(localStorage.getItem(USER_KEY));
-            if (!user || !user._id) {
-                document.getElementById("errorMsg").textContent = "Login error. Please login again.";
-                return;
-            }
-
-            const { itemsArray, overallTotal, deliveryCharge, grandTotal } = window.tempOrderData || { itemsArray: [], overallTotal: 0, deliveryCharge: 30, grandTotal: 0 };
+            const { itemsArray, overallTotal, deliveryCharge, grandTotal, shopName } = window.tempOrderData || { itemsArray: [], overallTotal: 0, deliveryCharge: 30, grandTotal: 0, shopName: "Chat Point" };
 
             if (itemsArray.length === 0) {
                 document.getElementById("errorMsg").textContent = "Cart is empty!";
@@ -311,21 +312,29 @@
             btn.innerHTML = "Saving Order...";
 
             const orderData = {
-                userId: null,  // ← FINAL FIX: Set to null so backend can handle missing userId
-                name,
-                phone,
+                user: {
+                    name: name,
+                    phone: phone
+                },
+                shop: shopName,
+                items: itemsArray,
+                totalAmount: grandTotal,
+                deliveryCharge: deliveryCharge,
                 address: {
+                    name: name,
+                    phone: phone,
                     line1: address1,
                     line2: address2 || ""
                 },
-                items: itemsArray,
-                itemsTotal: overallTotal,
-                deliveryCharge,
-                totalAmount: grandTotal,
-                paymentMode: "COD",
+                paymentMethod: "cash",
                 status: "pending",
                 date: new Date().toISOString()
             };
+
+            // Optional: add userId if logged in and _id is valid string
+            if (user && user._id && typeof user._id === 'string' && user._id.length === 24) {
+                orderData.userId = user._id;
+            }
 
             console.log("Sending to server:", orderData);
 
