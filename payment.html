@@ -166,11 +166,11 @@
     <script>
         const CART_KEY = "chatpoint_cart";
         const USER_KEY = "chatpoint_user";
-        const API_BASE = "https://chatpoint1.onrender.com";
+        const API_BASE = "https://chatpoint1.onrender.com"; // Your backend URL
 
         // YOUR TWO WHATSAPP NUMBERS
-        const PRIMARY = "9632367397";   // Opens first
-        const BACKUP  = "8088975913";   // Opens second
+        const PRIMARY = "9632367397";   // Primary
+        const BACKUP  = "8088975913";   // Backup
 
         function checkLogin() {
             const user = JSON.parse(localStorage.getItem(USER_KEY) || "null");
@@ -222,7 +222,7 @@
             const surpriseMsg = document.getElementById("surpriseMsg");
             container.innerHTML = "";
             let overallTotal = 0;
-            let itemsArray = []; // For DB & WhatsApp
+            let itemsArray = [];
 
             for (const shop in cart) {
                 let shopTotal = 0;
@@ -260,7 +260,6 @@
                     </div>
                 </div>`;
 
-            // Store temporarily for placeOrder
             window.tempOrderData = { itemsArray, overallTotal, deliveryCharge, grandTotal };
         }
 
@@ -290,7 +289,17 @@
             }
 
             const user = JSON.parse(localStorage.getItem(USER_KEY));
+            if (!user || !user._id) {
+                document.getElementById("errorMsg").textContent = "Login error. Please login again.";
+                return;
+            }
+
             const { itemsArray, overallTotal, deliveryCharge, grandTotal } = window.tempOrderData || { itemsArray: [], overallTotal: 0, deliveryCharge: 30, grandTotal: 0 };
+
+            if (itemsArray.length === 0) {
+                document.getElementById("errorMsg").textContent = "Cart is empty!";
+                return;
+            }
 
             const name = document.getElementById("name").value.trim();
             const phone = document.getElementById("phone").value.trim();
@@ -301,32 +310,50 @@
             btn.disabled = true;
             btn.innerHTML = "Saving Order...";
 
-            // Try to save to MongoDB
+            const orderData = {
+                userId: user._id,
+                name,
+                phone,
+                address: {
+                    line1: address1,
+                    line2: address2 || ""
+                },
+                items: itemsArray,
+                itemsTotal: overallTotal,
+                deliveryCharge,
+                totalAmount: grandTotal,
+                paymentMode: "COD",
+                status: "pending",
+                date: new Date().toISOString()
+            };
+
+            console.log("Sending to server:", orderData);
+
+            let saveSuccess = false;
+
             try {
                 const res = await fetch(`${API_BASE}/api/save-order`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        userId: user._id,
-                        name,
-                        phone,
-                        address: { line1: address1, line2: address2 },
-                        items: itemsArray,
-                        totalAmount: grandTotal,
-                        status: "pending",
-                        date: new Date().toISOString()
-                    })
+                    body: JSON.stringify(orderData)
                 });
 
-                if (!res.ok) throw new Error("Save failed");
-                document.getElementById("successMsg").innerHTML = "Order Saved! Opening WhatsApp...";
+                const data = await res.json();
+                console.log("Server response:", data);
+
+                if (res.ok && data.success) {
+                    saveSuccess = true;
+                    document.getElementById("successMsg").innerHTML = "Order Saved! Opening WhatsApp...";
+                } else {
+                    throw new Error(data.message || "Invalid response");
+                }
             } catch (err) {
-                console.error(err);
-                document.getElementById("errorMsg").textContent = "Could not save to server — still sending via WhatsApp";
-                setTimeout(() => document.getElementById("errorMsg").textContent = "", 5000);
+                console.error("Save failed:", err);
+                document.getElementById("errorMsg").textContent = `Save failed: ${err.message}. Still sending via WhatsApp.`;
+                setTimeout(() => document.getElementById("errorMsg").textContent = "", 6000);
             }
 
-            // Always clear cart and open WhatsApp (works on phone & web)
+            // Always clear cart and open WhatsApp
             localStorage.removeItem(CART_KEY);
 
             let itemsList = "";
@@ -335,13 +362,14 @@
             const message = `Hello! New Order Received\n\n${itemsList}\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? ', ' + address2 : ''}\nTotal: ₹${grandTotal} (${deliveryCharge === 0 ? 'Free Delivery' : '₹' + deliveryCharge + ' Delivery'})\n\nPlease confirm and deliver soon!`;
             const encoded = encodeURIComponent(message);
 
-            document.getElementById("successMsg").innerHTML = "Order Confirmed! Opening WhatsApp...";
+            document.getElementById("successMsg").innerHTML = saveSuccess 
+                ? "Order Saved & Sending to WhatsApp..." 
+                : "Sending Order via WhatsApp...";
 
-            // Open in new tab — works perfectly on mobile (app) and desktop (web.whatsapp.com)
             setTimeout(() => window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, '_blank'), 800);
             setTimeout(() => window.open(`https://wa.me/91${BACKUP}?text=${encoded}`, '_blank'), 1800);
 
-            // Fallback links in case popup blocked
+            // Fallback links
             setTimeout(() => {
                 document.getElementById("successMsg").innerHTML += `
                     <br><small>If WhatsApp didn't open:
