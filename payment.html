@@ -311,7 +311,7 @@
             btn.innerHTML = "Saving Order...";
 
             const orderData = {
-                userId: String(user._id),  // ← FIXED: Convert to string to avoid 400 error
+                userId: null,  // ← FINAL FIX: Set to null so backend can handle missing userId
                 name,
                 phone,
                 address: {
