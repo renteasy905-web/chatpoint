@@ -7,156 +7,156 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
     <style>
-        :root { 
-            --bg: #0a0a0a; 
-            --card: #111111; 
-            --border: #222222; 
-            --text: #e0e0e0; 
-            --muted: #888888; 
-            --accent: #00ff9d; 
-            --accent2: #ff2e63; 
-            --glow: 0 0 20px rgba(0, 255, 157, 0.3); 
+        :root {
+            --bg: #0a0a0a;
+            --card: #111111;
+            --border: #222222;
+            --text: #e0e0e0;
+            --muted: #888888;
+            --accent: #00ff9d;
+            --accent2: #ff2e63;
+            --glow: 0 0 20px rgba(0, 255, 157, 0.3);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Outfit', sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            min-height: 100vh; 
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
         }
-        .container { 
-            max-width: 480px; 
-            margin: 20px auto; 
-            padding: 24px; 
-            background: var(--card); 
-            border-radius: 24px; 
-            border: 1px solid var(--border); 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6), var(--glow); 
-            position: relative; 
-            z-index: 10; 
-            backdrop-filter: blur(16px); 
+        .container {
+            max-width: 480px;
+            margin: 20px auto;
+            padding: 24px;
+            background: var(--card);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), var(--glow);
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(16px);
         }
-        h2 { 
-            font-size: 28px; 
-            font-weight: 800; 
-            text-align: center; 
-            background: linear-gradient(90deg, var(--accent), var(--accent2)); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            margin-bottom: 24px; 
+        h2 {
+            font-size: 28px;
+            font-weight: 800;
+            text-align: center;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 24px;
         }
-        label { 
-            display: block; 
-            margin-top: 16px; 
-            font-weight: 600; 
-            font-size: 14px; 
-            color: var(--accent); 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
+        label {
+            display: block;
+            margin-top: 16px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        input[type=text], input[type=tel] { 
-            width: 100%; 
-            padding: 14px 16px; 
-            margin-top: 8px; 
-            border-radius: 16px; 
-            border: 1px solid #333; 
-            background: #1a1a1a; 
-            color: white; 
-            font-size: 16px; 
+        input[type=text], input[type=tel] {
+            width: 100%;
+            padding: 14px 16px;
+            margin-top: 8px;
+            border-radius: 16px;
+            border: 1px solid #333;
+            background: #1a1a1a;
+            color: white;
+            font-size: 16px;
         }
-        input:focus { 
-            outline: none; 
-            border-color: var(--accent); 
-            box-shadow: var(--glow); 
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: var(--glow);
         }
-        .radio-group { 
-            margin: 24px 0; 
-            display: flex; 
-            gap: 20px; 
-            justify-content: center; 
+        .radio-group {
+            margin: 24px 0;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
         }
-        .radio-group label { 
-            color: var(--text); 
-            font-weight: 500; 
-            cursor: pointer; 
-            padding: 10px 20px; 
-            border-radius: 12px; 
-            background: #1a1a1a; 
+        .radio-group label {
+            color: var(--text);
+            font-weight: 500;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 12px;
+            background: #1a1a1a;
         }
-        .radio-group input:checked + label { 
-            background: linear-gradient(135deg, var(--accent), var(--accent2)); 
-            color: black; 
-            font-weight: 700; 
+        .radio-group input:checked + label {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: black;
+            font-weight: 700;
         }
-        .shop-section { 
-            margin-top: 28px; 
-            background: #181818; 
-            border-radius: 18px; 
-            padding: 16px; 
-            border: 1px solid #252525; 
+        .shop-section {
+            margin-top: 28px;
+            background: #181818;
+            border-radius: 18px;
+            padding: 16px;
+            border: 1px solid #252525;
         }
-        .shop-title { 
-            font-size: 18px; 
-            font-weight: 700; 
-            color: var(--accent); 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            margin-bottom: 12px; 
+        .shop-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
         }
-        .item-line { 
-            display: flex; 
-            justify-content: space-between; 
-            padding: 8px 0; 
-            font-size: 15px; 
-            border-bottom: 1px dashed #333; 
+        .item-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 15px;
+            border-bottom: 1px dashed #333;
         }
-        .total-line { 
-            display: flex; 
-            justify-content: space-between; 
-            font-weight: 700; 
-            margin-top: 12px; 
-            font-size: 17px; 
+        .total-line {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            margin-top: 12px;
+            font-size: 17px;
         }
-        .surprise-msg { 
-            text-align: center; 
-            padding: 16px; 
-            background: linear-gradient(135deg, rgba(0,255,157,0.1), rgba(255,46,99,0.1)); 
-            border: 1px dashed var(--accent); 
-            border-radius: 16px; 
-            margin: 20px 0; 
-            font-weight: 700; 
-            color: var(--accent); 
-            animation: pulse 2s infinite; 
+        .surprise-msg {
+            text-align: center;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(0,255,157,0.1), rgba(255,46,99,0.1));
+            border: 1px dashed var(--accent);
+            border-radius: 16px;
+            margin: 20px 0;
+            font-weight: 700;
+            color: var(--accent);
+            animation: pulse 2s infinite;
         }
-        button.main-btn { 
-            margin-top: 32px; 
-            width: 100%; 
-            padding: 18px; 
-            background: linear-gradient(90deg, var(--accent), var(--accent2)); 
-            color: black; 
-            font-weight: 800; 
-            font-size: 18px; 
-            border: none; 
-            border-radius: 20px; 
-            cursor: pointer; 
-            box-shadow: 0 10px 30px rgba(0, 255, 157, 0.4); 
+        button.main-btn {
+            margin-top: 32px;
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            color: black;
+            font-weight: 800;
+            font-size: 18px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 255, 157, 0.4);
         }
-        .error-msg { 
-            color: #ff6b6b; 
-            text-align: center; 
-            margin: 12px 0; 
+        .error-msg {
+            color: #ff6b6b;
+            text-align: center;
+            margin: 12px 0;
         }
-        .success-msg { 
-            color: var(--accent); 
-            text-align: center; 
-            font-weight: 700; 
-            font-size: 18px; 
+        .success-msg {
+            color: var(--accent);
+            text-align: center;
+            font-weight: 700;
+            font-size: 18px;
         }
-        @keyframes pulse { 
-            0%,100% { opacity: 0.8; } 
-            50% { opacity: 1; } 
+        @keyframes pulse {
+            0%,100% { opacity: 0.8; }
+            50% { opacity: 1; }
         }
     </style>
 </head>
@@ -166,10 +166,11 @@
     <script>
         const CART_KEY = "chatpoint_cart";
         const USER_KEY = "chatpoint_user";
+        const API_BASE = "https://chatpoint1.onrender.com"; // Your backend URL
 
         // YOUR TWO NUMBERS — FIRST ONE WILL OPEN FIRST
-        const PRIMARY = "9632367397";   // ← Opens first
-        const BACKUP  = "8088975913";   // ← Opens second
+        const PRIMARY = "9632367397";   // Primary WhatsApp number
+        const BACKUP  = "8088975913";   // Backup WhatsApp number
 
         function checkLogin() {
             const user = JSON.parse(localStorage.getItem(USER_KEY) || "null");
@@ -222,9 +223,11 @@
             container.innerHTML = "";
             let overallTotal = 0;
 
+            let itemsArray = []; // For saving to DB
+
             for (const shop in cart) {
                 let shopTotal = 0;
-                const sec = document.createElement("div"); 
+                const sec = document.createElement("div");
                 sec.className = "shop-section";
                 sec.innerHTML = `<div class="shop-title">${shop}</div>`;
                 for (const name in cart[shop]) {
@@ -232,6 +235,13 @@
                     if (it.qty > 0) {
                         sec.innerHTML += `<div class="item-line"><span>${name} × ${it.qty}</span><span style="color:#00ff9d">₹${it.price * it.qty}</span></div>`;
                         shopTotal += it.price * it.qty;
+
+                        // Build items array for DB
+                        itemsArray.push({
+                            name: name,
+                            quantity: it.qty,
+                            price: it.price
+                        });
                     }
                 }
                 if (shopTotal > 0) {
@@ -256,6 +266,9 @@
                         <span>Grand Total</span><span>₹${grandTotal}</span>
                     </div>
                 </div>`;
+
+            // Store for later use in order save
+            window.tempOrderData = { itemsArray, overallTotal, deliveryCharge, grandTotal };
         }
 
         function validateForm() {
@@ -278,7 +291,6 @@
         async function placeOrder() {
             if (!validateForm()) return;
 
-            // Only allow COD for now
             if (document.querySelector('input[name="paymentMode"]:checked').value !== "COD") {
                 alert("Online payment coming soon!");
                 return;
@@ -296,36 +308,59 @@
             const address1 = document.getElementById("address1").value.trim();
             const address2 = document.getElementById("address2").value.trim();
 
+            const { itemsArray, overallTotal, deliveryCharge, grandTotal } = window.tempOrderData || { itemsArray: [], overallTotal: 0, deliveryCharge: 30, grandTotal: 0 };
+
             const btn = document.getElementById("placeOrderBtn");
             btn.disabled = true;
-            btn.innerHTML = `Placing Order...`;
+            btn.innerHTML = "Saving Order...";
 
-            let itemsTotal = 0;
-            let itemsList = "";
-            for (const shop in cart) {
-                for (const item in cart[shop]) {
-                    const it = cart[shop][item];
-                    if (it.qty > 0) {
-                        itemsList += `${item} (${shop}) × ${it.qty}\n`;
-                        itemsTotal += it.price * it.qty;
-                    }
+            try {
+                const res = await fetch(`${API_BASE}/api/save-order`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        userId: user._id,
+                        name,
+                        phone,
+                        address: {
+                            line1: address1,
+                            line2: address2
+                        },
+                        items: itemsArray,
+                        totalAmount: grandTotal,
+                        status: "pending", // Initial status
+                        date: new Date().toISOString()
+                    })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    throw new Error(data.message || "Failed to save order");
                 }
-            }
-            const deliveryCharge = itemsTotal >= 50 ? 0 : 30;
-            const grandTotal = itemsTotal + deliveryCharge;
 
-            // Bypassing server save-order API (to avoid 500 error)
-            // Directly clear cart and send to WhatsApp
+                document.getElementById("successMsg").innerHTML = "Order Saved Successfully! Sending to WhatsApp...";
+
+            } catch (err) {
+                console.error("Order save failed:", err);
+                document.getElementById("errorMsg").textContent = "Server error saving order, but sending via WhatsApp anyway.";
+                setTimeout(() => document.getElementById("errorMsg").textContent = "", 5000);
+            }
+
+            // Always clear cart and send WhatsApp (even if save failed)
             localStorage.removeItem(CART_KEY);
 
-            const message = `Hello! I have an order\n\n${itemsList}\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? ', ' + address2 : ''}\nTotal: ₹${grandTotal} (${deliveryCharge === 0 ? 'Free Delivery' : '₹' + deliveryCharge + ' Delivery'})\n\nAccept my order and reach us fast!`;
+            let itemsList = "";
+            itemsArray.forEach(it => {
+                itemsList += `${it.name} × ${it.quantity}\n`;
+            });
+
+            const message = `Hello! New Order Received\n\n${itemsList}\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? ', ' + address2 : ''}\nTotal: ₹${grandTotal} (${deliveryCharge === 0 ? 'Free Delivery' : '₹' + deliveryCharge + ' Delivery'})\n\nPlease confirm and deliver soon!`;
             const encoded = encodeURIComponent(message);
 
-            document.getElementById("successMsg").innerHTML = `Order Placed! Sending on WhatsApp...`;
+            document.getElementById("successMsg").innerHTML = "Order Confirmed! Opening WhatsApp...";
 
-            // Open primary number first
             setTimeout(() => window.location.href = `https://wa.me/91${PRIMARY}?text=${encoded}`, 800);
-            // Then backup number
             setTimeout(() => window.location.href = `https://wa.me/91${BACKUP}?text=${encoded}`, 1800);
         }
 
