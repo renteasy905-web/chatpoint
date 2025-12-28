@@ -29,101 +29,46 @@
         </div>
     </div>
     <div class="grid" id="itemsGrid"></div>
+
     <script>
-        const categoryData = {
-            "Pooja Essentials": [
-                {name: "Incense Sticks Pack", price: 65, img: "https://m.media-amazon.com/images/I/8101pj0qbAL._AC_UF894,1000_QL80_.jpg"},
-                {name: "Camphor Tablets 100g", price: 45, img: "https://www.astami.in/cdn/shop/files/100g_A_2.jpg?v=1673270673"},
-                {name: "Pooja Diya Set", price: 80, img: "https://cdn.shopify.com/s/files/1/0552/0962/3746/files/puja_diya_480x480.jpg?v=1646304432"},
-                {name: "Pooja Oil & Items Combo", price: 150, img: "http://dhoopchaon.co.in/cdn/shop/articles/10_Must-Have_Puja_Samagri_Items_for_Every_Ceremony.png?v=1750506620"}
-            ],
-            "Fruits & Vegetables": [
-                {name: "Fresh Apple 1kg", price: 180, img: "https://thumbs.dreamstime.com/b/fresh-vibrant-vegetables-fruits-piled-high-mesh-bags-indian-market-ready-sale-scene-captures-essence-403948304.jpg"},
-                {name: "Banana Dozen", price: 50, img: "https://thumbs.dreamstime.com/b/fresh-vegetables-indian-market-baskets-48428630.jpg"},
-                {name: "Tomato 1kg", price: 40, img: "https://c8.alamy.com/comp/PE3MM0/composition-with-assorted-fresh-raw-organic-vegetables-in-little-india-market-singapore-PE3MM0.jpg"},
-                {name: "Mixed Vegetables", price: 120, img: "https://indiaseatradenews.com/wp-content/uploads/2023/11/fruits-and-vegetables3.jpg"}
-            ],
-            "Dairy, Bread & Eggs": [
-                {name: "Amul Milk 1L", price: 68, img: "https://images.indianexpress.com/2017/03/dairy-759.jpg?w=414"},
-                {name: "Fresh Bread", price: 45, img: "https://media.istockphoto.com/id/165049572/photo/food-basket-dairy-products-bread-and-eggs.jpg?s=612x612&w=0&k=20&c=k6vXgQS67RhyzLx5gxRzrOqv-6PR-sIAo8-0mPnJD2Y="},
-                {name: "Eggs 6pcs", price: 55, img: "https://t4.ftcdn.net/jpg/00/78/39/25/360_F_78392550_0azqO8s1wBexN0q9dm1L3QbbAX6rQoPH.jpg"},
-                {name: "Cheese Block 200g", price: 125, img: "https://i0.wp.com/cheesescientist.com/wp-content/uploads/2024/12/What-Are-Dairy-Products-Examples-Production-Uses.jpg?fit=1600%2C1200&ssl=1"}
-            ],
-            "Atta, Rice, Oils & Sugar": [
-                {name: "Sugar (per kg)", price: 55, img: "https://m.media-amazon.com/images/I/71uN1KJ2VPL._AC_UF1000,1000_QL80_.jpg"},
-                {name: "Rice - Vajra Teja (per kg)", price: 65, img: "https://m.media-amazon.com/images/I/81fN5P9T9BL._AC_UF1000,1000_QL80_.jpg"},
-                {name: "Rice - BNM (per kg)", price: 60, img: "https://m.media-amazon.com/images/I/71vYvG1K5jL._AC_UF1000,1000_QL80_.jpg"},
-                {name: "Rice - We One Gold Colour (per kg)", price: 65, img: "https://m.media-amazon.com/images/I/81RqIlqh5HL._AC_UF1000,1000_QL80_.jpg"},
-                {name: "Rice - Balla Organic (per kg)", price: 70, img: "https://m.media-amazon.com/images/I/81t6q5L1QKL._AC_UF1000,1000_QL80_.jpg"},
-                {name: "Rice - Balla Inorganic (per kg)", price: 45, img: "https://m.media-amazon.com/images/I/71fN5P9T9BL._AC_UF1000,1000_QL80_.jpg"},
-                {name: "Sunrise Oil 15L", price: 2250, img: "https://m.media-amazon.com/images/I/71Qd2G6Z1QL._AC_UF1000,1000_QL80_.jpg"},
-                {name: "Uchi Gold / Palm Oil 1L", price: 150, img: "https://m.media-amazon.com/images/I/71f0d+2eTQL._AC_UF1000,1000_QL80_.jpg"},
-                {name: "Gemini Oil 1L", price: 160, img: "https://m.media-amazon.com/images/I/71e7Z5qL2PL._AC_UF1000,1000_QL80_.jpg"},
-                {name: "Gold Winner Oil (Bag/Pouch)", price: 1580, img: "https://m.media-amazon.com/images/I/71t4u3p9VQL._AC_UF1000,1000_QL80_.jpg"},
-                {name: "Freedom Oil 1L", price: 135, img: "https://m.media-amazon.com/images/I/71i+3+3o5zL._AC_UF1000,1000_QL80_.jpg"}
-            ],
-            "Masala & Dry Fruits": [
-                {name: "Mixed Masala Nuts", price: 250, img: "https://cdn.prod.website-files.com/64931d2aee18510b47f4bb1f/65ca5a40a282bc53d22f6442_Spiced-Nuts-Recipe-Cover-Image.jpg"},
-                {name: "Almonds 500g", price: 400, img: "https://thelemonbowl.com/wp-content/uploads/2023/12/Indian-Spiced-Mixed-Nuts.jpg"},
-                {name: "Cashews 500g", price: 500, img: "http://jobyneelankavil.com/wp-content/uploads/2020/12/PC088494-1024x819.jpg"},
-                {name: "Spice Mix Pack", price: 120, img: "https://assets.epicurious.com/photos/63fd234a61cf5335a5973109/master/pass/ThandaiMasala_RECIPE_022223_47826.jpg"}
-            ],
-            "Rice": [
-                {name: "Basmati Rice Bag", price: 900, img: "https://www.wric.com/wp-content/uploads/sites/74/2023/07/64c57292ed23a8.17411585.jpeg?w=900"},
-                {name: "Ponni Rice 10kg", price: 750, img: "https://www.yuvarajuagroimpex.com/uploads/gallery/small/1745409953781.jpg"},
-                {name: "Sona Masoori Rice", price: 650, img: "https://substack-post-media.s3.amazonaws.com/public/images/c896e032-c5e0-4e25-b5ce-b4740b99b82e_1024x768.jpeg"},
-                {name: "Variety Rice Bags", price: 800, img: "https://static.wixstatic.com/media/bf9a80_eadc25e962d4410ebe6a2318217a71a7~mv2.jpg/v1/fill/w_824,h_588,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Frame%2025%20(2).jpg"}
-            ],
-            "Snacks & Chocolates": [
-                {name: "Namkeen Mix", price: 150, img: "https://i.etsystatic.com/47712829/r/il/30ed72/5482946671/il_570xN.5482946671_cfaz.jpg"},
-                {name: "Chocolate Bars", price: 100, img: "https://as2.ftcdn.net/jpg/02/05/18/01/1000_F_205180180_XoXqw9KAe8fVVjwMTRdqX7IVRvWfrDuE.jpg"},
-                {name: "Biscuits Pack", price: 80, img: "https://assets.bonappetit.com/photos/597f654f4f130a49582c2bb4/16:9/w_2560%2Cc_limit/0817-murray-into%2520it-products%2520we%2520love.jpg"},
-                {name: "Chips & Snacks", price: 200, img: "https://pipingpotcurry.com/wp-content/uploads/2022/10/Indian-Asian-charcuterie-board-Piping-Pot-Curry.jpg"}
-            ],
-            "Beverages": [
-                {name: "Tea & Coffee Pack", price: 300, img: "https://www.tastingtable.com/img/gallery/21-indian-drinks-you-need-to-try-at-least-once/l-intro-1718799368.jpg"},
-                {name: "Juice Bottles", price: 150, img: "https://nawon.com.vn/wp-content/uploads/2024/06/Top-15-Best-Cold-Drinks-Name-List-in-India.jpg"},
-                {name: "Soft Drinks", price: 100, img: "https://www.tajmahalgroup.com/media/1051/soft-drinks.jpg?width=1024&height=682&bgcolor=f5deb3"},
-                {name: "Indian Beverages", price: 250, img: "https://images.food52.com/BK_V1zh9REinu1Ym1O9IAeN_wlk=/cdabb0aa-8613-46d9-a6fd-acf26e165354--2016-1220_refreshing-indian-drinks_james-ransom-233.jpg?w=3840&q=75"}
-            ],
-            "Cleaning & Household": [
-                {name: "Detergent Liquid", price: 200, img: "https://m.media-amazon.com/images/I/81ZhxgmqNNL.jpg"},
-                {name: "Floor Cleaner", price: 180, img: "https://klinolindia.com/wp-content/uploads/2025/07/Housekeeping-Cleaning-Products.jpg"},
-                {name: "Cleaning Combo", price: 500, img: "https://www.purecult.in/cdn/shop/files/luxury_banner_-_front_page1.jpg?v=1759480930&width=3840"},
-                {name: "Household Products", price: 350, img: "https://5.imimg.com/data5/SELLER/Default/2022/10/NK/DL/UX/1651149/household-cleaning-products-formulation-consulting.jpeg"}
-            ]
-        };
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        function loadItems() {
+
+        async function loadItems() {
             const category = localStorage.getItem('selectedCategory') || 'Fruits & Vegetables';
             document.getElementById('categoryName').textContent = category;
-            const items = categoryData[category] || [];
+
+            const res = await fetch(`/api/items/${encodeURIComponent(category)}`);
+            const data = await res.json();
+
+            const items = data.success ? data.items : [];
             const grid = document.getElementById('itemsGrid');
             grid.innerHTML = items.map((item, i) => `
                 <div class="item">
-                    <img src="${item.img}" alt="${item.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x140?text=Image+Not+Found'">
+                    <img src="${item.imageUrl}" alt="${item.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x140?text=No+Image'">
                     <div class="info">
                         <div class="name">${item.name}</div>
                         <div class="price">₹${item.price}</div>
                     </div>
-                    <button class="add-btn" onclick="addToCart(${i})">+</button>
+                    <button class="add-btn" onclick="addToCart('${item._id}', '${item.name}', ${item.price}, '${item.imageUrl}')">+</button>
                 </div>
             `).join('');
+
             updateCartCount();
         }
-        function addToCart(index) {
-            const category = localStorage.getItem('selectedCategory');
-            const item = categoryData[category][index];
-            const existing = cart.find(c => c.name === item.name);
+
+        function addToCart(id, name, price, img) {
+            const existing = cart.find(c => c.id === id);
             if (existing) existing.qty++;
-            else cart.push({...item, qty:1});
+            else cart.push({ id, name, price, img, qty: 1 });
             localStorage.setItem('cart', JSON.stringify(cart));
             updateCartCount();
         }
+
         function updateCartCount() {
             const total = cart.reduce((sum, item) => sum + item.qty, 0);
             document.getElementById('cartCount').textContent = total || 0;
         }
+
         window.onload = loadItems;
     </script>
 </body>
