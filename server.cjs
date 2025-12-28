@@ -6,49 +6,83 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const crypto = require("crypto");
 const multer = require("multer");
-const fs = require("fs");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// =============== CREATE UPLOAD FOLDER + MULTER ===============
-if (!fs.existsSync("icons")) {
-  fs.mkdirSync("icons", { recursive: true });
-}
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "icons/"),
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + "-" + Math.round(Math.random() * 1e9) + path.extname(file.originalname);
-    cb(null, uniqueName);
+// =============== CLOUDINARY CONFIG ===============
+cloudinary.config({
+  cloud_name: "djlkwjeb2",
+  api_key: "942326953292277",
+  api_secret: "GC0SO2VrcpdMSLGzQsYjLZ1SAZg",
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "grocery_items",
+    allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"],
+    transformation: [{ width: 800, height: 800, crop: "limit" }],
   },
 });
-const upload = multer({ storage });
+
+const upload = multer({ storage: storage });
 
 // =============== MIDDLEWARE ===============
 app.use(cors({ origin: "*", credentials: true }));
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
-app.use("/icons", express.static(path.join(__dirname, "icons")));
 
-// =============== MONGO DB ===============
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+// =============== MONGO DB CONNECTION ===============
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("MongoDB Connected"))
-  .catch(err => {
+  .catch((err) => {
     console.error("MongoDB Error:", err);
     process.exit(1);
   });
 
 // =============== MODELS ===============
-const User = mongoose.model("User", new mongoose.Schema({
-  name: String,
-  phone: { type: String, required: true, unique: true },
-  password: String,
-}, { timestamps: true }));
 
+// User Model (existing)
+const User = mongoose.model(
+  "User",
+  new mongoose.Schema(
+    {
+      name: String,
+      phone: { type: String, required: true, unique: true },
+      password: String,
+    },
+    { timestamps: true }
+  )
+);
+
+// Grocery Category Model
+const GroceryCategory = mongoose.model(
+  "GroceryCategory",
+  new mongoose.Schema({
+    name: { type: String, required: true, unique: true },
+  })
+);
+
+// Grocery Item Model
+const GroceryItem = mongoose.model(
+  "GroceryItem",
+  new mongoose.Schema({
+    category: { type: String, required: true },
+    name: { type: String, required: true },
+    price: { type: Number, required: true },
+    imageUrl: { type: String, required: true },
+  })
+);
+
+// Shop & Order Models (keep your existing ones if needed)
 const Shop = mongoose.model("Shop", new mongoose.Schema({
   type: { type: String, default: "shop" },
   shopName: String,
@@ -64,7 +98,7 @@ const Shop = mongoose.model("Shop", new mongoose.Schema({
 }));
 
 const Order = mongoose.model("Order", new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, required: false }, // Made optional
+  userId: { type: mongoose.Schema.Types.ObjectId, required: false },
   user: { name: String, phone: String },
   shop: String,
   items: [{ name: String, price: Number, quantity: Number }],
@@ -76,12 +110,123 @@ const Order = mongoose.model("Order", new mongoose.Schema({
   date: { type: Date, default: Date.now },
 }));
 
-// =============== UNIVERSAL ORDER SAVE FUNCTION (FIXED) ===============
+// =============== SIMPLE ADMIN AUTH ===============
+const ADMIN_PASSWORD = "admin123"; // CHANGE THIS IN PRODUCTION!
+
+// =============== GROCERY API ENDPOINTS ===============
+
+// Get all categories
+app.get("/api/categories", async (req, res) => {
+  try {
+    const cats = await GroceryCategory.find().sort({ name: 1 });
+    res.json({ success: true, categories: cats.map((c) => c.name) });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// Get items by category
+app.get("/api/items/:category", async (req, res) => {
+  try {
+    const category = decodeURIComponent(req.params.category);
+    const items = await GroceryItem.find({ category });
+    res.json({ success: true, items });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// Add new item (admin only)
+app.post("/api/admin/add-item", upload.single("image"), async (req, res) => {
+  const { password, category, name, price } = req.body;
+
+  if (password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
+  }
+
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "Image is required" });
+    }
+
+    const newItem = new GroceryItem({
+      category: category.trim(),
+      name: name.trim(),
+      price: Number(price),
+      imageUrl: req.file.path, // Cloudinary URL
+    });
+
+    await newItem.save();
+
+    // Ensure category exists in GroceryCategory collection
+    await GroceryCategory.findOneAndUpdate(
+      { name: category.trim() },
+      { name: category.trim() },
+      { upsert: true }
+    );
+
+    res.json({ success: true, item: newItem });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: "Failed to add item" });
+  }
+});
+
+// Edit item price (admin only)
+app.post("/api/admin/edit-item", async (req, res) => {
+  const { password, itemId, price } = req.body;
+
+  if (password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
+  }
+
+  try {
+    const updated = await GroceryItem.findByIdAndUpdate(
+      itemId,
+      { price: Number(price) },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: "Item not found" });
+    }
+
+    res.json({ success: true, item: updated });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false });
+  }
+});
+
+// Delete item (admin only)
+app.delete("/api/admin/delete-item/:id", async (req, res) => {
+  const { password } = req.query;
+
+  if (password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
+  }
+
+  try {
+    const deleted = await GroceryItem.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ success: false, message: "Item not found" });
+    }
+    res.json({ success: true });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false });
+  }
+});
+
+// =============== EXISTING ROUTES (YOUR ORIGINAL ONES) ===============
+
+// Universal order save
 const saveOrderUniversal = async (req, res) => {
   try {
     const body = req.body;
 
-    // Extract fields flexibly
     let userId = body.userId || body.user_id || null;
 
     const name = body.name || body.customer_name;
@@ -91,7 +236,6 @@ const saveOrderUniversal = async (req, res) => {
     const grandTotal = Number(body.grandTotal || body.totalAmount || body.total);
     const cart = body.cart || body.items;
 
-    // === VALIDATION (userId is now OPTIONAL) ===
     if (!name || !phone || !address1) {
       return res.status(400).json({ success: false, message: "Missing name, phone or address" });
     }
@@ -100,11 +244,10 @@ const saveOrderUniversal = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid total amount" });
     }
 
-    if (!cart || typeof cart !== 'object' || Object.keys(cart).length === 0) {
+    if (!cart || typeof cart !== "object" || Object.keys(cart).length === 0) {
       return res.status(400).json({ success: false, message: "Empty or invalid cart" });
     }
 
-    // Parse items from cart: { "ShopName": { "ItemName": { qty, price } } }
     let items = [];
     let shopName = null;
 
@@ -124,37 +267,34 @@ const saveOrderUniversal = async (req, res) => {
       return res.status(400).json({ success: false, message: "No valid items in cart" });
     }
 
-    // Create order
     const order = new Order({
-      userId: userId ? userId : null, // Save null if no valid userId
+      userId: userId ? userId : null,
       user: { name, phone },
-      shop: shopName || "ChatPoint",
+      shop: shopName || "GroceryStore",
       items,
       totalAmount: grandTotal,
       deliveryCharge: grandTotal >= 69 ? 0 : 30,
       address: { name, phone, line1: address1, line2: address2 },
-      paymentMethod: body.paymentMethod || "cash"
+      paymentMethod: body.paymentMethod || "cash",
     });
 
     await order.save();
 
-    console.log(`✅ NEW ORDER SAVED → #${order._id} | ₹${grandTotal} | ${phone} | ${name}`);
+    console.log(`NEW ORDER SAVED → #${order._id} | ₹${grandTotal} | ${phone}`);
 
     res.json({ success: true, orderId: order._id });
-
   } catch (err) {
     console.error("Order save error:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-// =============== ORDER ROUTES ===============
 app.post("/api/save-order", saveOrderUniversal);
 app.post("/api/place-order", saveOrderUniversal);
 app.post("/api/checkout", saveOrderUniversal);
 app.post("/api/order", saveOrderUniversal);
 
-// =============== USER ROUTES ===============
+// User signup & login
 app.post("/api/user/signup", async (req, res) => {
   try {
     const { name, phone, password } = req.body;
@@ -180,10 +320,10 @@ app.post("/api/user/login", async (req, res) => {
     res.json({
       success: true,
       user: {
-        _id: user._id.toString(),  // Ensure it's a string
+        _id: user._id.toString(),
         name: user.name,
-        phone: user.phone
-      }
+        phone: user.phone,
+      },
     });
   } catch (e) {
     console.error(e);
@@ -191,7 +331,7 @@ app.post("/api/user/login", async (req, res) => {
   }
 });
 
-// =============== OTHER ROUTES ===============
+// Other existing routes
 app.get("/api/shops", async (req, res) => {
   try {
     const shops = await Shop.find({ type: "shop" }).sort({ date: -1 }).lean();
@@ -203,7 +343,10 @@ app.get("/api/shops", async (req, res) => {
 
 app.get("/api/delivery-orders", async (req, res) => {
   try {
-    const orders = await Order.find({ status: { $in: ["pending", "confirmed"] } }).sort({ date: -1 }).limit(50).lean();
+    const orders = await Order.find({ status: { $in: ["pending", "confirmed"] } })
+      .sort({ date: -1 })
+      .limit(50)
+      .lean();
     res.json({ success: true, orders });
   } catch (e) {
     res.status(500).json({ success: false });
@@ -254,26 +397,35 @@ app.get("/api/admin/users", async (req, res) => {
   }
 });
 
-// Admin routes (keep your existing code here)
-app.post("/api/admin/add-shop", async (req, res) => {
-  // Your existing add-shop logic
-});
+// =============== SERVE HTML PAGES ===============
+const pages = [
+  "index",
+  "gitems",
+  "adminportal",
+  "privacy",
+  "delivery",
+  "orders",
+  "cart",
+  "gcart",
+  "payment",
+  "login",
+  "admin",
+];
 
-app.post("/api/admin/add-item", upload.array("images", 10), async (req, res) => {
-  // Your existing add-item logic
-});
-
-// =============== SERVE PAGES ===============
-const pages = ["index", "privacy", "delivery", "orders", "items", "cart", "payment", "login", "admin"];
-pages.forEach(p => {
-  app.get(`/${p === "index" ? "" : p + ".html"}`, (req, res) => {
-    res.sendFile(path.join(__dirname, `${p}.html`));
+pages.forEach((p) => {
+  const route = p === "index" ? "/" : `/${p}.html`;
+  const file = p === "index" ? "index.html" : `${p}.html`;
+  app.get(route, (req, res) => {
+    res.sendFile(path.join(__dirname, file));
   });
 });
-app.get("*", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
 
 // =============== START SERVER ===============
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`ChatPoint LIVE on port ${PORT}`);
-  console.log(`Delivery Portal → https://chatpoint1.onrender.com/delivery.html`);
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Admin Portal → http://localhost:${PORT}/adminportal.html`);
 });
