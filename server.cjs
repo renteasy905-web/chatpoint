@@ -64,7 +64,7 @@ const Shop = mongoose.model("Shop", new mongoose.Schema({
 }));
 
 const Order = mongoose.model("Order", new mongoose.Schema({
-  userId: mongoose.Schema.Types.ObjectId,
+  userId: { type: mongoose.Schema.Types.ObjectId, required: false }, // Made optional
   user: { name: String, phone: String },
   shop: String,
   items: [{ name: String, price: Number, quantity: Number }],
@@ -76,13 +76,14 @@ const Order = mongoose.model("Order", new mongoose.Schema({
   date: { type: Date, default: Date.now },
 }));
 
-// =============== UNIVERSAL ORDER SAVE FUNCTION ===============
+// =============== UNIVERSAL ORDER SAVE FUNCTION (FIXED) ===============
 const saveOrderUniversal = async (req, res) => {
   try {
     const body = req.body;
 
-    // Support multiple possible field names from different frontends
-    const userId = body.userId || body.user_id;
+    // Extract fields flexibly
+    let userId = body.userId || body.user_id || null;
+
     const name = body.name || body.customer_name;
     const phone = body.phone || body.customer_phone;
     const address1 = body.address1 || body.address || body.line1;
@@ -90,36 +91,44 @@ const saveOrderUniversal = async (req, res) => {
     const grandTotal = Number(body.grandTotal || body.totalAmount || body.total);
     const cart = body.cart || body.items;
 
-    if (!userId || !name || !phone || !grandTotal || !cart) {
-      return res.status(400).json({ success: false, message: "Missing required fields" });
+    // === VALIDATION (userId is now OPTIONAL) ===
+    if (!name || !phone || !address1) {
+      return res.status(400).json({ success: false, message: "Missing name, phone or address" });
     }
 
+    if (!grandTotal || isNaN(grandTotal) || grandTotal <= 0) {
+      return res.status(400).json({ success: false, message: "Invalid total amount" });
+    }
+
+    if (!cart || typeof cart !== 'object' || Object.keys(cart).length === 0) {
+      return res.status(400).json({ success: false, message: "Empty or invalid cart" });
+    }
+
+    // Parse items from cart: { "ShopName": { "ItemName": { qty, price } } }
     let items = [];
     let shopName = null;
 
-    // Handle cart structure: { "ShopName": { "ItemName": { qty, price } } }
     for (const shop in cart) {
       if (!shopName) shopName = shop;
       for (const itemName in cart[shop]) {
         const item = cart[shop][itemName];
-        if (item.qty > 0 || item.quantity > 0) {
-          items.push({
-            name: itemName,
-            price: Number(item.price),
-            quantity: item.qty || item.quantity
-          });
+        const qty = item.qty || item.quantity || 0;
+        const price = Number(item.price);
+        if (qty > 0 && !isNaN(price)) {
+          items.push({ name: itemName, price, quantity: qty });
         }
       }
     }
 
     if (items.length === 0) {
-      return res.status(400).json({ success: false, message: "No items in cart" });
+      return res.status(400).json({ success: false, message: "No valid items in cart" });
     }
 
+    // Create order
     const order = new Order({
-      userId,
+      userId: userId ? userId : null, // Save null if no valid userId
       user: { name, phone },
-      shop: shopName,
+      shop: shopName || "ChatPoint",
       items,
       totalAmount: grandTotal,
       deliveryCharge: grandTotal >= 69 ? 0 : 30,
@@ -135,17 +144,17 @@ const saveOrderUniversal = async (req, res) => {
 
   } catch (err) {
     console.error("Order save error:", err);
-    res.status(500).json({ success: false, message: err.message });
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
-// =============== ORDER ROUTES (ALL POINT TO SAME LOGIC) ===============
+// =============== ORDER ROUTES ===============
 app.post("/api/save-order", saveOrderUniversal);
 app.post("/api/place-order", saveOrderUniversal);
 app.post("/api/checkout", saveOrderUniversal);
 app.post("/api/order", saveOrderUniversal);
 
-// =============== REST OF YOUR ROUTES (UNCHANGED BUT VERIFIED WORKING) ===============
+// =============== USER ROUTES ===============
 app.post("/api/user/signup", async (req, res) => {
   try {
     const { name, phone, password } = req.body;
@@ -156,7 +165,10 @@ app.post("/api/user/signup", async (req, res) => {
     const user = new User({ name, phone, password: hash });
     await user.save();
     res.json({ success: true });
-  } catch (e) { res.status(500).json({ success: false }); }
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false });
+  }
 });
 
 app.post("/api/user/login", async (req, res) => {
@@ -165,29 +177,46 @@ app.post("/api/user/login", async (req, res) => {
     const hash = crypto.createHash("sha256").update(password).digest("hex");
     const user = await User.findOne({ phone, password: hash });
     if (!user) return res.status(401).json({ success: false, message: "Wrong credentials" });
-    res.json({ success: true, user: { _id: user._id, name: user.name, phone: user.phone } });
-  } catch (e) { res.status(500).json({ success: false }); }
+    res.json({
+      success: true,
+      user: {
+        _id: user._id.toString(),  // Ensure it's a string
+        name: user.name,
+        phone: user.phone
+      }
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false });
+  }
 });
 
+// =============== OTHER ROUTES ===============
 app.get("/api/shops", async (req, res) => {
   try {
     const shops = await Shop.find({ type: "shop" }).sort({ date: -1 }).lean();
     res.json({ success: true, shops });
-  } catch (e) { res.status(500).json({ success: false }); }
+  } catch (e) {
+    res.status(500).json({ success: false });
+  }
 });
 
 app.get("/api/delivery-orders", async (req, res) => {
   try {
     const orders = await Order.find({ status: { $in: ["pending", "confirmed"] } }).sort({ date: -1 }).limit(50).lean();
     res.json({ success: true, orders });
-  } catch (e) { res.status(500).json({ success: false }); }
+  } catch (e) {
+    res.status(500).json({ success: false });
+  }
 });
 
 app.get("/api/all-delivery-orders", async (req, res) => {
   try {
     const orders = await Order.find({}).sort({ date: -1 }).limit(1000).lean();
     res.json({ success: true, orders });
-  } catch (e) { res.status(500).json({ success: false }); }
+  } catch (e) {
+    res.status(500).json({ success: false });
+  }
 });
 
 app.post("/api/update-order-status", async (req, res) => {
@@ -198,7 +227,7 @@ app.post("/api/update-order-status", async (req, res) => {
     }
     const result = await Order.findByIdAndUpdate(orderId, { status }, { new: true });
     if (!result) return res.status(404).json({ success: false });
-    console.log(`Order ${orderId} → ${status}`);
+    console.log(`Order ${orderId} status → ${status}`);
     res.json({ success: true });
   } catch (e) {
     console.error(e);
@@ -211,7 +240,9 @@ app.get("/api/my-orders", async (req, res) => {
     const userId = req.headers["x-user-id"];
     const orders = await Order.find({ userId }).sort({ date: -1 }).lean();
     res.json({ success: true, orders });
-  } catch (e) { res.status(500).json({ success: false }); }
+  } catch (e) {
+    res.status(500).json({ success: false });
+  }
 });
 
 app.get("/api/admin/users", async (req, res) => {
@@ -223,11 +254,16 @@ app.get("/api/admin/users", async (req, res) => {
   }
 });
 
-// Admin routes (add shop, add item) — unchanged, kept for completeness
-app.post("/api/admin/add-shop", async (req, res) => { /* your code */ });
-app.post("/api/admin/add-item", upload.array("images", 10), async (req, res) => { /* your code */ });
+// Admin routes (keep your existing code here)
+app.post("/api/admin/add-shop", async (req, res) => {
+  // Your existing add-shop logic
+});
 
-// =============== SERVE HTML PAGES ===============
+app.post("/api/admin/add-item", upload.array("images", 10), async (req, res) => {
+  // Your existing add-item logic
+});
+
+// =============== SERVE PAGES ===============
 const pages = ["index", "privacy", "delivery", "orders", "items", "cart", "payment", "login", "admin"];
 pages.forEach(p => {
   app.get(`/${p === "index" ? "" : p + ".html"}`, (req, res) => {
@@ -239,5 +275,5 @@ app.get("*", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 // =============== START SERVER ===============
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`ChatPoint LIVE on port ${PORT}`);
-  console.log(`Delivery Portal → https://your-site.onrender.com/delivery.html`);
+  console.log(`Delivery Portal → https://chatpoint1.onrender.com/delivery.html`);
 });
