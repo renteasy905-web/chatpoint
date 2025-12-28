@@ -15,6 +15,7 @@
       --primary: #3b82f6;
       --success: #10b981;
       --danger: #ef4444;
+      --warning: #f59e0b;
       --whatsapp: #25D366;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -67,6 +68,7 @@
     .btn-primary { background: var(--primary); color: white; }
     .btn-success { background: var(--success); color: white; }
     .btn-danger { background: var(--danger); color: white; }
+    .btn-warning { background: var(--warning); color: white; }
     .btn-whatsapp { background: var(--whatsapp); color: white; padding: 0.5rem 1rem; font-size: 0.85rem; }
     .badge {
       padding: 0.3rem 0.8rem; font-size: 0.8rem; border-radius: 0.4rem;
@@ -125,6 +127,7 @@
     </div>
   </div>
   <audio id="loudSound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" preload="auto"></audio>
+
   <script>
     const API_BASE = window.location.origin;
     const REFRESH_INTERVAL = 5000;
@@ -132,6 +135,7 @@
     let allUsers = [];
     let currentFilter = 'active';
     let previousPendingCount = 0;
+
     const $ = s => document.querySelector(s);
     const $$ = s => document.querySelectorAll(s);
     const ordersContainer = $('#orders-container');
@@ -181,6 +185,25 @@ You can always visit us again at chatpoint.shop 🌐`);
       setTimeout(() => bigAlert.style.display = 'none', 10000);
     };
 
+    // New: Delete order from MongoDB
+    const deleteOrder = async (orderId) => {
+      if (!confirm("Permanently delete this order? This cannot be undone!")) return false;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/delete-order`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId })
+        });
+        const result = await res.json();
+        return result.success === true;
+      } catch (err) {
+        console.error("Delete failed:", err);
+        alert("Failed to delete order. Check network or server.");
+        return false;
+      }
+    };
+
     const updateOrderStatus = async (orderId, newStatus) => {
       try {
         const res = await fetch(`${API_BASE}/api/update-order-status`, {
@@ -192,7 +215,7 @@ You can always visit us again at chatpoint.shop 🌐`);
         return result.success === true;
       } catch (err) {
         console.error("Status update failed:", err);
-        alert("Failed to update status. Check network or server.");
+        alert("Failed to update status.");
         return false;
       }
     };
@@ -220,6 +243,13 @@ You can always visit us again at chatpoint.shop 🌐`);
           <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
             <button class="btn btn-success" ${commonAttrs} data-action="delivered">Delivered</button>
             <button class="btn btn-danger" ${commonAttrs} data-action="cancel">Cancel</button>
+          </div>`;
+      } else if (order.status === 'delivered' || order.status === 'cancelled') {
+        actions = `
+          <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
+            <button class="btn btn-warning" ${commonAttrs} data-action="delete">
+              <i class="fas fa-trash-alt"></i> Delete Order
+            </button>
           </div>`;
       }
 
@@ -314,17 +344,7 @@ You can always visit us again at chatpoint.shop 🌐`);
       }
     };
 
-    // Handle filter buttons
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentFilter = btn.dataset.filter;
-        applyView();
-      });
-    });
-
-    // Main click handler for action buttons
+    // Handle all button clicks (including delete)
     document.addEventListener('click', async e => {
       const btn = e.target.closest('button[data-action]');
       if (!btn) return;
@@ -344,14 +364,10 @@ You can always visit us again at chatpoint.shop 🌐`);
 
       if (action === 'confirm') {
         success = await updateOrderStatus(orderId, 'confirmed');
-        if (success) {
-          openWhatsApp(phone, confirmMessage(name));
-        }
+        if (success) openWhatsApp(phone, confirmMessage(name));
       } else if (action === 'delivered') {
         success = await updateOrderStatus(orderId, 'delivered');
-        if (success) {
-          openWhatsApp(phone, deliveredMessage);
-        }
+        if (success) openWhatsApp(phone, deliveredMessage);
       } else if (action === 'cancel') {
         if (!confirm('Cancel this order?')) {
           btn.innerHTML = originalText;
@@ -359,19 +375,29 @@ You can always visit us again at chatpoint.shop 🌐`);
           return;
         }
         success = await updateOrderStatus(orderId, 'cancelled');
+      } else if (action === 'delete') {
+        success = await deleteOrder(orderId);
+        if (success) {
+          allOrders = allOrders.filter(o => o._id !== orderId);
+          btn.innerHTML = 'Deleted!';
+          setTimeout(() => applyView(), 800);
+          return;
+        }
       }
 
-      if (success) {
-        // Update local data
+      if (success && action !== 'delete') {
         const order = allOrders.find(o => o._id === orderId);
-        if (order) order.status = action === 'confirm' ? 'confirmed' : action === 'delivered' ? 'delivered' : 'cancelled';
+        if (order) {
+          order.status = action === 'confirm' ? 'confirmed' :
+                          action === 'delivered' ? 'delivered' : 'cancelled';
+        }
         btn.innerHTML = 'Success!';
-        setTimeout(() => applyView(), 800); // Refresh view after short delay
-      } else {
+        setTimeout(() => applyView(), 800);
+      } else if (!success && action !== 'delete') {
         btn.innerHTML = originalText;
       }
 
-      btn.disabled = false;
+      if (action !== 'delete') btn.disabled = false;
     });
 
     $('#logoutBtn').onclick = () => {
@@ -381,7 +407,7 @@ You can always visit us again at chatpoint.shop 🌐`);
       }
     };
 
-    // Initial load
+    // Initial load + auto-refresh
     fetchData();
     setInterval(fetchData, REFRESH_INTERVAL);
   </script>
