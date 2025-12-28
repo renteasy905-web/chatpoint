@@ -53,12 +53,6 @@
       transition: transform 0.2s;
     }
     .card:hover { transform: translateY(-4px); }
-    .user-card {
-      background: var(--card-bg); border-radius: 0.75rem;
-      padding: 1rem; margin-bottom: 0.8rem;
-      display: flex; justify-content: space-between; align-items: center;
-      border: 1px solid var(--border);
-    }
     .btn {
       padding: 0.6rem 1.2rem; border: none; border-radius: 0.5rem;
       font-weight: 600; cursor: pointer; font-size: 0.9rem;
@@ -70,6 +64,7 @@
     .btn-danger { background: var(--danger); color: white; }
     .btn-warning { background: var(--warning); color: white; }
     .btn-whatsapp { background: var(--whatsapp); color: white; padding: 0.5rem 1rem; font-size: 0.85rem; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .badge {
       padding: 0.3rem 0.8rem; font-size: 0.8rem; border-radius: 0.4rem;
       font-weight: 700;
@@ -101,11 +96,13 @@
     <div>NEW ORDER!</div>
     <small>Check the portal now!</small>
   </div>
+
   <div class="container">
     <div class="header">
       <h1>Delivery Portal</h1>
       <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
+
     <div class="filter-tabs">
       <button class="filter-btn active" data-filter="active">Active Orders</button>
       <button class="filter-btn" data-filter="delivered">Delivered</button>
@@ -113,114 +110,97 @@
       <button class="filter-btn" data-filter="all">All Orders</button>
       <button class="filter-btn" data-filter="users">Users</button>
     </div>
+
     <div id="loading">
       <div class="loader"></div>
-      <p style="text-align:center; color:#94a3b8;">Loading...</p>
+      <p style="text-align:center; color:#94a3b8;">Loading orders...</p>
     </div>
+
     <div id="orders-container"></div>
     <div id="users-container" style="display:none;"></div>
-    <div id="empty" class="empty hidden">
-      <p>No items in this section.</p>
+
+    <div id="empty" class="empty" style="display:none;">
+      <p>No orders in this section.</p>
     </div>
+
     <div style="text-align:center; color:#64748b; font-size:0.85rem; margin-top:2rem;">
-      Auto-refresh every 5 seconds • New orders trigger full-screen alert
+      Auto-refresh every 5 seconds • New orders trigger alert
     </div>
   </div>
+
   <audio id="loudSound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" preload="auto"></audio>
 
   <script>
     const API_BASE = window.location.origin;
     const REFRESH_INTERVAL = 5000;
+
     let allOrders = [];
     let allUsers = [];
     let currentFilter = 'active';
     let previousPendingCount = 0;
 
     const $ = s => document.querySelector(s);
-    const $$ = s => document.querySelectorAll(s);
     const ordersContainer = $('#orders-container');
     const usersContainer = $('#users-container');
     const loadingEl = $('#loading');
     const bigAlert = $('#bigAlert');
     const loudSound = $('#loudSound');
 
-    const welcomeMessage = encodeURIComponent(`🌟 Welcome to Chatpoint! 🌟
-Thank you for choosing us! 😊
-✅ Our services are 100% end-to-end safe, super fast & genuine
-✅ Trusted by 100+ happy people
-✅ Successfully serving 150+ customers and growing! 🎉
-Special Launch Offer for You! 🔥
-🛒 Order above ₹250 → Get 1000ml bottle FREE! 🆓
-🚚 Order above ₹69 → FREE Delivery (No delivery charges)
-💰 Order above ₹49 → No GST + No handling fee
-🎁 Extra 5% OFF on ALL items!
-Shop now 👉 chatpoint.shop
-Hurry, offer valid for limited time! ⏳
-Team Chatpoint ❤️`);
+    // WhatsApp Messages
+    const welcomeMessage = encodeURIComponent(`🌟 Welcome to Chatpoint! 🌟\nThank you for choosing us! 😊\n✅ 100% safe, fast & genuine\nSpecial Offer: Order above ₹250 → FREE 1000ml bottle!\nShop now 👉 chatpoint.shop`);
 
-    const confirmMessage = (name) => encodeURIComponent(`Hi ${name}! 😊
-Thank you so much for your order on ChatPoint Shop! ❤️
-We've received it successfully and it's being processed right now. 🚀
-You'll get shipping updates soon! 📦
-Shop more at: https://chatpoint.shop
-Thanks for choosing us! 🌟`);
+    const confirmMessage = (name) => encodeURIComponent(`Hi ${name}! 😊\nYour order on ChatPoint has been confirmed!\nWe'll prepare it soon. 🚀\nThanks for shopping with us!`);
 
-    const deliveredMessage = encodeURIComponent(`We’re excited to let you know that your order from ChatPoint has just been delivered.
-Enjoy your meal, and thank you for choosing us! 🍽️🚀
-You can always visit us again at chatpoint.shop 🌐`);
+    const deliveredMessage = encodeURIComponent(`Great news! 🎉\nYour ChatPoint order has been delivered.\nEnjoy your items!\nOrder again at chatpoint.shop 🌟`);
 
     function openWhatsApp(phone, message) {
-      if (!phone) return alert("No phone number");
+      if (!phone) return alert("Phone number missing");
       let cleaned = phone.replace(/\D/g, '');
       if (cleaned.startsWith('0')) cleaned = '91' + cleaned.slice(1);
       else if (!cleaned.startsWith('91')) cleaned = '91' + cleaned;
       window.open(`https://wa.me/${cleaned}?text=${message}`, '_blank');
     }
 
-    const showBigAlert = () => {
+    function showBigAlert() {
       bigAlert.style.display = 'flex';
       loudSound.currentTime = 0;
-      loudSound.volume = 1.0;
       loudSound.play();
       setTimeout(() => bigAlert.style.display = 'none', 10000);
-    };
+    }
 
-    // New: Delete order from MongoDB
-    const deleteOrder = async (orderId) => {
-      if (!confirm("Permanently delete this order? This cannot be undone!")) return false;
+    // API Calls
+    async function updateOrderStatus(orderId, status) {
+      try {
+        const res = await fetch(`${API_BASE}/api/update-order-status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId, status })
+        });
+        const data = await res.json();
+        return data.success;
+      } catch (err) {
+        console.error("Update failed:", err);
+        return false;
+      }
+    }
 
+    async function deleteOrder(orderId) {
       try {
         const res = await fetch(`${API_BASE}/api/delete-order`, {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ orderId })
         });
-        const result = await res.json();
-        return result.success === true;
+        const data = await res.json();
+        return data.success;
       } catch (err) {
         console.error("Delete failed:", err);
-        alert("Failed to delete order. Check network or server.");
         return false;
       }
-    };
+    }
 
-    const updateOrderStatus = async (orderId, newStatus) => {
-      try {
-        const res = await fetch(`${API_BASE}/api/update-order-status`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId, status: newStatus })
-        });
-        const result = await res.json();
-        return result.success === true;
-      } catch (err) {
-        console.error("Status update failed:", err);
-        alert("Failed to update status.");
-        return false;
-      }
-    };
-
-    const renderOrderCard = order => {
+    // Render Order Card
+    function renderOrderCard(order) {
       const itemsHtml = order.items.map(i => `
         <div style="display:flex;justify-content:space-between;font-size:0.9rem;color:#cbd5e1;margin-top:0.4rem;">
           <span>${i.name} × ${i.quantity}</span>
@@ -229,25 +209,25 @@ You can always visit us again at chatpoint.shop 🌐`);
       `).join('');
 
       let actions = '';
-      const commonAttrs = `data-id="${order._id}" data-phone="${order.user.phone}" data-name="${order.user.name}"`;
+      const attrs = `data-id="${order._id}" data-phone="${order.user.phone}" data-name="${order.user.name}"`;
 
       if (order.status === 'pending') {
         actions = `
           <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
-            <button class="btn btn-primary" ${commonAttrs} data-action="confirm">Confirm</button>
-            <button class="btn btn-success" ${commonAttrs} data-action="delivered">Delivered</button>
-            <button class="btn btn-danger" ${commonAttrs} data-action="cancel">Cancel</button>
+            <button class="btn btn-primary" ${attrs} data-action="confirm">Confirm</button>
+            <button class="btn btn-success" ${attrs} data-action="delivered">Delivered</button>
+            <button class="btn btn-danger" ${attrs} data-action="cancel">Cancel</button>
           </div>`;
       } else if (order.status === 'confirmed') {
         actions = `
-          <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
-            <button class="btn btn-success" ${commonAttrs} data-action="delivered">Delivered</button>
-            <button class="btn btn-danger" ${commonAttrs} data-action="cancel">Cancel</button>
+          <div style="display:flex;gap:0.5rem;margin-top:1rem;">
+            <button class="btn btn-success" ${attrs} data-action="delivered">Delivered</button>
+            <button class="btn btn-danger" ${attrs} data-action="cancel">Cancel</button>
           </div>`;
       } else if (order.status === 'delivered' || order.status === 'cancelled') {
         actions = `
-          <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
-            <button class="btn btn-warning" ${commonAttrs} data-action="delete">
+          <div style="display:flex;gap:0.5rem;margin-top:1rem;">
+            <button class="btn btn-warning" ${attrs} data-action="delete">
               <i class="fas fa-trash-alt"></i> Delete Order
             </button>
           </div>`;
@@ -258,7 +238,7 @@ You can always visit us again at chatpoint.shop 🌐`);
         confirmed: '<span class="badge badge-confirmed">Confirmed</span>',
         delivered: '<span class="badge badge-delivered">Delivered</span>',
         cancelled: '<span class="badge badge-cancelled">Cancelled</span>'
-      }[order.status] || '<span class="badge badge-pending">Pending</span>';
+      }[order.status] || '<span class="badge badge-pending">Unknown</span>';
 
       return `
         <div class="card">
@@ -269,145 +249,189 @@ You can always visit us again at chatpoint.shop 🌐`);
             </div>
             ${statusBadge}
           </div>
+
           <div style="font-size:0.9rem;line-height:1.6;">
             <p><strong>Customer:</strong> ${order.user.name} (${order.user.phone})</p>
             <p><strong>Address:</strong> ${order.address.line1}${order.address.line2 ? ', ' + order.address.line2 : ''}</p>
-            <p><strong>Shop:</strong> ${order.shop || 'N/A'}</p>
+            <p><strong>Shop:</strong> ${order.shop || 'ChatPoint'}</p>
           </div>
+
           <div style="margin-top:0.8rem;">${itemsHtml}</div>
+
           <div style="display:flex;justify-content:space-between;font-weight:bold;font-size:1.25rem;margin-top:0.8rem;color:white;">
             <span>Grand Total</span>
             <span>₹${order.totalAmount?.toFixed(2) || '0.00'}</span>
           </div>
+
           ${actions}
         </div>
       `;
-    };
+    }
 
-    const renderUsers = () => {
+    function renderUsers() {
       if (allUsers.length === 0) {
         usersContainer.innerHTML = '<div class="empty"><p>No registered users yet.</p></div>';
         return;
       }
       usersContainer.innerHTML = allUsers.map((user, i) => `
-        <div class="user-card">
+        <div class="user-card" style="background:#1e293b;padding:1rem;margin-bottom:0.8rem;border-radius:0.75rem;border:1px solid #334155;display:flex;justify-content:space-between;align-items:center;">
           <div>
             <strong>${i+1}. ${user.name || 'No Name'}</strong><br>
             <small style="color:#94a3b8;">${user.phone}</small>
           </div>
           <button class="btn btn-whatsapp" onclick="openWhatsApp('${user.phone}', welcomeMessage)">
-            <i class="fab fa-whatsapp"></i> Send Msg
+            <i class="fab fa-whatsapp"></i> Send Message
           </button>
         </div>
       `).join('');
-    };
+    }
 
-    const applyView = () => {
+    function applyView() {
       loadingEl.style.display = 'none';
+
       if (currentFilter === 'users') {
         ordersContainer.style.display = 'none';
         usersContainer.style.display = 'block';
         renderUsers();
+        $('#empty').style.display = 'none';
       } else {
         usersContainer.style.display = 'none';
         ordersContainer.style.display = 'block';
+
         const filtered = allOrders.filter(o => {
           if (currentFilter === 'all') return true;
           if (currentFilter === 'active') return ['pending', 'confirmed'].includes(o.status);
           return o.status === currentFilter;
         });
-        ordersContainer.innerHTML = filtered.length ? filtered.map(renderOrderCard).join('') : '<div class="empty"><p>No orders here.</p></div>';
-      }
-    };
 
-    const fetchData = async () => {
+        if (filtered.length === 0) {
+          ordersContainer.innerHTML = '';
+          $('#empty').style.display = 'block';
+        } else {
+          $('#empty').style.display = 'none';
+          ordersContainer.innerHTML = filtered.map(renderOrderCard).join('');
+        }
+      }
+    }
+
+    async function fetchData() {
       try {
         const [ordersRes, usersRes] = await Promise.all([
-          fetch(`${API_BASE}/api/all-delivery-orders?t=${Date.now()}`, { cache: 'no-store' }),
-          fetch(`${API_BASE}/api/admin/users?t=${Date.now()}`, { cache: 'no-store' })
+          fetch(`${API_BASE}/api/all-delivery-orders?t=${Date.now()}`),
+          fetch(`${API_BASE}/api/admin/users?t=${Date.now()}`)
         ]);
+
         const ordersData = await ordersRes.json();
         const usersData = await usersRes.json();
 
         if (ordersData.success && Array.isArray(ordersData.orders)) {
-          const pending = ordersData.orders.filter(o => o.status === 'pending').length;
-          if (pending > previousPendingCount && pending > 0) showBigAlert();
-          previousPendingCount = pending;
+          const pendingCount = ordersData.orders.filter(o => o.status === 'pending').length;
+          if (pendingCount > previousPendingCount && pendingCount > 0) showBigAlert();
+          previousPendingCount = pendingCount;
+
           allOrders = ordersData.orders.sort((a, b) => new Date(b.date) - new Date(a.date));
         }
+
         if (usersData.users && Array.isArray(usersData.users)) {
           allUsers = usersData.users;
         }
+
         applyView();
       } catch (err) {
         console.error("Fetch error:", err);
+        ordersContainer.innerHTML = '<div class="empty">Failed to load data. Retrying...</div>';
       }
-    };
+    }
 
-    // Handle all button clicks (including delete)
-    document.addEventListener('click', async e => {
+    // Robust Button Click Handler
+    document.addEventListener('click', async (e) => {
       const btn = e.target.closest('button[data-action]');
       if (!btn) return;
 
       const action = btn.dataset.action;
       const orderId = btn.dataset.id;
-      const phone = btn.dataset.phone;
-      const name = btn.dataset.name;
+      const phone = btn.dataset.phone || '';
+      const name = btn.dataset.name || '';
 
-      if (!orderId) return;
+      if (!orderId) {
+        alert("Order ID not found!");
+        return;
+      }
 
+      // Prevent double-click
       btn.disabled = true;
       const originalText = btn.innerHTML;
-      btn.innerHTML = 'Processing...';
+      btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
 
       let success = false;
 
-      if (action === 'confirm') {
-        success = await updateOrderStatus(orderId, 'confirmed');
-        if (success) openWhatsApp(phone, confirmMessage(name));
-      } else if (action === 'delivered') {
-        success = await updateOrderStatus(orderId, 'delivered');
-        if (success) openWhatsApp(phone, deliveredMessage);
-      } else if (action === 'cancel') {
-        if (!confirm('Cancel this order?')) {
+      try {
+        if (action === 'confirm') {
+          success = await updateOrderStatus(orderId, 'confirmed');
+          if (success) openWhatsApp(phone, confirmMessage(name));
+        } else if (action === 'delivered') {
+          success = await updateOrderStatus(orderId, 'delivered');
+          if (success) openWhatsApp(phone, deliveredMessage);
+        } else if (action === 'cancel') {
+          if (!confirm("Cancel this order?")) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            return;
+          }
+          success = await updateOrderStatus(orderId, 'cancelled');
+        } else if (action === 'delete') {
+          if (!confirm("Permanently delete this order? This cannot be undone!")) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            return;
+          }
+          success = await deleteOrder(orderId);
+          if (success) {
+            allOrders = allOrders.filter(o => o._id !== orderId);
+            applyView();
+            return; // No need to re-enable button
+          }
+        }
+
+        if (success && action !== 'delete') {
+          const order = allOrders.find(o => o._id === orderId);
+          if (order) {
+            order.status = action === 'confirm' ? 'confirmed' :
+                           action === 'delivered' ? 'delivered' : 'cancelled';
+          }
+          applyView();
+        } else if (!success) {
+          alert("Action failed. Try again.");
+        }
+      } catch (err) {
+        alert("Network error. Check connection.");
+      } finally {
+        if (action !== 'delete') {
           btn.innerHTML = originalText;
           btn.disabled = false;
-          return;
-        }
-        success = await updateOrderStatus(orderId, 'cancelled');
-      } else if (action === 'delete') {
-        success = await deleteOrder(orderId);
-        if (success) {
-          allOrders = allOrders.filter(o => o._id !== orderId);
-          btn.innerHTML = 'Deleted!';
-          setTimeout(() => applyView(), 800);
-          return;
         }
       }
-
-      if (success && action !== 'delete') {
-        const order = allOrders.find(o => o._id === orderId);
-        if (order) {
-          order.status = action === 'confirm' ? 'confirmed' :
-                          action === 'delivered' ? 'delivered' : 'cancelled';
-        }
-        btn.innerHTML = 'Success!';
-        setTimeout(() => applyView(), 800);
-      } else if (!success && action !== 'delete') {
-        btn.innerHTML = originalText;
-      }
-
-      if (action !== 'delete') btn.disabled = false;
     });
 
+    // Filter Buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        applyView();
+      });
+    });
+
+    // Logout
     $('#logoutBtn').onclick = () => {
-      if (confirm('Logout?')) {
+      if (confirm('Logout from delivery portal?')) {
         localStorage.clear();
         location.href = 'login.html';
       }
     };
 
-    // Initial load + auto-refresh
+    // Start
     fetchData();
     setInterval(fetchData, REFRESH_INTERVAL);
   </script>
