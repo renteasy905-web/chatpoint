@@ -1,233 +1,413 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Portal - Grocery Items</title>
-    <style>
-        body { font-family: Arial, sans-serif; background:#f0f0f0; margin:0; padding:20px; }
-        .container { max-width:900px; margin:auto; background:white; padding:30px; border-radius:12px; box-shadow:0 0 20px rgba(0,0,0,0.1); }
-        h1 { text-align:center; color:#4CAF50; margin-bottom:20px; }
-        form { display:grid; gap:18px; background:#f9f9f9; padding:25px; border-radius:12px; margin-bottom:40px; }
-        label { font-weight:bold; color:#333; }
-        input, select, button { padding:14px; font-size:16px; border-radius:8px; border:1px solid #ccc; }
-        select { background:white; }
-        button { background:#4CAF50; color:white; border:none; cursor:pointer; font-weight:bold; }
-        button:hover { background:#45a049; }
-        .new-category-input, .new-category-photo { display:none; margin-top:10px; }
-        .items-section h2 { margin-top:40px; }
-        .items-list { display:grid; gap:20px; margin-top:20px; }
-        .item-card { background:#f9f9f9; padding:20px; border-radius:12px; display:flex; gap:20px; box-shadow:0 2px 10px rgba(0,0,0,0.05); align-items:center; }
-        .item-card img { width:100px; height:100px; object-fit:cover; border-radius:10px; }
-        .item-info { flex:1; }
-        .item-info strong { font-size:18px; display:block; margin-bottom:5px; }
-        .price-input { width:120px; padding:10px; margin-top:10px; }
-        .actions button { padding:10px 16px; margin-right:8px; border:none; border-radius:6px; cursor:pointer; }
-        .actions .update { background:#4CAF50; color:white; }
-        .actions .delete { background:#ff4444; color:white; }
-        .no-items { text-align:center; color:#999; padding:40px; font-size:18px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Portal — ChatPoint</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f4f6f9;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      overflow: hidden;
+    }
+    header {
+      background: #4CAF50;
+      color: white;
+      text-align: center;
+      padding: 24px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+    }
+    .content {
+      padding: 32px;
+    }
+    .password-section {
+      margin-bottom: 24px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+    }
+    input[type="password"], input, select {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    .form-grid {
+      display: grid;
+      gap: 20px;
+      background: #f9fbfa;
+      padding: 28px;
+      border-radius: 12px;
+      border: 1px solid #e0e0e0;
+      margin-bottom: 40px;
+    }
+    button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 16px;
+      font-size: 17px;
+      font-weight: 600;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #43a047;
+    }
+    .hidden {
+      display: none;
+    }
+    .items-section {
+      margin-top: 40px;
+    }
+    .items-section h2 {
+      color: #333;
+      margin-bottom: 16px;
+      font-size: 24px;
+    }
+    .items-list {
+      display: grid;
+      gap: 20px;
+      margin-top: 16px;
+    }
+    .item-card {
+      background: #f9fbfa;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .item-card img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+    .item-info {
+      flex: 1;
+    }
+    .item-info strong {
+      font-size: 19px;
+      display: block;
+      margin-bottom: 6px;
+      color: #222;
+    }
+    .price-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 12px 0;
+    }
+    .price-input {
+      width: 120px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+    .actions button {
+      padding: 10px 18px;
+      font-size: 14px;
+      border-radius: 8px;
+    }
+    .update-btn {
+      background: #4CAF50;
+    }
+    .delete-btn {
+      background: #f44336;
+    }
+    .no-items {
+      text-align: center;
+      padding: 50px;
+      color: #888;
+      font-size: 18px;
+    }
+    .loading {
+      text-align: center;
+      color: #666;
+      padding: 20px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Admin Portal - Grocery Items</h1>
+  <div class="container">
+    <header>
+      <h1>Admin Portal — ChatPoint</h1>
+    </header>
 
-        <label>Admin Password:</label>
-        <input type="password" id="adminPass" placeholder="Enter password" required>
+    <div class="content">
+      <div class="password-section">
+        <label>Admin Password</label>
+        <input type="password" id="adminPass" placeholder="Enter password (Brand)" required>
+      </div>
 
-        <form id="addForm">
-            <label>Category:</label>
-            <select id="categorySelect" required>
-                <option value="">Loading categories...</option>
-            </select>
-
-            <input type="text" id="newCategory" class="new-category-input" placeholder="New category name" required>
-
-            <div class="new-category-photo">
-                <label>Category Photo (Required):</label>
-                <input type="file" id="categoryImage" accept="image/*" required>
-            </div>
-
-            <label>Item Name:</label>
-            <input type="text" id="name" placeholder="e.g. Fresh Apple 1kg" required>
-
-            <label>Price (₹):</label>
-            <input type="number" id="price" placeholder="180" min="1" required>
-
-            <label>Item Image:</label>
-            <input type="file" id="image" accept="image/*" required>
-
-            <button type="submit">Add Item</button>
-        </form>
-
-        <div class="items-section">
-            <h2>Manage Items</h2>
-            <label>Select Category:</label>
-            <select id="viewCategory" onchange="loadItems(this.value)"></select>
-
-            <div id="itemsList" class="items-list">
-                <p class="no-items">Select a category to view items</p>
-            </div>
+      <form id="addForm" class="form-grid">
+        <div>
+          <label>Category</label>
+          <select id="categorySelect" required>
+            <option value="">Loading categories...</option>
+          </select>
         </div>
+
+        <div id="newCategorySection" class="hidden">
+          <input type="text" id="newCategory" placeholder="Enter new category name (e.g. Fruits)" required>
+        </div>
+
+        <div id="categoryPhotoSection" class="hidden">
+          <label>Category Photo (Required for new category)</label>
+          <input type="file" id="categoryImage" accept="image/*" required>
+        </div>
+
+        <div>
+          <label>Item Name</label>
+          <input type="text" id="name" placeholder="e.g. Fresh Apple 1kg" required>
+        </div>
+
+        <div>
+          <label>Price (₹)</label>
+          <input type="number" id="price" placeholder="180" min="1" required>
+        </div>
+
+        <div>
+          <label>Item Image</label>
+          <input type="file" id="image" accept="image/*" required>
+        </div>
+
+        <button type="submit">Add Item</button>
+      </form>
+
+      <div class="items-section">
+        <h2>Manage Items</h2>
+        <label>Select Category</label>
+        <select id="viewCategory" onchange="loadItems(this.value)">
+          <option value="">-- Choose Category --</option>
+        </select>
+
+        <div id="itemsList" class="items-list loading">
+          Select a category to view items
+        </div>
+      </div>
     </div>
+  </div>
 
-    <script>
-        const ADMIN_PASS = "Brand";
-        let categories = [];
+  <script>
+    const ADMIN_PASS = "Brand";
+    let categories = [];
 
-        async function loadCategories() {
-            try {
-                const res = await fetch("/api/categories");
-                if (!res.ok) throw new Error("Network error");
-                const data = await res.json();
-                if (!data.success) throw new Error("API error");
+    async function loadCategories() {
+      try {
+        const res = await fetch("/api/categories");
+        if (!res.ok) throw new Error("Network error");
+        const data = await res.json();
 
-                categories = data.categories.map(c => c.name).sort();
+        categories = data.success ? data.categories.map(c => c.name).sort() : [];
 
-                const addSelect = document.getElementById("categorySelect");
-                const viewSelect = document.getElementById("viewCategory");
+        const addSelect = document.getElementById("categorySelect");
+        const viewSelect = document.getElementById("viewCategory");
 
-                addSelect.innerHTML = `
-                    <option value="">-- Select or Add New --</option>
-                    ${categories.map(c => `<option value="${c}">${c}</option>`).join("")}
-                    <option value="__new__">+ Add New Category</option>
-                `;
+        addSelect.innerHTML = `
+          <option value="">-- Select Existing or Add New --</option>
+          ${categories.map(c => `<option value="${c}">${c}</option>`).join("")}
+          <option value="__new__">+ Add New Category</option>
+        `;
 
-                viewSelect.innerHTML = `
-                    <option value="">-- Choose Category --</option>
-                    ${categories.map(c => `<option value="${c}">${c}</option>`).join("")}
-                `;
+        viewSelect.innerHTML = `
+          <option value="">-- Choose Category --</option>
+          ${categories.map(c => `<option value="${c}">${c}</option>`).join("")}
+        `;
 
-                if (categories.length > 0) {
-                    viewSelect.value = categories[0];
-                    loadItems(categories[0]);
-                }
-            } catch (err) {
-                console.error(err);
-                document.getElementById("categorySelect").innerHTML = "<option>No categories</option>";
-            }
+        if (categories.length > 0) {
+          viewSelect.value = categories[0];
+          loadItems(categories[0]);
         }
+      } catch (err) {
+        console.error("Failed to load categories:", err);
+        document.getElementById("categorySelect").innerHTML = "<option>Error loading categories</option>";
+      }
+    }
 
-        document.getElementById("categorySelect").addEventListener("change", function() {
-            const isNew = this.value === "__new__";
-            document.querySelector(".new-category-input").style.display = isNew ? "block" : "none";
-            document.querySelector(".new-category-photo").style.display = isNew ? "block" : "none";
-            document.getElementById("newCategory").required = isNew;
-            document.getElementById("categoryImage").required = isNew;
+    // Toggle new category fields
+    document.getElementById("categorySelect").addEventListener("change", function () {
+      const isNew = this.value === "__new__";
+      document.getElementById("newCategorySection").classList.toggle("hidden", !isNew);
+      document.getElementById("categoryPhotoSection").classList.toggle("hidden", !isNew);
+
+      document.getElementById("newCategory").required = isNew;
+      document.getElementById("categoryImage").required = isNew;
+    });
+
+    function getSelectedCategory() {
+      const select = document.getElementById("categorySelect");
+      if (select.value === "__new__") {
+        const newName = document.getElementById("newCategory").value.trim();
+        if (!newName) {
+          alert("Please enter a new category name");
+          throw new Error("Missing category name");
+        }
+        return newName;
+      }
+      return select.value;
+    }
+
+    // Add Item Form Submit
+    document.getElementById("addForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const password = document.getElementById("adminPass").value;
+      if (password !== ADMIN_PASS) {
+        return alert("Incorrect password!");
+      }
+
+      const category = getSelectedCategory();
+      const isNewCategory = document.getElementById("categorySelect").value === "__new__";
+
+      const formData = new FormData();
+      formData.append("password", password);
+      formData.append("category", category);
+      formData.append("name", document.getElementById("name").value.trim());
+      formData.append("price", document.getElementById("price").value);
+      formData.append("image", document.getElementById("image").files[0]);
+
+      if (isNewCategory) {
+        const catImage = document.getElementById("categoryImage").files[0];
+        if (!catImage) return alert("Category photo is required for new category!");
+        formData.append("categoryImage", catImage);
+      }
+
+      try {
+        const res = await fetch("/api/admin/add-item", {
+          method: "POST",
+          body: formData
         });
 
-        function getSelectedCategory() {
-            const select = document.getElementById("categorySelect");
-            if (select.value === "__new__") {
-                return document.getElementById("newCategory").value.trim();
-            }
-            return select.value;
+        const data = await res.json();
+
+        if (data.success) {
+          alert(isNewCategory 
+            ? `New category "${category}" and item added successfully!` 
+            : `Item added to "${category}" successfully!`
+          );
+          document.getElementById("addForm").reset();
+          document.getElementById("newCategorySection").classList.add("hidden");
+          document.getElementById("categoryPhotoSection").classList.add("hidden");
+          loadCategories(); // Refresh dropdowns
+        } else {
+          alert("Error: " + (data.message || "Failed to add item"));
         }
+      } catch (err) {
+        console.error(err);
+        alert("Network error. Please try again.");
+      }
+    });
 
-        document.getElementById("addForm").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const pass = document.getElementById("adminPass").value;
-            if (pass !== ADMIN_PASS) return alert("Wrong password!");
+    // Load Items for Selected Category
+    async function loadItems(category) {
+      if (!category) {
+        document.getElementById("itemsList").innerHTML = "<div class='no-items'>Select a category to view items</div>";
+        return;
+      }
 
-            const category = getSelectedCategory();
-            if (!category) return alert("Enter category name");
+      document.getElementById("itemsList").innerHTML = "<div class='loading'>Loading items...</div>";
 
-            const isNew = document.getElementById("categorySelect").value === "__new__";
+      try {
+        const res = await fetch(`/api/items/${encodeURIComponent(category)}`);
+        const data = await res.json();
 
-            const formData = new FormData();
-            formData.append("password", pass);
-            formData.append("category", category);
-            formData.append("name", document.getElementById("name").value.trim());
-            formData.append("price", document.getElementById("price").value);
-            formData.append("image", document.getElementById("image").files[0]);
+        if (data.success && data.items.length > 0) {
+          document.getElementById("itemsList").innerHTML = data.items.map(item => `
+            <div class="item-card">
+              <img src="${item.imageUrl}" alt="${item.name}">
+              <div class="item-info">
+                <strong>${item.name}</strong>
+                <div class="price-row">
+                  <span>₹</span>
+                  <input type="number" class="price-input" value="${item.price}" data-id="${item._id}">
+                </div>
+                <div class="actions">
+                  <button class="update-btn" onclick="updatePrice('${item._id}')">Update Price</button>
+                  <button class="delete-btn" onclick="deleteItem('${item._id}')">Delete Item</button>
+                </div>
+              </div>
+            </div>
+          `).join("");
+        } else {
+          document.getElementById("itemsList").innerHTML = "<div class='no-items'>No items in this category yet</div>";
+        }
+      } catch (err) {
+        document.getElementById("itemsList").innerHTML = "<div class='no-items'>Error loading items</div>";
+      }
+    }
 
-            if (isNew) {
-                const catImg = document.getElementById("categoryImage").files[0];
-                if (!catImg) return alert("Category photo required!");
-                formData.append("categoryImage", catImg);
-            }
+    // Update Price
+    async function updatePrice(id) {
+      const input = document.querySelector(`.price-input[data-id="${id}"]`);
+      const newPrice = input.value;
+      const pass = prompt("Enter admin password to update price:");
+      if (pass !== ADMIN_PASS) return alert("Wrong password!");
 
-            try {
-                const res = await fetch("/api/admin/add-item", { method: "POST", body: formData });
-                const data = await res.json();
-                if (data.success) {
-                    alert("Item added successfully!");
-                    document.getElementById("addForm").reset();
-                    document.querySelectorAll(".new-category-input, .new-category-photo").forEach(el => el.style.display = "none");
-                    loadCategories();
-                } else {
-                    alert("Error: " + (data.message || "Failed"));
-                }
-            } catch (err) {
-                alert("Network error");
-            }
+      try {
+        const res = await fetch("/api/admin/edit-item", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ password: pass, itemId: id, price: newPrice })
         });
+        const data = await res.json();
+        alert(data.success ? "Price updated!" : "Update failed");
+      } catch (err) {
+        alert("Error updating price");
+      }
+    }
 
-        async function loadItems(category) {
-            if (!category) {
-                document.getElementById("itemsList").innerHTML = "<p class='no-items'>Select a category</p>";
-                return;
-            }
-            try {
-                const res = await fetch(`/api/items/${encodeURIComponent(category)}`);
-                const data = await res.json();
-                if (data.success && data.items.length > 0) {
-                    document.getElementById("itemsList").innerHTML = data.items.map(item => `
-                        <div class="item-card">
-                            <img src="${item.imageUrl}" alt="${item.name}">
-                            <div class="item-info">
-                                <strong>${item.name}</strong>
-                                <p>₹<input type="number" class="price-input" value="${item.price}" data-id="${item._id}"></p>
-                                <div class="actions">
-                                    <button class="update" onclick="updatePrice('${item._id}')">Update</button>
-                                    <button class="delete" onclick="deleteItem('${item._id}')">Delete</button>
-                                </div>
-                            </div>
-                        </div>
-                    `).join("");
-                } else {
-                    document.getElementById("itemsList").innerHTML = "<p class='no-items'>No items</p>";
-                }
-            } catch (err) {
-                document.getElementById("itemsList").innerHTML = "<p class='no-items'>Error loading</p>";
-            }
+    // Delete Item
+    async function deleteItem(id) {
+      if (!confirm("Permanently delete this item?")) return;
+
+      const pass = prompt("Enter admin password to delete:");
+      if (pass !== ADMIN_PASS) return alert("Wrong password!");
+
+      try {
+        const res = await fetch(`/api/admin/delete-item/${id}?password=${pass}`, {
+          method: "DELETE"
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert("Item deleted!");
+          loadItems(document.getElementById("viewCategory").value);
+        } else {
+          alert("Delete failed");
         }
+      } catch (err) {
+        alert("Error deleting item");
+      }
+    }
 
-        async function updatePrice(id) {
-            const input = document.querySelector(`.price-input[data-id="${id}"]`);
-            const price = input.value;
-            const pass = prompt("Password:");
-            if (pass !== ADMIN_PASS) return alert("Wrong");
-            try {
-                const res = await fetch("/api/admin/edit-item", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ password: pass, itemId: id, price })
-                });
-                const data = await res.json();
-                alert(data.success ? "Updated!" : "Failed");
-            } catch (err) {
-                alert("Error");
-            }
-        }
-
-        async function deleteItem(id) {
-            if (!confirm("Delete permanently?")) return;
-            const pass = prompt("Password:");
-            if (pass !== ADMIN_PASS) return alert("Wrong");
-            try {
-                const res = await fetch(`/api/admin/delete-item/${id}?password=${pass}`, { method: "DELETE" });
-                const data = await res.json();
-                if (data.success) {
-                    alert("Deleted!");
-                    loadItems(document.getElementById("viewCategory").value);
-                }
-            } catch (err) {
-                alert("Error");
-            }
-        }
-
-        window.onload = loadCategories;
-    </script>
+    // Load categories on page load
+    window.onload = loadCategories;
+  </script>
 </body>
 </html>
