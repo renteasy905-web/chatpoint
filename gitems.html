@@ -28,9 +28,7 @@
             🛒 <span class="cart-count" id="cartCount">0</span>
         </div>
     </div>
-
     <div class="grid" id="itemsGrid"></div>
-
     <script>
         const categoryData = {
             "Pooja Essentials": [
@@ -51,11 +49,18 @@
                 {name: "Eggs 6pcs", price: 55, img: "https://t4.ftcdn.net/jpg/00/78/39/25/360_F_78392550_0azqO8s1wBexN0q9dm1L3QbbAX6rQoPH.jpg"},
                 {name: "Cheese Block 200g", price: 125, img: "https://i0.wp.com/cheesescientist.com/wp-content/uploads/2024/12/What-Are-Dairy-Products-Examples-Production-Uses.jpg?fit=1600%2C1200&ssl=1"}
             ],
-            "Atta, Rice, Oils & Dals": [
-                {name: "Aashirvaad Atta 10kg", price: 450, img: "https://m.media-amazon.com/images/I/91XB+skYrcL._AC_UF894,1000_QL80_.jpg"},
-                {name: "Basmati Rice 5kg", price: 800, img: "https://m.media-amazon.com/images/I/81RqIlqh5HL.jpg_BO30,255,255,255_UF900,850_SR1910,1000,0,C_QL100_.jpg"},
-                {name: "Sunflower Oil 1L", price: 150, img: "https://indianexpressfoodmarket.com/wp-content/uploads/2025/09/IEFM-BLOG-IMAGES-1-1.webp"},
-                {name: "Toor Dal 1kg", price: 180, img: "https://b2958125.smushcdn.com/2958125/wp-content/uploads/100-percent-whole-grain-whole-wheat-indian-chakki-atta-bread-recipe-1-2.jpg?lossy=1&strip=1&webp=1"}
+            "Atta, Rice, Oils & Sugar": [
+                {name: "Sugar", price: 55, img: "https://m.media-amazon.com/images/I/71uN1KJ2VPL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Rice - Vajra Teja", price: 65, img: "https://m.media-amazon.com/images/I/81fN5P9T9BL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Rice - BNM", price: 60, img: "https://m.media-amazon.com/images/I/71vYvG1K5jL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Rice - We One Gold Colour", price: 65, img: "https://m.media-amazon.com/images/I/81RqIlqh5HL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Rice - Balla Organic", price: 70, img: "https://m.media-amazon.com/images/I/81t6q5L1QKL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Rice - Balla Inorganic", price: 45, img: "https://m.media-amazon.com/images/I/81fN5P9T9BL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Sunrise Oil 15L", price: 2250, img: "https://m.media-amazon.com/images/I/71Qd2G6Z1QL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Uchi Gold / Palm Oil 1L", price: 150, img: "https://m.media-amazon.com/images/I/71f0d+2eTQL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Gemini Oil 1L", price: 160, img: "https://m.media-amazon.com/images/I/71e7Z5qL2PL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Gold Winner Oil Bag", price: 1580, img: "https://m.media-amazon.com/images/I/71t4u3p9VQL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Freedom Oil 1L", price: 135, img: "https://m.media-amazon.com/images/I/71i+3+3o5zL._AC_UF1000,1000_QL80_.jpg"}
             ],
             "Masala & Dry Fruits": [
                 {name: "Mixed Masala Nuts", price: 250, img: "https://cdn.prod.website-files.com/64931d2aee18510b47f4bb1f/65ca5a40a282bc53d22f6442_Spiced-Nuts-Recipe-Cover-Image.jpg"},
@@ -88,13 +93,10 @@
                 {name: "Household Products", price: 350, img: "https://5.imimg.com/data5/SELLER/Default/2022/10/NK/DL/UX/1651149/household-cleaning-products-formulation-consulting.jpeg"}
             ]
         };
-
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-
         function loadItems() {
             const category = localStorage.getItem('selectedCategory') || 'Fruits & Vegetables';
             document.getElementById('categoryName').textContent = category;
-
             const items = categoryData[category] || [];
             const grid = document.getElementById('itemsGrid');
             grid.innerHTML = items.map((item, i) => `
@@ -102,15 +104,13 @@
                     <img src="${item.img}" alt="${item.name}" loading="lazy">
                     <div class="info">
                         <div class="name">${item.name}</div>
-                        <div class="price">₹${item.price}</div>
+                        <div class="price">₹${item.price}/kg or as listed</div>
                     </div>
                     <button class="add-btn" onclick="addToCart(${i})">+</button>
                 </div>
             `).join('');
-
             updateCartCount();
         }
-
         function addToCart(index) {
             const category = localStorage.getItem('selectedCategory');
             const item = categoryData[category][index];
@@ -120,12 +120,10 @@
             localStorage.setItem('cart', JSON.stringify(cart));
             updateCartCount();
         }
-
         function updateCartCount() {
             const total = cart.reduce((sum, item) => sum + item.qty, 0);
             document.getElementById('cartCount').textContent = total || 0;
         }
-
         window.onload = loadItems;
     </script>
 </body>
