@@ -1,13 +1,20 @@
 {
-  "name": "renteasy",
+  "name": "chatpoint",
   "version": "1.0.0",
-  "description": "RentEasy backend server",
+  "description": "ChatPoint - Grocery ordering and delivery app",
   "main": "server.cjs",
   "scripts": {
     "start": "node server.cjs",
     "dev": "nodemon server.cjs"
   },
-  "keywords": ["rent", "express", "mongodb", "cloudinary"],
+  "keywords": [
+    "chatpoint",
+    "grocery",
+    "delivery",
+    "express",
+    "mongodb",
+    "cloudinary"
+  ],
   "author": "renteasy905-web",
   "license": "ISC",
   "dependencies": {
