@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>ChatPoint — Login / Signup</title>
-  <link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- Fixes favicon 404 error -->
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
@@ -107,11 +107,9 @@
     <svg class="svg-3" viewBox="0 0 64 64"><defs><linearGradient id="g3"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><rect x="18" y="18" width="28" height="28" rx="6" stroke="url(#g3)" stroke-width="3" fill="none"/><path d="M24 18 Q32 6 40 18" stroke="url(#g3)" stroke-width="3" fill="none"/></svg>
     <svg class="svg-4" viewBox="0 0 64 64"><defs><linearGradient id="g4"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><rect x="20" y="16" width="24" height="10" rx="4" stroke="url(#g4)" stroke-width="2.8" fill="none"/><rect x="24" y="26" width="4" height="18" fill="#e23744"/><rect x="30" y="26" width="4" height="18" fill="#e23744"/><rect x="36" y="26" width="4" height="18" fill="#e23744"/></svg>
   </div>
-
   <div class="container">
     <div class="card">
       <div class="brand"><span>Chat</span><span>Point</span></div>
-
       <div id="loginForm">
         <div class="lead">Welcome back!</div>
         <div class="form-group"><input type="tel" id="loginPhone" class="input" placeholder="Phone number" maxlength="10" inputmode="numeric" /></div>
@@ -119,7 +117,6 @@
         <button class="btn" id="btnLogin">Login</button>
         <div class="toggle-text">New to ChatPoint? <a href="#" id="showSignup">Create account</a></div>
       </div>
-
       <div id="signupForm" style="display:none">
         <div class="lead">Join ChatPoint</div>
         <div class="form-group"><input type="text" id="signupName" class="input" placeholder="Full name" /></div>
@@ -130,7 +127,6 @@
       </div>
     </div>
   </div>
-
   <div id="loadingOverlay">
     <div class="loader">
       <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
@@ -146,9 +142,11 @@
     const progress = $('progressFill');
     const loaderText = $('loaderText');
 
+    // Toggle forms
     $('showSignup').onclick = e => { e.preventDefault(); loginForm.style.display = 'none'; signupForm.style.display = 'block'; };
     $('showLogin').onclick = e => { e.preventDefault(); signupForm.style.display = 'none'; loginForm.style.display = 'block'; };
 
+    // Loading animation
     function showLoading() {
       loading.classList.add('active');
       let w = 10;
@@ -163,65 +161,90 @@
       setTimeout(() => { loading.classList.remove('active'); progress.style.width = '0%'; }, 500);
     }
 
+    // Phone validation
     const isValidPhone = p => /^\d{10}$/.test(p.trim());
 
-    // Fake Signup (saves to localStorage)
-    $('btnSignup').onclick = () => {
+    // Backend API base URL (change if deployed)
+    const API_BASE = ''; // Empty = same origin (e.g., http://localhost:5000)
+
+    // Signup
+    $('btnSignup').onclick = async () => {
       const name = $('signupName').value.trim();
       const phone = $('signupPhone').value.trim();
-      const pass = $('signupPassword').value;
+      const password = $('signupPassword').value;
 
-      if (!name || !phone || !pass) return alert('Please fill all fields');
-      if (!isValidPhone(phone)) return alert('Enter valid 10-digit phone');
-
-      const users = JSON.parse(localStorage.getItem('chatpoint_users') || '[]');
-      if (users.find(u => u.phone === phone)) return alert('Phone already registered');
-
-      const newUser = { _id: Date.now(), name, phone, password: pass };
-      users.push(newUser);
-      localStorage.setItem('chatpoint_users', JSON.stringify(users));
-      localStorage.setItem('chatpoint_user', JSON.stringify(newUser));
+      if (!name || !phone || !password) return alert('Please fill all fields');
+      if (!isValidPhone(phone)) return alert('Enter a valid 10-digit phone number');
 
       const stop = showLoading();
-      setTimeout(() => {
-        stop(); hideLoading();
-        alert('Account created! Welcome ' + name);
+
+      try {
+        const res = await fetch(API_BASE + '/api/user/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, phone, password })
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          throw new Error(data.message || 'Signup failed');
+        }
+
+        alert('Account created successfully! Welcome ' + name);
         location.href = 'index.html';
-      }, 1200);
+      } catch (err) {
+        alert(err.message || 'Something went wrong');
+      } finally {
+        stop();
+        hideLoading();
+      }
     };
 
-    // Fake Login
-    $('btnLogin').onclick = () => {
+    // Login
+    $('btnLogin').onclick = async () => {
       const phone = $('loginPhone').value.trim();
-      const pass = $('loginPassword').value;
+      const password = $('loginPassword').value;
 
-      if (!phone || !pass) return alert('Please fill all fields');
-      if (!isValidPhone(phone)) return alert('Enter valid 10-digit phone');
+      if (!phone || !password) return alert('Please fill all fields');
+      if (!isValidPhone(phone)) return alert('Enter a valid 10-digit phone number');
 
-      // Demo admin login
-      if (phone === '1234567890' && pass === 'admin') {
-        const demoUser = { _id: 'admin1', name: 'Admin User', phone: '1234567890' };
-        localStorage.setItem('chatpoint_user', JSON.stringify(demoUser));
-        const stop = showLoading();
-        setTimeout(() => { stop(); hideLoading(); location.href = 'index.html'; }, 1200);
-        return;
-      }
-
-      const users = JSON.parse(localStorage.getItem('chatpoint_users') || '[]');
-      const user = users.find(u => u.phone === phone && u.password === pass);
-
-      if (!user) return alert('Invalid phone or password');
-
-      localStorage.setItem('chatpoint_user', JSON.stringify(user));
       const stop = showLoading();
-      setTimeout(() => { stop(); hideLoading(); location.href = 'index.html'; }, 1200);
+
+      try {
+        const res = await fetch(API_BASE + '/api/user/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, password })
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          throw new Error(data.message || 'Invalid credentials');
+        }
+
+        // Save user to localStorage for use in other pages
+        localStorage.setItem('chatpoint_user', JSON.stringify(data.user));
+
+        // Optional: redirect with success
+        location.href = 'index.html';
+      } catch (err) {
+        alert(err.message || 'Login failed');
+      } finally {
+        stop();
+        hideLoading();
+      }
     };
 
     // Enter key support
     document.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
-        if (signupForm.style.display !== 'none') $('btnSignup').click();
-        else $('btnLogin').click();
+        if (signupForm.style.display !== 'none') {
+          $('btnSignup').click();
+        } else {
+          $('btnLogin').click();
+        }
       }
     });
   </script>
