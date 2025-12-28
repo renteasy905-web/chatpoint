@@ -8,6 +8,7 @@ const crypto = require("crypto");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -17,6 +18,7 @@ cloudinary.config({
   api_key: "942326953292277",
   api_secret: "GC0SO2VrcpdMSLGzQsYjLZ1SAZg",
 });
+
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
@@ -25,6 +27,7 @@ const storage = new CloudinaryStorage({
     transformation: [{ width: 800, height: 800, crop: "limit" }],
   },
 });
+
 const upload = multer({ storage: storage });
 
 // =============== MIDDLEWARE ===============
@@ -57,12 +60,14 @@ const User = mongoose.model(
     { timestamps: true }
   )
 );
+
 const GroceryCategory = mongoose.model(
   "GroceryCategory",
   new mongoose.Schema({
     name: { type: String, required: true, unique: true },
   })
 );
+
 const GroceryItem = mongoose.model(
   "GroceryItem",
   new mongoose.Schema({
@@ -72,6 +77,7 @@ const GroceryItem = mongoose.model(
     imageUrl: { type: String, required: true },
   })
 );
+
 const Shop = mongoose.model("Shop", new mongoose.Schema({
   type: { type: String, default: "shop" },
   shopName: String,
@@ -80,6 +86,7 @@ const Shop = mongoose.model("Shop", new mongoose.Schema({
   items: [{ name: String, price: Number, description: String, imageUrl: [String] }],
   date: { type: Date, default: Date.now },
 }));
+
 const Order = mongoose.model("Order", new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, required: false },
   user: { name: String, phone: String },
@@ -100,7 +107,6 @@ const ADMIN_PASSWORD = "Brand"; // CHANGE THIS FOR SECURITY!
 const saveOrderUniversal = async (req, res) => {
   try {
     const body = req.body;
-    // Extract fields flexibly
     let userId = body.userId || body.user_id || null;
     const name = body.name || body.customer_name;
     const phone = body.phone || body.customer_phone;
@@ -108,7 +114,7 @@ const saveOrderUniversal = async (req, res) => {
     const address2 = body.address2 || body.line2 || "";
     const grandTotal = Number(body.grandTotal || body.totalAmount || body.total);
     const cart = body.cart || body.items;
-    // === VALIDATION (userId is now OPTIONAL) ===
+
     if (!name || !phone || !address1) {
       return res.status(400).json({ success: false, message: "Missing name, phone or address" });
     }
@@ -118,7 +124,7 @@ const saveOrderUniversal = async (req, res) => {
     if (!cart || typeof cart !== 'object' || Object.keys(cart).length === 0) {
       return res.status(400).json({ success: false, message: "Empty or invalid cart" });
     }
-    // Parse items from cart: { "ShopName": { "ItemName": { qty, price } } }
+
     let items = [];
     let shopName = null;
     for (const shop in cart) {
@@ -132,12 +138,13 @@ const saveOrderUniversal = async (req, res) => {
         }
       }
     }
+
     if (items.length === 0) {
       return res.status(400).json({ success: false, message: "No valid items in cart" });
     }
-    // Create order
+
     const order = new Order({
-      userId: userId ? userId : null, // Save null if no valid userId
+      userId: userId ? userId : null,
       user: { name, phone },
       shop: shopName || "ChatPoint",
       items,
@@ -146,8 +153,9 @@ const saveOrderUniversal = async (req, res) => {
       address: { name, phone, line1: address1, line2: address2 },
       paymentMethod: body.paymentMethod || "cash"
     });
+
     await order.save();
-    console.log(`✅ NEW ORDER SAVED → #${order._id} | ₹${grandTotal} | ${phone} | ${name}`);
+    console.log(`NEW ORDER SAVED → #${order._id} | ₹${grandTotal} | ${phone} | ${name}`);
     res.json({ success: true, orderId: order._id });
   } catch (err) {
     console.error("Order save error:", err);
@@ -156,8 +164,8 @@ const saveOrderUniversal = async (req, res) => {
 };
 
 // =============== API ENDPOINTS ===============
+
 // Grocery Routes
-// Get all categories
 app.get("/api/categories", async (req, res) => {
   try {
     const cats = await GroceryCategory.find().sort({ name: 1 });
@@ -168,7 +176,6 @@ app.get("/api/categories", async (req, res) => {
   }
 });
 
-// Get items by category
 app.get("/api/items/:category", async (req, res) => {
   try {
     const category = decodeURIComponent(req.params.category);
@@ -180,25 +187,28 @@ app.get("/api/items/:category", async (req, res) => {
   }
 });
 
-// Add new grocery item (Cloudinary upload)
 app.post("/api/admin/add-item", upload.single("image"), async (req, res) => {
   const { password, category, name, price } = req.body;
   if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false, message: "Wrong password" });
+
   try {
     if (!req.file) return res.status(400).json({ success: false, message: "Image required" });
+
     const newItem = new GroceryItem({
       category: category.trim(),
       name: name.trim(),
       price: Number(price),
       imageUrl: req.file.path,
     });
+
     await newItem.save();
-    // Auto-create category if not exists
+
     await GroceryCategory.findOneAndUpdate(
       { name: category.trim() },
       { name: category.trim() },
       { upsert: true }
     );
+
     res.json({ success: true, item: newItem });
   } catch (e) {
     console.error(e);
@@ -206,10 +216,10 @@ app.post("/api/admin/add-item", upload.single("image"), async (req, res) => {
   }
 });
 
-// Edit grocery item price
 app.post("/api/admin/edit-item", async (req, res) => {
   const { password, itemId, price } = req.body;
   if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false });
+
   try {
     const updated = await GroceryItem.findByIdAndUpdate(itemId, { price: Number(price) }, { new: true });
     if (!updated) return res.status(404).json({ success: false });
@@ -219,10 +229,10 @@ app.post("/api/admin/edit-item", async (req, res) => {
   }
 });
 
-// Delete grocery item
 app.delete("/api/admin/delete-item/:id", async (req, res) => {
   const { password } = req.query;
   if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false });
+
   try {
     await GroceryItem.findByIdAndDelete(req.params.id);
     res.json({ success: true });
@@ -242,11 +252,14 @@ app.post("/api/user/signup", async (req, res) => {
   try {
     const { name, phone, password } = req.body;
     if (!name || !phone || !password) return res.status(400).json({ success: false });
+
     const exists = await User.findOne({ phone });
     if (exists) return res.status(400).json({ success: false, message: "Phone already registered" });
+
     const hash = crypto.createHash("sha256").update(password).digest("hex");
     const user = new User({ name, phone, password: hash });
     await user.save();
+
     res.json({ success: true });
   } catch (e) {
     console.error(e);
@@ -259,11 +272,13 @@ app.post("/api/user/login", async (req, res) => {
     const { phone, password } = req.body;
     const hash = crypto.createHash("sha256").update(password).digest("hex");
     const user = await User.findOne({ phone, password: hash });
+
     if (!user) return res.status(401).json({ success: false, message: "Wrong credentials" });
+
     res.json({
       success: true,
       user: {
-        _id: user._id.toString(), // Ensure it's a string
+        _id: user._id.toString(),
         name: user.name,
         phone: user.phone
       }
@@ -308,13 +323,32 @@ app.post("/api/update-order-status", async (req, res) => {
     if (!["confirmed", "delivered", "cancelled"].includes(status)) {
       return res.status(400).json({ success: false });
     }
+
     const result = await Order.findByIdAndUpdate(orderId, { status }, { new: true });
     if (!result) return res.status(404).json({ success: false });
+
     console.log(`Order ${orderId} status → ${status}`);
     res.json({ success: true });
   } catch (e) {
     console.error(e);
     res.status(500).json({ success: false });
+  }
+});
+
+// NEW: Delete Order Permanently (for Delivery Portal)
+app.delete("/api/delete-order", async (req, res) => {
+  try {
+    const { orderId } = req.body;
+    if (!orderId) return res.status(400).json({ success: false, message: "Order ID required" });
+
+    const result = await Order.findByIdAndDelete(orderId);
+    if (!result) return res.status(404).json({ success: false, message: "Order not found" });
+
+    console.log(`Order ${orderId} PERMANENTLY DELETED from database`);
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Delete order error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
@@ -339,13 +373,16 @@ app.get("/api/admin/users", async (req, res) => {
 
 // =============== SERVE PAGES ===============
 const pages = ["index", "gitems", "adminportal", "gcart", "privacy", "delivery", "orders", "cart", "payment", "login", "admin", "items"];
+
 pages.forEach((p) => {
   const route = p === "index" ? "/" : `/${p}.html`;
   const file = p === "index" ? "index.html" : `${p}.html`;
   app.get(route, (req, res) => res.sendFile(path.join(__dirname, file)));
 });
+
 app.get("*", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
+// =============== START SERVER ===============
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on http://localhost:${PORT}`);
   console.log(`Admin Portal: http://localhost:${PORT}/adminportal.html`);
