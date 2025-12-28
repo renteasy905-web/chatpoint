@@ -17,6 +17,7 @@
         .category:hover { transform:scale(1.05); }
         .category img { width:100%; height:120px; object-fit:cover; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
         .category p { margin:10px 0 0; font-size:14px; color:#333; font-weight:500; }
+        .loading { text-align:center; padding:40px; color:#666; }
     </style>
 </head>
 <body>
@@ -27,47 +28,53 @@
             <div class="tab">Popular</div>
         </div>
         <div class="grid" id="categoryGrid">
-            <!-- Categories will be loaded dynamically or keep static ones -->
-            <div class="category" onclick="openCategory('Fruits & Vegetables')">
-                <img src="https://thumbs.dreamstime.com/b/fresh-vegetables-sale-indian-street-market-assorted-261843812.jpg" alt="Fruits & Vegetables">
-                <p>Fruits & Vegetables</p>
-            </div>
-            <div class="category" onclick="openCategory('Dairy, Bread & Eggs')">
-                <img src="https://nagabazaar.com/cdn/shop/collections/towfiqu-barbhuiya-X4zRlInfdQg-unsplash-300x300.webp?v=1748116760" alt="Dairy, Bread & Eggs">
-                <p>Dairy, Bread & Eggs</p>
-            </div>
-            <div class="category" onclick="openCategory('Atta, Rice, Oils & Dals')">
-                <img src="https://m.media-amazon.com/images/I/81qmtmMSHoL._AC_UF894,1000_QL80_.jpg" alt="Atta, Rice, Oils & Dals">
-                <p>Atta, Rice, Oils & Dals</p>
-            </div>
-            <div class="category" onclick="openCategory('Masala & Dry Fruits')">
-                <img src="https://snnfoods.com/cdn/shop/articles/snn-blog-1-image-151086.jpg?v=1710844801" alt="Masala & Dry Fruits">
-                <p>Masala & Dry Fruits</p>
-            </div>
-            <div class="category" onclick="openCategory('Rice')">
-                <img src="https://media.gettyimages.com/id/1157969278/photo/various-brands-of-basmati-rice-bags-for-sale.jpg?s=612x612&w=gi&k=20&c=o5oZ7JKpSflYaqxBxwTipBpUSsF1GYbIFE-wCjriVBc=" alt="Rice">
-                <p>Rice</p>
-            </div>
-            <div class="category" onclick="openCategory('Snacks & Chocolates')">
-                <img src="https://m.media-amazon.com/images/I/61Jwn55lp4L._AC_UF894,1000_QL80_.jpg" alt="Snacks & Chocolates">
-                <p>Snacks & Chocolates</p>
-            </div>
-            <div class="category" onclick="openCategory('Beverages')">
-                <img src="https://www.tastingtable.com/img/gallery/21-indian-drinks-you-need-to-try-at-least-once/l-intro-1718799368.jpg" alt="Beverages">
-                <p>Beverages</p>
-            </div>
-            <div class="category" onclick="openCategory('Cleaning & Household')">
-                <img src="https://5.imimg.com/data5/SELLER/Default/2022/10/NK/DL/UX/1651149/household-cleaning-products-formulation-consulting.jpeg" alt="Cleaning & Household">
-                <p>Cleaning & Household</p>
-            </div>
+            <div class="loading">Loading categories...</div>
         </div>
     </div>
 
     <script>
+        // Default category images (you can enhance this later with per-category images)
+        const categoryImages = {
+            "Fruits & Vegetables": "https://thumbs.dreamstime.com/b/fresh-vegetables-sale-indian-street-market-assorted-261843812.jpg",
+            "Dairy, Bread & Eggs": "https://nagabazaar.com/cdn/shop/collections/towfiqu-barbhuiya-X4zRlInfdQg-unsplash-300x300.webp?v=1748116760",
+            "Atta, Rice, Oils & Dals": "https://m.media-amazon.com/images/I/81qmtmMSHoL._AC_UF894,1000_QL80_.jpg",
+            "Masala & Dry Fruits": "https://snnfoods.com/cdn/shop/articles/snn-blog-1-image-151086.jpg?v=1710844801",
+            "Rice": "https://media.gettyimages.com/id/1157969278/photo/various-brands-of-basmati-rice-bags-for-sale.jpg?s=612x612&w=gi&k=20&c=o5oZ7JKpSflYaqxBxwTipBpUSsF1GYbIFE-wCjriVBc=",
+            "Snacks & Chocolates": "https://m.media-amazon.com/images/I/61Jwn55lp4L._AC_UF894,1000_QL80_.jpg",
+            "Beverages": "https://www.tastingtable.com/img/gallery/21-indian-drinks-you-need-to-try-at-least-once/l-intro-1718799368.jpg",
+            "Cleaning & Household": "https://5.imimg.com/data5/SELLER/Default/2022/10/NK/DL/UX/1651149/household-cleaning-products-formulation-consulting.jpeg"
+        };
+
+        async function loadCategories() {
+            try {
+                const res = await fetch("/api/categories");
+                const data = await res.json();
+                const grid = document.getElementById("categoryGrid");
+
+                if (data.success && data.categories.length > 0) {
+                    grid.innerHTML = data.categories.map(cat => {
+                        const img = categoryImages[cat] || "https://via.placeholder.com/300x120?text=" + encodeURIComponent(cat);
+                        return `
+                            <div class="category" onclick="openCategory('${cat.replace(/'/g, "\\'")}')">
+                                <img src="${img}" alt="${cat}">
+                                <p>${cat}</p>
+                            </div>
+                        `;
+                    }).join("");
+                } else {
+                    grid.innerHTML = "<div class='loading'>No categories yet. Add items in Admin Portal!</div>";
+                }
+            } catch (err) {
+                document.getElementById("categoryGrid").innerHTML = "<div class='loading'>Error loading categories</div>";
+            }
+        }
+
         function openCategory(name) {
             localStorage.setItem('selectedCategory', name);
             window.location.href = 'gitems.html';
         }
+
+        window.onload = loadCategories;
     </script>
 </body>
 </html>
