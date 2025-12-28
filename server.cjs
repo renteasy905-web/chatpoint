@@ -19,11 +19,10 @@ cloudinary.config({
   api_secret: "GC0SO2VrcpdMSLGzQsYjLZ1SAZg",
 });
 
-// Dynamic storage: automatically chooses folder based on field name
+// SINGLE dynamic storage — this is the correct way
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: (req, file) => {
-    // For category images
     if (file.fieldname === "categoryImage") {
       return {
         folder: "grocery_categories",
@@ -31,7 +30,7 @@ const storage = new CloudinaryStorage({
         transformation: [{ width: 600, height: 600, crop: "fill" }],
       };
     }
-    // Default: for item images
+    // Default: item image
     return {
       folder: "grocery_items",
       allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"],
@@ -40,7 +39,7 @@ const storage = new CloudinaryStorage({
   },
 });
 
-// Multer with dynamic storage
+// Correct multer usage
 const upload = multer({ storage: storage });
 
 // =============== MIDDLEWARE ===============
@@ -115,7 +114,7 @@ const Order = mongoose.model("Order", new mongoose.Schema({
 }));
 
 // =============== ADMIN PASSWORD ===============
-const ADMIN_PASSWORD = "Brand"; // CHANGE THIS IN PRODUCTION!
+const ADMIN_PASSWORD = "Brand"; // CHANGE THIS!
 
 // =============== UNIVERSAL ORDER SAVE FUNCTION ===============
 const saveOrderUniversal = async (req, res) => {
@@ -129,15 +128,9 @@ const saveOrderUniversal = async (req, res) => {
     const grandTotal = Number(body.grandTotal || body.totalAmount || body.total);
     const cart = body.cart || body.items;
 
-    if (!name || !phone || !address1) {
-      return res.status(400).json({ success: false, message: "Missing name, phone or address" });
-    }
-    if (!grandTotal || isNaN(grandTotal) || grandTotal <= 0) {
-      return res.status(400).json({ success: false, message: "Invalid total amount" });
-    }
-    if (!cart || typeof cart !== 'object' || Object.keys(cart).length === 0) {
-      return res.status(400).json({ success: false, message: "Empty or invalid cart" });
-    }
+    if (!name || !phone || !address1) return res.status(400).json({ success: false, message: "Missing name, phone or address" });
+    if (!grandTotal || isNaN(grandTotal) || grandTotal <= 0) return res.status(400).json({ success: false, message: "Invalid total amount" });
+    if (!cart || typeof cart !== 'object' || Object.keys(cart).length === 0) return res.status(400).json({ success: false, message: "Empty cart" });
 
     let items = [];
     let shopName = null;
@@ -153,9 +146,7 @@ const saveOrderUniversal = async (req, res) => {
       }
     }
 
-    if (items.length === 0) {
-      return res.status(400).json({ success: false, message: "No valid items in cart" });
-    }
+    if (items.length === 0) return res.status(400).json({ success: false, message: "No valid items" });
 
     const order = new Order({
       userId: userId ? userId : null,
@@ -169,7 +160,7 @@ const saveOrderUniversal = async (req, res) => {
     });
 
     await order.save();
-    console.log(`NEW ORDER SAVED → #${order._id} | ₹${grandTotal} | ${phone} | ${name}`);
+    console.log(`NEW ORDER → #${order._id} | ₹${grandTotal} | ${name}`);
     res.json({ success: true, orderId: order._id });
   } catch (err) {
     console.error("Order save error:", err);
@@ -179,19 +170,16 @@ const saveOrderUniversal = async (req, res) => {
 
 // =============== API ENDPOINTS ===============
 
-// Safe categories endpoint
 app.get("/api/categories", async (req, res) => {
   try {
     const cats = await GroceryCategory.find().sort({ name: 1 });
-    if (cats.length === 0) {
-      return res.json({ success: true, categories: [] });
-    }
+    if (cats.length === 0) return res.json({ success: true, categories: [] });
     res.json({
       success: true,
       categories: cats.map(c => ({ name: c.name, imageUrl: c.imageUrl }))
     });
   } catch (e) {
-    console.error("Categories fetch error:", e);
+    console.error(e);
     res.json({ success: true, categories: [] });
   }
 });
@@ -207,7 +195,7 @@ app.get("/api/items/:category", async (req, res) => {
   }
 });
 
-// Fixed add-item endpoint — works with dynamic storage
+// FINAL FIXED add-item endpoint
 app.post("/api/admin/add-item", upload.fields([
   { name: "image", maxCount: 1 },
   { name: "categoryImage", maxCount: 1 }
@@ -218,15 +206,14 @@ app.post("/api/admin/add-item", upload.fields([
   }
 
   try {
-    // Validate item image
+    // Item image required
     if (!req.files["image"] || !req.files["image"][0]) {
-      return res.status(400).json({ success: false, message: "Item image is required" });
+      return res.status(400).json({ success: false, message: "Item image required" });
     }
     const itemImageUrl = req.files["image"][0].path;
 
     let isNewCategory = false;
 
-    // Handle new category
     if (req.files["categoryImage"] && req.files["categoryImage"][0]) {
       isNewCategory = true;
       const catImageUrl = req.files["categoryImage"][0].path;
@@ -237,17 +224,12 @@ app.post("/api/admin/add-item", upload.fields([
         { upsert: true, new: true }
       );
     } else {
-      // Existing category check
       const existing = await GroceryCategory.findOne({ name: category.trim() });
       if (!existing) {
-        return res.status(400).json({ 
-          success: false, 
-          message: "Category not found. Upload a category photo to create a new one." 
-        });
+        return res.status(400).json({ success: false, message: "Category not found. Upload photo to create new." });
       }
     }
 
-    // Save item
     const newItem = new GroceryItem({
       category: category.trim(),
       name: name.trim(),
@@ -257,21 +239,17 @@ app.post("/api/admin/add-item", upload.fields([
 
     await newItem.save();
 
-    res.json({ 
-      success: true, 
-      item: newItem,
-      message: isNewCategory ? "New category and item added!" : "Item added!"
-    });
+    res.json({ success: true, item: newItem });
   } catch (e) {
-    console.error("Add item/category error:", e);
-    res.status(500).json({ success: false, message: "Server error: " + e.message });
+    console.error("Add item error:", e);
+    res.status(500).json({ success: false, message: e.message || "Server error" });
   }
 });
 
+// Rest of your endpoints (unchanged)
 app.post("/api/admin/edit-item", async (req, res) => {
   const { password, itemId, price } = req.body;
   if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false });
-
   try {
     const updated = await GroceryItem.findByIdAndUpdate(itemId, { price: Number(price) }, { new: true });
     if (!updated) return res.status(404).json({ success: false });
@@ -284,7 +262,6 @@ app.post("/api/admin/edit-item", async (req, res) => {
 app.delete("/api/admin/delete-item/:id", async (req, res) => {
   const { password } = req.query;
   if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false });
-
   try {
     await GroceryItem.findByIdAndDelete(req.params.id);
     res.json({ success: true });
@@ -293,25 +270,20 @@ app.delete("/api/admin/delete-item/:id", async (req, res) => {
   }
 });
 
-// Order Routes
 app.post("/api/save-order", saveOrderUniversal);
 app.post("/api/place-order", saveOrderUniversal);
 app.post("/api/checkout", saveOrderUniversal);
 app.post("/api/order", saveOrderUniversal);
 
-// User Routes
 app.post("/api/user/signup", async (req, res) => {
   try {
     const { name, phone, password } = req.body;
     if (!name || !phone || !password) return res.status(400).json({ success: false });
-
     const exists = await User.findOne({ phone });
     if (exists) return res.status(400).json({ success: false, message: "Phone already registered" });
-
     const hash = crypto.createHash("sha256").update(password).digest("hex");
     const user = new User({ name, phone, password: hash });
     await user.save();
-
     res.json({ success: true });
   } catch (e) {
     console.error(e);
@@ -324,16 +296,10 @@ app.post("/api/user/login", async (req, res) => {
     const { phone, password } = req.body;
     const hash = crypto.createHash("sha256").update(password).digest("hex");
     const user = await User.findOne({ phone, password: hash });
-
     if (!user) return res.status(401).json({ success: false, message: "Wrong credentials" });
-
     res.json({
       success: true,
-      user: {
-        _id: user._id.toString(),
-        name: user.name,
-        phone: user.phone
-      }
+      user: { _id: user._id.toString(), name: user.name, phone: user.phone }
     });
   } catch (e) {
     console.error(e);
@@ -341,7 +307,6 @@ app.post("/api/user/login", async (req, res) => {
   }
 });
 
-// Other Routes
 app.get("/api/shops", async (req, res) => {
   try {
     const shops = await Shop.find({ type: "shop" }).sort({ date: -1 }).lean();
@@ -372,12 +337,10 @@ app.get("/api/all-delivery-orders", async (req, res) => {
 app.post("/api/update-order-status", async (req, res) => {
   try {
     const { orderId, status } = req.body;
-    if (!["confirmed", "delivered", "cancelled"].includes(status)) {
-      return res.status(400).json({ success: false });
-    }
+    if (!["confirmed", "delivered", "cancelled"].includes(status)) return res.status(400).json({ success: false });
     const result = await Order.findByIdAndUpdate(orderId, { status }, { new: true });
     if (!result) return res.status(404).json({ success: false });
-    console.log(`Order ${orderId} status → ${status}`);
+    console.log(`Order ${orderId} → ${status}`);
     res.json({ success: true });
   } catch (e) {
     console.error(e);
@@ -391,10 +354,10 @@ app.delete("/api/delete-order", async (req, res) => {
     if (!orderId) return res.status(400).json({ success: false, message: "Order ID required" });
     const result = await Order.findByIdAndDelete(orderId);
     if (!result) return res.status(404).json({ success: false, message: "Order not found" });
-    console.log(`Order ${orderId} PERMANENTLY DELETED`);
+    console.log(`Order ${orderId} DELETED`);
     res.json({ success: true });
   } catch (err) {
-    console.error("Delete order error:", err);
+    console.error(err);
     res.status(500).json({ success: false });
   }
 });
@@ -420,13 +383,11 @@ app.get("/api/admin/users", async (req, res) => {
 
 // =============== SERVE PAGES ===============
 const pages = ["index", "gitems", "adminportal", "gcart", "privacy", "delivery", "orders", "cart", "payment", "login", "admin", "items"];
-
 pages.forEach((p) => {
   const route = p === "index" ? "/" : `/${p}.html`;
   const file = p === "index" ? "index.html" : `${p}.html`;
   app.get(route, (req, res) => res.sendFile(path.join(__dirname, file)));
 });
-
 app.get("*", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
 app.listen(PORT, "0.0.0.0", () => {
