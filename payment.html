@@ -34,20 +34,9 @@
       border: 1px solid var(--border);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
-    h2 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-      color: var(--accent);
-      font-size: 1.8rem;
-    }
-    .form-group {
-      margin-bottom: 1.2rem;
-    }
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-    }
+    h2 { text-align: center; margin-bottom: 1.5rem; color: var(--accent); font-size: 1.8rem; }
+    .form-group { margin-bottom: 1.2rem; }
+    label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
     input, textarea {
       width: 100%;
       padding: 0.9rem;
@@ -57,11 +46,7 @@
       color: var(--text);
       font-size: 1rem;
     }
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: var(--glow);
-    }
+    input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: var(--glow); }
     .cart-summary {
       background: #1a1a1a;
       padding: 1.2rem;
@@ -97,15 +82,8 @@
       margin-top: 1.5rem;
       transition: all 0.3s;
     }
-    .btn:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--glow);
-    }
-    .btn:disabled {
-      background: #555;
-      cursor: not-allowed;
-      transform: none;
-    }
+    .btn:hover { transform: translateY(-3px); box-shadow: var(--glow); }
+    .btn:disabled { background: #555; cursor: not-allowed; transform: none; }
     .msg {
       text-align: center;
       padding: 1rem;
@@ -115,64 +93,43 @@
       font-size: 1.1rem;
       display: none;
     }
-    .success {
-      background: #003322;
-      color: var(--accent);
-      border: 1px solid var(--accent);
-    }
-    .error {
-      background: #330000;
-      color: #ff6b6b;
-      border: 1px solid #ff4444;
-    }
-    .login-required {
-      text-align: center;
-      padding: 4rem 1rem;
-      color: var(--muted);
-    }
-    .login-required a {
-      color: var(--accent);
-      font-weight: 700;
-      text-decoration: none;
-    }
+    .success { background: #003322; color: var(--accent); border: 1px solid var(--accent); }
+    .error { background: #330000; color: #ff6b6b; border: 1px solid #ff4444; }
+    .login-required { text-align: center; padding: 4rem 1rem; color: var(--muted); }
+    .login-required a { color: var(--accent); font-weight: 700; text-decoration: none; }
   </style>
 </head>
 <body>
-  <div class="container" id="mainContainer">
-    <!-- Content injected by JavaScript -->
-  </div>
+  <div class="container" id="mainContainer"></div>
 
   <script>
     const CART_KEY = "chatpoint_cart";
     const USER_KEY = "chatpoint_user";
-    const API_BASE = "https://chatpoint1.onrender.com"; // Update if your domain changes
+    const API_BASE = "https://chatpoint1.onrender.com";
 
     const PRIMARY = "9632367397";
     const BACKUP = "8088975913";
 
-    // Check if user is logged in
     function checkLogin() {
       const user = JSON.parse(localStorage.getItem(USER_KEY) || "null");
       if (!user || !user.phone) {
         document.getElementById("mainContainer").innerHTML = `
           <div class="login-required">
             <h3>Login Required</h3>
-            <p>Please <a href="login.html">login</a> to continue checkout.</p>
+            <p>Please <a href="login.html">login</a> to place an order.</p>
           </div>`;
         return null;
       }
       return user;
     }
 
-    // Render checkout form
     function renderForm(user) {
       const cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
-
       if (Object.keys(cart).length === 0) {
         document.getElementById("mainContainer").innerHTML = `
           <div style="text-align:center;padding:4rem;color:#888">
-            <h3>Your Cart is Empty</h3>
-            <p><a href="index.html" style="color:var(--accent);font-weight:700">Continue Shopping</a></p>
+            <h3>Cart is Empty</h3>
+            <p><a href="index.html" style="color:var(--accent);font-weight:700">Go Shopping</a></p>
           </div>`;
         return;
       }
@@ -181,19 +138,13 @@
       let overallTotal = 0;
       let shopName = "ChatPoint";
 
-      // Parse cart
       for (const shop in cart) {
         shopName = shop;
         for (const itemName in cart[shop]) {
           const item = cart[shop][itemName];
           if (item.qty > 0) {
-            const total = item.price * item.qty;
-            overallTotal += total;
-            itemsArray.push({
-              name: itemName,
-              price: item.price,
-              quantity: item.qty
-            });
+            overallTotal += item.price * item.qty;
+            itemsArray.push({ name: itemName, price: item.price, quantity: item.qty });
           }
         }
       }
@@ -201,33 +152,28 @@
       const deliveryCharge = overallTotal >= 69 ? 0 : 30;
       const grandTotal = overallTotal + deliveryCharge;
 
-      // Store temporarily for order submission
       window.tempOrderData = { itemsArray, overallTotal, deliveryCharge, grandTotal, shopName };
 
       document.getElementById("mainContainer").innerHTML = `
         <h2>Checkout</h2>
-
         <div id="successMsg" class="msg success"></div>
         <div id="errorMsg" class="msg error"></div>
 
         <div class="form-group">
           <label>Name *</label>
-          <input type="text" id="name" value="${user.name || ''}" placeholder="Your full name" required />
+          <input type="text" id="name" value="${user.name || ''}" required />
         </div>
-
         <div class="form-group">
           <label>Phone *</label>
-          <input type="tel" id="phone" value="${user.phone || ''}" placeholder="10-digit mobile number" required />
+          <input type="tel" id="phone" value="${user.phone || ''}" required />
         </div>
-
         <div class="form-group">
           <label>Address Line 1 *</label>
-          <textarea id="address1" rows="3" placeholder="House no., Building, Street" required></textarea>
+          <textarea id="address1" rows="3" required placeholder="House no., Building, Street"></textarea>
         </div>
-
         <div class="form-group">
           <label>Address Line 2 (Optional)</label>
-          <textarea id="address2" rows="2" placeholder="Landmark, Area, etc."></textarea>
+          <textarea id="address2" rows="2" placeholder="Landmark, Area"></textarea>
         </div>
 
         <div class="cart-summary">
@@ -238,27 +184,17 @@
               <span>₹${(it.price * it.quantity).toFixed(2)}</span>
             </div>
           `).join('')}
-          <div class="cart-item">
-            <span>Subtotal</span>
-            <span>₹${overallTotal.toFixed(2)}</span>
-          </div>
-          <div class="cart-item">
-            <span>Delivery Charge</span>
-            <span>${deliveryCharge === 0 ? '<strong style="color:var(--accent)">FREE</strong>' : '₹' + deliveryCharge}</span>
-          </div>
-          <div class="total-row cart-item">
-            <span>Grand Total</span>
-            <span>₹${grandTotal.toFixed(2)}</span>
-          </div>
+          <div class="cart-item"><span>Subtotal</span><span>₹${overallTotal.toFixed(2)}</span></div>
+          <div class="cart-item"><span>Delivery</span><span>${deliveryCharge === 0 ? '<strong style="color:var(--accent)">FREE</strong>' : '₹' + deliveryCharge}</span></div>
+          <div class="total-row cart-item"><span>Grand Total</span><span>₹${grandTotal.toFixed(2)}</span></div>
         </div>
 
         <button id="placeOrderBtn" class="btn">Place Order (Cash on Delivery)</button>
       `;
 
-      document.getElementById("placeOrderBtn").addEventListener("click", placeOrder);
+      document.getElementById("placeOrderBtn").onclick = placeOrder;
     }
 
-    // Place order function
     async function placeOrder() {
       const name = document.getElementById("name").value.trim();
       const phone = document.getElementById("phone").value.trim();
@@ -270,39 +206,33 @@
         return;
       }
 
-      if (!/^\d{10}$/.test(phone.replace(/\D/g, ''))) {
-        showError("Please enter a valid 10-digit phone number.");
-        return;
-      }
-
-      const { itemsArray, overallTotal, deliveryCharge, grandTotal, shopName } = window.tempOrderData;
+      const { itemsArray, grandTotal, shopName } = window.tempOrderData;
 
       const user = JSON.parse(localStorage.getItem(USER_KEY));
 
-      // Safely handle userId – only send if it's a valid 24-char hex string
+      // Safely get userId (only if valid MongoDB ObjectId)
       let userId = null;
       if (user && user._id && typeof user._id === 'string' && /^[a-f0-9]{24}$/i.test(user._id)) {
         userId = user._id;
       }
 
-      // Build cart in format expected by server
-      const cartForServer = { [shopName]: {} };
+      // Build cart exactly as server expects
+      const cart = { [shopName]: {} };
       itemsArray.forEach(item => {
-        cartForServer[shopName][item.name] = {
-          qty: item.quantity,
-          price: item.price
-        };
+        cart[shopName][item.name] = { qty: item.quantity, price: item.price };
       });
 
       const orderData = {
-        userId,           // May be null → server handles it safely
+        userId,         // can be null
         name,
         phone,
         address1,
         address2,
         grandTotal,
-        cart: cartForServer
+        cart
       };
+
+      console.log("Sending order data:", orderData);
 
       const btn = document.getElementById("placeOrderBtn");
       btn.disabled = true;
@@ -316,31 +246,29 @@
         });
 
         const data = await res.json();
-        console.log("Server Response:", data);
+        console.log("Server response:", data);
 
         if (res.ok && data.success) {
-          showSuccess("Order Placed Successfully! 🎉 Opening WhatsApp...");
+          showSuccess("Order Placed Successfully! 🎉");
           localStorage.removeItem(CART_KEY);
 
-          // WhatsApp Message
           const itemsList = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
-          const message = `New Order Received! 🚀\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\n\nTotal: ₹${grandTotal} ${deliveryCharge === 0 ? '(Free Delivery)' : ''}\n\nPlease confirm & deliver soon!`;
+          const message = `New Order!\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nTotal: ₹${grandTotal}\n\nPlease confirm soon!`;
           const encoded = encodeURIComponent(message);
 
-          setTimeout(() => window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, '_blank'), 1500);
-          setTimeout(() => window.open(`https://wa.me/91${BACKUP}?text=${encoded}`, '_blank'), 2500);
+          setTimeout(() => window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, '_blank'), 1000);
+          setTimeout(() => window.open(`https://wa.me/91${BACKUP}?text=${encoded}`, '_blank'), 2000);
 
           setTimeout(() => location.href = "orders.html", 4000);
         } else {
-          throw new Error(data.message || "Failed to save order");
+          throw new Error(data.message || "Unknown error");
         }
       } catch (err) {
         console.error("Order failed:", err);
-        showError("Online save failed. Sending via WhatsApp...");
+        showError("Failed to save online. Sending via WhatsApp...");
 
-        // Fallback WhatsApp
         const itemsList = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
-        const message = `(Online Failed) New Order\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nTotal: ₹${grandTotal}`;
+        const message = `(Online Save Failed)\nNew Order\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nTotal: ₹${grandTotal}`;
         const encoded = encodeURIComponent(message);
         window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, '_blank');
       }
@@ -350,20 +278,17 @@
     }
 
     function showSuccess(msg) {
-      const el = document.getElementById("successMsg");
-      el.textContent = msg;
-      el.style.display = "block";
+      document.getElementById("successMsg").textContent = msg;
+      document.getElementById("successMsg").style.display = "block";
       document.getElementById("errorMsg").style.display = "none";
     }
 
     function showError(msg) {
-      const el = document.getElementById("errorMsg");
-      el.textContent = msg;
-      el.style.display = "block";
+      document.getElementById("errorMsg").textContent = msg;
+      document.getElementById("errorMsg").style.display = "block";
       document.getElementById("successMsg").style.display = "none";
     }
 
-    // On page load
     window.onload = () => {
       const user = checkLogin();
       if (user) renderForm(user);
