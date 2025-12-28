@@ -19,7 +19,7 @@ cloudinary.config({
   api_secret: "GC0SO2VrcpdMSLGzQsYjLZ1SAZg",
 });
 
-// Separate storages for items and categories
+// Storage for grocery items
 const itemStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
@@ -29,6 +29,7 @@ const itemStorage = new CloudinaryStorage({
   },
 });
 
+// Storage for category images
 const categoryStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
@@ -38,10 +39,11 @@ const categoryStorage = new CloudinaryStorage({
   },
 });
 
-// Multer with multiple fields
-const upload = multer({
-  storage: itemStorage, // default for 'image'
-});
+// Multer: handle both fields with correct storage
+const upload = multer().fields([
+  { name: "image", maxCount: 1, storage: itemStorage },           // Item image
+  { name: "categoryImage", maxCount: 1, storage: categoryStorage } // Category image
+]);
 
 // =============== MIDDLEWARE ===============
 app.use(cors({ origin: "*", credentials: true }));
@@ -74,12 +76,11 @@ const User = mongoose.model(
   )
 );
 
-// Updated: Category now has imageUrl (required)
 const GroceryCategory = mongoose.model(
   "GroceryCategory",
   new mongoose.Schema({
     name: { type: String, required: true, unique: true },
-    imageUrl: { type: String, required: true }, // Category photo
+    imageUrl: { type: String, required: true },
   })
 );
 
@@ -116,7 +117,7 @@ const Order = mongoose.model("Order", new mongoose.Schema({
 }));
 
 // =============== ADMIN PASSWORD ===============
-const ADMIN_PASSWORD = "Brand"; // CHANGE THIS IN PRODUCTION!
+const ADMIN_PASSWORD = "Brand"; // CHANGE IN PRODUCTION!
 
 // =============== UNIVERSAL ORDER SAVE FUNCTION ===============
 const saveOrderUniversal = async (req, res) => {
@@ -180,17 +181,20 @@ const saveOrderUniversal = async (req, res) => {
 
 // =============== API ENDPOINTS ===============
 
-// Get categories (now returns name + imageUrl)
+// Safe categories endpoint - handles empty DB
 app.get("/api/categories", async (req, res) => {
   try {
     const cats = await GroceryCategory.find().sort({ name: 1 });
+    if (cats.length === 0) {
+      return res.json({ success: true, categories: [] });
+    }
     res.json({
       success: true,
       categories: cats.map(c => ({ name: c.name, imageUrl: c.imageUrl }))
     });
   } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false });
+    console.error("Categories fetch error:", e);
+    res.json({ success: true, categories: [] });
   }
 });
 
@@ -205,41 +209,34 @@ app.get("/api/items/:category", async (req, res) => {
   }
 });
 
-// Updated: Handle both item image and optional category image
-app.post("/api/admin/add-item", upload.fields([
-  { name: "image", maxCount: 1 },           // Item image (required)
-  { name: "categoryImage", maxCount: 1 }    // Category image (only when new)
-]), async (req, res) => {
+// Add item + optional new category with photo
+app.post("/api/admin/add-item", upload, async (req, res) => {
   const { password, category, name, price } = req.body;
   if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false, message: "Wrong password" });
 
   try {
-    // Item image is required
     if (!req.files["image"] || !req.files["image"][0]) {
-      return res.status(400).json({ success: false, message: "Item image is required" });
+      return res.status(400).json({ success: false, message: "Item image required" });
     }
-
     const itemImageUrl = req.files["image"][0].path;
 
-    // If categoryImage is provided → this is a new category
+    let categoryCreated = false;
+
     if (req.files["categoryImage"] && req.files["categoryImage"][0]) {
       const catImageUrl = req.files["categoryImage"][0].path;
-
-      // Create or update category with image
       await GroceryCategory.findOneAndUpdate(
         { name: category.trim() },
         { name: category.trim(), imageUrl: catImageUrl },
         { upsert: true, new: true }
       );
+      categoryCreated = true;
     } else {
-      // Existing category → check if it exists and has image
-      const existingCat = await GroceryCategory.findOne({ name: category.trim() });
-      if (!existingCat) {
-        return res.status(400).json({ success: false, message: "Category not found. Upload a photo to create it." });
+      const existing = await GroceryCategory.findOne({ name: category.trim() });
+      if (!existing) {
+        return res.status(400).json({ success: false, message: "Category not found. Upload a photo to create new." });
       }
     }
 
-    // Save the new grocery item
     const newItem = new GroceryItem({
       category: category.trim(),
       name: name.trim(),
@@ -248,8 +245,7 @@ app.post("/api/admin/add-item", upload.fields([
     });
 
     await newItem.save();
-
-    res.json({ success: true, item: newItem });
+    res.json({ success: true, item: newItem, categoryCreated });
   } catch (e) {
     console.error("Add item error:", e);
     res.status(500).json({ success: false });
@@ -363,10 +359,8 @@ app.post("/api/update-order-status", async (req, res) => {
     if (!["confirmed", "delivered", "cancelled"].includes(status)) {
       return res.status(400).json({ success: false });
     }
-
     const result = await Order.findByIdAndUpdate(orderId, { status }, { new: true });
     if (!result) return res.status(404).json({ success: false });
-
     console.log(`Order ${orderId} status → ${status}`);
     res.json({ success: true });
   } catch (e) {
@@ -375,15 +369,12 @@ app.post("/api/update-order-status", async (req, res) => {
   }
 });
 
-// Delete Order Permanently
 app.delete("/api/delete-order", async (req, res) => {
   try {
     const { orderId } = req.body;
     if (!orderId) return res.status(400).json({ success: false, message: "Order ID required" });
-
     const result = await Order.findByIdAndDelete(orderId);
     if (!result) return res.status(404).json({ success: false, message: "Order not found" });
-
     console.log(`Order ${orderId} PERMANENTLY DELETED`);
     res.json({ success: true });
   } catch (err) {
