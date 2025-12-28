@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal - Add Grocery Items</title>
+    <style>
+        body { font-family: Arial, sans-serif; background:#f0f0f0; margin:0; padding:20px; }
+        .container { max-width:800px; margin:auto; background:white; padding:20px; border-radius:12px; box-shadow:0 0 15px rgba(0,0,0,0.1); }
+        h1 { text-align:center; color:#4CAF50; }
+        form { display:grid; gap:15px; margin-bottom:30px; }
+        input, select { padding:10px; font-size:16px; border:1px solid #ccc; border-radius:8px; }
+        button { padding:12px; background:#4CAF50; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; }
+        .items-list { display:grid; gap:15px; }
+        .item-card { background:#f9f9f9; padding:15px; border-radius:12px; display:flex; align-items:center; gap:15px; }
+        .item-card img { width:80px; height:80px; object-fit:cover; border-radius:8px; }
+        .item-info { flex:1; }
+        .item-actions button { background:#ff4444; margin-left:10px; }
+        .edit-price { width:80px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Portal - Manage Grocery Items</h1>
+        <p>Admin Password: <input type="password" id="adminPass" placeholder="Enter password" required></p>
+
+        <form id="addForm">
+            <select id="category" required></select>
+            <input type="text" id="name" placeholder="Item Name" required>
+            <input type="number" id="price" placeholder="Price (₹)" required>
+            <input type="file" id="image" accept="image/*" required>
+            <button type="submit">Add Item</button>
+        </form>
+
+        <h2>Existing Items</h2>
+        <div id="itemsList" class="items-list"></div>
+    </div>
+
+    <script>
+        const ADMIN_PASS = "admin123"; // Change to match server
+        let categories = [];
+        let currentCategory = "";
+
+        async function loadCategories() {
+            const res = await fetch("/api/categories");
+            const data = await res.json();
+            if (data.success) {
+                categories = data.categories;
+                const select = document.getElementById("category");
+                select.innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join("");
+                if (categories.length > 0) loadItems(categories[0]);
+            }
+        }
+
+        document.getElementById("category").addEventListener("change", (e) => {
+            currentCategory = e.target.value;
+            loadItems(currentCategory);
+        });
+
+        async function loadItems(cat) {
+            const res = await fetch(`/api/items/${cat}`);
+            const data = await res.json();
+            if (data.success) {
+                const list = document.getElementById("itemsList");
+                list.innerHTML = data.items.map(item => `
+                    <div class="item-card">
+                        <img src="${item.imageUrl}" alt="${item.name}">
+                        <div class="item-info">
+                            <strong>${item.name}</strong><br>
+                            ₹<input type="number" class="edit-price" value="${item.price}" data-id="${item._id}">
+                            <button onclick="updatePrice('${item._id}')">Save Price</button>
+                        </div>
+                        <div class="item-actions">
+                            <button onclick="deleteItem('${item._id}')">Delete</button>
+                        </div>
+                    </div>
+                `).join("");
+            }
+        }
+
+        document.getElementById("addForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const pass = document.getElementById("adminPass").value;
+            if (pass !== ADMIN_PASS) return alert("Wrong password");
+
+            const formData = new FormData();
+            formData.append("password", pass);
+            formData.append("category", document.getElementById("category").value);
+            formData.append("name", document.getElementById("name").value);
+            formData.append("price", document.getElementById("price").value);
+            formData.append("image", document.getElementById("image").files[0]);
+
+            const res = await fetch("/api/admin/add-item", {
+                method: "POST",
+                body: formData
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert("Item added!");
+                loadItems(document.getElementById("category").value);
+                e.target.reset();
+            } else {
+                alert("Error: " + (data.message || "Failed"));
+            }
+        });
+
+        async function updatePrice(id) {
+            const pass = document.getElementById("adminPass").value;
+            if (pass !== ADMIN_PASS) return alert("Wrong password");
+            const newPrice = document.querySelector(`input[data-id="${id}"]`).value;
+
+            const res = await fetch("/api/admin/edit-item", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ password: pass, itemId: id, price: newPrice })
+            });
+            const data = await res.json();
+            if (data.success) alert("Price updated!");
+        }
+
+        async function deleteItem(id) {
+            if (!confirm("Delete this item?")) return;
+            const pass = document.getElementById("adminPass").value;
+            if (pass !== ADMIN_PASS) return alert("Wrong password");
+
+            const res = await fetch(`/api/admin/delete-item/${id}?password=${pass}`, { method: "DELETE" });
+            const data = await res.json();
+            if (data.success) {
+                alert("Item deleted");
+                loadItems(currentCategory);
+            }
+        }
+
+        loadCategories();
+    </script>
+</body>
+</html>
