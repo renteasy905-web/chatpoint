@@ -26,7 +26,6 @@
         .actions .update { background:#4CAF50; color:white; }
         .actions .delete { background:#ff4444; color:white; }
         .no-items { text-align:center; color:#999; padding:40px; font-size:18px; }
-        .category-preview { margin-top:10px; font-size:14px; color:#666; }
     </style>
 </head>
 <body>
@@ -34,7 +33,7 @@
         <h1>Admin Portal - Grocery Items</h1>
 
         <label>Admin Password:</label>
-        <input type="password" id="adminPass" placeholder="Enter password (Brand)" required>
+        <input type="password" id="adminPass" placeholder="Enter password" required>
 
         <form id="addForm">
             <label>Category:</label>
@@ -42,14 +41,11 @@
                 <option value="">Loading categories...</option>
             </select>
 
-            <!-- New Category Name Input -->
-            <input type="text" id="newCategory" class="new-category-input" placeholder="Type new category name (e.g. Fruits)" required>
+            <input type="text" id="newCategory" class="new-category-input" placeholder="New category name" required>
 
-            <!-- New Category Photo (only shown when adding new) -->
             <div class="new-category-photo">
-                <label>Category Photo (Required for new category):</label>
+                <label>Category Photo (Required):</label>
                 <input type="file" id="categoryImage" accept="image/*" required>
-                <p class="category-preview">This photo will represent the new category in the app.</p>
             </div>
 
             <label>Item Name:</label>
@@ -70,53 +66,52 @@
             <select id="viewCategory" onchange="loadItems(this.value)"></select>
 
             <div id="itemsList" class="items-list">
-                <p class="no-items">Select a category above to view items</p>
+                <p class="no-items">Select a category to view items</p>
             </div>
         </div>
     </div>
 
     <script>
-        const ADMIN_PASS = "Brand"; // Change in production!
+        const ADMIN_PASS = "Brand";
         let categories = [];
 
         async function loadCategories() {
             try {
                 const res = await fetch("/api/categories");
+                if (!res.ok) throw new Error("Network error");
                 const data = await res.json();
-                if (data.success) {
-                    categories = data.categories.sort();
-                    const addSelect = document.getElementById("categorySelect");
-                    const viewSelect = document.getElementById("viewCategory");
+                if (!data.success) throw new Error("API error");
 
-                    addSelect.innerHTML = `
-                        <option value="">-- Select Existing or Add New --</option>
-                        ${categories.map(c => `<option value="${c}">${c}</option>`).join("")}
-                        <option value="__new__">+ Add New Category</option>
-                    `;
+                categories = data.categories.map(c => c.name).sort();
 
-                    viewSelect.innerHTML = `
-                        <option value="">-- Choose Category --</option>
-                        ${categories.map(c => `<option value="${c}">${c}</option>`).join("")}
-                    `;
+                const addSelect = document.getElementById("categorySelect");
+                const viewSelect = document.getElementById("viewCategory");
 
-                    if (categories.length > 0) {
-                        viewSelect.value = categories[0];
-                        loadItems(categories[0]);
-                    }
+                addSelect.innerHTML = `
+                    <option value="">-- Select or Add New --</option>
+                    ${categories.map(c => `<option value="${c}">${c}</option>`).join("")}
+                    <option value="__new__">+ Add New Category</option>
+                `;
+
+                viewSelect.innerHTML = `
+                    <option value="">-- Choose Category --</option>
+                    ${categories.map(c => `<option value="${c}">${c}</option>`).join("")}
+                `;
+
+                if (categories.length > 0) {
+                    viewSelect.value = categories[0];
+                    loadItems(categories[0]);
                 }
             } catch (err) {
-                console.error("Failed to load categories:", err);
-                alert("Could not load categories.");
+                console.error(err);
+                document.getElementById("categorySelect").innerHTML = "<option>No categories</option>";
             }
         }
 
-        // Toggle new category fields
         document.getElementById("categorySelect").addEventListener("change", function() {
             const isNew = this.value === "__new__";
             document.querySelector(".new-category-input").style.display = isNew ? "block" : "none";
             document.querySelector(".new-category-photo").style.display = isNew ? "block" : "none";
-
-            // Required attributes
             document.getElementById("newCategory").required = isNew;
             document.getElementById("categoryImage").required = isNew;
         });
@@ -124,24 +119,20 @@
         function getSelectedCategory() {
             const select = document.getElementById("categorySelect");
             if (select.value === "__new__") {
-                const newName = document.getElementById("newCategory").value.trim();
-                if (!newName) {
-                    alert("Please enter a new category name!");
-                    throw new Error("Missing category name");
-                }
-                return newName;
+                return document.getElementById("newCategory").value.trim();
             }
             return select.value;
         }
 
         document.getElementById("addForm").addEventListener("submit", async (e) => {
             e.preventDefault();
-
             const pass = document.getElementById("adminPass").value;
             if (pass !== ADMIN_PASS) return alert("Wrong password!");
 
             const category = getSelectedCategory();
-            const isNewCategory = document.getElementById("categorySelect").value === "__new__";
+            if (!category) return alert("Enter category name");
+
+            const isNew = document.getElementById("categorySelect").value === "__new__";
 
             const formData = new FormData();
             formData.append("password", pass);
@@ -150,39 +141,28 @@
             formData.append("price", document.getElementById("price").value);
             formData.append("image", document.getElementById("image").files[0]);
 
-            // If new category → also send category image
-            if (isNewCategory) {
-                const catImageFile = document.getElementById("categoryImage").files[0];
-                if (!catImageFile) return alert("Category photo is required for new categories!");
-                formData.append("categoryImage", catImageFile);
+            if (isNew) {
+                const catImg = document.getElementById("categoryImage").files[0];
+                if (!catImg) return alert("Category photo required!");
+                formData.append("categoryImage", catImg);
             }
 
             try {
-                const res = await fetch("/api/admin/add-item", {
-                    method: "POST",
-                    body: formData
-                });
+                const res = await fetch("/api/admin/add-item", { method: "POST", body: formData });
                 const data = await res.json();
-
                 if (data.success) {
-                    alert(`Item "${document.getElementById("name").value}" added to "${category}"!`);
+                    alert("Item added successfully!");
                     document.getElementById("addForm").reset();
-                    document.querySelector(".new-category-input").style.display = "none";
-                    document.querySelector(".new-category-photo").style.display = "none";
-                    loadCategories(); // Refresh category list
-                    if (document.getElementById("viewCategory").value === category) {
-                        loadItems(category);
-                    }
+                    document.querySelectorAll(".new-category-input, .new-category-photo").forEach(el => el.style.display = "none");
+                    loadCategories();
                 } else {
-                    alert("Error: " + (data.message || "Failed to add item"));
+                    alert("Error: " + (data.message || "Failed"));
                 }
             } catch (err) {
-                console.error(err);
-                alert("Network error. Check console.");
+                alert("Network error");
             }
         });
 
-        // Placeholder for managing items (you already have this)
         async function loadItems(category) {
             if (!category) {
                 document.getElementById("itemsList").innerHTML = "<p class='no-items'>Select a category</p>";
@@ -197,59 +177,53 @@
                             <img src="${item.imageUrl}" alt="${item.name}">
                             <div class="item-info">
                                 <strong>${item.name}</strong>
-                                <p>Category: ${item.category}</p>
-                                <input type="number" class="price-input" value="${item.price}" data-id="${item._id}">
+                                <p>₹<input type="number" class="price-input" value="${item.price}" data-id="${item._id}"></p>
                                 <div class="actions">
-                                    <button class="update" onclick="updatePrice('${item._id}')">Update Price</button>
+                                    <button class="update" onclick="updatePrice('${item._id}')">Update</button>
                                     <button class="delete" onclick="deleteItem('${item._id}')">Delete</button>
                                 </div>
                             </div>
                         </div>
                     `).join("");
                 } else {
-                    document.getElementById("itemsList").innerHTML = "<p class='no-items'>No items in this category</p>";
+                    document.getElementById("itemsList").innerHTML = "<p class='no-items'>No items</p>";
                 }
             } catch (err) {
-                document.getElementById("itemsList").innerHTML = "<p class='no-items'>Error loading items</p>";
+                document.getElementById("itemsList").innerHTML = "<p class='no-items'>Error loading</p>";
             }
         }
 
         async function updatePrice(id) {
             const input = document.querySelector(`.price-input[data-id="${id}"]`);
-            const newPrice = input.value;
-            const pass = prompt("Enter admin password to update price:");
-            if (pass !== ADMIN_PASS) return alert("Wrong password!");
-
+            const price = input.value;
+            const pass = prompt("Password:");
+            if (pass !== ADMIN_PASS) return alert("Wrong");
             try {
                 const res = await fetch("/api/admin/edit-item", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ password: pass, itemId: id, price: newPrice })
+                    body: JSON.stringify({ password: pass, itemId: id, price })
                 });
                 const data = await res.json();
-                if (data.success) alert("Price updated!");
-                else alert("Failed: " + data.message);
+                alert(data.success ? "Updated!" : "Failed");
             } catch (err) {
-                alert("Error updating price");
+                alert("Error");
             }
         }
 
         async function deleteItem(id) {
-            if (!confirm("Delete this item permanently?")) return;
-            const pass = prompt("Enter admin password to delete:");
-            if (pass !== ADMIN_PASS) return alert("Wrong password!");
-
+            if (!confirm("Delete permanently?")) return;
+            const pass = prompt("Password:");
+            if (pass !== ADMIN_PASS) return alert("Wrong");
             try {
                 const res = await fetch(`/api/admin/delete-item/${id}?password=${pass}`, { method: "DELETE" });
                 const data = await res.json();
                 if (data.success) {
-                    alert("Item deleted!");
+                    alert("Deleted!");
                     loadItems(document.getElementById("viewCategory").value);
-                } else {
-                    alert("Delete failed");
                 }
             } catch (err) {
-                alert("Error deleting item");
+                alert("Error");
             }
         }
 
