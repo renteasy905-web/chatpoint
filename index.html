@@ -261,10 +261,14 @@
       <div class="quote-author">Life & Food Wisdom</div>
     </section>
 
-    <div class="tab-switch" role="tablist" aria-label="Food or Grocery">
-      <a href="gindex.html" id="foodBtn" class="tab-btn food" role="tab" aria-selected="true"><i class="fas fa-utensils" style="margin-right:8px"></i> Food</a>
-      <a href="grocery.html" id="groceryBtn" class="tab-btn grocery inactive" role="tab" aria-selected="false"><i class="fas fa-shopping-basket" style="margin-right:8px"></i> Grocery</a>
-    </div>
+  <div class="tab-switch" role="tablist" aria-label="Food or Grocery">
+  <a href="#" id="foodBtn" class="tab-btn food" role="tab" aria-selected="true" onclick="event.preventDefault()">
+    <i class="fas fa-utensils" style="margin-right:8px"></i> Food
+  </a>
+  <a href="gindex.html" id="groceryBtn" class="tab-btn grocery" role="tab" aria-selected="false">
+    <i class="fas fa-shopping-basket" style="margin-right:8px"></i> Grocery
+  </a>
+</div>
 
     <div class="search-bar" role="search">
       <input type="text" id="searchInput" placeholder="Search your favorite shop..." oninput="searchShops()" aria-label="Search shops">
