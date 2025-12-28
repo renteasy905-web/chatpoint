@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery Categories</title>
+    <style>
+        body { font-family: Arial, sans-serif; background:#f8f8f8; margin:0; padding:0; display:flex; justify-content:center; }
+        .container { max-width:400px; width:100%; background:white; height:100vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 0 15px rgba(0,0,0,0.1); }
+        header { background:white; padding:15px; text-align:center; border-bottom:1px solid #eee; }
+        header h1 { margin:0; font-size:24px; color:#333; }
+        .tabs { display:flex; background:#f0f8f0; padding:10px; border-bottom:1px solid #ddd; }
+        .tab { flex:1; text-align:center; padding:8px; font-weight:bold; }
+        .tab.active { color:#4CAF50; border-bottom:3px solid #4CAF50; }
+        .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:15px; padding:20px; flex-grow:1; overflow-y:auto; }
+        .category { text-align:center; cursor:pointer; transition:0.3s; }
+        .category:hover { transform:scale(1.05); }
+        .category img { width:100%; height:120px; object-fit:cover; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
+        .category p { margin:10px 0 0; font-size:14px; color:#333; font-weight:500; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header><h1>CATEGORIES</h1></header>
+        <div class="tabs">
+            <div class="tab active">All</div>
+            <div class="tab">Popular</div>
+        </div>
+        <div class="grid">
+            <div class="category" onclick="openCategory('Pooja Essentials')">
+                <img src="https://m.media-amazon.com/images/I/81XxcHqNbEL._AC_UF894,1000_QL80_.jpg" alt="Pooja Essentials">
+                <p>Pooja Essentials</p>
+            </div>
+            <div class="category" onclick="openCategory('Fruits & Vegetables')">
+                <img src="https://thumbs.dreamstime.com/b/fresh-vegetables-sale-indian-street-market-assorted-261843812.jpg" alt="Fruits & Vegetables">
+                <p>Fruits & Vegetables</p>
+            </div>
+            <div class="category" onclick="openCategory('Dairy, Bread & Eggs')">
+                <img src="https://nagabazaar.com/cdn/shop/collections/towfiqu-barbhuiya-X4zRlInfdQg-unsplash-300x300.webp?v=1748116760" alt="Dairy, Bread & Eggs">
+                <p>Dairy, Bread & Eggs</p>
+            </div>
+            <div class="category" onclick="openCategory('Atta, Rice, Oils & Dals')">
+                <img src="https://m.media-amazon.com/images/I/81qmtmMSHoL._AC_UF894,1000_QL80_.jpg" alt="Atta, Rice, Oils & Dals">
+                <p>Atta, Rice, Oils & Dals</p>
+            </div>
+            <div class="category" onclick="openCategory('Masala & Dry Fruits')">
+                <img src="https://snnfoods.com/cdn/shop/articles/snn-blog-1-image-151086.jpg?v=1710844801" alt="Masala & Dry Fruits">
+                <p>Masala & Dry Fruits</p>
+            </div>
+            <div class="category" onclick="openCategory('Rice')">
+                <img src="https://media.gettyimages.com/id/1157969278/photo/various-brands-of-basmati-rice-bags-for-sale.jpg?s=612x612&w=gi&k=20&c=o5oZ7JKpSflYaqxBxwTipBpUSsF1GYbIFE-wCjriVBc=" alt="Rice">
+                <p>Rice</p>
+            </div>
+            <div class="category" onclick="openCategory('Snacks & Chocolates')">
+                <img src="https://m.media-amazon.com/images/I/61Jwn55lp4L._AC_UF894,1000_QL80_.jpg" alt="Snacks & Chocolates">
+                <p>Snacks & Chocolates</p>
+            </div>
+            <div class="category" onclick="openCategory('Beverages')">
+                <img src="https://www.tastingtable.com/img/gallery/21-indian-drinks-you-need-to-try-at-least-once/l-intro-1718799368.jpg" alt="Beverages">
+                <p>Beverages</p>
+            </div>
+            <div class="category" onclick="openCategory('Cleaning & Household')">
+                <img src="https://5.imimg.com/data5/SELLER/Default/2022/10/NK/DL/UX/1651149/household-cleaning-products-formulation-consulting.jpeg" alt="Cleaning & Household">
+                <p>Cleaning & Household</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openCategory(name) {
+            localStorage.setItem('selectedCategory', name);
+            window.location.href = 'gitems.html';
+        }
+    </script>
+</body>
+</html>
