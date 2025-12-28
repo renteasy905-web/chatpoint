@@ -3,33 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Portal - Add Grocery Items</title>
+    <title>Admin Portal - Grocery Items</title>
     <style>
         body { font-family: Arial, sans-serif; background:#f0f0f0; margin:0; padding:20px; }
-        .container { max-width:800px; margin:auto; background:white; padding:20px; border-radius:12px; box-shadow:0 0 15px rgba(0,0,0,0.1); }
+        .container { max-width:900px; margin:auto; background:white; padding:30px; border-radius:12px; box-shadow:0 0 20px rgba(0,0,0,0.1); }
         h1 { text-align:center; color:#4CAF50; }
-        form { display:grid; gap:15px; margin-bottom:30px; }
-        input, select { padding:10px; font-size:16px; border:1px solid #ccc; border-radius:8px; }
-        button { padding:12px; background:#4CAF50; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; }
-        .items-list { display:grid; gap:15px; }
-        .item-card { background:#f9f9f9; padding:15px; border-radius:12px; display:flex; align-items:center; gap:15px; }
-        .item-card img { width:80px; height:80px; object-fit:cover; border-radius:8px; }
+        form { display:grid; gap:15px; margin-bottom:40px; background:#f9f9f9; padding:20px; border-radius:10px; }
+        input, button { padding:12px; font-size:16px; border-radius:8px; border:1px solid #ccc; }
+        button { background:#4CAF50; color:white; border:none; cursor:pointer; font-weight:bold; }
+        button:hover { background:#45a049; }
+        .items-list { display:grid; gap:20px; }
+        .item-card { background:#f9f9f9; padding:20px; border-radius:12px; display:flex; align-items:center; gap:20px; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+        .item-card img { width:100px; height:100px; object-fit:cover; border-radius:10px; }
         .item-info { flex:1; }
-        .item-actions button { background:#ff4444; margin-left:10px; }
-        .edit-price { width:80px; }
+        .item-info strong { font-size:18px; }
+        .price-input { width:100px; padding:8px; }
+        .actions button { background:#ff4444; margin-left:8px; }
+        .actions button:first-child { background:#4CAF50; }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Admin Portal - Manage Grocery Items</h1>
-        <p>Admin Password: <input type="password" id="adminPass" placeholder="Enter password" required></p>
+        <p>Password: <input type="password" id="adminPass" placeholder="Enter admin password" style="width:200px;"></p>
 
         <form id="addForm">
-            <select id="category" required></select>
+            <input type="text" list="categoryList" id="category" placeholder="Type or select category" required>
+            <datalist id="categoryList"></datalist>
+
             <input type="text" id="name" placeholder="Item Name" required>
             <input type="number" id="price" placeholder="Price (₹)" required>
             <input type="file" id="image" accept="image/*" required>
-            <button type="submit">Add Item</button>
+            <button type="submit">Add New Item</button>
         </form>
 
         <h2>Existing Items</h2>
@@ -37,7 +42,7 @@
     </div>
 
     <script>
-        const ADMIN_PASS = "admin123"; // Change to match server
+        const ADMIN_PASS = "admin123"; // Must match server
         let categories = [];
         let currentCategory = "";
 
@@ -46,57 +51,63 @@
             const data = await res.json();
             if (data.success) {
                 categories = data.categories;
-                const select = document.getElementById("category");
-                select.innerHTML = categories.map(c => `<option value="${c}">${c}</option>`).join("");
-                if (categories.length > 0) loadItems(categories[0]);
+                const datalist = document.getElementById("categoryList");
+                datalist.innerHTML = categories.map(c => `<option value="${c}">`).join("");
+                if (categories.length > 0 && !currentCategory) {
+                    document.getElementById("category").value = categories[0];
+                    currentCategory = categories[0];
+                    loadItems(currentCategory);
+                }
             }
         }
 
-        document.getElementById("category").addEventListener("change", (e) => {
-            currentCategory = e.target.value;
-            loadItems(currentCategory);
-        });
-
         async function loadItems(cat) {
-            const res = await fetch(`/api/items/${cat}`);
+            if (!cat) return;
+            currentCategory = cat;
+            const res = await fetch(`/api/items/${encodeURIComponent(cat)}`);
             const data = await res.json();
-            if (data.success) {
-                const list = document.getElementById("itemsList");
+            const list = document.getElementById("itemsList");
+            if (data.success && data.items.length > 0) {
                 list.innerHTML = data.items.map(item => `
                     <div class="item-card">
                         <img src="${item.imageUrl}" alt="${item.name}">
                         <div class="item-info">
                             <strong>${item.name}</strong><br>
-                            ₹<input type="number" class="edit-price" value="${item.price}" data-id="${item._id}">
-                            <button onclick="updatePrice('${item._id}')">Save Price</button>
-                        </div>
-                        <div class="item-actions">
-                            <button onclick="deleteItem('${item._id}')">Delete</button>
+                            <small>Category: ${item.category}</small><br><br>
+                            Price: ₹ <input type="number" class="price-input" value="${item.price}" data-id="${item._id}">
+                            <div class="actions">
+                                <button onclick="updatePrice('${item._id}')">Update Price</button>
+                                <button onclick="deleteItem('${item._id}')">Delete</button>
+                            </div>
                         </div>
                     </div>
                 `).join("");
+            } else {
+                list.innerHTML = "<p>No items in this category yet.</p>";
             }
         }
+
+        document.getElementById("category").addEventListener("change", (e) => {
+            loadItems(e.target.value);
+        });
 
         document.getElementById("addForm").addEventListener("submit", async (e) => {
             e.preventDefault();
             const pass = document.getElementById("adminPass").value;
-            if (pass !== ADMIN_PASS) return alert("Wrong password");
+            if (pass !== ADMIN_PASS) return alert("Incorrect password!");
 
             const formData = new FormData();
             formData.append("password", pass);
-            formData.append("category", document.getElementById("category").value);
-            formData.append("name", document.getElementById("name").value);
+            formData.append("category", document.getElementById("category").value.trim());
+            formData.append("name", document.getElementById("name").value.trim());
             formData.append("price", document.getElementById("price").value);
             formData.append("image", document.getElementById("image").files[0]);
 
-            const res = await fetch("/api/admin/add-item", {
-                method: "POST",
-                body: formData
-            });
+            const res = await fetch("/api/admin/add-item", { method: "POST", body: formData });
             const data = await res.json();
             if (data.success) {
-                alert("Item added!");
+                alert("Item added successfully!");
+                loadCategories(); // Refresh category list
                 loadItems(document.getElementById("category").value);
                 e.target.reset();
             } else {
@@ -107,7 +118,8 @@
         async function updatePrice(id) {
             const pass = document.getElementById("adminPass").value;
             if (pass !== ADMIN_PASS) return alert("Wrong password");
-            const newPrice = document.querySelector(`input[data-id="${id}"]`).value;
+            const input = document.querySelector(`input[data-id="${id}"]`);
+            const newPrice = input.value;
 
             const res = await fetch("/api/admin/edit-item", {
                 method: "POST",
@@ -116,10 +128,11 @@
             });
             const data = await res.json();
             if (data.success) alert("Price updated!");
+            else alert("Failed to update price");
         }
 
         async function deleteItem(id) {
-            if (!confirm("Delete this item?")) return;
+            if (!confirm("Delete this item permanently?")) return;
             const pass = document.getElementById("adminPass").value;
             if (pass !== ADMIN_PASS) return alert("Wrong password");
 
@@ -131,6 +144,7 @@
             }
         }
 
+        // Load on start
         loadCategories();
     </script>
 </body>
