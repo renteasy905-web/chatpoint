@@ -19,31 +19,29 @@ cloudinary.config({
   api_secret: "GC0SO2VrcpdMSLGzQsYjLZ1SAZg",
 });
 
-// Storage for grocery items
-const itemStorage = new CloudinaryStorage({
+// Dynamic storage: automatically chooses folder based on field name
+const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: "grocery_items",
-    allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"],
-    transformation: [{ width: 800, height: 800, crop: "limit" }],
+  params: (req, file) => {
+    // For category images
+    if (file.fieldname === "categoryImage") {
+      return {
+        folder: "grocery_categories",
+        allowed_formats: ["jpg", "jpeg", "png", "webp"],
+        transformation: [{ width: 600, height: 600, crop: "fill" }],
+      };
+    }
+    // Default: for item images
+    return {
+      folder: "grocery_items",
+      allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"],
+      transformation: [{ width: 800, height: 800, crop: "limit" }],
+    };
   },
 });
 
-// Storage for category images
-const categoryStorage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "grocery_categories",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"],
-    transformation: [{ width: 600, height: 600, crop: "fill" }],
-  },
-});
-
-// Multer: handle both fields with correct storage
-const upload = multer().fields([
-  { name: "image", maxCount: 1, storage: itemStorage },           // Item image
-  { name: "categoryImage", maxCount: 1, storage: categoryStorage } // Category image
-]);
+// Multer with dynamic storage
+const upload = multer({ storage: storage });
 
 // =============== MIDDLEWARE ===============
 app.use(cors({ origin: "*", credentials: true }));
@@ -117,7 +115,7 @@ const Order = mongoose.model("Order", new mongoose.Schema({
 }));
 
 // =============== ADMIN PASSWORD ===============
-const ADMIN_PASSWORD = "Brand"; // CHANGE IN PRODUCTION!
+const ADMIN_PASSWORD = "Brand"; // CHANGE THIS IN PRODUCTION!
 
 // =============== UNIVERSAL ORDER SAVE FUNCTION ===============
 const saveOrderUniversal = async (req, res) => {
@@ -181,7 +179,7 @@ const saveOrderUniversal = async (req, res) => {
 
 // =============== API ENDPOINTS ===============
 
-// Safe categories endpoint - handles empty DB
+// Safe categories endpoint
 app.get("/api/categories", async (req, res) => {
   try {
     const cats = await GroceryCategory.find().sort({ name: 1 });
@@ -209,34 +207,47 @@ app.get("/api/items/:category", async (req, res) => {
   }
 });
 
-// Add item + optional new category with photo
-app.post("/api/admin/add-item", upload, async (req, res) => {
+// Fixed add-item endpoint — works with dynamic storage
+app.post("/api/admin/add-item", upload.fields([
+  { name: "image", maxCount: 1 },
+  { name: "categoryImage", maxCount: 1 }
+]), async (req, res) => {
   const { password, category, name, price } = req.body;
-  if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false, message: "Wrong password" });
+  if (password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, message: "Wrong password" });
+  }
 
   try {
+    // Validate item image
     if (!req.files["image"] || !req.files["image"][0]) {
-      return res.status(400).json({ success: false, message: "Item image required" });
+      return res.status(400).json({ success: false, message: "Item image is required" });
     }
     const itemImageUrl = req.files["image"][0].path;
 
-    let categoryCreated = false;
+    let isNewCategory = false;
 
+    // Handle new category
     if (req.files["categoryImage"] && req.files["categoryImage"][0]) {
+      isNewCategory = true;
       const catImageUrl = req.files["categoryImage"][0].path;
+
       await GroceryCategory.findOneAndUpdate(
         { name: category.trim() },
         { name: category.trim(), imageUrl: catImageUrl },
         { upsert: true, new: true }
       );
-      categoryCreated = true;
     } else {
+      // Existing category check
       const existing = await GroceryCategory.findOne({ name: category.trim() });
       if (!existing) {
-        return res.status(400).json({ success: false, message: "Category not found. Upload a photo to create new." });
+        return res.status(400).json({ 
+          success: false, 
+          message: "Category not found. Upload a category photo to create a new one." 
+        });
       }
     }
 
+    // Save item
     const newItem = new GroceryItem({
       category: category.trim(),
       name: name.trim(),
@@ -245,10 +256,15 @@ app.post("/api/admin/add-item", upload, async (req, res) => {
     });
 
     await newItem.save();
-    res.json({ success: true, item: newItem, categoryCreated });
+
+    res.json({ 
+      success: true, 
+      item: newItem,
+      message: isNewCategory ? "New category and item added!" : "Item added!"
+    });
   } catch (e) {
-    console.error("Add item error:", e);
-    res.status(500).json({ success: false });
+    console.error("Add item/category error:", e);
+    res.status(500).json({ success: false, message: "Server error: " + e.message });
   }
 });
 
