@@ -50,16 +50,16 @@
                 {name: "Cheese Block 200g", price: 125, img: "https://i0.wp.com/cheesescientist.com/wp-content/uploads/2024/12/What-Are-Dairy-Products-Examples-Production-Uses.jpg?fit=1600%2C1200&ssl=1"}
             ],
             "Atta, Rice, Oils & Sugar": [
-                {name: "Sugar", price: 55, img: "https://m.media-amazon.com/images/I/71uN1KJ2VPL._AC_UF1000,1000_QL80_.jpg"},
-                {name: "Rice - Vajra Teja", price: 65, img: "https://m.media-amazon.com/images/I/81fN5P9T9BL._AC_UF1000,1000_QL80_.jpg"},
-                {name: "Rice - BNM", price: 60, img: "https://m.media-amazon.com/images/I/71vYvG1K5jL._AC_UF1000,1000_QL80_.jpg"},
-                {name: "Rice - We One Gold Colour", price: 65, img: "https://m.media-amazon.com/images/I/81RqIlqh5HL._AC_UF1000,1000_QL80_.jpg"},
-                {name: "Rice - Balla Organic", price: 70, img: "https://m.media-amazon.com/images/I/81t6q5L1QKL._AC_UF1000,1000_QL80_.jpg"},
-                {name: "Rice - Balla Inorganic", price: 45, img: "https://m.media-amazon.com/images/I/81fN5P9T9BL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Sugar (per kg)", price: 55, img: "https://m.media-amazon.com/images/I/71uN1KJ2VPL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Rice - Vajra Teja (per kg)", price: 65, img: "https://m.media-amazon.com/images/I/81fN5P9T9BL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Rice - BNM (per kg)", price: 60, img: "https://m.media-amazon.com/images/I/71vYvG1K5jL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Rice - We One Gold Colour (per kg)", price: 65, img: "https://m.media-amazon.com/images/I/81RqIlqh5HL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Rice - Balla Organic (per kg)", price: 70, img: "https://m.media-amazon.com/images/I/81t6q5L1QKL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Rice - Balla Inorganic (per kg)", price: 45, img: "https://m.media-amazon.com/images/I/71fN5P9T9BL._AC_UF1000,1000_QL80_.jpg"},
                 {name: "Sunrise Oil 15L", price: 2250, img: "https://m.media-amazon.com/images/I/71Qd2G6Z1QL._AC_UF1000,1000_QL80_.jpg"},
                 {name: "Uchi Gold / Palm Oil 1L", price: 150, img: "https://m.media-amazon.com/images/I/71f0d+2eTQL._AC_UF1000,1000_QL80_.jpg"},
                 {name: "Gemini Oil 1L", price: 160, img: "https://m.media-amazon.com/images/I/71e7Z5qL2PL._AC_UF1000,1000_QL80_.jpg"},
-                {name: "Gold Winner Oil Bag", price: 1580, img: "https://m.media-amazon.com/images/I/71t4u3p9VQL._AC_UF1000,1000_QL80_.jpg"},
+                {name: "Gold Winner Oil (Bag/Pouch)", price: 1580, img: "https://m.media-amazon.com/images/I/71t4u3p9VQL._AC_UF1000,1000_QL80_.jpg"},
                 {name: "Freedom Oil 1L", price: 135, img: "https://m.media-amazon.com/images/I/71i+3+3o5zL._AC_UF1000,1000_QL80_.jpg"}
             ],
             "Masala & Dry Fruits": [
@@ -101,10 +101,10 @@
             const grid = document.getElementById('itemsGrid');
             grid.innerHTML = items.map((item, i) => `
                 <div class="item">
-                    <img src="${item.img}" alt="${item.name}" loading="lazy">
+                    <img src="${item.img}" alt="${item.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x140?text=Image+Not+Found'">
                     <div class="info">
                         <div class="name">${item.name}</div>
-                        <div class="price">₹${item.price}/kg or as listed</div>
+                        <div class="price">₹${item.price}</div>
                     </div>
                     <button class="add-btn" onclick="addToCart(${i})">+</button>
                 </div>
