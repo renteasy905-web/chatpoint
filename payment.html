@@ -105,8 +105,7 @@
   <script>
     const CART_KEY = "chatpoint_cart";
     const USER_KEY = "chatpoint_user";
-    const API_BASE = "https://chatpoint1.onrender.com";
-
+    const API_BASE = window.location.origin; // Use same origin as your app
     const PRIMARY = "9632367397";
     const BACKUP = "8088975913";
 
@@ -207,12 +206,11 @@
       }
 
       const { itemsArray, grandTotal, shopName } = window.tempOrderData;
-
       const user = JSON.parse(localStorage.getItem(USER_KEY));
 
-      // Safely get userId (only if valid MongoDB ObjectId)
+      // Safely extract userId
       let userId = null;
-      if (user && user._id && typeof user._id === 'string' && /^[a-f0-9]{24}$/i.test(user._id)) {
+      if (user && user._id && /^[a-f0-9]{24}$/i.test(user._id)) {
         userId = user._id;
       }
 
@@ -223,16 +221,16 @@
       });
 
       const orderData = {
-        userId,         // can be null
+        userId, // This links order to user → tracking works!
         name,
         phone,
         address1,
-        address2,
+        address2: address2 || "",
         grandTotal,
         cart
       };
 
-      console.log("Sending order data:", orderData);
+      console.log("Sending order:", orderData);
 
       const btn = document.getElementById("placeOrderBtn");
       btn.disabled = true;
@@ -246,30 +244,38 @@
         });
 
         const data = await res.json();
-        console.log("Server response:", data);
+        console.log("Response:", data);
 
         if (res.ok && data.success) {
           showSuccess("Order Placed Successfully! 🎉");
+
+          // Clear cart
           localStorage.removeItem(CART_KEY);
 
+          // Prepare WhatsApp message (same as before)
           const itemsList = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
           const message = `New Order!\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nTotal: ₹${grandTotal}\n\nPlease confirm soon!`;
           const encoded = encodeURIComponent(message);
 
+          // Send to both numbers
           setTimeout(() => window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, '_blank'), 1000);
           setTimeout(() => window.open(`https://wa.me/91${BACKUP}?text=${encoded}`, '_blank'), 2000);
 
-          setTimeout(() => location.href = "orders.html", 4000);
+          // Redirect to tracking page after 3 seconds
+          setTimeout(() => {
+            window.location.href = "tracking.html";
+          }, 3000);
+
         } else {
-          throw new Error(data.message || "Unknown error");
+          throw new Error(data.message || "Server error");
         }
       } catch (err) {
         console.error("Order failed:", err);
         showError("Failed to save online. Sending via WhatsApp...");
 
         const itemsList = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
-        const message = `(Online Save Failed)\nNew Order\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nTotal: ₹${grandTotal}`;
-        const encoded = encodeURIComponent(message);
+        const fallbackMsg = `(Online Failed)\nNew Order\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nTotal: ₹${grandTotal}`;
+        const encoded = encodeURIComponent(fallbackMsg);
         window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, '_blank');
       }
 
@@ -278,14 +284,16 @@
     }
 
     function showSuccess(msg) {
-      document.getElementById("successMsg").textContent = msg;
-      document.getElementById("successMsg").style.display = "block";
+      const el = document.getElementById("successMsg");
+      el.textContent = msg;
+      el.style.display = "block";
       document.getElementById("errorMsg").style.display = "none";
     }
 
     function showError(msg) {
-      document.getElementById("errorMsg").textContent = msg;
-      document.getElementById("errorMsg").style.display = "block";
+      const el = document.getElementById("errorMsg");
+      el.textContent = msg;
+      el.style.display = "block";
       document.getElementById("successMsg").style.display = "none";
     }
 
