@@ -19,7 +19,13 @@
       --whatsapp: #25D366;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 100px; }
+    body { 
+      font-family: system-ui, -apple-system, sans-serif; 
+      background: var(--bg); 
+      color: var(--text); 
+      min-height: 100vh; 
+      padding-bottom: 100px; 
+    }
     .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
     .header {
       position: sticky; top: 0; background: var(--bg); z-index: 10;
@@ -89,6 +95,15 @@
     }
     @keyframes flash { from { background: rgba(239, 68, 68, 0.98); } to { background: rgba(220, 38, 38, 1); } }
     .new-order-alert small { font-size: 2rem; margin-top: 2rem; }
+
+    /* Progress Buttons Styling */
+    .progress-btns {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
 <body>
@@ -184,6 +199,21 @@
       }
     }
 
+    async function updateOrderProgress(orderId, progress) {
+      try {
+        const res = await fetch(`${API_BASE}/api/update-order-progress`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId, progress })
+        });
+        const data = await res.json();
+        return data.success;
+      } catch (err) {
+        console.error("Progress update failed:", err);
+        return false;
+      }
+    }
+
     async function deleteOrder(orderId) {
       try {
         const res = await fetch(`${API_BASE}/api/delete-order`, {
@@ -201,6 +231,8 @@
 
     // Render Order Card
     function renderOrderCard(order) {
+      order.progress = order.progress || 0; // default 0
+
       const itemsHtml = order.items.map(i => `
         <div style="display:flex;justify-content:space-between;font-size:0.9rem;color:#cbd5e1;margin-top:0.4rem;">
           <span>${i.name} × ${i.quantity}</span>
@@ -209,6 +241,7 @@
       `).join('');
 
       let actions = '';
+      let progressButtons = '';
       const attrs = `data-id="${order._id}" data-phone="${order.user.phone}" data-name="${order.user.name}"`;
 
       if (order.status === 'pending') {
@@ -219,9 +252,26 @@
             <button class="btn btn-danger" ${attrs} data-action="cancel">Cancel</button>
           </div>`;
       } else if (order.status === 'confirmed') {
+        // Show 4 progress buttons only when confirmed and not yet delivered
+        if (order.progress < 4) {
+          progressButtons = `
+            <div class="progress-btns">
+              ${[1,2,3,4].map(num => {
+                let bg = '#475569';
+                if (order.progress >= num) bg = 'var(--success)';
+                else if (order.progress === num - 1) bg = 'var(--primary)';
+                return `<button class="btn" style="width:50px;height:50px;border-radius:50%;background:${bg};color:white;font-size:1.2rem;" 
+                         ${order.progress >= num ? 'disabled' : ''} 
+                         ${attrs} data-action="progress" data-progress="${num}">
+                  ${num}
+                </button>`;
+              }).join('')}
+            </div>`;
+        }
+
         actions = `
-          <div style="display:flex;gap:0.5rem;margin-top:1rem;">
-            <button class="btn btn-success" ${attrs} data-action="delivered">Delivered</button>
+          <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
+            <button class="btn btn-success" ${attrs} data-action="delivered">Mark Delivered</button>
             <button class="btn btn-danger" ${attrs} data-action="cancel">Cancel</button>
           </div>`;
       } else if (order.status === 'delivered' || order.status === 'cancelled') {
@@ -263,6 +313,7 @@
             <span>₹${order.totalAmount?.toFixed(2) || '0.00'}</span>
           </div>
 
+          ${progressButtons}
           ${actions}
         </div>
       `;
@@ -274,7 +325,7 @@
         return;
       }
       usersContainer.innerHTML = allUsers.map((user, i) => `
-        <div class="user-card" style="background:#1e293b;padding:1rem;margin-bottom:0.8rem;border-radius:0.75rem;border:1px solid #334155;display:flex;justify-content:space-between;align-items:center;">
+        <div style="background:#1e293b;padding:1rem;margin-bottom:0.8rem;border-radius:0.75rem;border:1px solid #334155;display:flex;justify-content:space-between;align-items:center;">
           <div>
             <strong>${i+1}. ${user.name || 'No Name'}</strong><br>
             <small style="color:#94a3b8;">${user.phone}</small>
@@ -329,7 +380,9 @@
           if (pendingCount > previousPendingCount && pendingCount > 0) showBigAlert();
           previousPendingCount = pendingCount;
 
-          allOrders = ordersData.orders.sort((a, b) => new Date(b.date) - new Date(a.date));
+          allOrders = ordersData.orders
+            .map(o => ({ ...o, progress: o.progress || 0 }))
+            .sort((a, b) => new Date(b.date) - new Date(a.date));
         }
 
         if (usersData.users && Array.isArray(usersData.users)) {
@@ -343,7 +396,7 @@
       }
     }
 
-    // Robust Button Click Handler
+    // Button Click Handler
     document.addEventListener('click', async (e) => {
       const btn = e.target.closest('button[data-action]');
       if (!btn) return;
@@ -358,15 +411,22 @@
         return;
       }
 
-      // Prevent double-click
       btn.disabled = true;
-      const originalText = btn.innerHTML;
+      const originalHTML = btn.innerHTML;
       btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
 
       let success = false;
 
       try {
-        if (action === 'confirm') {
+        if (action === 'progress') {
+          const progress = parseInt(btn.dataset.progress);
+          success = await updateOrderProgress(orderId, progress);
+          if (success && progress === 4) {
+            // Auto mark as delivered when progress reaches 4
+            await updateOrderStatus(orderId, 'delivered');
+            openWhatsApp(phone, deliveredMessage);
+          }
+        } else if (action === 'confirm') {
           success = await updateOrderStatus(orderId, 'confirmed');
           if (success) openWhatsApp(phone, confirmMessage(name));
         } else if (action === 'delivered') {
@@ -374,14 +434,14 @@
           if (success) openWhatsApp(phone, deliveredMessage);
         } else if (action === 'cancel') {
           if (!confirm("Cancel this order?")) {
-            btn.innerHTML = originalText;
+            btn.innerHTML = originalHTML;
             btn.disabled = false;
             return;
           }
           success = await updateOrderStatus(orderId, 'cancelled');
         } else if (action === 'delete') {
           if (!confirm("Permanently delete this order? This cannot be undone!")) {
-            btn.innerHTML = originalText;
+            btn.innerHTML = originalHTML;
             btn.disabled = false;
             return;
           }
@@ -389,25 +449,25 @@
           if (success) {
             allOrders = allOrders.filter(o => o._id !== orderId);
             applyView();
-            return; // No need to re-enable button
+            return;
           }
         }
 
         if (success && action !== 'delete') {
           const order = allOrders.find(o => o._id === orderId);
           if (order) {
-            order.status = action === 'confirm' ? 'confirmed' :
-                           action === 'delivered' ? 'delivered' : 'cancelled';
+            if (action === 'progress') order.progress = parseInt(btn.dataset.progress);
+            else order.status = action === 'confirm' ? 'confirmed' : action === 'delivered' ? 'delivered' : 'cancelled';
           }
           applyView();
         } else if (!success) {
-          alert("Action failed. Try again.");
+          alert("Action failed. Please try again.");
         }
       } catch (err) {
-        alert("Network error. Check connection.");
+        alert("Network error. Check your connection.");
       } finally {
         if (action !== 'delete') {
-          btn.innerHTML = originalText;
+          btn.innerHTML = originalHTML;
           btn.disabled = false;
         }
       }
