@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatPoint Grocery</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background:#f4f6f9;
+            margin:0;
+            padding:0;
+            display:flex;
+            justify-content:center;
+        }
+        .container {
+            max-width:420px;
+            width:100%;
+            background:white;
+            min-height:100vh;
+            display:flex;
+            flex-direction:column;
+            box-shadow:0 0 20px rgba(0,0,0,0.08);
+            padding-bottom: 90px;
+        }
+        header {
+            background:#4CAF50;
+            color:white;
+            text-align:center;
+            padding:30px 20px;
+        }
+        header h1 {
+            margin:0;
+            font-size:28px;
+            font-weight:700;
+        }
+        header p {
+            margin:10px 0 0;
+            opacity:0.9;
+            font-size:16px;
+        }
+        .hero {
+            padding:30px 20px;
+            text-align:center;
+        }
+        .hero h2 {
+            font-size:24px;
+            margin-bottom:16px;
+            color:#333;
+        }
+        .start-btn {
+            background:#4CAF50;
+            color:white;
+            border:none;
+            padding:16px 40px;
+            border-radius:30px;
+            font-size:18px;
+            font-weight:bold;
+            cursor:pointer;
+            box-shadow:0 6px 20px rgba(76,175,80,0.3);
+        }
+        .start-btn:hover {
+            background:#43a047;
+        }
+
+        .login-required {
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            height:100vh;
+            text-align:center;
+            padding:20px;
+            color:#e74c3c;
+            font-size:18px;
+        }
+        .login-required a {
+            margin-top:20px;
+            background:#4CAF50;
+            color:white;
+            padding:14px 32px;
+            border-radius:30px;
+            text-decoration:none;
+            font-weight:bold;
+            font-size:20px;
+        }
+
+        .track-bar {
+            position:fixed;
+            bottom:0;
+            left:0;
+            right:0;
+            background:white;
+            padding:16px;
+            box-shadow:0 -6px 20px rgba(0,0,0,0.12);
+            text-align:center;
+            border-top:1px solid #eee;
+            max-width:420px;
+            margin:0 auto;
+            display:none;
+            z-index:100;
+        }
+        .track-bar.visible {
+            display:block;
+        }
+        .track-text {
+            font-size:15px;
+            color:#333;
+            font-weight:600;
+            margin-bottom:10px;
+        }
+        .track-btn {
+            background:#4CAF50;
+            color:white;
+            border:none;
+            padding:14px 40px;
+            border-radius:30px;
+            font-size:18px;
+            font-weight:bold;
+            cursor:pointer;
+            box-shadow:0 4px 15px rgba(76,175,80,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContent">
+        <header>
+            <h1>ChatPoint</h1>
+            <p>Fresh groceries delivered fast</p>
+        </header>
+        <div class="hero">
+            <h2>Welcome back!</h2>
+            <button class="start-btn" onclick="window.location.href='categories.html'">Shop Now</button>
+        </div>
+    </div>
+
+    <div id="loginRequired" class="login-required" style="display:none;">
+        <p>You need to login to shop</p>
+        <a href="login.html">Login Now →</a>
+    </div>
+
+    <div class="track-bar" id="trackBar">
+        <div class="track-text" id="trackText">1 Active Order</div>
+        <button class="track-btn" onclick="window.location.href='tracking.html'">Track Now →</button>
+    </div>
+
+    <script>
+        const loggedUser = JSON.parse(localStorage.getItem('chatpoint_user') || 'null');
+        const trackBar = document.getElementById('trackBar');
+        const trackText = document.getElementById('trackText');
+
+        if (!loggedUser) {
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('loginRequired').style.display = 'flex';
+        } else {
+            checkActiveOrders();
+            setInterval(checkActiveOrders, 15000);
+        }
+
+        async function checkActiveOrders() {
+            if (!loggedUser || !loggedUser._id) {
+                trackBar.classList.remove('visible');
+                return;
+            }
+
+            try {
+                const res = await fetch("/api/my-orders", {
+                    headers: { 'x-user-id': loggedUser._id }
+                });
+                const data = await res.json();
+
+                if (data.success && data.orders) {
+                    const active = data.orders.filter(o => o.status === 'pending' || o.status === 'confirmed');
+                    if (active.length > 0) {
+                        trackBar.classList.add('visible');
+                        trackText.textContent = active.length === 1 ? "1 Active Order" : `${active.length} Active Orders`;
+                    } else {
+                        trackBar.classList.remove('visible');
+                    }
+                } else {
+                    trackBar.classList.remove('visible');
+                }
+            } catch (err) {
+                console.error("Order check error:", err);
+                trackBar.classList.remove('visible');
+            }
+        }
+    </script>
+</body>
+</html>
