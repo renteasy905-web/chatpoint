@@ -100,10 +100,41 @@
             text-decoration:none; 
             font-weight:bold; 
         }
+
+        /* Login Required Screen */
+        .login-required {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+            color: #e74c3c;
+            font-size: 18px;
+        }
+        .login-required p {
+            margin: 20px 0;
+        }
+        .login-required a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 20px;
+            padding: 12px 30px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(76,175,80,0.3);
+        }
+        .login-required a:hover {
+            background: #43a047;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Main Categories Page (only shown if logged in) -->
+    <div class="container" id="mainContent">
         <header>
             <h1>CATEGORIES</h1>
         </header>
@@ -118,7 +149,25 @@
         </div>
     </div>
 
+    <!-- Login Required Screen (shown if not logged in) -->
+    <div id="loginRequired" class="login-required" style="display:none;">
+        <p>You need to login to browse categories and shop</p>
+        <p><a href="login.html">Login Now →</a></p>
+    </div>
+
     <script>
+        // Check if user is logged in
+        const loggedUser = JSON.parse(localStorage.getItem('chatpoint_user') || 'null');
+
+        if (!loggedUser) {
+            // Not logged in → show login required screen
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('loginRequired').style.display = 'flex';
+        } else {
+            // Logged in → load categories
+            loadCategories();
+        }
+
         async function loadCategories() {
             const grid = document.getElementById("categoryGrid");
 
@@ -151,7 +200,7 @@
                 grid.innerHTML = `
                     <div class="loading">
                         <p>Error loading categories</p>
-                        <p>Check your internet connection or server status.</p>
+                        <p>Please check your connection or try again later.</p>
                     </div>
                 `;
             }
@@ -161,9 +210,6 @@
             localStorage.setItem('selectedCategory', name);
             window.location.href = 'gitems.html';
         }
-
-        // Load categories when page opens
-        window.onload = loadCategories;
     </script>
 </body>
 </html>
