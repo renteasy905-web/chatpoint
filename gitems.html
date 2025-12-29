@@ -90,30 +90,64 @@
         .view-cart-btn:hover {
             background: #43a047;
         }
+
+        /* Login Required Message */
+        .login-required {
+            text-align: center;
+            padding: 80px 20px;
+            color: #e74c3c;
+            font-size: 18px;
+        }
+        .login-required a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <div class="back" onclick="history.back()">←</div>
         <div class="title" id="categoryName">Loading...</div>
-        <div class="cart-icon" onclick="window.location='gcart.html'">
+        <div class="cart-icon" onclick="checkLoginAndGoToCart()">
             🛒 <span class="cart-count" id="cartCount">0</span>
         </div>
     </div>
 
-    <div class="grid" id="itemsGrid"></div>
+    <!-- Main Content - Hidden if not logged in -->
+    <div id="mainContent">
+        <div class="grid" id="itemsGrid"></div>
 
-    <!-- Bottom Cart Bar -->
-    <div class="bottom-cart-bar" id="bottomCartBar">
-        <div class="cart-summary">
-            <span class="cart-items-text" id="cartItemsText">1 Item</span>
-            <span class="cart-total-price" id="cartTotalPrice">₹0</span>
+        <!-- Bottom Cart Bar -->
+        <div class="bottom-cart-bar" id="bottomCartBar">
+            <div class="cart-summary">
+                <span class="cart-items-text" id="cartItemsText">1 Item</span>
+                <span class="cart-total-price" id="cartTotalPrice">₹0</span>
+            </div>
+            <button class="view-cart-btn" onclick="checkLoginAndGoToCart()">View Cart</button>
         </div>
-        <button class="view-cart-btn" onclick="window.location='gcart.html'">View Cart</button>
+    </div>
+
+    <!-- Shown only if not logged in -->
+    <div id="loginRequired" class="login-required" style="display:none;">
+        <p>You need to login to browse items and shop</p>
+        <p><a href="login.html">Login Now →</a></p>
     </div>
 
     <script>
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const loggedUser = JSON.parse(localStorage.getItem('chatpoint_user') || 'null');
+
+        // === MANDATORY LOGIN CHECK ===
+        if (!loggedUser) {
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('loginRequired').style.display = 'block';
+        } else {
+            // User is logged in — load items
+            loadItems();
+            updateCartDisplay();
+        }
 
         async function loadItems() {
             const category = localStorage.getItem('selectedCategory') || 'Fruits & Vegetables';
@@ -127,7 +161,7 @@
                 const grid = document.getElementById('itemsGrid');
                 grid.innerHTML = items.map(item => `
                     <div class="item">
-                        <img src="${item.imageUrl}" alt="${item.name}" loading="lazy" 
+                        <img src="${item.imageUrl}" alt="${item.name}" loading="lazy"
                              onerror="this.src='https://via.placeholder.com/300x140?text=No+Image'">
                         <div class="info">
                             <div class="name">${item.name}</div>
@@ -165,7 +199,7 @@
             const cartBar = document.getElementById('bottomCartBar');
             if (totalItems > 0) {
                 cartBar.classList.add('visible');
-                document.getElementById('cartItemsText').textContent = 
+                document.getElementById('cartItemsText').textContent =
                     totalItems === 1 ? "1 Item" : `${totalItems} Items`;
                 document.getElementById('cartTotalPrice').textContent = `₹${totalPrice}`;
             } else {
@@ -173,11 +207,14 @@
             }
         }
 
-        // Initial load
-        window.onload = () => {
-            loadItems();
-            updateCartDisplay();
-        };
+        // Safe navigation to cart — checks login first
+        function checkLoginAndGoToCart() {
+            if (!loggedUser) {
+                window.location.href = 'login.html';
+            } else {
+                window.location.href = 'gcart.html';
+            }
+        }
     </script>
 </body>
 </html>
