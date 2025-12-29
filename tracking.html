@@ -121,7 +121,7 @@
             const list = document.getElementById('ordersList');
             list.innerHTML = orders.map(order => {
                 const progress = order.progress || 0;
-                const isTrackable = order.status === 'confirmed';
+                const isTrackable = order.status === 'confirmed' || order.status === 'delivered';
 
                 const positions = [
                     { left: '15%', top: '70%' },
@@ -156,9 +156,9 @@
                       <div class="order-status ${statusClass}">${statusText}</div>
                     </div>
 
-                    ${(isTrackable || order.status === 'delivered') ? `
+                    ${isTrackable ? `
                     <button class="track-btn" onclick="toggleTracking(this)">
-                      ${order.status === 'pending' ? '⏳ Waiting for confirmation' : 'Track Order'}
+                      Track Order
                     </button>
 
                     <div class="tracking-section">
@@ -188,7 +188,7 @@
                         </div>
                       </div>
                     </div>
-                    ` : ''}
+                    ` : (order.status === 'pending' ? '<div style="padding:16px;text-align:center;color:#666;">⏳ Waiting for confirmation</div>' : '')}
                   </div>
                 `;
             }).join('');
