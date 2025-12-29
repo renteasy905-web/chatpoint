@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatPoint Grocery</title>
+    <title>Categories — ChatPoint</title>
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -27,66 +27,105 @@
             background:#4CAF50;
             color:white;
             text-align:center;
-            padding:30px 20px;
+            padding:20px;
         }
         header h1 {
             margin:0;
-            font-size:28px;
-            font-weight:700;
+            font-size:26px;
+            font-weight:600;
         }
-        header p {
-            margin:10px 0 0;
-            opacity:0.9;
-            font-size:16px;
+        .tabs {
+            display:flex;
+            background:white;
+            padding:12px 0;
+            border-bottom:1px solid #eee;
         }
-        .hero {
-            padding:30px 20px;
+        .tab {
+            flex:1;
             text-align:center;
+            padding:10px;
+            font-weight:600;
+            color:#666;
+            cursor:pointer;
         }
-        .hero h2 {
-            font-size:24px;
-            margin-bottom:16px;
+        .tab.active {
+            color:#4CAF50;
+            border-bottom:4px solid #4CAF50;
+        }
+        .grid {
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:18px;
+            padding:24px;
+            flex-grow:1;
+            overflow-y:auto;
+        }
+        .category {
+            text-align:center;
+            cursor:pointer;
+            transition:transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .category:hover {
+            transform:translateY(-6px);
+            box-shadow:0 8px 20px rgba(0,0,0,0.12);
+        }
+        .category img {
+            width:100%;
+            height:130px;
+            object-fit:cover;
+            border-radius:16px;
+            box-shadow:0 6px 15px rgba(0,0,0,0.1);
+        }
+        .category p {
+            margin:12px 0 0;
+            font-size:15px;
+            font-weight:600;
             color:#333;
         }
-        .start-btn {
-            background:#4CAF50;
-            color:white;
-            border:none;
-            padding:16px 40px;
-            border-radius:30px;
-            font-size:18px;
-            font-weight:bold;
-            cursor:pointer;
-            box-shadow:0 6px 20px rgba(76,175,80,0.3);
-        }
-        .start-btn:hover {
-            background:#43a047;
-        }
-
-        /* Login Required */
-        .login-required {
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            justify-content:center;
-            height:100vh;
+        .loading {
+            grid-column:1/-1;
             text-align:center;
-            padding:20px;
-            color:#e74c3c;
+            padding:60px 20px;
+            color:#888;
             font-size:18px;
         }
-        .login-required a {
-            margin-top:20px;
-            background:#4CAF50;
-            color:white;
-            padding:14px 32px;
-            border-radius:30px;
+        .no-categories {
+            grid-column:1/-1;
+            text-align:center;
+            padding:60px 20px;
+            color:#666;
+            font-size:18px;
+        }
+        .no-categories a {
+            color:#4CAF50;
             text-decoration:none;
             font-weight:bold;
-            font-size:20px;
         }
 
-        /* Track Now Bar */
+        .login-required {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+            color: #e74c3c;
+            font-size: 18px;
+        }
+        .login-required a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 20px;
+            padding: 12px 30px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(76,175,80,0.3);
+            margin-top: 20px;
+        }
+
         .track-bar {
             position:fixed;
             bottom:0;
@@ -127,21 +166,22 @@
 <body>
     <div class="container" id="mainContent">
         <header>
-            <h1>ChatPoint</h1>
-            <p>Fresh groceries delivered fast</p>
+            <h1>CATEGORIES</h1>
         </header>
-        <div class="hero">
-            <h2>Welcome back!</h2>
-            <button class="start-btn" onclick="window.location.href='categories.html'">Shop Now</button>
+        <div class="tabs">
+            <div class="tab active">All</div>
+            <div class="tab">Popular</div>
+        </div>
+        <div class="grid" id="categoryGrid">
+            <div class="loading">Loading categories...</div>
         </div>
     </div>
 
     <div id="loginRequired" class="login-required" style="display:none;">
-        <p>You need to login to shop</p>
+        <p>You need to login to browse categories and shop</p>
         <a href="login.html">Login Now →</a>
     </div>
 
-    <!-- Track Now Bar -->
     <div class="track-bar" id="trackBar">
         <div class="track-text" id="trackText">1 Active Order</div>
         <button class="track-btn" onclick="window.location.href='tracking.html'">Track Now →</button>
@@ -156,8 +196,44 @@
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('loginRequired').style.display = 'flex';
         } else {
+            loadCategories();
             checkActiveOrders();
             setInterval(checkActiveOrders, 15000);
+        }
+
+        async function loadCategories() {
+            const grid = document.getElementById("categoryGrid");
+            try {
+                const res = await fetch("/api/categories");
+                if (!res.ok) throw new Error("Network error");
+                const data = await res.json();
+                if (data.success && data.categories && data.categories.length > 0) {
+                    grid.innerHTML = data.categories.map(cat => {
+                        const imgSrc = cat.imageUrl || `https://via.placeholder.com/400x300/eeeeee/999999?text=${encodeURIComponent(cat.name)}`;
+                        return `
+                            <div class="category" onclick="openCategory('${cat.name.replace(/'/g, "\\'")}')">
+                                <img src="${imgSrc}" alt="${cat.name}" loading="lazy">
+                                <p>${cat.name}</p>
+                            </div>
+                        `;
+                    }).join("");
+                } else {
+                    grid.innerHTML = `
+                        <div class="no-categories">
+                            <p>No categories available yet.</p>
+                            <p>Add items in <a href="adminportal.html">Admin Portal</a> to get started!</p>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error("Failed to load categories:", err);
+                grid.innerHTML = `<div class="loading"><p>Error loading categories. Retrying...</p></div>`;
+            }
+        }
+
+        function openCategory(name) {
+            localStorage.setItem('selectedCategory', name);
+            window.location.href = 'gitems.html';
         }
 
         async function checkActiveOrders() {
@@ -184,7 +260,7 @@
                     trackBar.classList.remove('visible');
                 }
             } catch (err) {
-                console.error(err);
+                console.error("Order check error:", err);
                 trackBar.classList.remove('visible');
             }
         }
