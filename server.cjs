@@ -19,7 +19,6 @@ cloudinary.config({
   api_secret: "GC0SO2VrcpdMSLGzQsYjLZ1SAZg",
 });
 
-// SINGLE dynamic storage — this is the correct way
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: (req, file) => {
@@ -30,7 +29,6 @@ const storage = new CloudinaryStorage({
         transformation: [{ width: 600, height: 600, crop: "fill" }],
       };
     }
-    // Default: item image
     return {
       folder: "grocery_items",
       allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"],
@@ -39,7 +37,6 @@ const storage = new CloudinaryStorage({
   },
 });
 
-// Correct multer usage
 const upload = multer({ storage: storage });
 
 // =============== MIDDLEWARE ===============
@@ -100,6 +97,7 @@ const Shop = mongoose.model("Shop", new mongoose.Schema({
   date: { type: Date, default: Date.now },
 }));
 
+// UPDATED ORDER SCHEMA WITH PROGRESS FIELD
 const Order = mongoose.model("Order", new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, required: false },
   user: { name: String, phone: String },
@@ -110,6 +108,7 @@ const Order = mongoose.model("Order", new mongoose.Schema({
   address: { name: String, phone: String, line1: String, line2: String },
   paymentMethod: { type: String, default: "cash" },
   status: { type: String, default: "pending" },
+  progress: { type: Number, default: 0 }, // ← NEW: 0 to 4 for tracking
   date: { type: Date, default: Date.now },
 }));
 
@@ -145,7 +144,6 @@ const saveOrderUniversal = async (req, res) => {
         }
       }
     }
-
     if (items.length === 0) return res.status(400).json({ success: false, message: "No valid items" });
 
     const order = new Order({
@@ -156,7 +154,8 @@ const saveOrderUniversal = async (req, res) => {
       totalAmount: grandTotal,
       deliveryCharge: grandTotal >= 69 ? 0 : 30,
       address: { name, phone, line1: address1, line2: address2 },
-      paymentMethod: body.paymentMethod || "cash"
+      paymentMethod: body.paymentMethod || "cash",
+      progress: 0 // Always start at 0
     });
 
     await order.save();
@@ -169,11 +168,9 @@ const saveOrderUniversal = async (req, res) => {
 };
 
 // =============== API ENDPOINTS ===============
-
 app.get("/api/categories", async (req, res) => {
   try {
     const cats = await GroceryCategory.find().sort({ name: 1 });
-    if (cats.length === 0) return res.json({ success: true, categories: [] });
     res.json({
       success: true,
       categories: cats.map(c => ({ name: c.name, imageUrl: c.imageUrl }))
@@ -195,7 +192,6 @@ app.get("/api/items/:category", async (req, res) => {
   }
 });
 
-// FINAL FIXED add-item endpoint
 app.post("/api/admin/add-item", upload.fields([
   { name: "image", maxCount: 1 },
   { name: "categoryImage", maxCount: 1 }
@@ -204,20 +200,15 @@ app.post("/api/admin/add-item", upload.fields([
   if (password !== ADMIN_PASSWORD) {
     return res.status(401).json({ success: false, message: "Wrong password" });
   }
-
   try {
-    // Item image required
     if (!req.files["image"] || !req.files["image"][0]) {
       return res.status(400).json({ success: false, message: "Item image required" });
     }
     const itemImageUrl = req.files["image"][0].path;
-
     let isNewCategory = false;
-
     if (req.files["categoryImage"] && req.files["categoryImage"][0]) {
       isNewCategory = true;
       const catImageUrl = req.files["categoryImage"][0].path;
-
       await GroceryCategory.findOneAndUpdate(
         { name: category.trim() },
         { name: category.trim(), imageUrl: catImageUrl },
@@ -229,16 +220,13 @@ app.post("/api/admin/add-item", upload.fields([
         return res.status(400).json({ success: false, message: "Category not found. Upload photo to create new." });
       }
     }
-
     const newItem = new GroceryItem({
       category: category.trim(),
       name: name.trim(),
       price: Number(price),
       imageUrl: itemImageUrl,
     });
-
     await newItem.save();
-
     res.json({ success: true, item: newItem });
   } catch (e) {
     console.error("Add item error:", e);
@@ -246,7 +234,6 @@ app.post("/api/admin/add-item", upload.fields([
   }
 });
 
-// Rest of your endpoints (unchanged)
 app.post("/api/admin/edit-item", async (req, res) => {
   const { password, itemId, price } = req.body;
   if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false });
@@ -334,6 +321,32 @@ app.get("/api/all-delivery-orders", async (req, res) => {
   }
 });
 
+// NEW: Update progress (1 to 4)
+app.post("/api/update-order-progress", async (req, res) => {
+  try {
+    const { orderId, progress } = req.body;
+    if (!orderId || !Number.isInteger(Number(progress)) || progress < 0 || progress > 4) {
+      return res.status(400).json({ success: false, message: "Invalid data" });
+    }
+
+    const updated = await Order.findByIdAndUpdate(
+      orderId,
+      { progress: Number(progress) },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    console.log(`Order ${orderId} → Progress ${progress}/4`);
+    res.json({ success: true, order: updated });
+  } catch (err) {
+    console.error("Progress update error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
 app.post("/api/update-order-status", async (req, res) => {
   try {
     const { orderId, status } = req.body;
@@ -372,6 +385,20 @@ app.get("/api/my-orders", async (req, res) => {
   }
 });
 
+// NEW: Get single order by ID (for tracking page)
+app.get("/api/order/:id", async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id).lean();
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+    res.json({ success: true, order });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false });
+  }
+});
+
 app.get("/api/admin/users", async (req, res) => {
   try {
     const users = await User.find({}, { name: 1, phone: 1, _id: 0 }).sort({ createdAt: -1 });
@@ -382,16 +409,18 @@ app.get("/api/admin/users", async (req, res) => {
 });
 
 // =============== SERVE PAGES ===============
-const pages = ["index", "gitems", "adminportal", "gcart", "privacy", "delivery", "orders", "cart", "payment", "login", "admin", "items"];
+const pages = ["index", "gitems", "adminportal", "gcart", "privacy", "delivery", "orders", "cart", "payment", "login", "admin", "items", "tracking"]; // Added tracking.html
 pages.forEach((p) => {
   const route = p === "index" ? "/" : `/${p}.html`;
   const file = p === "index" ? "index.html" : `${p}.html`;
   app.get(route, (req, res) => res.sendFile(path.join(__dirname, file)));
 });
+
 app.get("*", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on http://localhost:${PORT}`);
   console.log(`Admin Portal: http://localhost:${PORT}/adminportal.html`);
   console.log(`Delivery Portal: http://localhost:${PORT}/delivery.html`);
+  console.log(`Order Tracking Example: http://localhost:${PORT}/tracking.html?orderId=123abc`);
 });
