@@ -14,9 +14,9 @@ const PORT = process.env.PORT || 5000;
 
 // =============== CLOUDINARY CONFIG ===============
 cloudinary.config({
-  cloud_name: "djlkwjeb2",
-  api_key: "942326953292277",
-  api_secret: "GC0SO2VrcpdMSLGzQsYjLZ1SAZg",
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "djlkwjeb2",
+  api_key: process.env.CLOUDINARY_API_KEY || "942326953292277",
+  api_secret: process.env.CLOUDINARY_API_SECRET || "GC0SO2VrcpdMSLGzQsYjLZ1SAZg",
 });
 
 const storage = new CloudinaryStorage({
@@ -97,9 +97,9 @@ const Shop = mongoose.model("Shop", new mongoose.Schema({
   date: { type: Date, default: Date.now },
 }));
 
-// UPDATED ORDER SCHEMA WITH PROGRESS FIELD
+// Order Schema with progress
 const Order = mongoose.model("Order", new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, required: false },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
   user: { name: String, phone: String },
   shop: String,
   items: [{ name: String, price: Number, quantity: Number }],
@@ -108,14 +108,14 @@ const Order = mongoose.model("Order", new mongoose.Schema({
   address: { name: String, phone: String, line1: String, line2: String },
   paymentMethod: { type: String, default: "cash" },
   status: { type: String, default: "pending" },
-  progress: { type: Number, default: 0 }, // ← NEW: 0 to 4 for tracking
+  progress: { type: Number, default: 0 },
   date: { type: Date, default: Date.now },
 }));
 
 // =============== ADMIN PASSWORD ===============
-const ADMIN_PASSWORD = "Brand"; // CHANGE THIS!
+const ADMIN_PASSWORD = "Brand"; // CHANGE THIS IN PRODUCTION!
 
-// =============== UNIVERSAL ORDER SAVE FUNCTION ===============
+// =============== UNIVERSAL ORDER SAVE ===============
 const saveOrderUniversal = async (req, res) => {
   try {
     const body = req.body;
@@ -147,7 +147,7 @@ const saveOrderUniversal = async (req, res) => {
     if (items.length === 0) return res.status(400).json({ success: false, message: "No valid items" });
 
     const order = new Order({
-      userId: userId ? userId : null,
+      userId: userId || null,
       user: { name, phone },
       shop: shopName || "ChatPoint",
       items,
@@ -155,7 +155,7 @@ const saveOrderUniversal = async (req, res) => {
       deliveryCharge: grandTotal >= 69 ? 0 : 30,
       address: { name, phone, line1: address1, line2: address2 },
       paymentMethod: body.paymentMethod || "cash",
-      progress: 0 // Always start at 0
+      progress: 0
     });
 
     await order.save();
@@ -197,17 +197,15 @@ app.post("/api/admin/add-item", upload.fields([
   { name: "categoryImage", maxCount: 1 }
 ]), async (req, res) => {
   const { password, category, name, price } = req.body;
-  if (password !== ADMIN_PASSWORD) {
-    return res.status(401).json({ success: false, message: "Wrong password" });
-  }
+  if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false, message: "Wrong password" });
+
   try {
     if (!req.files["image"] || !req.files["image"][0]) {
       return res.status(400).json({ success: false, message: "Item image required" });
     }
     const itemImageUrl = req.files["image"][0].path;
-    let isNewCategory = false;
+
     if (req.files["categoryImage"] && req.files["categoryImage"][0]) {
-      isNewCategory = true;
       const catImageUrl = req.files["categoryImage"][0].path;
       await GroceryCategory.findOneAndUpdate(
         { name: category.trim() },
@@ -216,10 +214,9 @@ app.post("/api/admin/add-item", upload.fields([
       );
     } else {
       const existing = await GroceryCategory.findOne({ name: category.trim() });
-      if (!existing) {
-        return res.status(400).json({ success: false, message: "Category not found. Upload photo to create new." });
-      }
+      if (!existing) return res.status(400).json({ success: false, message: "Category not found. Upload photo to create new." });
     }
+
     const newItem = new GroceryItem({
       category: category.trim(),
       name: name.trim(),
@@ -321,29 +318,23 @@ app.get("/api/all-delivery-orders", async (req, res) => {
   }
 });
 
-// NEW: Update progress (1 to 4)
 app.post("/api/update-order-progress", async (req, res) => {
   try {
     const { orderId, progress } = req.body;
-    if (!orderId || !Number.isInteger(Number(progress)) || progress < 0 || progress > 4) {
+    if (!orderId || progress < 0 || progress > 4) {
       return res.status(400).json({ success: false, message: "Invalid data" });
     }
-
     const updated = await Order.findByIdAndUpdate(
       orderId,
       { progress: Number(progress) },
       { new: true }
     );
-
-    if (!updated) {
-      return res.status(404).json({ success: false, message: "Order not found" });
-    }
-
+    if (!updated) return res.status(404).json({ success: false, message: "Order not found" });
     console.log(`Order ${orderId} → Progress ${progress}/4`);
     res.json({ success: true, order: updated });
   } catch (err) {
     console.error("Progress update error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(500).json({ success: false });
   }
 });
 
@@ -364,9 +355,9 @@ app.post("/api/update-order-status", async (req, res) => {
 app.delete("/api/delete-order", async (req, res) => {
   try {
     const { orderId } = req.body;
-    if (!orderId) return res.status(400).json({ success: false, message: "Order ID required" });
+    if (!orderId) return res.status(400).json({ success: false });
     const result = await Order.findByIdAndDelete(orderId);
-    if (!result) return res.status(404).json({ success: false, message: "Order not found" });
+    if (!result) return res.status(404).json({ success: false });
     console.log(`Order ${orderId} DELETED`);
     res.json({ success: true });
   } catch (err) {
@@ -375,23 +366,29 @@ app.delete("/api/delete-order", async (req, res) => {
   }
 });
 
+// FIXED: Handle both logged-in and guest orders
 app.get("/api/my-orders", async (req, res) => {
   try {
     const userId = req.headers["x-user-id"];
-    const orders = await Order.find({ userId }).sort({ date: -1 }).lean();
+    let query = {};
+    if (userId) {
+      query = { userId };
+    } else {
+      // For guest orders, you might want to use phone from body or session (not implemented here)
+      return res.json({ success: true, orders: [] });
+    }
+    const orders = await Order.find(query).sort({ date: -1 }).lean();
     res.json({ success: true, orders });
   } catch (e) {
+    console.error(e);
     res.status(500).json({ success: false });
   }
 });
 
-// NEW: Get single order by ID (for tracking page)
 app.get("/api/order/:id", async (req, res) => {
   try {
     const order = await Order.findById(req.params.id).lean();
-    if (!order) {
-      return res.status(404).json({ success: false, message: "Order not found" });
-    }
+    if (!order) return res.status(404).json({ success: false, message: "Order not found" });
     res.json({ success: true, order });
   } catch (err) {
     console.error(err);
@@ -409,7 +406,8 @@ app.get("/api/admin/users", async (req, res) => {
 });
 
 // =============== SERVE PAGES ===============
-const pages = ["index", "gitems", "adminportal", "gcart", "privacy", "delivery", "orders", "cart", "payment", "login", "admin", "items", "tracking"]; // Added tracking.html
+const pages = ["index", "gitems", "adminportal", "gcart", "privacy", "delivery", "orders", "cart", "payment", "login", "admin", "items", "tracking", "categories"];
+
 pages.forEach((p) => {
   const route = p === "index" ? "/" : `/${p}.html`;
   const file = p === "index" ? "index.html" : `${p}.html`;
@@ -420,7 +418,6 @@ app.get("*", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`Admin Portal: http://localhost:${PORT}/adminportal.html`);
-  console.log(`Delivery Portal: http://localhost:${PORT}/delivery.html`);
-  console.log(`Order Tracking Example: http://localhost:${PORT}/tracking.html?orderId=123abc`);
+  console.log(`Categories: http://localhost:${PORT}/categories.html`);
+  console.log(`Tracking: http://localhost:${PORT}/tracking.html`);
 });
