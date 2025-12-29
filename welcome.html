@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to ChatPoint</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      height: 100vh;
+      background: linear-gradient(to bottom, #ff3b30 60%, white 60%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      overflow: hidden;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    /* Top red section with pattern */
+    .top-section {
+      width: 100%;
+      height: 60vh;
+      background: #ff3b30;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Pattern icons with crossed lines */
+    .pattern {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+    .pattern svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .logo {
+      font-size: 5.5rem;
+      font-weight: 900;
+      color: white;
+      letter-spacing: -2px;
+      z-index: 2;
+      margin-top: -40px;
+    }
+
+    /* Bottom white section */
+    .bottom-section {
+      width: 100%;
+      flex: 1;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .tagline {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #ff3b30;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      color: #666;
+      line-height: 1.6;
+      max-width: 300px;
+    }
+
+    /* Fade-in animation */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .bottom-section > * {
+      animation: fadeIn 1s ease-out forwards;
+      opacity: 0;
+    }
+    .tagline { animation-delay: 0.5s; }
+    .subtitle { animation-delay: 0.8s; }
+  </style>
+</head>
+<body>
+  <div class="top-section">
+    <!-- Food pattern with crossed red lines (like chilies) -->
+    <div class="pattern">
+      <svg viewBox="0 0 400 600" preserveAspectRatio="xMidYMid slice">
+        <!-- Horizontal wavy chilies -->
+        <path d="M50,100 Q80,70 110,100 T170,100" stroke="white" stroke-width="8" fill="none"/>
+        <path d="M230,120 Q260,90 290,120 T350,120" stroke="white" stroke-width="8" fill="none"/>
+
+        <!-- Tomato-like circles -->
+        <circle cx="100" cy="200" r="40" fill="none" stroke="white" stroke-width="8"/>
+        <circle cx="300" cy="220" r="35" fill="none" stroke="white" stroke-width="8"/>
+
+        <!-- Leaf or carrot top -->
+        <path d="M200,280 L220,240 L240,280 Z" fill="none" stroke="white" stroke-width="8"/>
+
+        <!-- Crossed lines in the middle (like two crossed chilies) -->
+        <path d="M100,350 L300,480" stroke="white" stroke-width="12" opacity="0.3"/>
+        <path d="M300,350 L100,480" stroke="white" stroke-width="12" opacity="0.3"/>
+
+        <!-- Bottom wavy veggies -->
+        <path d="M80,450 Q130,410 180,450 T280,450" stroke="white" stroke-width="8" fill="none"/>
+        <circle cx="200" cy="520" r="45" fill="none" stroke="white" stroke-width="8"/>
+      </svg>
+    </div>
+
+    <div class="logo">ChatPoint</div>
+  </div>
+
+  <div class="bottom-section">
+    <div class="tagline">Hungry? Get It Fast</div>
+    <div class="subtitle">Fast, fresh, and just the way you like it!</div>
+  </div>
+
+  <script>
+    // Redirect to index.html after 3 seconds
+    setTimeout(() => {
+      window.location.href = "index.html";
+    }, 3000);
+  </script>
+</body>
+</html>
