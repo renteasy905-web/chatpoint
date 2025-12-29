@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout — ChatPoint</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background:#f8f8f8; 
+            margin:0; 
+            padding:0; 
+        }
+        .header { 
+            position:sticky; top:0; background:white; padding:15px; 
+            box-shadow:0 2px 10px rgba(0,0,0,0.1); display:flex; align-items:center; gap:15px; z-index:10; 
+        }
+        .back { font-size:28px; cursor:pointer; color:#4CAF50; }
+        .title { font-size:20px; font-weight:bold; flex:1; }
+        .container { padding:20px; max-width:600px; margin:0 auto; }
+        .form-group { margin-bottom:20px; }
+        label { display:block; font-weight:600; margin-bottom:8px; color:#333; }
+        input, textarea { 
+            width:100%; padding:14px; border:1px solid #ddd; 
+            border-radius:10px; font-size:16px; box-sizing:border-box; 
+        }
+        input[readonly] { background:#f0f0f0; color:#555; }
+        textarea { resize:vertical; min-height:100px; }
+        .items-section { 
+            background:white; padding:20px; border-radius:12px; 
+            box-shadow:0 4px 10px rgba(0,0,0,0.08); margin:20px 0; 
+        }
+        .item-row { 
+            display:flex; align-items:center; gap:16px; 
+            padding:12px 0; border-bottom:1px solid #eee; 
+        }
+        .item-row:last-child { border-bottom:none; }
+        .item-img { width:60px; height:60px; object-fit:cover; border-radius:8px; }
+        .item-info { flex:1; }
+        .item-name { font-weight:600; font-size:16px; }
+        .item-details { color:#666; font-size:14px; margin-top:4px; }
+        .item-price { color:#4CAF50; font-weight:bold; font-size:16px; }
+        .summary { 
+            background:white; padding:20px; border-radius:12px; 
+            box-shadow:0 4px 10px rgba(0,0,0,0.08); margin:20px 0; 
+        }
+        .summary-row { 
+            display:flex; justify-content:space-between; font-size:16px; margin-bottom:12px; 
+        }
+        .grand-total { 
+            font-size:20px; font-weight:bold; color:#4CAF50; padding-top:12px; border-top:2px solid #eee; 
+        }
+        .order-btn { 
+            width:100%; background:#4CAF50; color:white; border:none; 
+            padding:16px; font-size:18px; font-weight:bold; border-radius:12px; 
+            cursor:pointer; box-shadow:0 4px 15px rgba(76,175,80,0.3); margin-top:20px;
+        }
+        .order-btn:hover { background:#43a047; }
+        .order-btn:disabled { background:#aaa; cursor:not-allowed; box-shadow:none; }
+        .min-note { text-align:center; color:#e74c3c; font-size:14px; margin:10px 0; }
+        .login-required {
+            text-align:center; padding:80px 20px; color:#e74c3c; font-size:18px;
+        }
+        .login-required a {
+            color:#4CAF50; text-decoration:none; font-weight:bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="back" onclick="history.back()">←</div>
+        <div class="title">Checkout</div>
+    </div>
+
+    <div class="container">
+        <!-- Shown only if not logged in -->
+        <div id="loginRequired" class="login-required">
+            <p>Login is required to place an order</p>
+            <p><a href="login.html">Login Now →</a></p>
+        </div>
+
+        <!-- Main checkout form (hidden if not logged in) -->
+        <div id="checkoutForm" style="display:none;">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="name" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="phone" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Delivery Address <span style="color:#e74c3c;">*</span></label>
+                <textarea id="address" placeholder="House no., street, landmark, city, pin code" required></textarea>
+            </div>
+
+            <div class="items-section">
+                <h3 style="margin-top:0; margin-bottom:16px; color:#333;">Your Order</h3>
+                <div id="itemsList"></div>
+            </div>
+
+            <div class="summary">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">₹0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Delivery Charge (10%)</span>
+                    <span id="delivery">₹0</span>
+                </div>
+                <div class="summary-row grand-total">
+                    <span>Grand Total</span>
+                    <span id="grandTotal">₹0</span>
+                </div>
+
+                <div class="min-note" id="minNote" style="display:none;">
+                    Minimum order ₹300 required
+                </div>
+
+                <button class="order-btn" id="orderBtn" disabled>Order Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MIN_ORDER = 300;
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const loggedUser = JSON.parse(localStorage.getItem('chatpoint_user') || 'null');
+
+        // === MANDATORY LOGIN CHECK ===
+        if (!loggedUser) {
+            document.getElementById('checkoutForm').style.display = 'none';
+            document.getElementById('loginRequired').style.display = 'block';
+        } else {
+            // User is logged in — show checkout
+            document.getElementById('loginRequired').style.display = 'none';
+            document.getElementById('checkoutForm').style.display = 'block';
+
+            // Pre-fill name and phone (read-only)
+            document.getElementById('name').value = loggedUser.name || '';
+            document.getElementById('phone').value = loggedUser.phone || '';
+
+            renderItems();
+        }
+
+        function renderItems() {
+            const itemsList = document.getElementById('itemsList');
+
+            if (cart.length === 0) {
+                itemsList.innerHTML = '<div style="text-align:center;padding:40px;color:#888;">Your cart is empty</div>';
+                document.querySelector('.summary').style.display = 'none';
+                return;
+            }
+
+            itemsList.innerHTML = cart.map(item => `
+                <div class="item-row">
+                    <img class="item-img" src="${item.img}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60'">
+                    <div class="item-info">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-details">Quantity: ${item.qty} × ₹${item.price}</div>
+                    </div>
+                    <div class="item-price">₹${item.price * item.qty}</div>
+                </div>
+            `).join('');
+
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const delivery = Math.round(subtotal * 0.10);
+            const total = subtotal + delivery;
+
+            document.getElementById('subtotal').textContent = `₹${subtotal}`;
+            document.getElementById('delivery').textContent = `₹${delivery}`;
+            document.getElementById('grandTotal').textContent = `₹${total}`;
+
+            const btn = document.getElementById('orderBtn');
+            const note = document.getElementById('minNote');
+
+            if (subtotal >= MIN_ORDER) {
+                btn.disabled = false;
+                note.style.display = 'none';
+            } else {
+                btn.disabled = true;
+                note.style.display = 'block';
+                note.textContent = `Add ₹${MIN_ORDER - subtotal} more items`;
+            }
+        }
+
+        async function placeOrder() {
+            const address = document.getElementById('address').value.trim();
+            if (!address) {
+                alert("Please enter your delivery address");
+                return;
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            if (subtotal < MIN_ORDER) {
+                alert("Minimum order value is ₹300");
+                return;
+            }
+
+            // Format cart for backend
+            const cartFormatted = {};
+            const shopName = localStorage.getItem('selectedCategory') || "ChatPoint";
+            cartFormatted[shopName] = {};
+            cart.forEach(item => {
+                cartFormatted[shopName][item.name] = {
+                    qty: item.qty,
+                    price: item.price
+                };
+            });
+
+            const orderData = {
+                name: loggedUser.name,
+                phone: loggedUser.phone,
+                address1: address,
+                grandTotal: subtotal + Math.round(subtotal * 0.10),
+                cart: cartFormatted
+            };
+
+            try {
+                const res = await fetch('/api/save-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
+
+                const result = await res.json();
+
+                if (result.success) {
+                    alert(`Order placed successfully!\nOrder ID: ${result.orderId}\nThank you for shopping with ChatPoint!`);
+                    localStorage.removeItem('cart');
+                    window.location.href = 'index.html'; // or 'orders.html'
+                } else {
+                    alert("Order failed: " + (result.message || "Please try again"));
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Network error. Check your connection.");
+            }
+        }
+
+        // Attach order button
+        document.getElementById('orderBtn').onclick = placeOrder;
+
+        // Initial load
+        window.onload = () => {
+            if (loggedUser) renderItems();
+        };
+    </script>
+</body>
+</html>
