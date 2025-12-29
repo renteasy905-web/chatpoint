@@ -5,100 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Categories — ChatPoint</title>
     <style>
-        body { 
-            font-family: 'Segoe UI', Arial, sans-serif; 
-            background:#f4f6f9; 
-            margin:0; 
-            padding:0; 
-            display:flex; 
-            justify-content:center; 
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background:#f4f6f9;
+            margin:0;
+            padding:0;
+            display:flex;
+            justify-content:center;
         }
-        .container { 
-            max-width:420px; 
-            width:100%; 
-            background:white; 
-            min-height:100vh; 
-            display:flex; 
-            flex-direction:column; 
-            box-shadow:0 0 20px rgba(0,0,0,0.08); 
+        .container {
+            max-width:420px;
+            width:100%;
+            background:white;
+            min-height:100vh;
+            display:flex;
+            flex-direction:column;
+            box-shadow:0 0 20px rgba(0,0,0,0.08);
+            padding-bottom: 80px; /* Space for bottom bar */
         }
-        header { 
-            background:#4CAF50; 
-            color:white; 
-            text-align:center; 
-            padding:20px; 
+        header {
+            background:#4CAF50;
+            color:white;
+            text-align:center;
+            padding:20px;
         }
-        header h1 { 
-            margin:0; 
-            font-size:26px; 
-            font-weight:600; 
+        header h1 {
+            margin:0;
+            font-size:26px;
+            font-weight:600;
         }
-        .tabs { 
-            display:flex; 
-            background:white; 
-            padding:12px 0; 
-            border-bottom:1px solid #eee; 
+        .tabs {
+            display:flex;
+            background:white;
+            padding:12px 0;
+            border-bottom:1px solid #eee;
         }
-        .tab { 
-            flex:1; 
-            text-align:center; 
-            padding:10px; 
-            font-weight:600; 
-            color:#666; 
-            cursor:pointer; 
+        .tab {
+            flex:1;
+            text-align:center;
+            padding:10px;
+            font-weight:600;
+            color:#666;
+            cursor:pointer;
         }
-        .tab.active { 
-            color:#4CAF50; 
-            border-bottom:4px solid #4CAF50; 
+        .tab.active {
+            color:#4CAF50;
+            border-bottom:4px solid #4CAF50;
         }
-        .grid { 
-            display:grid; 
-            grid-template-columns:repeat(3,1fr); 
-            gap:18px; 
-            padding:24px; 
-            flex-grow:1; 
-            overflow-y:auto; 
+        .grid {
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:18px;
+            padding:24px;
+            flex-grow:1;
+            overflow-y:auto;
         }
-        .category { 
-            text-align:center; 
-            cursor:pointer; 
-            transition:transform 0.3s ease, box-shadow 0.3s ease; 
+        .category {
+            text-align:center;
+            cursor:pointer;
+            transition:transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .category:hover { 
-            transform:translateY(-6px); 
-            box-shadow:0 8px 20px rgba(0,0,0,0.12); 
+        .category:hover {
+            transform:translateY(-6px);
+            box-shadow:0 8px 20px rgba(0,0,0,0.12);
         }
-        .category img { 
-            width:100%; 
-            height:130px; 
-            object-fit:cover; 
-            border-radius:16px; 
-            box-shadow:0 6px 15px rgba(0,0,0,0.1); 
+        .category img {
+            width:100%;
+            height:130px;
+            object-fit:cover;
+            border-radius:16px;
+            box-shadow:0 6px 15px rgba(0,0,0,0.1);
         }
-        .category p { 
-            margin:12px 0 0; 
-            font-size:15px; 
-            font-weight:600; 
-            color:#333; 
+        .category p {
+            margin:12px 0 0;
+            font-size:15px;
+            font-weight:600;
+            color:#333;
         }
-        .loading { 
-            grid-column:1/-1; 
-            text-align:center; 
-            padding:60px 20px; 
-            color:#888; 
-            font-size:18px; 
+        .loading {
+            grid-column:1/-1;
+            text-align:center;
+            padding:60px 20px;
+            color:#888;
+            font-size:18px;
         }
         .no-categories {
-            grid-column:1/-1; 
-            text-align:center; 
-            padding:60px 20px; 
-            color:#666; 
-            font-size:18px; 
+            grid-column:1/-1;
+            text-align:center;
+            padding:60px 20px;
+            color:#666;
+            font-size:18px;
         }
         .no-categories a {
-            color:#4CAF50; 
-            text-decoration:none; 
-            font-weight:bold; 
+            color:#4CAF50;
+            text-decoration:none;
+            font-weight:bold;
         }
 
         /* Login Required Screen */
@@ -127,56 +128,92 @@
             border-radius: 30px;
             box-shadow: 0 4px 15px rgba(76,175,80,0.3);
         }
-        .login-required a:hover {
+
+        /* Track Now Bottom Bar */
+        .track-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 16px;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            border-top: 1px solid #eee;
+            max-width: 420px;
+            margin: 0 auto;
+            display: none; /* Hidden by default */
+        }
+        .track-bar.visible {
+            display: block;
+        }
+        .track-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(76,175,80,0.3);
+            width: 100%;
+            max-width: 300px;
+        }
+        .track-btn:hover {
             background: #43a047;
+        }
+        .track-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
         }
     </style>
 </head>
 <body>
-    <!-- Main Categories Page (only shown if logged in) -->
+    <!-- Main Categories Page -->
     <div class="container" id="mainContent">
         <header>
             <h1>CATEGORIES</h1>
         </header>
-
         <div class="tabs">
             <div class="tab active">All</div>
             <div class="tab">Popular</div>
         </div>
-
         <div class="grid" id="categoryGrid">
             <div class="loading">Loading categories...</div>
         </div>
     </div>
 
-    <!-- Login Required Screen (shown if not logged in) -->
+    <!-- Login Required Screen -->
     <div id="loginRequired" class="login-required" style="display:none;">
         <p>You need to login to browse categories and shop</p>
         <p><a href="login.html">Login Now →</a></p>
     </div>
 
+    <!-- Track Now Bottom Bar -->
+    <div class="track-bar" id="trackBar">
+        <div class="track-text">You have an active order</div>
+        <button class="track-btn" onclick="window.location.href='tracking.html'">Track Now →</button>
+    </div>
+
     <script>
-        // Check if user is logged in
         const loggedUser = JSON.parse(localStorage.getItem('chatpoint_user') || 'null');
 
         if (!loggedUser) {
-            // Not logged in → show login required screen
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('loginRequired').style.display = 'flex';
         } else {
-            // Logged in → load categories
             loadCategories();
+            checkActiveOrders(); // Check for pending/confirmed orders
         }
 
         async function loadCategories() {
             const grid = document.getElementById("categoryGrid");
-
             try {
                 const res = await fetch("/api/categories");
                 if (!res.ok) throw new Error("Network error");
-
                 const data = await res.json();
-
                 if (data.success && data.categories && data.categories.length > 0) {
                     grid.innerHTML = data.categories.map(cat => {
                         const imgSrc = cat.imageUrl || `https://via.placeholder.com/400x300/eeeeee/999999?text=${encodeURIComponent(cat.name)}`;
@@ -209,6 +246,30 @@
         function openCategory(name) {
             localStorage.setItem('selectedCategory', name);
             window.location.href = 'gitems.html';
+        }
+
+        // New: Check if user has any pending or confirmed order
+        async function checkActiveOrders() {
+            if (!loggedUser) return;
+
+            try {
+                const res = await fetch("/api/my-orders", {
+                    headers: { 'x-user-id': loggedUser._id }
+                });
+                const data = await res.json();
+
+                if (data.success && data.orders) {
+                    const hasActiveOrder = data.orders.some(order => 
+                        order.status === 'pending' || order.status === 'confirmed'
+                    );
+
+                    if (hasActiveOrder) {
+                        document.getElementById('trackBar').classList.add('visible');
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to check orders:", err);
+            }
         }
     </script>
 </body>
