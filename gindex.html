@@ -3,68 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grocery Categories</title>
+    <title>Categories — ChatPoint</title>
     <style>
-        body { font-family: Arial, sans-serif; background:#f8f8f8; margin:0; padding:0; display:flex; justify-content:center; }
-        .container { max-width:400px; width:100%; background:white; height:100vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 0 15px rgba(0,0,0,0.1); }
-        header { background:white; padding:15px; text-align:center; border-bottom:1px solid #eee; }
-        header h1 { margin:0; font-size:24px; color:#333; }
-        .tabs { display:flex; background:#f0f8f0; padding:10px; border-bottom:1px solid #ddd; }
-        .tab { flex:1; text-align:center; padding:8px; font-weight:bold; }
-        .tab.active { color:#4CAF50; border-bottom:3px solid #4CAF50; }
-        .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:15px; padding:20px; flex-grow:1; overflow-y:auto; }
-        .category { text-align:center; cursor:pointer; transition:0.3s; }
-        .category:hover { transform:scale(1.05); }
-        .category img { width:100%; height:120px; object-fit:cover; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.1); }
-        .category p { margin:10px 0 0; font-size:14px; color:#333; font-weight:500; }
-        .loading { text-align:center; padding:40px; color:#666; }
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background:#f4f6f9; 
+            margin:0; 
+            padding:0; 
+            display:flex; 
+            justify-content:center; 
+        }
+        .container { 
+            max-width:420px; 
+            width:100%; 
+            background:white; 
+            min-height:100vh; 
+            display:flex; 
+            flex-direction:column; 
+            box-shadow:0 0 20px rgba(0,0,0,0.08); 
+        }
+        header { 
+            background:#4CAF50; 
+            color:white; 
+            text-align:center; 
+            padding:20px; 
+        }
+        header h1 { 
+            margin:0; 
+            font-size:26px; 
+            font-weight:600; 
+        }
+        .tabs { 
+            display:flex; 
+            background:white; 
+            padding:12px 0; 
+            border-bottom:1px solid #eee; 
+        }
+        .tab { 
+            flex:1; 
+            text-align:center; 
+            padding:10px; 
+            font-weight:600; 
+            color:#666; 
+            cursor:pointer; 
+        }
+        .tab.active { 
+            color:#4CAF50; 
+            border-bottom:4px solid #4CAF50; 
+        }
+        .grid { 
+            display:grid; 
+            grid-template-columns:repeat(3,1fr); 
+            gap:18px; 
+            padding:24px; 
+            flex-grow:1; 
+            overflow-y:auto; 
+        }
+        .category { 
+            text-align:center; 
+            cursor:pointer; 
+            transition:transform 0.3s ease, box-shadow 0.3s ease; 
+        }
+        .category:hover { 
+            transform:translateY(-6px); 
+            box-shadow:0 8px 20px rgba(0,0,0,0.12); 
+        }
+        .category img { 
+            width:100%; 
+            height:130px; 
+            object-fit:cover; 
+            border-radius:16px; 
+            box-shadow:0 6px 15px rgba(0,0,0,0.1); 
+        }
+        .category p { 
+            margin:12px 0 0; 
+            font-size:15px; 
+            font-weight:600; 
+            color:#333; 
+        }
+        .loading { 
+            grid-column:1/-1; 
+            text-align:center; 
+            padding:60px 20px; 
+            color:#888; 
+            font-size:18px; 
+        }
+        .no-categories {
+            grid-column:1/-1; 
+            text-align:center; 
+            padding:60px 20px; 
+            color:#666; 
+            font-size:18px; 
+        }
+        .no-categories a {
+            color:#4CAF50; 
+            text-decoration:none; 
+            font-weight:bold; 
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <header><h1>CATEGORIES</h1></header>
+        <header>
+            <h1>CATEGORIES</h1>
+        </header>
+
         <div class="tabs">
             <div class="tab active">All</div>
             <div class="tab">Popular</div>
         </div>
+
         <div class="grid" id="categoryGrid">
             <div class="loading">Loading categories...</div>
         </div>
     </div>
 
- <script>
-  async function loadCategories() {
-    try {
-      const res = await fetch("/api/categories");
-      const data = await res.json();
-      const grid = document.getElementById("categoryGrid");
+    <script>
+        async function loadCategories() {
+            const grid = document.getElementById("categoryGrid");
 
-      if (data.success && data.categories.length > 0) {
-        grid.innerHTML = data.categories.map(cat => {
-          // Use the real imageUrl from database, fallback to placeholder
-          const img = cat.imageUrl || "https://via.placeholder.com/300x120?text=" + encodeURIComponent(cat.name);
-          return `
-            <div class="category" onclick="openCategory('${cat.name.replace(/'/g, "\\'")}')">
-              <img src="${img}" alt="${cat.name}">
-              <p>${cat.name}</p>
-            </div>
-          `;
-        }).join("");
-      } else {
-        grid.innerHTML = "<div class='loading'>No categories yet. Add in Admin Portal!</div>";
-      }
-    } catch (err) {
-      console.error("Fetch error:", err);
-      document.getElementById("categoryGrid").innerHTML = "<div class='loading'>Error loading categories. Check server.</div>";
-    }
-  }
+            try {
+                const res = await fetch("/api/categories");
+                if (!res.ok) throw new Error("Network error");
 
-  function openCategory(name) {
-    localStorage.setItem('selectedCategory', name);
-    window.location.href = 'gitems.html';
-  }
+                const data = await res.json();
 
-  window.onload = loadCategories;
-</script>
+                if (data.success && data.categories && data.categories.length > 0) {
+                    grid.innerHTML = data.categories.map(cat => {
+                        const imgSrc = cat.imageUrl || `https://via.placeholder.com/400x300/eeeeee/999999?text=${encodeURIComponent(cat.name)}`;
+                        return `
+                            <div class="category" onclick="openCategory('${cat.name.replace(/'/g, "\\'")}')">
+                                <img src="${imgSrc}" alt="${cat.name}" loading="lazy">
+                                <p>${cat.name}</p>
+                            </div>
+                        `;
+                    }).join("");
+                } else {
+                    grid.innerHTML = `
+                        <div class="no-categories">
+                            <p>No categories available yet.</p>
+                            <p>Add items in <a href="adminportal.html">Admin Portal</a> to get started!</p>
+                        </div>
+                    `;
+                }
+            } catch (err) {
+                console.error("Failed to load categories:", err);
+                grid.innerHTML = `
+                    <div class="loading">
+                        <p>Error loading categories</p>
+                        <p>Check your internet connection or server status.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function openCategory(name) {
+            localStorage.setItem('selectedCategory', name);
+            window.location.href = 'gitems.html';
+        }
+
+        // Load categories when page opens
+        window.onload = loadCategories;
+    </script>
 </body>
 </html>
