@@ -70,6 +70,12 @@
         .empty-cart a { 
             color:#4CAF50; text-decoration:none; font-weight:bold; 
         }
+        .login-required {
+            text-align:center; padding:60px 20px; color:#e74c3c; font-size:18px;
+        }
+        .login-required a {
+            color:#4CAF50; text-decoration:none; font-weight:bold;
+        }
     </style>
 </head>
 <body>
@@ -79,42 +85,62 @@
     </div>
 
     <div class="container">
-        <div id="cartItems" class="cart-items">
-            <!-- Items injected by JS -->
+        <!-- This will show if not logged in -->
+        <div id="loginRequired" class="login-required" style="display:none;">
+            <p>You need to login to view your cart</p>
+            <p><a href="login.html">Login Now →</a></p>
         </div>
 
-        <div id="emptyCart" class="empty-cart">
-            <p>Your cart is empty</p>
-            <p><a href="index.html">Continue Shopping →</a></p>
-        </div>
-
-        <div id="totalSection" class="total-section" style="display:none;">
-            <div class="total-row">
-                <span>Subtotal</span>
-                <span id="subtotal">₹0</span>
-            </div>
-            <div class="total-row">
-                <span>Delivery Charge (10%)</span>
-                <span id="deliveryCharge">₹0</span>
-            </div>
-            <div class="total-row grand-total">
-                <span>Grand Total</span>
-                <span id="grandTotal">₹0</span>
+        <!-- Normal cart content -->
+        <div id="cartContent">
+            <div id="cartItems" class="cart-items">
+                <!-- Items injected by JS -->
             </div>
 
-            <div class="min-order-note" id="minOrderNote">
-                Minimum order value is ₹300 to checkout
+            <div id="emptyCart" class="empty-cart">
+                <p>Your cart is empty</p>
+                <p><a href="index.html">Continue Shopping →</a></p>
             </div>
 
-            <button class="checkout-btn" id="checkoutBtn" onclick="proceedToCheckout()" disabled>
-                Proceed to Payment
-            </button>
+            <div id="totalSection" class="total-section" style="display:none;">
+                <div class="total-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">₹0</span>
+                </div>
+                <div class="total-row">
+                    <span>Delivery Charge (10%)</span>
+                    <span id="deliveryCharge">₹0</span>
+                </div>
+                <div class="total-row grand-total">
+                    <span>Grand Total</span>
+                    <span id="grandTotal">₹0</span>
+                </div>
+
+                <div class="min-order-note" id="minOrderNote">
+                    Minimum order value is ₹300 to proceed
+                </div>
+
+                <button class="checkout-btn" id="checkoutBtn" onclick="proceedToCheckout()" disabled>
+                    Proceed to Payment
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         const MIN_ORDER = 300;
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const user = JSON.parse(localStorage.getItem('chatpoint_user') || null);
+
+        // === Check if user is logged in ===
+        if (!user) {
+            document.getElementById('cartContent').style.display = 'none';
+            document.getElementById('loginRequired').style.display = 'block';
+            document.title = "Login Required — ChatPoint";
+        } else {
+            // User is logged in — show cart
+            renderCart();
+        }
 
         function renderCart() {
             const cartItemsDiv = document.getElementById('cartItems');
@@ -168,7 +194,7 @@
 
         function calculateTotal() {
             const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            const deliveryCharge = Math.round(subtotal * 0.10); // 10% of subtotal
+            const deliveryCharge = Math.round(subtotal * 0.10); // 10%
             const grandTotal = subtotal + deliveryCharge;
 
             document.getElementById('subtotal').textContent = `₹${subtotal}`;
@@ -184,7 +210,7 @@
             } else {
                 checkoutBtn.disabled = true;
                 minOrderNote.style.display = 'block';
-                minOrderNote.innerHTML = `Add items worth ₹${MIN_ORDER - subtotal} more to reach minimum order of ₹${MIN_ORDER}`;
+                minOrderNote.innerHTML = `Add ₹${MIN_ORDER - subtotal} more to reach minimum order of ₹${MIN_ORDER}`;
             }
         }
 
@@ -198,12 +224,8 @@
                 alert(`Minimum order value is ₹${MIN_ORDER}`);
                 return;
             }
-            // Redirect to GPay page
-            window.location.href = 'gpay.html';
+            window.location.href = 'gpay.html'; // Your payment page
         }
-
-        // Load cart on page open
-        window.onload = renderCart;
     </script>
 </body>
 </html>
