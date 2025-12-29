@@ -6,7 +6,12 @@
     <title>My Orders & Tracking | ChatPoint</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        :root { --primary: #ff4500; --success: #28a745; --bg: #f8f9fa; }
+        :root {
+            --primary: #ff4500;
+            --success: #28a745;
+            --bg: #f8f9fa;
+            --text: #333;
+        }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); min-height: 100vh; }
         .container { max-width: 500px; margin: 0 auto; padding: 1rem; }
@@ -15,11 +20,16 @@
             background: white; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 10;
         }
-        .back-btn { font-size: 24px; cursor: pointer; }
+        .back-btn { font-size: 24px; cursor: pointer; color: var(--text); }
         .title { font-size: 18px; font-weight: bold; }
 
-        .order-card { background: white; border-radius: 12px; margin: 16px 0; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
-        .order-header { padding: 16px; border-bottom: 1px solid #eee; }
+        .order-card {
+            background: white; border-radius: 12px; margin: 16px 0; overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+        .order-header {
+            padding: 16px; border-bottom: 1px solid #eee;
+        }
         .order-id { font-weight: bold; font-size: 1.1rem; }
         .order-status { font-size: 0.9rem; margin-top: 4px; color: var(--primary); }
         .status-delivered { color: var(--success); }
@@ -34,23 +44,36 @@
         .tracking-section { display: none; padding: 20px; background: #f9f9f9; }
         .tracking-section.active { display: block; }
 
-        .map-container { position: relative; height: 300px; background: #e0e0e0; overflow: hidden; border-radius: 8px; }
-        .map-bg { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.9); }
+        .map-container {
+            position: relative; height: 300px; background: #e0e0e0; overflow: hidden; border-radius: 8px;
+        }
+        .map-bg {
+            width: 100%; height: 100%; object-fit: cover; filter: brightness(0.9);
+        }
         .path { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
         .path-svg { width: 100%; height: 100%; }
         .dotted-line { stroke: var(--primary); stroke-width: 4; fill: none; stroke-dasharray: 8,8; }
         .pin { position: absolute; font-size: 32px; color: var(--primary); transform: translate(-50%, -100%); }
         .store-pin { left: 15%; top: 70%; }
         .customer-pin { left: 80%; top: 20%; }
-        .bike { position: absolute; font-size: 28px; color: black; transform: translate(-50%, -50%); transition: all 1s ease-in-out; z-index: 5; }
+        .bike {
+            position: absolute; font-size: 28px; color: black;
+            transform: translate(-50%, -50%); transition: all 1s ease-in-out; z-index: 5;
+        }
 
         .status-box { text-align: center; padding: 20px 0; }
         .status-title { font-size: 18px; font-weight: bold; }
         .eta { font-size: 16px; color: var(--primary); font-weight: bold; margin: 8px 0; }
 
-        .progress-steps { display: flex; justify-content: space-between; padding: 0 20px 20px; }
+        .progress-steps {
+            display: flex; justify-content: space-between; padding: 0 20px 20px;
+        }
         .step { text-align: center; flex: 1; }
-        .step-circle { width: 40px; height: 40px; border-radius: 50%; background: #ddd; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+        .step-circle {
+            width: 40px; height: 40px; border-radius: 50%; background: #ddd;
+            margin: 0 auto 8px; display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: bold;
+        }
         .step.active .step-circle { background: var(--primary); }
         .step-label { font-size: 12px; color: #666; }
         .step.active .step-label { color: var(--primary); font-weight: bold; }
@@ -73,13 +96,13 @@
         </div>
 
         <div id="noLogin" class="no-login" style="display:none;">
-            <p>You need to login to view orders</p>
+            <p>You need to login to view your orders</p>
             <p><a href="login.html" style="color:#4CAF50;font-weight:bold;">Login Now →</a></p>
         </div>
 
         <div id="noOrders" class="no-orders" style="display:none;">
-            <p>No orders yet</p>
-            <p>Start shopping to place your first order!</p>
+            <p>No orders found</p>
+            <p>Place your first order to track it here!</p>
         </div>
 
         <div id="ordersList"></div>
@@ -93,7 +116,7 @@
             document.getElementById('noLogin').style.display = 'block';
         } else {
             fetchUserOrders();
-            setInterval(fetchUserOrders, 10000);
+            setInterval(fetchUserOrders, 10000); // Refresh every 10 seconds
         }
 
         async function fetchUserOrders() {
@@ -110,8 +133,8 @@
                     document.getElementById('noOrders').style.display = 'block';
                 }
             } catch (err) {
-                console.error(err);
-                document.getElementById('loading').innerHTML = '<p>Error loading orders...</p>';
+                console.error("Fetch error:", err);
+                document.getElementById('loading').innerHTML = '<p>Error loading orders. Retrying...</p>';
             }
         }
 
@@ -124,11 +147,11 @@
                 const isTrackable = order.status === 'confirmed' || order.status === 'delivered';
 
                 const positions = [
-                    { left: '15%', top: '70%' },
+                    { left: '15%', top: '70%' },  // at store
                     { left: '35%', top: '55%' },
                     { left: '55%', top: '45%' },
                     { left: '70%', top: '30%' },
-                    { left: '80%', top: '20%' }
+                    { left: '80%', top: '20%' }   // at customer
                 ];
                 const pos = positions[Math.min(progress, 4)];
 
@@ -137,7 +160,7 @@
                     "Picked up from store",
                     "On the way",
                     "Almost there!",
-                    "Delivered! Enjoy 🥳"
+                    "Delivered! Enjoy your items 🥳"
                 ];
                 const etas = ["~30 min", "~25 min", "~15 min", "~5 min", "Delivered"];
 
@@ -156,39 +179,43 @@
                       <div class="order-status ${statusClass}">${statusText}</div>
                     </div>
 
+                    ${order.status === 'pending' ? `
+                      <div style="padding:20px; text-align:center; color:#666; font-size:16px;">
+                        ⏳ Waiting for shop confirmation
+                      </div>
+                    ` : ''}
+
                     ${isTrackable ? `
-                    <button class="track-btn" onclick="toggleTracking(this)">
-                      Track Order
-                    </button>
+                      <button class="track-btn" onclick="toggleTracking(this)">Track Order</button>
 
-                    <div class="tracking-section">
-                      <div class="map-container">
-                        <img src="https://images.unsplash.com/photo-1569336415965-7d80c2e3ff2a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Map" class="map-bg">
-                        <div class="path">
-                          <svg class="path-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-                            <path class="dotted-line" d="M15 70 Q 30 50, 50 45 T 80 20" />
-                          </svg>
+                      <div class="tracking-section">
+                        <div class="map-container">
+                          <img src="https://images.unsplash.com/photo-1569336415965-7d80c2e3ff2a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Map" class="map-bg">
+                          <div class="path">
+                            <svg class="path-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                              <path class="dotted-line" d="M15 70 Q 30 50, 50 45 T 80 20" />
+                            </svg>
+                          </div>
+                          <div class="pin store-pin"><i class="fas fa-store"></i></div>
+                          <div class="pin customer-pin"><i class="fas fa-map-marker-alt"></i></div>
+                          <div class="bike" style="left:${pos.left};top:${pos.top};">${bikeIcon}</div>
                         </div>
-                        <div class="pin store-pin"><i class="fas fa-store"></i></div>
-                        <div class="pin customer-pin"><i class="fas fa-map-marker-alt"></i></div>
-                        <div class="bike" style="left:${pos.left};top:${pos.top};">${bikeIcon}</div>
-                      </div>
 
-                      <div class="status-box">
-                        <div class="status-title">${messages[progress] || 'Order confirmed'}</div>
-                        <div class="eta">${etas[progress] || '~30 min'}</div>
+                        <div class="status-box">
+                          <div class="status-title">${messages[progress] || 'On the way'}</div>
+                          <div class="eta">${etas[progress] || '~15 min'}</div>
 
-                        <div class="progress-steps">
-                          ${[1,2,3,4].map(num => `
-                            <div class="step ${progress >= num ? 'active' : ''}">
-                              <div class="step-circle">${num}</div>
-                              <div class="step-label">${['Prepared','Picked','On Way','Delivered'][num-1]}</div>
-                            </div>
-                          `).join('')}
+                          <div class="progress-steps">
+                            ${[1,2,3,4].map(num => `
+                              <div class="step ${progress >= num ? 'active' : ''}">
+                                <div class="step-circle">${num}</div>
+                                <div class="step-label">${['Prepared','Picked','On Way','Delivered'][num-1]}</div>
+                              </div>
+                            `).join('')}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    ` : (order.status === 'pending' ? '<div style="padding:16px;text-align:center;color:#666;">⏳ Waiting for confirmation</div>' : '')}
+                    ` : ''}
                   </div>
                 `;
             }).join('');
