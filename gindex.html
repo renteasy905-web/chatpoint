@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Categories — ChatPoint</title>
+    <title>ChatPoint Grocery</title>
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -21,236 +21,150 @@
             display:flex;
             flex-direction:column;
             box-shadow:0 0 20px rgba(0,0,0,0.08);
-            padding-bottom: 80px; /* Space for bottom bar */
+            padding-bottom: 90px;
         }
         header {
             background:#4CAF50;
             color:white;
             text-align:center;
-            padding:20px;
+            padding:30px 20px;
         }
         header h1 {
             margin:0;
-            font-size:26px;
-            font-weight:600;
+            font-size:28px;
+            font-weight:700;
         }
-        .tabs {
-            display:flex;
-            background:white;
-            padding:12px 0;
-            border-bottom:1px solid #eee;
+        header p {
+            margin:10px 0 0;
+            opacity:0.9;
+            font-size:16px;
         }
-        .tab {
-            flex:1;
+        .hero {
+            padding:30px 20px;
             text-align:center;
-            padding:10px;
-            font-weight:600;
-            color:#666;
-            cursor:pointer;
         }
-        .tab.active {
-            color:#4CAF50;
-            border-bottom:4px solid #4CAF50;
-        }
-        .grid {
-            display:grid;
-            grid-template-columns:repeat(3,1fr);
-            gap:18px;
-            padding:24px;
-            flex-grow:1;
-            overflow-y:auto;
-        }
-        .category {
-            text-align:center;
-            cursor:pointer;
-            transition:transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .category:hover {
-            transform:translateY(-6px);
-            box-shadow:0 8px 20px rgba(0,0,0,0.12);
-        }
-        .category img {
-            width:100%;
-            height:130px;
-            object-fit:cover;
-            border-radius:16px;
-            box-shadow:0 6px 15px rgba(0,0,0,0.1);
-        }
-        .category p {
-            margin:12px 0 0;
-            font-size:15px;
-            font-weight:600;
+        .hero h2 {
+            font-size:24px;
+            margin-bottom:16px;
             color:#333;
         }
-        .loading {
-            grid-column:1/-1;
-            text-align:center;
-            padding:60px 20px;
-            color:#888;
+        .start-btn {
+            background:#4CAF50;
+            color:white;
+            border:none;
+            padding:16px 40px;
+            border-radius:30px;
             font-size:18px;
-        }
-        .no-categories {
-            grid-column:1/-1;
-            text-align:center;
-            padding:60px 20px;
-            color:#666;
-            font-size:18px;
-        }
-        .no-categories a {
-            color:#4CAF50;
-            text-decoration:none;
             font-weight:bold;
+            cursor:pointer;
+            box-shadow:0 6px 20px rgba(76,175,80,0.3);
+        }
+        .start-btn:hover {
+            background:#43a047;
         }
 
-        /* Login Required Screen */
+        /* Login Required */
         .login-required {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            text-align: center;
-            padding: 20px;
-            color: #e74c3c;
-            font-size: 18px;
-        }
-        .login-required p {
-            margin: 20px 0;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            height:100vh;
+            text-align:center;
+            padding:20px;
+            color:#e74c3c;
+            font-size:18px;
         }
         .login-required a {
-            color: #4CAF50;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 20px;
-            padding: 12px 30px;
-            background: #4CAF50;
-            color: white;
-            border-radius: 30px;
-            box-shadow: 0 4px 15px rgba(76,175,80,0.3);
+            margin-top:20px;
+            background:#4CAF50;
+            color:white;
+            padding:14px 32px;
+            border-radius:30px;
+            text-decoration:none;
+            font-weight:bold;
+            font-size:20px;
         }
 
-        /* Track Now Bottom Bar */
+        /* Track Now Bar */
         .track-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 16px;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-            text-align: center;
-            border-top: 1px solid #eee;
-            max-width: 420px;
-            margin: 0 auto;
-            display: none; /* Hidden by default */
+            position:fixed;
+            bottom:0;
+            left:0;
+            right:0;
+            background:white;
+            padding:16px;
+            box-shadow:0 -6px 20px rgba(0,0,0,0.12);
+            text-align:center;
+            border-top:1px solid #eee;
+            max-width:420px;
+            margin:0 auto;
+            display:none;
+            z-index:100;
         }
         .track-bar.visible {
-            display: block;
-        }
-        .track-btn {
-            background: #4CAF50;
-            color: white;
-            border: none;
-            padding: 14px 32px;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(76,175,80,0.3);
-            width: 100%;
-            max-width: 300px;
-        }
-        .track-btn:hover {
-            background: #43a047;
+            display:block;
         }
         .track-text {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
+            font-size:15px;
+            color:#333;
+            font-weight:600;
+            margin-bottom:10px;
+        }
+        .track-btn {
+            background:#4CAF50;
+            color:white;
+            border:none;
+            padding:14px 40px;
+            border-radius:30px;
+            font-size:18px;
+            font-weight:bold;
+            cursor:pointer;
+            box-shadow:0 4px 15px rgba(76,175,80,0.3);
         }
     </style>
 </head>
 <body>
-    <!-- Main Categories Page -->
     <div class="container" id="mainContent">
         <header>
-            <h1>CATEGORIES</h1>
+            <h1>ChatPoint</h1>
+            <p>Fresh groceries delivered fast</p>
         </header>
-        <div class="tabs">
-            <div class="tab active">All</div>
-            <div class="tab">Popular</div>
-        </div>
-        <div class="grid" id="categoryGrid">
-            <div class="loading">Loading categories...</div>
+        <div class="hero">
+            <h2>Welcome back!</h2>
+            <button class="start-btn" onclick="window.location.href='categories.html'">Shop Now</button>
         </div>
     </div>
 
-    <!-- Login Required Screen -->
     <div id="loginRequired" class="login-required" style="display:none;">
-        <p>You need to login to browse categories and shop</p>
-        <p><a href="login.html">Login Now →</a></p>
+        <p>You need to login to shop</p>
+        <a href="login.html">Login Now →</a>
     </div>
 
-    <!-- Track Now Bottom Bar -->
+    <!-- Track Now Bar -->
     <div class="track-bar" id="trackBar">
-        <div class="track-text">You have an active order</div>
+        <div class="track-text" id="trackText">1 Active Order</div>
         <button class="track-btn" onclick="window.location.href='tracking.html'">Track Now →</button>
     </div>
 
     <script>
         const loggedUser = JSON.parse(localStorage.getItem('chatpoint_user') || 'null');
+        const trackBar = document.getElementById('trackBar');
+        const trackText = document.getElementById('trackText');
 
         if (!loggedUser) {
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('loginRequired').style.display = 'flex';
         } else {
-            loadCategories();
-            checkActiveOrders(); // Check for pending/confirmed orders
+            checkActiveOrders();
+            setInterval(checkActiveOrders, 15000);
         }
 
-        async function loadCategories() {
-            const grid = document.getElementById("categoryGrid");
-            try {
-                const res = await fetch("/api/categories");
-                if (!res.ok) throw new Error("Network error");
-                const data = await res.json();
-                if (data.success && data.categories && data.categories.length > 0) {
-                    grid.innerHTML = data.categories.map(cat => {
-                        const imgSrc = cat.imageUrl || `https://via.placeholder.com/400x300/eeeeee/999999?text=${encodeURIComponent(cat.name)}`;
-                        return `
-                            <div class="category" onclick="openCategory('${cat.name.replace(/'/g, "\\'")}')">
-                                <img src="${imgSrc}" alt="${cat.name}" loading="lazy">
-                                <p>${cat.name}</p>
-                            </div>
-                        `;
-                    }).join("");
-                } else {
-                    grid.innerHTML = `
-                        <div class="no-categories">
-                            <p>No categories available yet.</p>
-                            <p>Add items in <a href="adminportal.html">Admin Portal</a> to get started!</p>
-                        </div>
-                    `;
-                }
-            } catch (err) {
-                console.error("Failed to load categories:", err);
-                grid.innerHTML = `
-                    <div class="loading">
-                        <p>Error loading categories</p>
-                        <p>Please check your connection or try again later.</p>
-                    </div>
-                `;
-            }
-        }
-
-        function openCategory(name) {
-            localStorage.setItem('selectedCategory', name);
-            window.location.href = 'gitems.html';
-        }
-
-        // New: Check if user has any pending or confirmed order
         async function checkActiveOrders() {
-            if (!loggedUser) return;
+            if (!loggedUser || !loggedUser._id) {
+                trackBar.classList.remove('visible');
+                return;
+            }
 
             try {
                 const res = await fetch("/api/my-orders", {
@@ -259,16 +173,19 @@
                 const data = await res.json();
 
                 if (data.success && data.orders) {
-                    const hasActiveOrder = data.orders.some(order => 
-                        order.status === 'pending' || order.status === 'confirmed'
-                    );
-
-                    if (hasActiveOrder) {
-                        document.getElementById('trackBar').classList.add('visible');
+                    const active = data.orders.filter(o => o.status === 'pending' || o.status === 'confirmed');
+                    if (active.length > 0) {
+                        trackBar.classList.add('visible');
+                        trackText.textContent = active.length === 1 ? "1 Active Order" : `${active.length} Active Orders`;
+                    } else {
+                        trackBar.classList.remove('visible');
                     }
+                } else {
+                    trackBar.classList.remove('visible');
                 }
             } catch (err) {
-                console.error("Failed to check orders:", err);
+                console.error(err);
+                trackBar.classList.remove('visible');
             }
         }
     </script>
