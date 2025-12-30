@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Categories — ChatPoint</title>
-
+<title>Grocery Categories — ChatPoint</title>
 <style>
 * {
   margin: 0;
@@ -12,13 +11,11 @@
   box-sizing: border-box;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
-
 body {
   background: #f4f6f9;
   display: flex;
   justify-content: center;
 }
-
 .container {
   max-width: 420px;
   width: 100%;
@@ -29,27 +26,44 @@ body {
   box-shadow: 0 0 20px rgba(0,0,0,0.08);
   padding-bottom: 90px;
 }
-
 /* HEADER */
 header {
   background: #4CAF50;
   padding: 18px;
   text-align: center;
   color: #fff;
+  position: relative;
 }
-
 header h1 {
   font-size: 22px;
   font-weight: 600;
 }
-
+/* OFFER BUTTON IN HEADER */
+.offer-btn {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.4);
+  padding: 6px 14px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.offer-btn:hover {
+  background: rgba(255,255,255,0.3);
+}
 /* TABS */
 .tabs {
   display: flex;
   background: #fff;
   border-bottom: 1px solid #eee;
 }
-
 .tab {
   flex: 1;
   text-align: center;
@@ -58,12 +72,10 @@ header h1 {
   font-size: 14px;
   color: #666;
 }
-
 .tab.active {
   color: #4CAF50;
   border-bottom: 3px solid #4CAF50;
 }
-
 /* GRID */
 .grid {
   display: grid;
@@ -73,7 +85,6 @@ header h1 {
   flex-grow: 1;
   overflow-y: auto;
 }
-
 /* CATEGORY CARD */
 .category {
   background: #fff;
@@ -84,32 +95,27 @@ header h1 {
   box-shadow: 0 6px 16px rgba(0,0,0,0.08);
   transition: box-shadow 0.25s ease;
 }
-
 .category:hover {
   box-shadow: 0 14px 30px rgba(0,0,0,0.14);
 }
-
 .category-img {
   width: 100%;
   aspect-ratio: 1 / 1;
   background: #e5e7eb;
   overflow: hidden;
 }
-
 .category-img img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
-
 .category p {
   padding: 10px 8px 14px;
   font-size: 14px;
   font-weight: 600;
   color: #333;
 }
-
 /* STATES */
 .loading,
 .no-categories {
@@ -119,13 +125,11 @@ header h1 {
   font-size: 16px;
   color: #777;
 }
-
 .no-categories a {
   color: #4CAF50;
   font-weight: 600;
   text-decoration: none;
 }
-
 /* LOGIN */
 .login-required {
   display: none;
@@ -136,13 +140,11 @@ header h1 {
   padding: 20px;
   text-align: center;
 }
-
 .login-required p {
   color: #e74c3c;
   font-size: 16px;
   margin-bottom: 20px;
 }
-
 .login-required a {
   background: #4CAF50;
   color: #fff;
@@ -152,7 +154,6 @@ header h1 {
   text-decoration: none;
   box-shadow: 0 6px 18px rgba(76,175,80,0.35);
 }
-
 /* TRACK BAR */
 .track-bar {
   position: fixed;
@@ -168,18 +169,15 @@ header h1 {
   display: none;
   z-index: 100;
 }
-
 .track-bar.visible {
   display: block;
 }
-
 .track-text {
   text-align: center;
   font-weight: 600;
   font-size: 14px;
   margin-bottom: 10px;
 }
-
 .track-btn {
   width: 100%;
   background: #4CAF50;
@@ -192,47 +190,45 @@ header h1 {
 }
 </style>
 </head>
-
 <body>
-
 <div class="container" id="mainContent">
   <header>
-    <h1>CATEGORIES</h1>
+    <h1>GROCERY CATEGORIES</h1>
+    <!-- Offers Button -->
+    <button class="offer-btn" onclick="location.href='offer.html'">
+      Offers
+    </button>
   </header>
-
   <div class="tabs">
     <div class="tab active">All</div>
     <div class="tab">Popular</div>
   </div>
-
   <div class="grid" id="categoryGrid">
     <div class="loading">Loading categories...</div>
   </div>
 </div>
-
 <div class="login-required" id="loginRequired">
   <p>You need to login to browse categories</p>
   <a href="login.html">Login Now →</a>
 </div>
-
 <div class="track-bar" id="trackBar">
   <div class="track-text" id="trackText">1 Active Order</div>
   <button class="track-btn" onclick="location.href='tracking.html'">
     Track Now →
   </button>
 </div>
-
 <script>
 const loggedUser = JSON.parse(localStorage.getItem("chatpoint_user") || "null");
-
 const categories = [
-  { name: "Groceries", image: "https://images.unsplash.com/photo-1586201375761-83865001e17b" },
-  { name: "Vegetables", image: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce" },
-  { name: "Fruits", image: "https://images.unsplash.com/photo-1574226516831-e1dff420e43e" },
-  { name: "Snacks", image: "https://images.unsplash.com/photo-1604908177522-402b9c31c2b7" },
-  { name: "Beverages", image: "https://images.unsplash.com/photo-1544145945-f90425340c7e" }
+  { name: "Staples & Groceries", image: "https://cdn.apartmenttherapy.info/image/upload/v1746109915/tk/photo/2025/04-2025/2025%20Kitchen%20Appliance%20Stock/Spice%20Pantry%20Stock/spice-pantry-096.jpg" },
+  { name: "Vegetables", image: "https://media.gettyimages.com/id/1172975655/photo/delicious-fresh-vegetables-and-fruits-at-the-refrigerated-section-of-a-supermarket.jpg?s=612x612&w=gi&k=20&c=UQ5o1zmtbKMJV2fBvENufVhunWevzRBVeMomzto-RHs=" },
+  { name: "Fruits", image: "https://www.shutterstock.com/shutterstock/photos/407011315/display_1500/stock-photo-fresh-organic-fruit-in-basket-for-sell-on-supermarket-407011315.jpg" },
+  { name: "Snacks", image: "https://c8.alamy.com/comp/DK7CX2/supermarket-interior-showing-selection-of-chocolate-biscuits-britain-DK7CX2.jpg" },
+  { name: "Beverages", image: "https://www.shutterstock.com/image-photo/washington-dc-us-december-28-600nw-2569443773.jpg" },
+  { name: "Dairy & Eggs", image: "https://img.freepik.com/premium-photo/refrigerator-with-dairy-products-milk-cheese-yogurt-generative-ai_864588-12386.jpg" },
+  { name: "Household", image: "https://media.gettyimages.com/id/614264864/photo/household-cleaning-products-retail-display-in-a-supermarket-mendoza-plaza-shopping.jpg?s=1024x1024&w=gi&k=20&c=4mkyzPZXCX_OhBXDF_6b_bqEr-BqL3bSR3bv1EEd73E=" },
+  { name: "Personal Care", image: "https://c8.alamy.com/comp/2HG75EJ/nicaragua-managua-supermarket-storeshopping-retail-business-shelf-shelves-personal-care-toiletries-shampoos-hair-care-pert-dove-vo5-fructis-citre-2HG75EJ.jpg" }
 ];
-
 const grid = document.getElementById("categoryGrid");
 const trackBar = document.getElementById("trackBar");
 
@@ -260,9 +256,8 @@ function loadCategories() {
 
 function openCategory(name) {
   localStorage.setItem("selectedCategory", name);
-  alert("Selected: " + name);
+  location.href = "products.html"; // Change to your products page if needed
 }
 </script>
-
 </body>
 </html>
