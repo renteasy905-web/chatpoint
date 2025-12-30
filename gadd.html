@@ -5,152 +5,245 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Portal — ChatPoint</title>
   <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f4f6f9;
-      margin: 0;
-      padding: 20px;
+    :root {
+      --primary: #2563eb; /* Modern blue for professional feel */
+      --primary-dark: #1d4ed8;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      --radius: 12px;
     }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 16px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
     .container {
-      max-width: 960px;
+      max-width: 1200px;
       margin: 0 auto;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       overflow: hidden;
     }
+
     header {
-      background: #4CAF50;
+      background: var(--primary);
       color: white;
       text-align: center;
-      padding: 24px;
+      padding: 32px 24px;
     }
+
     header h1 {
       margin: 0;
       font-size: 28px;
       font-weight: 600;
     }
+
     .content {
-      padding: 32px;
+      padding: 32px 24px;
     }
+
     .password-section {
-      margin-bottom: 24px;
+      margin-bottom: 32px;
     }
+
     label {
       display: block;
       font-weight: 600;
       margin-bottom: 8px;
-      color: #333;
+      color: var(--text);
     }
-    input[type="password"], input, select {
+
+    input[type="password"], input[type="text"], input[type="number"], input[type="file"], select {
       width: 100%;
-      padding: 14px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
       font-size: 16px;
       box-sizing: border-box;
+      transition: border-color 0.3s, box-shadow 0.3s;
     }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+    }
+
     .form-grid {
       display: grid;
-      gap: 20px;
-      background: #f9fbfa;
-      padding: 28px;
-      border-radius: 12px;
-      border: 1px solid #e0e0e0;
-      margin-bottom: 40px;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      background: #f1f5f9;
+      padding: 32px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin-bottom: 48px;
     }
+
     button {
-      background: #4CAF50;
+      background: var(--primary);
       color: white;
       border: none;
-      padding: 16px;
+      padding: 16px 24px;
       font-size: 17px;
       font-weight: 600;
-      border-radius: 10px;
+      border-radius: var(--radius);
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.3s, transform 0.1s;
     }
+
     button:hover {
-      background: #43a047;
+      background: var(--primary-dark);
     }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
     .hidden {
       display: none;
     }
-    .items-section {
-      margin-top: 40px;
-    }
+
     .items-section h2 {
-      color: #333;
+      color: var(--text);
       margin-bottom: 16px;
-      font-size: 24px;
+      font-size: 26px;
     }
+
     .items-list {
       display: grid;
-      gap: 20px;
-      margin-top: 16px;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      margin-top: 24px;
     }
+
     .item-card {
-      background: #f9fbfa;
-      border: 1px solid #eee;
-      border-radius: 12px;
-      padding: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
       display: flex;
-      align-items: center;
+      flex-direction: column;
       gap: 20px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      transition: box-shadow 0.3s;
     }
+
+    .item-card:hover {
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
     .item-card img {
-      width: 100px;
-      height: 100px;
+      width: 100%;
+      height: 200px;
       object-fit: cover;
-      border-radius: 10px;
+      border-radius: var(--radius);
     }
-    .item-info {
-      flex: 1;
-    }
+
     .item-info strong {
-      font-size: 19px;
+      font-size: 20px;
       display: block;
-      margin-bottom: 6px;
-      color: #222;
+      margin-bottom: 8px;
+      color: var(--text);
     }
+
     .price-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin: 12px 0;
+      gap: 12px;
+      margin: 16px 0;
     }
+
     .price-input {
-      width: 120px;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+      width: 140px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
     }
+
     .actions {
       display: flex;
-      gap: 10px;
+      flex-wrap: wrap;
+      gap: 12px;
     }
+
     .actions button {
-      padding: 10px 18px;
-      font-size: 14px;
-      border-radius: 8px;
+      padding: 12px 20px;
+      font-size: 15px;
+      flex: 1;
+      min-width: 120px;
     }
+
     .update-btn {
-      background: #4CAF50;
+      background: var(--success);
     }
+
+    .update-btn:hover {
+      background: #059669;
+    }
+
     .delete-btn {
-      background: #f44336;
+      background: var(--danger);
     }
-    .no-items {
+
+    .delete-btn:hover {
+      background: #dc2626;
+    }
+
+    .no-items, .loading {
       text-align: center;
-      padding: 50px;
-      color: #888;
+      padding: 60px;
+      color: var(--text-light);
       font-size: 18px;
     }
-    .loading {
-      text-align: center;
-      color: #666;
-      padding: 20px;
+
+    /* Responsive Improvements */
+    @media (min-width: 640px) {
+      .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .form-grid > button {
+        grid-column: span 2;
+      }
+    }
+
+    @media (min-width: 768px) {
+      body {
+        padding: 32px;
+      }
+      .content {
+        padding: 48px;
+      }
+      .item-card {
+        flex-direction: row;
+        align-items: center;
+      }
+      .item-card img {
+        width: 140px;
+        height: 140px;
+      }
+      .items-list {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .items-list {
+        grid-template-columns: repeat(3, 1fr);
+      }
     }
   </style>
 </head>
@@ -175,6 +268,7 @@
         </div>
 
         <div id="newCategorySection" class="hidden">
+          <label>New Category Name</label>
           <input type="text" id="newCategory" placeholder="Enter new category name (e.g. Fruits)" required>
         </div>
 
@@ -251,7 +345,6 @@
       }
     }
 
-    // Toggle new category fields
     document.getElementById("categorySelect").addEventListener("change", function () {
       const isNew = this.value === "__new__";
       document.getElementById("newCategorySection").classList.toggle("hidden", !isNew);
@@ -274,7 +367,6 @@
       return select.value;
     }
 
-    // Add Item Form Submit
     document.getElementById("addForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -313,9 +405,10 @@
             : `Item added to "${category}" successfully!`
           );
           document.getElementById("addForm").reset();
+          document.getElementById("categorySelect").value = "";
           document.getElementById("newCategorySection").classList.add("hidden");
           document.getElementById("categoryPhotoSection").classList.add("hidden");
-          loadCategories(); // Refresh dropdowns
+          loadCategories();
         } else {
           alert("Error: " + (data.message || "Failed to add item"));
         }
@@ -325,7 +418,6 @@
       }
     });
 
-    // Load Items for Selected Category
     async function loadItems(category) {
       if (!category) {
         document.getElementById("itemsList").innerHTML = "<div class='no-items'>Select a category to view items</div>";
@@ -345,7 +437,7 @@
               <div class="item-info">
                 <strong>${item.name}</strong>
                 <div class="price-row">
-                  <span>₹</span>
+                  <span style="font-size:18px; font-weight:600;">₹</span>
                   <input type="number" class="price-input" value="${item.price}" data-id="${item._id}">
                 </div>
                 <div class="actions">
@@ -363,7 +455,6 @@
       }
     }
 
-    // Update Price
     async function updatePrice(id) {
       const input = document.querySelector(`.price-input[data-id="${id}"]`);
       const newPrice = input.value;
@@ -383,7 +474,6 @@
       }
     }
 
-    // Delete Item
     async function deleteItem(id) {
       if (!confirm("Permanently delete this item?")) return;
 
@@ -406,7 +496,6 @@
       }
     }
 
-    // Load categories on page load
     window.onload = loadCategories;
   </script>
 </body>
