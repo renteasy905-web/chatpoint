@@ -1,269 +1,323 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Categories — ChatPoint</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background:#f4f6f9;
-            margin:0;
-            padding:0;
-            display:flex;
-            justify-content:center;
-        }
-        .container {
-            max-width:420px;
-            width:100%;
-            background:white;
-            min-height:100vh;
-            display:flex;
-            flex-direction:column;
-            box-shadow:0 0 20px rgba(0,0,0,0.08);
-            padding-bottom: 90px;
-        }
-        header {
-            background:#4CAF50;
-            color:white;
-            text-align:center;
-            padding:20px;
-        }
-        header h1 {
-            margin:0;
-            font-size:26px;
-            font-weight:600;
-        }
-        .tabs {
-            display:flex;
-            background:white;
-            padding:12px 0;
-            border-bottom:1px solid #eee;
-        }
-        .tab {
-            flex:1;
-            text-align:center;
-            padding:10px;
-            font-weight:600;
-            color:#666;
-            cursor:pointer;
-        }
-        .tab.active {
-            color:#4CAF50;
-            border-bottom:4px solid #4CAF50;
-        }
-        .grid {
-            display:grid;
-            grid-template-columns:repeat(3,1fr);
-            gap:18px;
-            padding:24px;
-            flex-grow:1;
-            overflow-y:auto;
-        }
-        .category {
-            text-align:center;
-            cursor:pointer;
-            transition:transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .category:hover {
-            transform:translateY(-6px);
-            box-shadow:0 8px 20px rgba(0,0,0,0.12);
-        }
-        .category img {
-            width:100%;
-            height:130px;
-            object-fit:cover;
-            border-radius:16px;
-            box-shadow:0 6px 15px rgba(0,0,0,0.1);
-        }
-        .category p {
-            margin:12px 0 0;
-            font-size:15px;
-            font-weight:600;
-            color:#333;
-        }
-        .loading {
-            grid-column:1/-1;
-            text-align:center;
-            padding:60px 20px;
-            color:#888;
-            font-size:18px;
-        }
-        .no-categories {
-            grid-column:1/-1;
-            text-align:center;
-            padding:60px 20px;
-            color:#666;
-            font-size:18px;
-        }
-        .no-categories a {
-            color:#4CAF50;
-            text-decoration:none;
-            font-weight:bold;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Categories — ChatPoint</title>
 
-        .login-required {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            text-align: center;
-            padding: 20px;
-            color: #e74c3c;
-            font-size: 18px;
-        }
-        .login-required a {
-            color: #4CAF50;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 20px;
-            padding: 12px 30px;
-            background: #4CAF50;
-            color: white;
-            border-radius: 30px;
-            box-shadow: 0 4px 15px rgba(76,175,80,0.3);
-            margin-top: 20px;
-        }
+  <style>
+    /* ===================== RESET & BASE ===================== */
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-        .track-bar {
-            position:fixed;
-            bottom:0;
-            left:0;
-            right:0;
-            background:white;
-            padding:16px;
-            box-shadow:0 -6px 20px rgba(0,0,0,0.12);
-            text-align:center;
-            border-top:1px solid #eee;
-            max-width:420px;
-            margin:0 auto;
-            display:none;
-            z-index:100;
-        }
-        .track-bar.visible {
-            display:block;
-        }
-        .track-text {
-            font-size:15px;
-            color:#333;
-            font-weight:600;
-            margin-bottom:10px;
-        }
-        .track-btn {
-            background:#4CAF50;
-            color:white;
-            border:none;
-            padding:14px 40px;
-            border-radius:30px;
-            font-size:18px;
-            font-weight:bold;
-            cursor:pointer;
-            box-shadow:0 4px 15px rgba(76,175,80,0.3);
-        }
-    </style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f4f6f9;
+      overscroll-behavior: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    /* ===================== LAYOUT ===================== */
+    body {
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      min-height: 100dvh;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 12px rgba(0,0,0,0.06);
+      padding-bottom: 110px;
+    }
+
+    /* ===================== HEADER ===================== */
+    header {
+      background: linear-gradient(135deg, #43a047, #4CAF50);
+      color: #fff;
+      text-align: center;
+      padding: 18px 16px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    /* ===================== TABS ===================== */
+    .tabs {
+      display: flex;
+      padding: 6px;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+    }
+
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 12px 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: #777;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: rgba(76, 175, 80, 0.12);
+      color: #4CAF50;
+    }
+
+    /* ===================== GRID ===================== */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      padding: 16px;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 360px) {
+      .grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* ===================== CATEGORY CARD ===================== */
+    .category {
+      background: #fff;
+      border-radius: 18px;
+      padding: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .category:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.1);
+    }
+
+    .category:active {
+      transform: scale(0.97);
+    }
+
+    .category img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 14px;
+      background: #f1f1f1;
+    }
+
+    .category p {
+      margin: 10px 4px 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #222;
+      line-height: 1.3;
+    }
+
+    /* ===================== STATES ===================== */
+    .loading,
+    .no-categories {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      font-size: 16px;
+      color: #777;
+    }
+
+    .no-categories a {
+      color: #4CAF50;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* ===================== LOGIN REQUIRED ===================== */
+    .login-required {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+      padding: 20px;
+      color: #e74c3c;
+      font-size: 18px;
+    }
+
+    .login-required a {
+      margin-top: 20px;
+      padding: 12px 32px;
+      background: #4CAF50;
+      color: #fff;
+      border-radius: 30px;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(76,175,80,0.3);
+    }
+
+    /* ===================== TRACK BAR ===================== */
+    .track-bar {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 24px);
+      max-width: 420px;
+      background: #fff;
+      padding: 14px 16px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      display: none;
+      z-index: 100;
+      text-align: center;
+    }
+
+    .track-bar.visible {
+      display: block;
+    }
+
+    .track-text {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .track-btn {
+      background: #4CAF50;
+      color: #fff;
+      border: none;
+      padding: 14px 40px;
+      border-radius: 30px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(76,175,80,0.3);
+    }
+  </style>
 </head>
+
 <body>
-    <div class="container" id="mainContent">
-        <header>
-            <h1>CATEGORIES</h1>
-        </header>
-        <div class="tabs">
-            <div class="tab active">All</div>
-            <div class="tab">Popular</div>
-        </div>
-        <div class="grid" id="categoryGrid">
-            <div class="loading">Loading categories...</div>
-        </div>
+
+  <div class="container" id="mainContent">
+    <header>
+      <h1>CATEGORIES</h1>
+    </header>
+
+    <div class="tabs">
+      <div class="tab active">All</div>
+      <div class="tab">Popular</div>
     </div>
 
-    <div id="loginRequired" class="login-required" style="display:none;">
-        <p>You need to login to browse categories and shop</p>
-        <a href="login.html">Login Now →</a>
+    <div class="grid" id="categoryGrid">
+      <div class="loading">Loading categories...</div>
     </div>
+  </div>
 
-    <div class="track-bar" id="trackBar">
-        <div class="track-text" id="trackText">1 Active Order</div>
-        <button class="track-btn" onclick="window.location.href='tracking.html'">Track Now →</button>
-    </div>
+  <div id="loginRequired" class="login-required" style="display:none;">
+    <p>You need to login to browse categories and shop</p>
+    <a href="login.html">Login Now →</a>
+  </div>
 
-    <script>
-        const loggedUser = JSON.parse(localStorage.getItem('chatpoint_user') || 'null');
-        const trackBar = document.getElementById('trackBar');
-        const trackText = document.getElementById('trackText');
+  <div class="track-bar" id="trackBar">
+    <div class="track-text" id="trackText">1 Active Order</div>
+    <button class="track-btn" onclick="window.location.href='tracking.html'">
+      Track Now →
+    </button>
+  </div>
 
-        if (!loggedUser) {
-            document.getElementById('mainContent').style.display = 'none';
-            document.getElementById('loginRequired').style.display = 'flex';
+  <script>
+    const loggedUser = JSON.parse(localStorage.getItem('chatpoint_user') || 'null');
+    const trackBar = document.getElementById('trackBar');
+    const trackText = document.getElementById('trackText');
+
+    if (!loggedUser) {
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('loginRequired').style.display = 'flex';
+    } else {
+      loadCategories();
+      checkActiveOrders();
+      setInterval(checkActiveOrders, 15000);
+    }
+
+    async function loadCategories() {
+      const grid = document.getElementById("categoryGrid");
+      try {
+        const res = await fetch("/api/categories");
+        const data = await res.json();
+
+        if (data.success && data.categories?.length) {
+          grid.innerHTML = data.categories.map(cat => {
+            const imgSrc = cat.imageUrl ||
+              `https://via.placeholder.com/300x300/f5f5f5/888888?text=${encodeURIComponent(cat.name)}`;
+            return `
+              <div class="category" onclick="openCategory('${cat.name.replace(/'/g, "\\'")}')">
+                <img src="${imgSrc}" loading="lazy" alt="${cat.name}">
+                <p>${cat.name}</p>
+              </div>`;
+          }).join("");
         } else {
-            loadCategories();
-            checkActiveOrders();
-            setInterval(checkActiveOrders, 15000);
+          grid.innerHTML = `
+            <div class="no-categories">
+              <p>No categories available.</p>
+              <p>Add items in <a href="adminportal.html">Admin Portal</a></p>
+            </div>`;
         }
+      } catch {
+        grid.innerHTML = `<div class="loading">Failed to load categories</div>`;
+      }
+    }
 
-        async function loadCategories() {
-            const grid = document.getElementById("categoryGrid");
-            try {
-                const res = await fetch("/api/categories");
-                if (!res.ok) throw new Error("Network error");
-                const data = await res.json();
-                if (data.success && data.categories && data.categories.length > 0) {
-                    grid.innerHTML = data.categories.map(cat => {
-                        const imgSrc = cat.imageUrl || `https://via.placeholder.com/400x300/eeeeee/999999?text=${encodeURIComponent(cat.name)}`;
-                        return `
-                            <div class="category" onclick="openCategory('${cat.name.replace(/'/g, "\\'")}')">
-                                <img src="${imgSrc}" alt="${cat.name}" loading="lazy">
-                                <p>${cat.name}</p>
-                            </div>
-                        `;
-                    }).join("");
-                } else {
-                    grid.innerHTML = `
-                        <div class="no-categories">
-                            <p>No categories available yet.</p>
-                            <p>Add items in <a href="adminportal.html">Admin Portal</a> to get started!</p>
-                        </div>
-                    `;
-                }
-            } catch (err) {
-                console.error("Failed to load categories:", err);
-                grid.innerHTML = `<div class="loading"><p>Error loading categories. Retrying...</p></div>`;
-            }
+    function openCategory(name) {
+      localStorage.setItem('selectedCategory', name);
+      window.location.href = 'gitems.html';
+    }
+
+    async function checkActiveOrders() {
+      if (!loggedUser?._id) return trackBar.classList.remove('visible');
+
+      try {
+        const res = await fetch("/api/my-orders", {
+          headers: { 'x-user-id': loggedUser._id }
+        });
+        const data = await res.json();
+
+        const active = data.orders?.filter(o =>
+          o.status === 'pending' || o.status === 'confirmed'
+        );
+
+        if (active?.length) {
+          trackBar.classList.add('visible');
+          trackText.textContent =
+            active.length === 1 ? '1 Active Order' : `${active.length} Active Orders`;
+        } else {
+          trackBar.classList.remove('visible');
         }
+      } catch {
+        trackBar.classList.remove('visible');
+      }
+    }
+  </script>
 
-        function openCategory(name) {
-            localStorage.setItem('selectedCategory', name);
-            window.location.href = 'gitems.html';
-        }
-
-        async function checkActiveOrders() {
-            if (!loggedUser || !loggedUser._id) {
-                trackBar.classList.remove('visible');
-                return;
-            }
-
-            try {
-                const res = await fetch("/api/my-orders", {
-                    headers: { 'x-user-id': loggedUser._id }
-                });
-                const data = await res.json();
-
-                if (data.success && data.orders) {
-                    const active = data.orders.filter(o => o.status === 'pending' || o.status === 'confirmed');
-                    if (active.length > 0) {
-                        trackBar.classList.add('visible');
-                        trackText.textContent = active.length === 1 ? "1 Active Order" : `${active.length} Active Orders`;
-                    } else {
-                        trackBar.classList.remove('visible');
-                    }
-                } else {
-                    trackBar.classList.remove('visible');
-                }
-            } catch (err) {
-                console.error("Order check error:", err);
-                trackBar.classList.remove('visible');
-            }
-        }
-    </script>
 </body>
 </html>
