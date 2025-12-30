@@ -6,6 +6,13 @@ const shops = [
     desc: "Your favorite hangout – burgers, chats, coffee & vibes!",
     items: ["Zinger Burger", "Peri Peri Fries", "Cold Coffee", "Oreo Shake", "Chicken Roll"]
   },
+    {
+    name: "Hasanamba Iyengar Bakery",
+    img: "https://plus.unsplash.com/premium_photo-1665669263531-cdcbe18e7fe4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YmFrZXJ5fGVufDB8fDB8fHww",
+    rating: 4.5,
+    desc: "Fresh baked goods and sweet treats.",
+    items: ["Plum Cake", "Cookies", "Croissant", "Puff Pastry"]
+  },
   {
     name: "Sangambar Udupi Hotel",
     img: "https://plus.unsplash.com/premium_photo-1673108852141-e8c3c22a4a22?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Zm9vZHxlbnwwfHwwfHx8MA%3D%3D",
@@ -47,14 +54,8 @@ const shops = [
     rating: 4.5,
     desc: "Fresh sandwiches & healthy bites.",
     items: ["Veg Sandwich", "Grilled Cheese", "Club Sandwich", "Cold Coffee"]
-  },
-  {
-    name: "Hasanamba Iyengar Bakery",
-    img: "https://plus.unsplash.com/premium_photo-1665669263531-cdcbe18e7fe4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YmFrZXJ5fGVufDB8fDB8fHww",
-    rating: 4.5,
-    desc: "Fresh baked goods and sweet treats.",
-    items: ["Plum Cake", "Cookies", "Croissant", "Puff Pastry"]
   }
+
 ];
 
 function renderShops(filter = "") {
