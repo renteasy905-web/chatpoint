@@ -1,386 +1,242 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grocery Items — ChatPoint</title>
-    <style>
-        :root {
-            --primary: #2563eb; /* Modern professional blue */
-            --primary-dark: #1d4ed8;
-            --success: #10b981;
-            --danger: #ef4444;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text: #1e293b;
-            --text-light: #64748b;
-            --border: #e2e8f0;
-            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-            --radius: 14px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grocery Items — ChatPoint</title>
 
-        body {
-            font-family: system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
-            background: var(--bg);
-            margin: 0;
-            padding: 0;
-            padding-bottom: 100px; /* Space for bottom cart bar */
-            color: var(--text);
-        }
+<style>
+:root{
+  --primary:#2563eb;
+  --primary-dark:#1d4ed8;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --text:#1e293b;
+  --muted:#64748b;
+  --border:#e2e8f0;
+  --radius:16px;
+  --shadow:0 8px 22px rgba(0,0,0,.08);
+}
 
-        .header {
-            position: sticky;
-            top: 0;
-            background: var(--card-bg);
-            padding: 16px 20px;
-            box-shadow: var(--shadow-sm);
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            z-index: 20;
-        }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 
-        .back {
-            font-size: 32px;
-            cursor: pointer;
-            color: var(--primary);
-            font-weight: 300;
-        }
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  background:var(--bg);
+  color:var(--text);
+  padding-bottom:110px;
+}
 
-        .title {
-            font-size: 22px;
-            font-weight: 600;
-            flex: 1;
-        }
+/* HEADER */
+.header{
+  position:sticky;top:0;z-index:20;
+  background:#fff;
+  display:flex;align-items:center;gap:14px;
+  padding:14px 16px;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);
+}
+.back{font-size:26px;cursor:pointer;color:var(--primary)}
+.title{font-size:20px;font-weight:600;flex:1}
+.cart-icon{font-size:24px;position:relative;cursor:pointer}
+.cart-count{
+  position:absolute;top:-6px;right:-6px;
+  background:#ef4444;color:#fff;
+  width:18px;height:18px;border-radius:50%;
+  font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
 
-        .cart-icon {
-            font-size: 28px;
-            position: relative;
-            cursor: pointer;
-            padding: 8px;
-        }
+/* GRID */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:16px;
+  padding:16px;
+}
+@media(min-width:480px){.grid{grid-template-columns:repeat(3,1fr)}}
 
-        .cart-count {
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            background: var(--danger);
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-            min-width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+/* ITEM CARD */
+.item{
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  transition:transform .25s ease;
+}
+.item:active{transform:scale(.97)}
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            padding: 24px 16px;
-        }
+.item img{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  background:#f1f5f9;
+}
 
-        .item {
-            background: var(--card-bg);
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            position: relative;
-            transition: all 0.3s ease;
-        }
+/* INFO */
+.info{
+  padding:12px 12px 8px;
+  flex:1;
+}
+.name{
+  font-size:14px;
+  font-weight:600;
+  line-height:1.35;
+  margin-bottom:6px;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.price{
+  font-size:16px;
+  font-weight:700;
+  color:var(--primary);
+}
 
-        .item:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow);
-        }
+/* ACTION ROW */
+.action{
+  padding:10px 12px 14px;
+  display:flex;
+  justify-content:flex-end;
+}
+.add-btn{
+  background:var(--primary);
+  color:#fff;
+  border:none;
+  width:44px;height:44px;
+  border-radius:50%;
+  font-size:22px;
+  font-weight:700;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+}
+.add-btn:active{transform:scale(.9)}
 
-        .item img {
-            width: 100%;
-            height: 160px;
-            object-fit: cover;
-            background: #f1f5f9;
-        }
+/* SVG RIPPLE */
+.add-btn svg{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:0;
+}
+.add-btn.active svg{
+  animation:ripple .6s ease;
+}
+@keyframes ripple{
+  0%{opacity:.4;transform:scale(.4)}
+  100%{opacity:0;transform:scale(2)}
+}
 
-        .info {
-            padding: 16px;
-        }
+/* BOTTOM CART */
+.bottom-cart-bar{
+  position:fixed;
+  bottom:12px;left:50%;
+  transform:translateX(-50%) translateY(120%);
+  background:#fff;
+  width:calc(100% - 24px);
+  max-width:420px;
+  padding:14px 16px;
+  border-radius:22px;
+  box-shadow:0 12px 28px rgba(0,0,0,.18);
+  display:flex;justify-content:space-between;align-items:center;
+  transition:.4s cubic-bezier(.25,.8,.25,1);
+}
+.bottom-cart-bar.visible{transform:translateX(-50%)}
 
-        .name {
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text);
-            line-height: 1.4;
-        }
+.cart-summary{font-weight:600}
+.cart-price{color:var(--primary);font-size:18px}
 
-        .price {
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--primary);
-        }
+.view-cart-btn{
+  background:var(--primary);
+  color:#fff;
+  border:none;
+  padding:12px 24px;
+  border-radius:24px;
+  font-size:16px;
+  font-weight:600;
+}
 
-        .add-btn {
-            position: absolute;
-            bottom: 12px;
-            right: 12px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
-            transition: all 0.2s;
-        }
-
-        .add-btn:hover {
-            background: var(--primary-dark);
-            transform: scale(1.1);
-        }
-
-        .add-btn:active {
-            transform: scale(0.95);
-        }
-
-        /* Bottom Cart Bar */
-        .bottom-cart-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--card-bg);
-            padding: 16px 20px;
-            box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.12);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-top: 1px solid var(--border);
-            transform: translateY(100%);
-            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-            z-index: 100;
-        }
-
-        .bottom-cart-bar.visible {
-            transform: translateY(0);
-        }
-
-        .cart-summary {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .cart-items-text {
-            font-weight: 600;
-            font-size: 17px;
-            color: var(--text);
-        }
-
-        .cart-total-price {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .view-cart-btn {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 30px;
-            font-size: 17px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
-            transition: all 0.3s;
-        }
-
-        .view-cart-btn:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        .view-cart-btn:active {
-            transform: translateY(0);
-        }
-
-        /* Login Required */
-        .login-required {
-            text-align: center;
-            padding: 100px 24px;
-            color: var(--text-light);
-            font-size: 19px;
-        }
-
-        .login-required a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 20px;
-        }
-
-        .login-required a:hover {
-            text-decoration: underline;
-        }
-
-        /* Loading / Error State */
-        .loading-state {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--text-light);
-            font-size: 18px;
-        }
-
-        /* Responsive Adjustments */
-        @media (min-width: 480px) {
-            .grid {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (min-width: 768px) {
-            .grid {
-                grid-template-columns: repeat(4, 1fr);
-                padding: 32px;
-                gap: 24px;
-            }
-            .container {
-                max-width: 1200px;
-                margin: 0 auto;
-            }
-        }
-    </style>
+/* STATES */
+.loading-state{
+  grid-column:1/-1;
+  text-align:center;
+  padding:60px 20px;
+  color:var(--muted);
+}
+</style>
 </head>
+
 <body>
-    <div class="header">
-        <div class="back" onclick="history.back()">←</div>
-        <div class="title" id="categoryName">Loading...</div>
-        <div class="cart-icon" onclick="checkLoginAndGoToCart()">
-            🛒 <span class="cart-count" id="cartCount">0</span>
-        </div>
+
+<div class="header">
+  <div class="back" onclick="history.back()">←</div>
+  <div class="title" id="categoryName">Loading...</div>
+  <div class="cart-icon" onclick="goCart()">🛒<span class="cart-count" id="cartCount">0</span></div>
+</div>
+
+<div class="grid" id="itemsGrid"></div>
+
+<div class="bottom-cart-bar" id="cartBar">
+  <div class="cart-summary"><span id="cartItems">0 Items</span> • <span class="cart-price" id="cartPrice">₹0</span></div>
+  <button class="view-cart-btn" onclick="goCart()">View Cart</button>
+</div>
+
+<script>
+let cart=JSON.parse(localStorage.getItem('cart')||'[]');
+
+async function load(){
+  const cat=localStorage.getItem('selectedCategory')||'Items';
+  categoryName.textContent=cat;
+  itemsGrid.innerHTML='<div class="loading-state">Loading...</div>';
+
+  const res=await fetch('/api/items/'+encodeURIComponent(cat));
+  const data=await res.json();
+
+  itemsGrid.innerHTML=data.items.map(i=>`
+    <div class="item">
+      <img src="${i.imageUrl}" onerror="this.src='https://via.placeholder.com/300'">
+      <div class="info">
+        <div class="name">${i.name}</div>
+        <div class="price">₹${i.price}</div>
+      </div>
+      <div class="action">
+        <button class="add-btn" onclick="add('${i._id}','${i.name}',${i.price},this)">
+          +
+          <svg viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="40" fill="white"/>
+          </svg>
+        </button>
+      </div>
     </div>
+  `).join('');
+  update();
+}
 
-    <!-- Main Content -->
-    <div id="mainContent">
-        <div class="grid" id="itemsGrid">
-            <!-- Items loaded here -->
-        </div>
+function add(id,name,price,btn){
+  let f=cart.find(i=>i.id===id);
+  f?f.qty++:cart.push({id,name,price,qty:1});
+  localStorage.setItem('cart',JSON.stringify(cart));
+  btn.classList.add('active');
+  setTimeout(()=>btn.classList.remove('active'),600);
+  update();
+}
 
-        <!-- Bottom Cart Bar -->
-        <div class="bottom-cart-bar" id="bottomCartBar">
-            <div class="cart-summary">
-                <span class="cart-items-text" id="cartItemsText">1 Item</span>
-                <span class="cart-total-price" id="cartTotalPrice">₹0</span>
-            </div>
-            <button class="view-cart-btn" onclick="checkLoginAndGoToCart()">View Cart</button>
-        </div>
-    </div>
+function update(){
+  let items=cart.reduce((s,i)=>s+i.qty,0);
+  let total=cart.reduce((s,i)=>s+i.qty*i.price,0);
+  cartCount.textContent=items;
+  cartItems.textContent=items+' Items';
+  cartPrice.textContent='₹'+total;
+  cartBar.classList.toggle('visible',items>0);
+}
 
-    <!-- Login Required Message -->
-    <div id="loginRequired" class="login-required" style="display:none;">
-        <p>You need to login to browse items and shop</p>
-        <p><a href="login.html">Login Now →</a></p>
-    </div>
+function goCart(){location.href='gcart.html'}
+load();
+</script>
 
-    <script>
-        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        const loggedUser = JSON.parse(localStorage.getItem('chatpoint_user') || 'null');
-
-        // Login Check
-        if (!loggedUser) {
-            document.getElementById('mainContent').style.display = 'none';
-            document.getElementById('loginRequired').style.display = 'block';
-        } else {
-            loadItems();
-            updateCartDisplay();
-        }
-
-        async function loadItems() {
-            const category = localStorage.getItem('selectedCategory') || 'Fruits & Vegetables';
-            document.getElementById('categoryName').textContent = category;
-
-            const grid = document.getElementById('itemsGrid');
-            grid.innerHTML = '<div class="loading-state">Loading items...</div>';
-
-            try {
-                const res = await fetch(`/api/items/${encodeURIComponent(category)}`);
-                const data = await res.json();
-                const items = data.success ? data.items : [];
-
-                if (items.length === 0) {
-                    grid.innerHTML = '<div class="loading-state">No items available in this category yet</div>';
-                    return;
-                }
-
-                grid.innerHTML = items.map(item => `
-                    <div class="item">
-                        <img src="${item.imageUrl}" alt="${item.name}" loading="lazy"
-                             onerror="this.src='https://via.placeholder.com/300x160?text=No+Image'">
-                        <div class="info">
-                            <div class="name">${item.name}</div>
-                            <div class="price">₹${item.price}</div>
-                        </div>
-                        <button class="add-btn" onclick="addToCart('${item._id}', '${item.name.replace(/'/g, "\\'")}', ${item.price}, '${item.imageUrl}')">+</button>
-                    </div>
-                `).join('');
-
-                updateCartDisplay();
-            } catch (err) {
-                console.error(err);
-                grid.innerHTML = '<div class="loading-state">Error loading items. Please try again.</div>';
-            }
-        }
-
-        function addToCart(id, name, price, img) {
-            const existing = cart.find(c => c.id === id);
-            if (existing) {
-                existing.qty++;
-            } else {
-                cart.push({ id, name, price, img, qty: 1 });
-            }
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartDisplay();
-
-            // Optional: subtle feedback
-            const btn = event.target;
-            btn.textContent = '✓';
-            setTimeout(() => { btn.textContent = '+'; }, 800);
-        }
-
-        function updateCartDisplay() {
-            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
-            const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-
-            // Header cart badge
-            document.getElementById('cartCount').textContent = totalItems || 0;
-
-            // Bottom bar
-            const cartBar = document.getElementById('bottomCartBar');
-            if (totalItems > 0) {
-                cartBar.classList.add('visible');
-                document.getElementById('cartItemsText').textContent =
-                    totalItems === 1 ? '1 Item' : `${totalItems} Items`;
-                document.getElementById('cartTotalPrice').textContent = `₹${totalPrice}`;
-            } else {
-                cartBar.classList.remove('visible');
-            }
-        }
-
-        function checkLoginAndGoToCart() {
-            if (!loggedUser) {
-                window.location.href = 'login.html';
-            } else {
-                window.location.href = 'gcart.html';
-            }
-        }
-    </script>
 </body>
 </html>
