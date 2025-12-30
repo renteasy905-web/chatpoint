@@ -78,12 +78,15 @@ const GroceryCategory = mongoose.model(
   })
 );
 
+// UPDATED SCHEMA: Added originalPrice and offerPrice
 const GroceryItem = mongoose.model(
   "GroceryItem",
   new mongoose.Schema({
     category: { type: String, required: true },
     name: { type: String, required: true },
-    price: { type: Number, required: true },
+    price: { type: Number, required: true }, // Legacy fallback
+    originalPrice: { type: Number },         // New: For strikethrough (e.g., 55)
+    offerPrice: { type: Number },            // New: Actual selling price (e.g., 50)
     imageUrl: { type: String, required: true },
   })
 );
@@ -181,22 +184,35 @@ app.get("/api/categories", async (req, res) => {
   }
 });
 
+// UPDATED: Returns originalPrice and offerPrice with fallbacks
 app.get("/api/items/:category", async (req, res) => {
   try {
     const category = decodeURIComponent(req.params.category);
     const items = await GroceryItem.find({ category });
-    res.json({ success: true, items });
+
+    // Format items for frontend compatibility
+    const formattedItems = items.map(item => {
+      const obj = item.toObject();
+      return {
+        ...obj,
+        originalPrice: obj.originalPrice || obj.price,     // Show strikethrough if exists
+        offerPrice: obj.offerPrice || obj.price,           // This is what goes to cart
+      };
+    });
+
+    res.json({ success: true, items: formattedItems });
   } catch (e) {
     console.error(e);
     res.status(500).json({ success: false });
   }
 });
 
+// UPDATED: Accepts originalPrice and offerPrice from admin form
 app.post("/api/admin/add-item", upload.fields([
   { name: "image", maxCount: 1 },
   { name: "categoryImage", maxCount: 1 }
 ]), async (req, res) => {
-  const { password, category, name, price } = req.body;
+  const { password, category, name, originalPrice, offerPrice } = req.body;
   if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false, message: "Wrong password" });
 
   try {
@@ -220,7 +236,9 @@ app.post("/api/admin/add-item", upload.fields([
     const newItem = new GroceryItem({
       category: category.trim(),
       name: name.trim(),
-      price: Number(price),
+      price: Number(offerPrice || originalPrice), // fallback compatibility
+      originalPrice: Number(originalPrice),
+      offerPrice: Number(offerPrice),
       imageUrl: itemImageUrl,
     });
     await newItem.save();
@@ -231,12 +249,24 @@ app.post("/api/admin/add-item", upload.fields([
   }
 });
 
+// UPDATED: Now updates both originalPrice and offerPrice
 app.post("/api/admin/edit-item", async (req, res) => {
-  const { password, itemId, price } = req.body;
+  const { password, itemId, originalPrice, offerPrice } = req.body;
   if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false });
+
   try {
-    const updated = await GroceryItem.findByIdAndUpdate(itemId, { price: Number(price) }, { new: true });
+    const updateData = {
+      originalPrice: originalPrice ? Number(originalPrice) : undefined,
+      offerPrice: offerPrice ? Number(offerPrice) : undefined,
+      price: offerPrice ? Number(offerPrice) : undefined, // keep legacy field updated
+    };
+
+    // Remove undefined fields
+    Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
+
+    const updated = await GroceryItem.findByIdAndUpdate(itemId, updateData, { new: true });
     if (!updated) return res.status(404).json({ success: false });
+
     res.json({ success: true, item: updated });
   } catch (e) {
     res.status(500).json({ success: false });
@@ -366,7 +396,6 @@ app.delete("/api/delete-order", async (req, res) => {
   }
 });
 
-// FIXED: Handle both logged-in and guest orders
 app.get("/api/my-orders", async (req, res) => {
   try {
     const userId = req.headers["x-user-id"];
@@ -374,7 +403,6 @@ app.get("/api/my-orders", async (req, res) => {
     if (userId) {
       query = { userId };
     } else {
-      // For guest orders, you might want to use phone from body or session (not implemented here)
       return res.json({ success: true, orders: [] });
     }
     const orders = await Order.find(query).sort({ date: -1 }).lean();
