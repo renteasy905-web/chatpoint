@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Offers | Chat Point</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --card-bg: #ffffff;
+      --text: #2d2d2d;
+      --muted: #666666;
+      --primary: #e91e63;
+      --accent: #ff4081;
+      --shadow: rgba(0,0,0,0.08);
+      --radius: 20px;
+      --green: #4caf50;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); }
+    body { padding-top: 70px; }
+
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: #ffffff; padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 2px 12px var(--shadow); border-bottom: 1px solid #eee;
+    }
+    .back-btn {
+      width: 40px; height: 40px; border-radius: 12px; background: #f0f0f0;
+      display: grid; place-items: center; cursor: pointer; font-size: 18px;
+    }
+    .page-title { font-size: 20px; font-weight: 800; flex: 1; }
+    .page-title span { color: #ffe500; }
+
+    main { padding: 20px 16px; max-width: 800px; margin: 0 auto; }
+
+    .section-title {
+      font-size: 24px; font-weight: 800; margin-bottom: 20px; text-align: center;
+    }
+
+    .offers-container {
+      display: flex; flex-direction: column; gap: 20px;
+    }
+
+    .offer-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 8px 24px var(--shadow);
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .offer-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 16px 32px rgba(0,0,0,0.12);
+    }
+
+    .offer-header {
+      height: 180px; position: relative;
+    }
+    .offer-header img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .offer-badge {
+      position: absolute; top: 16px; left: 16px;
+      background: var(--primary); color: white; padding: 8px 16px;
+      border-radius: 30px; font-weight: 800; font-size: 14px;
+    }
+
+    .offer-body {
+      padding: 24px;
+    }
+    .offer-title {
+      font-size: 22px; font-weight: 800; margin-bottom: 8px;
+    }
+    .offer-desc {
+      font-size: 16px; color: var(--muted); margin-bottom: 16px; line-height: 1.5;
+    }
+    .coupon-code {
+      background: #f0f0f0; padding: 12px 20px; border-radius: 12px;
+      font-size: 20px; font-weight: 800; text-align: center; margin: 16px 0;
+      letter-spacing: 1.5px; color: var(--primary);
+      border: 2px dashed var(--primary);
+    }
+    .copy-btn {
+      display: block; width: 100%; padding: 14px; background: var(--primary);
+      color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700;
+      cursor: pointer; margin-top: 12px; transition: background 0.3s;
+    }
+    .copy-btn:hover { background: var(--accent); }
+    .copy-btn i { margin-right: 8px; }
+
+    .terms {
+      font-size: 13px; color: var(--muted); margin-top: 16px; line-height: 1.5;
+    }
+
+    @media (min-width: 640px) {
+      .offers-container { gap: 28px; }
+      .offer-header { height: 220px; }
+      .offer-body { padding: 32px; }
+      .section-title { font-size: 28px; }
+    }
+
+    footer {
+      text-align: center; padding: 30px 20px; color: var(--muted); font-size: 14px; margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <button class="back-btn" onclick="history.back()">
+      <i class="fas fa-arrow-left"></i>
+    </button>
+    <div class="page-title">Offers</div>
+  </header>
+
+  <main>
+    <h1 class="section-title">Active Offers</h1>
+
+    <div class="offers-container">
+
+      <!-- Offer 1: 5% off -->
+      <div class="offer-card">
+        <div class="offer-header">
+          <img src="https://media.istockphoto.com/id/1400845884/vector/5-off-discount-creative-composition-3d-golden-sale-symbol-with-decorative-objects-golden.jpg?s=612x612&w=0&k=20&c=bqHvMZQ-ScqUoQCv6wkryTN1kiLs2CJhjRMK36DCX3I=" alt="5% Off Offer Banner">
+          <div class="offer-badge">5% OFF</div>
+        </div>
+        <div class="offer-body">
+          <div class="offer-title">Extra 5% Off on Your Order</div>
+          <div class="offer-desc">Get flat 5% discount on all food orders above ₹500. Perfect for your next meal!</div>
+          <div class="coupon-code">ME0204</div>
+          <button class="copy-btn" onclick="copyCode('ME0204')">
+            <i class="fas fa-copy"></i> Copy Code
+          </button>
+          <div class="terms">Valid on orders above ₹500 • One time use per user • Valid till 31 Jan 2026</div>
+        </div>
+      </div>
+
+      <!-- Offer 2: Welcome 2% off -->
+      <div class="offer-card">
+        <div class="offer-header">
+          <img src="offer.jpg">
+          <div class="offer-badge">WELCOME</div>
+        </div>
+        <div class="offer-body">
+          <div class="offer-title">Welcome Offer – 2% Off</div>
+          <div class="offer-desc">New to Chat Point? Enjoy 2% instant discount on your cart items with this welcome code.</div>
+          <div class="coupon-code">WELCOME104</div>
+          <button class="copy-btn" onclick="copyCode('WELCOME104')">
+            <i class="fas fa-copy"></i> Copy Code
+          </button>
+          <div class="terms">Applicable on all items • Valid for new users only • Minimum order 300₹</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>© 2025 Chat Point • Made with Passion</footer>
+
+  <script>
+    function copyCode(code) {
+      navigator.clipboard.writeText(code).then(() => {
+        alert('Coupon code ' + code + ' copied to clipboard!');
+      }).catch(() => {
+        prompt('Copy this code:', code);
+      });
+    }
+  </script>
+</body>
+</html>
