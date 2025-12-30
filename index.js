@@ -21,19 +21,20 @@ const shops = [
     items: ["Masala Dosa", "Idli Vada", "Puri Bhaji", "Filter Coffee"]
   },
   {
-    name: "Nandi Grand Hotels",
-    img: "https://plus.unsplash.com/premium_photo-1674106347866-8282d8c19f84?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTI5fHxmb29kfGVufDB8fDB8fHww",
-    rating: 4.7,
-    desc: "Crispy dosas with authentic flavors.",
-    items: ["Plain Dosa", "Ghee Roast", "Onion Uttapam", "Podi Idli"]
-  },
-  {
     name: "Pizza Spot",
     img: "https://plus.unsplash.com/premium_photo-1723478418445-b13c20b21231?q=80&w=1125&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     rating: 4.5,
     desc: "Loaded pizzas with fresh toppings.",
     items: ["Margherita", "Pepperoni", "Veggie Supreme", "BBQ Chicken"]
   },
+  {
+    name: "Nandi Grand Hotels",
+    img: "https://plus.unsplash.com/premium_photo-1674106347866-8282d8c19f84?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTI5fHxmb29kfGVufDB8fDB8fHww",
+    rating: 4.7,
+    desc: "Crispy dosas with authentic flavors.",
+    items: ["Plain Dosa", "Ghee Roast", "Onion Uttapam", "Podi Idli"]
+  },
+  
   {
     name: "connect with Pizza",
     img: "https://plus.unsplash.com/premium_photo-1679924471091-f7cd7ad90ddf?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
