@@ -1,190 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatPoint Grocery</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background:#f4f6f9;
-            margin:0;
-            padding:0;
-            display:flex;
-            justify-content:center;
-        }
-        .container {
-            max-width:420px;
-            width:100%;
-            background:white;
-            min-height:100vh;
-            display:flex;
-            flex-direction:column;
-            box-shadow:0 0 20px rgba(0,0,0,0.08);
-            padding-bottom: 90px;
-        }
-        header {
-            background:#4CAF50;
-            color:white;
-            text-align:center;
-            padding:30px 20px;
-        }
-        header h1 {
-            margin:0;
-            font-size:28px;
-            font-weight:700;
-        }
-        header p {
-            margin:10px 0 0;
-            opacity:0.9;
-            font-size:16px;
-        }
-        .hero {
-            padding:30px 20px;
-            text-align:center;
-        }
-        .hero h2 {
-            font-size:24px;
-            margin-bottom:16px;
-            color:#333;
-        }
-        .start-btn {
-            background:#4CAF50;
-            color:white;
-            border:none;
-            padding:16px 40px;
-            border-radius:30px;
-            font-size:18px;
-            font-weight:bold;
-            cursor:pointer;
-            box-shadow:0 6px 20px rgba(76,175,80,0.3);
-        }
-        .start-btn:hover {
-            background:#43a047;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Categories — ChatPoint</title>
 
-        .login-required {
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            justify-content:center;
-            height:100vh;
-            text-align:center;
-            padding:20px;
-            color:#e74c3c;
-            font-size:18px;
-        }
-        .login-required a {
-            margin-top:20px;
-            background:#4CAF50;
-            color:white;
-            padding:14px 32px;
-            border-radius:30px;
-            text-decoration:none;
-            font-weight:bold;
-            font-size:20px;
-        }
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
 
-        .track-bar {
-            position:fixed;
-            bottom:0;
-            left:0;
-            right:0;
-            background:white;
-            padding:16px;
-            box-shadow:0 -6px 20px rgba(0,0,0,0.12);
-            text-align:center;
-            border-top:1px solid #eee;
-            max-width:420px;
-            margin:0 auto;
-            display:none;
-            z-index:100;
-        }
-        .track-bar.visible {
-            display:block;
-        }
-        .track-text {
-            font-size:15px;
-            color:#333;
-            font-weight:600;
-            margin-bottom:10px;
-        }
-        .track-btn {
-            background:#4CAF50;
-            color:white;
-            border:none;
-            padding:14px 40px;
-            border-radius:30px;
-            font-size:18px;
-            font-weight:bold;
-            cursor:pointer;
-            box-shadow:0 4px 15px rgba(76,175,80,0.3);
-        }
-    </style>
+body {
+  background: #f4f6f9;
+  display: flex;
+  justify-content: center;
+}
+
+.container {
+  max-width: 420px;
+  width: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 20px rgba(0,0,0,0.08);
+  padding-bottom: 90px;
+}
+
+/* HEADER */
+header {
+  background: #4CAF50;
+  padding: 18px;
+  text-align: center;
+  color: #fff;
+}
+
+header h1 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* TABS */
+.tabs {
+  display: flex;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #666;
+}
+
+.tab.active {
+  color: #4CAF50;
+  border-bottom: 3px solid #4CAF50;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 20px;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+/* CATEGORY CARD */
+.category {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+  transition: box-shadow 0.25s ease;
+}
+
+.category:hover {
+  box-shadow: 0 14px 30px rgba(0,0,0,0.14);
+}
+
+.category-img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+
+.category-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.category p {
+  padding: 10px 8px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* STATES */
+.loading,
+.no-categories {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 16px;
+  color: #777;
+}
+
+.no-categories a {
+  color: #4CAF50;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* LOGIN */
+.login-required {
+  display: none;
+  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
+  text-align: center;
+}
+
+.login-required p {
+  color: #e74c3c;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.login-required a {
+  background: #4CAF50;
+  color: #fff;
+  padding: 12px 36px;
+  border-radius: 30px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(76,175,80,0.35);
+}
+
+/* TRACK BAR */
+.track-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 420px;
+  margin: auto;
+  background: #fff;
+  border-top: 1px solid #eee;
+  padding: 14px;
+  box-shadow: 0 -6px 20px rgba(0,0,0,0.12);
+  display: none;
+  z-index: 100;
+}
+
+.track-bar.visible {
+  display: block;
+}
+
+.track-text {
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.track-btn {
+  width: 100%;
+  background: #4CAF50;
+  color: #fff;
+  border: none;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 30px;
+}
+</style>
 </head>
+
 <body>
-    <div class="container" id="mainContent">
-        <header>
-            <h1>ChatPoint</h1>
-            <p>Fresh groceries delivered fast</p>
-        </header>
-        <div class="hero">
-            <h2>Welcome back!</h2>
-            <button class="start-btn" onclick="window.location.href='categories.html'">Shop Now</button>
+
+<div class="container" id="mainContent">
+  <header>
+    <h1>CATEGORIES</h1>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active">All</div>
+    <div class="tab">Popular</div>
+  </div>
+
+  <div class="grid" id="categoryGrid">
+    <div class="loading">Loading categories...</div>
+  </div>
+</div>
+
+<div class="login-required" id="loginRequired">
+  <p>You need to login to browse categories</p>
+  <a href="login.html">Login Now →</a>
+</div>
+
+<div class="track-bar" id="trackBar">
+  <div class="track-text" id="trackText">1 Active Order</div>
+  <button class="track-btn" onclick="location.href='tracking.html'">
+    Track Now →
+  </button>
+</div>
+
+<script>
+const loggedUser = JSON.parse(localStorage.getItem("chatpoint_user") || "null");
+
+const categories = [
+  { name: "Groceries", image: "https://images.unsplash.com/photo-1586201375761-83865001e17b" },
+  { name: "Vegetables", image: "https://images.unsplash.com/photo-1567306226416-28f0efdc88ce" },
+  { name: "Fruits", image: "https://images.unsplash.com/photo-1574226516831-e1dff420e43e" },
+  { name: "Snacks", image: "https://images.unsplash.com/photo-1604908177522-402b9c31c2b7" },
+  { name: "Beverages", image: "https://images.unsplash.com/photo-1544145945-f90425340c7e" }
+];
+
+const grid = document.getElementById("categoryGrid");
+const trackBar = document.getElementById("trackBar");
+
+if (!loggedUser) {
+  document.getElementById("mainContent").style.display = "none";
+  document.getElementById("loginRequired").style.display = "flex";
+} else {
+  loadCategories();
+  trackBar.classList.add("visible");
+}
+
+function loadCategories() {
+  grid.innerHTML = "";
+  categories.forEach(cat => {
+    grid.innerHTML += `
+      <div class="category" onclick="openCategory('${cat.name}')">
+        <div class="category-img">
+          <img src="${cat.image}" alt="${cat.name}" loading="lazy">
         </div>
-    </div>
+        <p>${cat.name}</p>
+      </div>
+    `;
+  });
+}
 
-    <div id="loginRequired" class="login-required" style="display:none;">
-        <p>You need to login to shop</p>
-        <a href="login.html">Login Now →</a>
-    </div>
+function openCategory(name) {
+  localStorage.setItem("selectedCategory", name);
+  alert("Selected: " + name);
+}
+</script>
 
-    <div class="track-bar" id="trackBar">
-        <div class="track-text" id="trackText">1 Active Order</div>
-        <button class="track-btn" onclick="window.location.href='tracking.html'">Track Now →</button>
-    </div>
-
-    <script>
-        const loggedUser = JSON.parse(localStorage.getItem('chatpoint_user') || 'null');
-        const trackBar = document.getElementById('trackBar');
-        const trackText = document.getElementById('trackText');
-
-        if (!loggedUser) {
-            document.getElementById('mainContent').style.display = 'none';
-            document.getElementById('loginRequired').style.display = 'flex';
-        } else {
-            checkActiveOrders();
-            setInterval(checkActiveOrders, 15000);
-        }
-
-        async function checkActiveOrders() {
-            if (!loggedUser || !loggedUser._id) {
-                trackBar.classList.remove('visible');
-                return;
-            }
-
-            try {
-                const res = await fetch("/api/my-orders", {
-                    headers: { 'x-user-id': loggedUser._id }
-                });
-                const data = await res.json();
-
-                if (data.success && data.orders) {
-                    const active = data.orders.filter(o => o.status === 'pending' || o.status === 'confirmed');
-                    if (active.length > 0) {
-                        trackBar.classList.add('visible');
-                        trackText.textContent = active.length === 1 ? "1 Active Order" : `${active.length} Active Orders`;
-                    } else {
-                        trackBar.classList.remove('visible');
-                    }
-                } else {
-                    trackBar.classList.remove('visible');
-                }
-            } catch (err) {
-                console.error("Order check error:", err);
-                trackBar.classList.remove('visible');
-            }
-        }
-    </script>
 </body>
 </html>
