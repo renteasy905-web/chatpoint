@@ -172,6 +172,39 @@
       border-top: 2px solid var(--border);
     }
 
+    .coupon-section {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .coupon-input {
+      flex: 1;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 16px;
+    }
+
+    .coupon-btn {
+      padding: 0 20px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .coupon-msg {
+      margin-top: 8px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .success-msg { color: var(--success); }
+    .error-msg { color: var(--danger); }
+
     .min-order-note {
       font-size: 15px;
       color: var(--danger);
@@ -196,7 +229,6 @@
       border-radius: var(--radius);
       font-size: 16px;
       box-sizing: border-box;
-      transition: border-color 0.3s, box-shadow 0.3s;
     }
 
     .checkout-form input:focus,
@@ -226,15 +258,10 @@
       transform: translateY(-2px);
     }
 
-    .checkout-btn:active {
-      transform: translateY(0);
-    }
-
     .checkout-btn:disabled {
       background: #94a3b8;
       cursor: not-allowed;
       box-shadow: none;
-      transform: none;
     }
 
     .empty-cart,
@@ -252,11 +279,6 @@
       font-weight: 600;
       font-size: 18px;
     }
-
-    .empty-cart a:hover,
-    .login-required a:hover {
-      text-decoration: underline;
-    }
   </style>
 </head>
 <body>
@@ -266,13 +288,11 @@
   </div>
 
   <div class="container">
-    <!-- Login Required -->
     <div id="loginRequired" class="login-required" style="display:none;">
       <p>You need to login to view your cart</p>
       <p><a href="login.html">Login Now →</a></p>
     </div>
 
-    <!-- Cart Content -->
     <div id="cartContent">
       <div id="cartItems" class="cart-items"></div>
 
@@ -287,18 +307,20 @@
           <span id="subtotal">₹0</span>
         </div>
 
-        <!-- Delivery charge is calculated internally but NOT shown to user -->
-        
+        <!-- Coupon Section -->
+        <div class="coupon-section">
+          <input type="text" id="couponCode" class="coupon-input" placeholder="Enter coupon code">
+          <button class="coupon-btn" onclick="applyCoupon()">Apply</button>
+        </div>
+        <div id="couponMsg" class="coupon-msg"></div>
+
         <div class="total-row grand-total">
-          <span>Grand Total  </span>
+          <span>Grand Total</span>
           <span id="grandTotal">₹0</span>
         </div>
 
-        <div class="min-order-note" id="minOrderNote">
-          Add more items to reach minimum order
-        </div>
+        <div class="min-order-note" id="minOrderNote"></div>
 
-        <!-- Checkout Form -->
         <div class="checkout-form">
           <input type="text" id="name" placeholder="Your Full Name" required>
           <input type="tel" id="phone" placeholder="Phone Number" required>
@@ -313,10 +335,21 @@
 
   <script>
     const MIN_ORDER = 300;
-    const FIXED_DELIVERY = 20; // Fixed ₹20 delivery charge
+    const FIXED_DELIVERY = 20;
+
+    // Define coupons
+    const COUPONS = {
+      "me0204": { type: "percent", value: 5, maxDiscount: null, minAmount: 500, category: "all" },
+      "dec10": { type: "percent", value: 10, maxDiscount: 10, minAmount: 0, category: "fmcg" },
+      "welcome104": { type: "percent", value: 2, maxDiscount: 8, minAmount: 299, category: "all" }
+    };
+
+    // FMCG items (you can expand this list based on your items)
+    const FMCG_ITEMS = ["shampoo", "soap", "oil", "rice", "dal", "atta", "toothpaste", "detergent"]; // lowercase for matching
 
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
     const user = JSON.parse(localStorage.getItem('chatpoint_user') || null);
+    let appliedCoupon = null;
 
     if (!user) {
       document.getElementById('cartContent').style.display = 'none';
@@ -362,9 +395,7 @@
 
     function updateQty(index, change) {
       cart[index].qty += change;
-      if (cart[index].qty <= 0) {
-        cart.splice(index, 1);
-      }
+      if (cart[index].qty <= 0) cart.splice(index, 1);
       localStorage.setItem('cart', JSON.stringify(cart));
       renderCart();
     }
@@ -377,16 +408,79 @@
       }
     }
 
+    function applyCoupon() {
+      const code = document.getElementById('couponCode').value.trim().toLowerCase();
+      const msgDiv = document.getElementById('couponMsg');
+      msgDiv.textContent = '';
+      msgDiv.className = 'coupon-msg';
+
+      if (!COUPONS[code]) {
+        msgDiv.textContent = 'Invalid coupon code';
+        msgDiv.classList.add('error-msg');
+        appliedCoupon = null;
+        calculateTotal();
+        return;
+      }
+
+      const coupon = COUPONS[code];
+      const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+      if (subtotal < coupon.minAmount) {
+        msgDiv.textContent = `Minimum ₹${coupon.minAmount} required for this coupon`;
+        msgDiv.classList.add('error-msg');
+        appliedCoupon = null;
+        calculateTotal();
+        return;
+      }
+
+      if (coupon.category === "fmcg") {
+        const fmcgTotal = cart
+          .filter(item => FMCG_ITEMS.some(f => item.name.toLowerCase().includes(f)))
+          .reduce((sum, item) => sum + item.price * item.qty, 0);
+
+        if (fmcgTotal === 0) {
+          msgDiv.textContent = 'No FMCG items in cart';
+          msgDiv.classList.add('error-msg');
+          appliedCoupon = null;
+          calculateTotal();
+          return;
+        }
+      }
+
+      appliedCoupon = { code, ...coupon };
+      msgDiv.textContent = `Coupon "${code.toUpperCase()}" applied successfully!`;
+      msgDiv.classList.add('success-msg');
+      calculateTotal();
+    }
+
     function calculateTotal() {
-      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-      const grandTotal = subtotal + FIXED_DELIVERY;
+      const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+      let discount = 0;
+      if (appliedCoupon) {
+        let applicableAmount = subtotal;
+
+        if (appliedCoupon.category === "fmcg") {
+          applicableAmount = cart
+            .filter(item => FMCG_ITEMS.some(f => item.name.toLowerCase().includes(f)))
+            .reduce((sum, item) => sum + item.price * item.qty, 0);
+        }
+
+        discount = (applicableAmount * appliedCoupon.value) / 100;
+        if (appliedCoupon.maxDiscount) {
+          discount = Math.min(discount, appliedCoupon.maxDiscount);
+        }
+      }
+
+      const finalAmount = Math.round(subtotal - discount + FIXED_DELIVERY);
 
       document.getElementById('subtotal').textContent = `₹${subtotal}`;
-      document.getElementById('grandTotal').textContent = `₹${grandTotal}`;
+      document.getElementById('grandTotal').textContent = `₹${finalAmount}`;
 
       const checkoutBtn = document.getElementById('checkoutBtn');
       const minOrderNote = document.getElementById('minOrderNote');
 
+      // Minimum order checked on ORIGINAL subtotal (before coupon)
       if (subtotal >= MIN_ORDER) {
         checkoutBtn.disabled = false;
         minOrderNote.style.display = 'none';
@@ -413,20 +507,31 @@
         return;
       }
 
+      let discount = 0;
+      if (appliedCoupon) {
+        let applicableAmount = subtotal;
+        if (appliedCoupon.category === "fmcg") {
+          applicableAmount = cart.filter(item => FMCG_ITEMS.some(f => item.name.toLowerCase().includes(f)))
+            .reduce((sum, item) => sum + item.price * item.qty, 0);
+        }
+        discount = Math.min((applicableAmount * appliedCoupon.value) / 100, appliedCoupon.maxDiscount || Infinity);
+      }
+
+      const grandTotal = Math.round(subtotal - discount + FIXED_DELIVERY);
+
       const cartObj = { "ChatPoint": {} };
       cart.forEach(item => {
-        cartObj["ChatPoint"][item.name] = {
-          price: item.price,
-          qty: item.qty
-        };
+        cartObj["ChatPoint"][item.name] = { price: item.price, qty: item.qty };
       });
 
       const body = {
         name,
         phone,
         address1: address,
-        grandTotal: subtotal + FIXED_DELIVERY,
+        grandTotal,
         cart: cartObj,
+        coupon: appliedCoupon ? appliedCoupon.code.toUpperCase() : null,
+        discountAmount: discount,
         userId: user ? user._id : null,
         customer_name: user ? user.name : name,
         customer_phone: user ? user.phone : phone
@@ -445,6 +550,7 @@
           alert("Order placed successfully! 🎉");
           localStorage.removeItem('cart');
           cart = [];
+          appliedCoupon = null;
           renderCart();
           window.location.href = 'tracking.html';
         } else {
