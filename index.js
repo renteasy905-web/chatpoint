@@ -4,28 +4,28 @@ const shops = [
     img: "https://plus.unsplash.com/premium_photo-1670601440146-3b33dfcd7e17?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8Zm9vZHxlbnwwfHwwfHx8MA%3D%3D",
     rating: 4.9,
     desc: "Your favorite hangout – burgers, chats, coffee & vibes!",
-    items: ["Zinger Burger", "Peri Peri Fries", "Cold Coffee", "Oreo Shake", "Chicken Roll"]
+    items: ["Burger", "Fries", "Oreo Shake", "Chicken Roll", "juice"]
   },
     {
     name: "Hasanamba Iyengar Bakery",
     img: "https://plus.unsplash.com/premium_photo-1665669263531-cdcbe18e7fe4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YmFrZXJ5fGVufDB8fDB8fHww",
     rating: 4.5,
     desc: "Fresh baked goods and sweet treats.",
-    items: ["Plum Cake", "Cookies", "Croissant", "Puff Pastry"]
+    items: ["Cake", "Puff", "rolls", "Puff Pastry"]
   },
   {
     name: "Sangambar Udupi Hotel",
     img: "https://plus.unsplash.com/premium_photo-1673108852141-e8c3c22a4a22?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Zm9vZHxlbnwwfHwwfHx8MA%3D%3D",
     rating: 4.6,
     desc: "Pure vegetarian South Indian meals.",
-    items: ["Masala Dosa", "Idli Vada", "Puri Bhaji", "Filter Coffee"]
+    items: ["Masala Dosa", "Idli Vada", "Puri Bhaji", "Coffee"]
   },
   {
     name: "Pizza Spot",
     img: "https://plus.unsplash.com/premium_photo-1723478418445-b13c20b21231?q=80&w=1125&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     rating: 4.5,
     desc: "Loaded pizzas with fresh toppings.",
-    items: ["Margherita", "Pepperoni", "Veggie Supreme", "BBQ Chicken"]
+    items: ["momos", "pizza", "burger", "juice", "Veggie pizza", "pav bhaji"]
   },
   {
     name: "Nandi Grand Hotels",
@@ -40,7 +40,7 @@ const shops = [
     img: "https://plus.unsplash.com/premium_photo-1679924471091-f7cd7ad90ddf?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     rating: 4.6,
     desc: "100% veg pizzas, light & tasty.",
-    items: ["Paneer Tikka", "Corn & Cheese", "Farmhouse", "Veg Extravaganza"]
+    items: ["Paneer Tikka", "Corn & Cheese", "nugets ", "Veg Extravaganza"]
   },
   {
     name: "Mister Chef",
@@ -54,7 +54,7 @@ const shops = [
     img: "https://images.unsplash.com/photo-1496412705862-e0088f16f791?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjd8fGZvb2QlMjBwaG90b2dyYXBoeXxlbnwwfHwwfHx8MA%3D%3D",
     rating: 4.5,
     desc: "Fresh sandwiches & healthy bites.",
-    items: ["Veg Sandwich", "Grilled Cheese", "Club Sandwich", "Cold Coffee"]
+    items: ["Veg Sandwich", "Grilled Cheese", "Club Sandwich", "rice", "panner", "Cold Coffee"]
   }
 
 ];
