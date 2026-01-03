@@ -19,7 +19,7 @@ body{margin:0;font-family:system-ui;background:var(--bg);color:var(--text);paddi
 @media(min-width:480px){.grid{grid-template-columns:repeat(3,1fr)}}
 .item{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;transition:transform .25s;}
 .item:active{transform:scale(.97)}
-.item img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#f1f5f9;}
+.item img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#f1f5f9;cursor:zoom-in;}
 .info{padding:12px 12px 8px;flex:1;}
 .name{font-size:14px;font-weight:600;line-height:1.35;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .price{display:flex;align-items:center;gap:8px;font-weight:700;}
@@ -37,6 +37,43 @@ body{margin:0;font-family:system-ui;background:var(--bg);color:var(--text);paddi
 .cart-price{color:var(--primary);font-size:18px}
 .view-cart-btn{background:var(--primary);color:#fff;border:none;padding:12px 24px;border-radius:24px;font-size:16px;font-weight:600;}
 .loading-state{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted);}
+
+/* Full-screen image viewer */
+.image-viewer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  display: none;
+}
+.image-viewer img {
+  max-width: 90%;
+  max-height: 75vh;
+  object-fit: contain;
+  border-radius: 12px;
+}
+.image-viewer-back {
+  margin-top: 30px;
+  padding: 12px 32px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 24px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+.image-viewer-back:hover {
+  background: #1d4ed8;
+}
 </style>
 </head>
 <body>
@@ -49,6 +86,12 @@ body{margin:0;font-family:system-ui;background:var(--bg);color:var(--text);paddi
 <div class="bottom-cart-bar" id="cartBar">
   <div class="cart-summary"><span id="cartItems">0 Items</span> • <span class="cart-price" id="cartPrice">₹0</span></div>
   <button class="view-cart-btn" onclick="goCart()">View Cart</button>
+</div>
+
+<!-- Full-screen image viewer overlay -->
+<div id="imageViewer" class="image-viewer">
+  <img id="fullImage" src="" alt="Full item image">
+  <button class="image-viewer-back" onclick="closeImageViewer()">Back</button>
 </div>
 
 <script>
@@ -66,10 +109,12 @@ async function load() {
     const priceToUse = i.offerPrice || i.price;
     const originalToShow = i.originalPrice || i.price;
     const showStrikethrough = i.originalPrice && i.originalPrice > i.offerPrice;
+    const escapedImg = i.imageUrl.replace(/'/g, "\\'");
+    const escapedName = i.name.replace(/'/g, "\\'");
 
     return `
       <div class="item">
-        <img src="${i.imageUrl}" onerror="this.src='https://placehold.co/300x300?text=No+Image'">
+        <img src="${i.imageUrl}" onerror="this.src='https://placehold.co/300x300?text=No+Image'" onclick="openImageViewer('${escapedImg}')">
         <div class="info">
           <div class="name">${i.name}</div>
           <div class="price">
@@ -78,7 +123,7 @@ async function load() {
           </div>
         </div>
         <div class="action">
-          <button class="add-btn" onclick="add('${i._id}','${i.name.replace(/'/g, "\\'")}',${priceToUse},this)">
+          <button class="add-btn" onclick="add('${i._id}','${escapedName}',${priceToUse},this)">
             +
             <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="white"/></svg>
           </button>
@@ -90,10 +135,24 @@ async function load() {
   updateCartUI();
 }
 
+function openImageViewer(imageSrc) {
+  const viewer = document.getElementById('imageViewer');
+  const fullImg = document.getElementById('fullImage');
+  fullImg.src = imageSrc;
+  fullImg.onerror = () => {
+    fullImg.src = 'https://placehold.co/600x800?text=No+Image';
+  };
+  viewer.style.display = 'flex';
+}
+
+function closeImageViewer() {
+  document.getElementById('imageViewer').style.display = 'none';
+}
+
 function add(id, name, price, btn) {
   let item = cart.find(x => x.id === id);
   if (item) item.qty++;
-  else cart.push({ id, name, price, qty: 1 });
+  else cart.push({ id, name, price, qty: 1, img: btn.parentElement.previousElementSibling.previousElementSibling.querySelector('img').src });
   localStorage.setItem('cart', JSON.stringify(cart));
   btn.classList.add('active');
   setTimeout(() => btn.classList.remove('active'), 600);
