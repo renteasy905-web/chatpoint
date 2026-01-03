@@ -4,14 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Categories — ChatPoint</title>
-
   <style>
     /* ===================== RESET & BASE ===================== */
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
     }
-
     html, body {
       margin: 0;
       padding: 0;
@@ -21,18 +19,15 @@
       background: #f4f6f9;
       overscroll-behavior: none;
     }
-
     img {
       max-width: 100%;
       display: block;
     }
-
     /* ===================== LAYOUT ===================== */
     body {
       display: flex;
       justify-content: center;
     }
-
     .container {
       width: 100%;
       max-width: 420px;
@@ -43,7 +38,6 @@
       box-shadow: 0 0 12px rgba(0,0,0,0.06);
       padding-bottom: 110px;
     }
-
     /* ===================== HEADER ===================== */
     header {
       background: linear-gradient(135deg, #43a047, #4CAF50);
@@ -51,22 +45,20 @@
       text-align: center;
       padding: 18px 16px;
     }
-
     header h1 {
       margin: 0;
       font-size: 22px;
       font-weight: 700;
       letter-spacing: 0.5px;
     }
-
     /* ===================== TABS ===================== */
     .tabs {
       display: flex;
       padding: 6px;
       background: #fff;
       border-bottom: 1px solid #eee;
+      gap: 8px; /* Better spacing */
     }
-
     .tab {
       flex: 1;
       text-align: center;
@@ -77,12 +69,24 @@
       border-radius: 10px;
       cursor: pointer;
     }
-
     .tab.active {
       background: rgba(76, 175, 80, 0.12);
       color: #4CAF50;
     }
-
+    /* New: OFFERS as a highlighted button */
+    .tab-offers {
+      background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+      color: #fff !important;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+    }
+    .tab-offers:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(255, 152, 0, 0.4);
+    }
+    .tab-offers:active {
+      transform: scale(0.97);
+    }
     /* ===================== GRID ===================== */
     .grid {
       display: grid;
@@ -92,13 +96,11 @@
       flex-grow: 1;
       overflow-y: auto;
     }
-
     @media (max-width: 360px) {
       .grid {
         grid-template-columns: repeat(2, 1fr);
       }
     }
-
     /* ===================== CATEGORY CARD ===================== */
     .category {
       background: #fff;
@@ -108,16 +110,13 @@
       cursor: pointer;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-
     .category:hover {
       transform: translateY(-3px);
       box-shadow: 0 10px 22px rgba(0,0,0,0.1);
     }
-
     .category:active {
       transform: scale(0.97);
     }
-
     .category img {
       width: 100%;
       aspect-ratio: 1 / 1;
@@ -125,7 +124,6 @@
       border-radius: 14px;
       background: #f1f1f1;
     }
-
     .category p {
       margin: 10px 4px 6px;
       font-size: 14px;
@@ -133,7 +131,6 @@
       color: #222;
       line-height: 1.3;
     }
-
     /* ===================== STATES ===================== */
     .loading,
     .no-categories {
@@ -143,13 +140,11 @@
       font-size: 16px;
       color: #777;
     }
-
     .no-categories a {
       color: #4CAF50;
       font-weight: 600;
       text-decoration: none;
     }
-
     /* ===================== LOGIN REQUIRED ===================== */
     .login-required {
       display: flex;
@@ -162,7 +157,6 @@
       color: #e74c3c;
       font-size: 18px;
     }
-
     .login-required a {
       margin-top: 20px;
       padding: 12px 32px;
@@ -174,7 +168,6 @@
       font-weight: 600;
       box-shadow: 0 4px 15px rgba(76,175,80,0.3);
     }
-
     /* ===================== TRACK BAR ===================== */
     .track-bar {
       position: fixed;
@@ -191,18 +184,15 @@
       z-index: 100;
       text-align: center;
     }
-
     .track-bar.visible {
       display: block;
     }
-
     .track-text {
       font-size: 15px;
       font-weight: 600;
       margin-bottom: 10px;
       color: #333;
     }
-
     .track-btn {
       background: #4CAF50;
       color: #fff;
@@ -216,42 +206,36 @@
     }
   </style>
 </head>
-
 <body>
-
   <div class="container" id="mainContent">
     <header>
       <h1>CATEGORIES</h1>
     </header>
-
     <div class="tabs">
       <div class="tab active">All</div>
-      <div class="tab">OFFERS</div>
-     
+      <!-- OFFERS is now a clickable button linking to offer.html -->
+      <div class="tab tab-offers" onclick="window.location.href='offer.html'">
+        OFFERS 🔥
+      </div>
     </div>
-
     <div class="grid" id="categoryGrid">
       <div class="loading">Loading categories...</div>
     </div>
   </div>
-
   <div id="loginRequired" class="login-required" style="display:none;">
     <p>You need to login to browse categories and shop</p>
     <a href="login.html">Login Now →</a>
   </div>
-
   <div class="track-bar" id="trackBar">
     <div class="track-text" id="trackText">1 Active Order</div>
     <button class="track-btn" onclick="window.location.href='tracking.html'">
       Track Now →
     </button>
   </div>
-
   <script>
     const loggedUser = JSON.parse(localStorage.getItem('chatpoint_user') || 'null');
     const trackBar = document.getElementById('trackBar');
     const trackText = document.getElementById('trackText');
-
     if (!loggedUser) {
       document.getElementById('mainContent').style.display = 'none';
       document.getElementById('loginRequired').style.display = 'flex';
@@ -260,13 +244,11 @@
       checkActiveOrders();
       setInterval(checkActiveOrders, 15000);
     }
-
     async function loadCategories() {
       const grid = document.getElementById("categoryGrid");
       try {
         const res = await fetch("/api/categories");
         const data = await res.json();
-
         if (data.success && data.categories?.length) {
           grid.innerHTML = data.categories.map(cat => {
             const imgSrc = cat.imageUrl ||
@@ -281,32 +263,27 @@
           grid.innerHTML = `
             <div class="no-categories">
               <p>No categories available.</p>
-              <p>Visite later <a href="index.html">Admin Portal</a></p>
+              <p>Visit later <a href="index.html">Admin Portal</a></p>
             </div>`;
         }
       } catch {
         grid.innerHTML = `<div class="loading">Failed to load categories</div>`;
       }
     }
-
     function openCategory(name) {
       localStorage.setItem('selectedCategory', name);
       window.location.href = 'gitems.html';
     }
-
     async function checkActiveOrders() {
       if (!loggedUser?._id) return trackBar.classList.remove('visible');
-
       try {
         const res = await fetch("/api/my-orders", {
           headers: { 'x-user-id': loggedUser._id }
         });
         const data = await res.json();
-
         const active = data.orders?.filter(o =>
           o.status === 'pending' || o.status === 'confirmed'
         );
-
         if (active?.length) {
           trackBar.classList.add('visible');
           trackText.textContent =
@@ -319,6 +296,5 @@
       }
     }
   </script>
-
 </body>
 </html>
