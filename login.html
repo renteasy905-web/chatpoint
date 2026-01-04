@@ -93,10 +93,61 @@
     .loader { width: 90%; max-width: 400px; text-align: center; color: white; }
     .progress-bar { height: 10px; background: rgba(255,255,255,0.15); border-radius: 10px; overflow: hidden; margin: 20px 0; }
     .progress-fill { height: 100%; width: 0%; background: var(--primary); border-radius: 10px; transition: width 0.4s ease; }
+
+    /* Toast Styles */
+    #toast-container {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: none;
+    }
+    .toast {
+      min-width: 320px;
+      max-width: 400px;
+      padding: 16px 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: white;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(100px);
+      transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      pointer-events: all;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .toast i {
+      font-size: 24px;
+    }
+    .toast .message {
+      flex: 1;
+    }
+    .toast .close-btn {
+      cursor: pointer;
+      font-size: 20px;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .toast .close-btn:hover { opacity: 1; }
+    .toast.success { background: #2d8a3d; }
+    .toast.error { background: #c42b2b; }
+    .toast.offline { background: #b36b00; }
+
     @media (max-width: 480px) {
       .card { padding: 28px 24px; border-radius: 16px; }
       .brand span { font-size: 28px; }
       .lead { font-size: 20px; }
+      #toast-container { bottom: 20px; right: 20px; left: 20px; }
+      .toast { min-width: auto; }
     }
   </style>
 </head>
@@ -107,6 +158,7 @@
     <svg class="svg-3" viewBox="0 0 64 64"><defs><linearGradient id="g3"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><rect x="18" y="18" width="28" height="28" rx="6" stroke="url(#g3)" stroke-width="3" fill="none"/><path d="M24 18 Q32 6 40 18" stroke="url(#g3)" stroke-width="3" fill="none"/></svg>
     <svg class="svg-4" viewBox="0 0 64 64"><defs><linearGradient id="g4"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><rect x="20" y="16" width="24" height="10" rx="4" stroke="url(#g4)" stroke-width="2.8" fill="none"/><rect x="24" y="26" width="4" height="18" fill="#e23744"/><rect x="30" y="26" width="4" height="18" fill="#e23744"/><rect x="36" y="26" width="4" height="18" fill="#e23744"/></svg>
   </div>
+
   <div class="container">
     <div class="card">
       <div class="brand"><span>Chat</span><span>Point</span></div>
@@ -127,12 +179,16 @@
       </div>
     </div>
   </div>
+
   <div id="loadingOverlay">
     <div class="loader">
       <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
       <div id="loaderText">Connecting...</div>
     </div>
   </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
 
   <script>
     const $ = id => document.getElementById(id);
@@ -146,7 +202,7 @@
     $('showSignup').onclick = e => { e.preventDefault(); loginForm.style.display = 'none'; signupForm.style.display = 'block'; };
     $('showLogin').onclick = e => { e.preventDefault(); signupForm.style.display = 'none'; loginForm.style.display = 'block'; };
 
-    // Loading animation
+    // Loading overlay
     function showLoading() {
       loading.classList.add('active');
       let w = 10;
@@ -155,82 +211,134 @@
       const textInt = setInterval(() => { loaderText.textContent = 'Connecting' + '.'.repeat((dots++ % 3) + 1); }, 500);
       return () => { clearInterval(int); clearInterval(textInt); };
     }
-
     function hideLoading() {
       progress.style.width = '100%';
       setTimeout(() => { loading.classList.remove('active'); progress.style.width = '0%'; }, 500);
     }
 
+    // Sound Effects
+    const sounds = {
+      success: 'https://assets.mixkit.co/sfx/preview/mixkit-bell-notification-933.mp3',
+      error: 'https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-946.mp3',
+      offline: 'https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3'
+    };
+
+    function playSound(type) {
+      const audio = new Audio(sounds[type]);
+      audio.volume = 0.4; // Pleasant volume
+      audio.play().catch(() => {
+        // Silent if browser blocks (very rare after user interaction)
+      });
+    }
+
+    // Toast Notification Function
+    function showToast(message, type = 'error', duration = 4500) {
+      const container = $('toast-container');
+      const toast = document.createElement('div');
+      toast.classList.add('toast', type);
+
+      let icon = 'fa-circle-exclamation';
+      if (type === 'success') icon = 'fa-circle-check';
+      else if (type === 'offline') icon = 'fa-wifi';
+
+      toast.innerHTML = `
+        <i class="fas ${icon}"></i>
+        <div class="message">${message}</div>
+        <span class="close-btn" onclick="this.parentElement.classList.remove('show'); setTimeout(()=>this.parentElement.remove(),400)">&times;</span>
+      `;
+
+      container.appendChild(toast);
+      setTimeout(() => toast.classList.add('show'), 100);
+
+      // Play sound
+      if (type in sounds) playSound(type);
+
+      if (duration > 0) {
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => toast.remove(), 400);
+        }, duration);
+      }
+    }
+
     // Phone validation
     const isValidPhone = p => /^\d{10}$/.test(p.trim());
+    const API_BASE = '';
 
-    // Backend API base URL (change if deployed)
-    const API_BASE = ''; // Empty = same origin (e.g., http://localhost:5000)
-
-    // Signup
+    // Signup Handler
     $('btnSignup').onclick = async () => {
       const name = $('signupName').value.trim();
       const phone = $('signupPhone').value.trim();
       const password = $('signupPassword').value;
 
-      if (!name || !phone || !password) return alert('Please fill all fields');
-      if (!isValidPhone(phone)) return alert('Enter a valid 10-digit phone number');
+      if (!name || !phone || !password) return showToast('Please fill all fields', 'error');
+      if (!isValidPhone(phone)) return showToast('Enter a valid 10-digit phone number', 'error');
 
       const stop = showLoading();
-
       try {
         const res = await fetch(API_BASE + '/api/user/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, phone, password })
         });
-
         const data = await res.json();
 
-        if (!data.success) {
+        if (!res.ok || !data.success) {
+          if (!navigator.onLine) throw new Error('No internet connection');
           throw new Error(data.message || 'Signup failed');
         }
 
-        alert('Account created successfully! Welcome ' + name);
-        location.href = 'index.html';
+        showToast(`Account created successfully! Welcome ${name}`, 'success', 5000);
+        setTimeout(() => location.href = 'index.html', 1500);
       } catch (err) {
-        alert(err.message || 'Something went wrong');
+        let msg = err.message || 'Something went wrong';
+        let type = 'error';
+        if (msg.toLowerCase().includes('internet') || msg.toLowerCase().includes('network')) {
+          msg = 'No internet connection';
+          type = 'offline';
+        }
+        showToast(msg, type);
       } finally {
         stop();
         hideLoading();
       }
     };
 
-    // Login
+    // Login Handler
     $('btnLogin').onclick = async () => {
       const phone = $('loginPhone').value.trim();
       const password = $('loginPassword').value;
 
-      if (!phone || !password) return alert('Please fill all fields');
-      if (!isValidPhone(phone)) return alert('Enter a valid 10-digit phone number');
+      if (!phone || !password) return showToast('Please fill all fields', 'error');
+      if (!isValidPhone(phone)) return showToast('Enter a valid 10-digit phone number', 'error');
 
       const stop = showLoading();
-
       try {
         const res = await fetch(API_BASE + '/api/user/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ phone, password })
         });
-
         const data = await res.json();
 
-        if (!data.success) {
+        if (!res.ok || !data.success) {
+          if (!navigator.onLine) throw new Error('No internet connection');
           throw new Error(data.message || 'Invalid credentials');
         }
 
-        // Save user to localStorage for use in other pages
         localStorage.setItem('chatpoint_user', JSON.stringify(data.user));
-
-        // Optional: redirect with success
-        location.href = 'index.html';
+        showToast('Login successful! Welcome back', 'success', 4000);
+        setTimeout(() => location.href = 'index.html', 1200);
       } catch (err) {
-        alert(err.message || 'Login failed');
+        let msg = err.message || 'Login failed';
+        let type = 'error';
+        if (msg.toLowerCase().includes('internet') || msg.toLowerCase().includes('network')) {
+          msg = 'No internet connection';
+          type = 'offline';
+        } else if (msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('wrong')) {
+          msg = 'Wrong phone number or password';
+        }
+        showToast(msg, type);
       } finally {
         stop();
         hideLoading();
