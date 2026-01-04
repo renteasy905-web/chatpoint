@@ -94,7 +94,7 @@
     .progress-bar { height: 10px; background: rgba(255,255,255,0.15); border-radius: 10px; overflow: hidden; margin: 20px 0; }
     .progress-fill { height: 100%; width: 0%; background: var(--primary); border-radius: 10px; transition: width 0.4s ease; }
 
-    /* Toast Styles (Now on TOP-RIGHT) */
+    /* Original Toast Style - Now on TOP-RIGHT */
     #toast-container {
       position: fixed;
       top: 30px;
@@ -106,41 +106,35 @@
       pointer-events: none;
     }
     .toast {
-      min-width: 320px;
-      max-width: 400px;
-      padding: 16px 20px;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-      display: flex;
-      align-items: center;
-      gap: 14px;
+      min-width: 300px;
+      padding: 15px 20px;
+      background-color: #333;
       color: white;
-      font-weight: 600;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       opacity: 0;
-      transform: translateY(-100px); /* Slide from top */
-      transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transform: translateX(100%);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       pointer-events: all;
     }
     .toast.show {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateX(0);
     }
-    .toast i {
-      font-size: 24px;
-    }
-    .toast .message {
-      flex: 1;
-    }
+    .toast.success { background-color: #4caf50; }
+    .toast.error   { background-color: #f44336; }
+    .toast.offline { background-color: #ff9800; }
+
     .toast .close-btn {
       cursor: pointer;
-      font-size: 20px;
-      opacity: 0.7;
-      transition: opacity 0.2s;
+      font-size: 18px;
+      margin-left: 20px;
+      opacity: 0.8;
     }
     .toast .close-btn:hover { opacity: 1; }
-    .toast.success { background: #2d8a3d; }
-    .toast.error { background: #c42b2b; }
-    .toast.offline { background: #b36b00; }
 
     @media (max-width: 480px) {
       .card { padding: 28px 24px; border-radius: 16px; }
@@ -187,73 +181,53 @@
     </div>
   </div>
 
-  <!-- Toast Container -->
   <div id="toast-container"></div>
 
   <script>
     const $ = id => document.getElementById(id);
-    const loginForm = $('loginForm');
-    const signupForm = $('signupForm');
-    const loading = $('loadingOverlay');
-    const progress = $('progressFill');
-    const loaderText = $('loaderText');
 
     // Toggle forms
-    $('showSignup').onclick = e => { e.preventDefault(); loginForm.style.display = 'none'; signupForm.style.display = 'block'; };
-    $('showLogin').onclick = e => { e.preventDefault(); signupForm.style.display = 'none'; loginForm.style.display = 'block'; };
+    $('showSignup').onclick = e => { e.preventDefault(); $('loginForm').style.display = 'none'; $('signupForm').style.display = 'block'; };
+    $('showLogin').onclick = e => { e.preventDefault(); $('signupForm').style.display = 'none'; $('loginForm').style.display = 'block'; };
 
-    // Loading overlay
+    // Loading
     function showLoading() {
-      loading.classList.add('active');
+      $('loadingOverlay').classList.add('active');
       let w = 10;
-      const int = setInterval(() => { w = Math.min(w + 7, 94); progress.style.width = w + '%'; }, 300);
+      const int = setInterval(() => { w = Math.min(w + 7, 94); $('progressFill').style.width = w + '%'; }, 300);
       let dots = 0;
-      const textInt = setInterval(() => { loaderText.textContent = 'Connecting' + '.'.repeat((dots++ % 3) + 1); }, 500);
+      const textInt = setInterval(() => { $('loaderText').textContent = 'Connecting' + '.'.repeat((dots++ % 3) + 1); }, 500);
       return () => { clearInterval(int); clearInterval(textInt); };
     }
     function hideLoading() {
-      progress.style.width = '100%';
-      setTimeout(() => { loading.classList.remove('active'); progress.style.width = '0%'; }, 500);
+      $('progressFill').style.width = '100%';
+      setTimeout(() => { $('loadingOverlay').classList.remove('active'); $('progressFill').style.width = '0%'; }, 500);
     }
 
-    // Sound Effects (verified URLs - should play post-click)
+    // Reliable sounds
     const sounds = {
-      success: 'https://assets.mixkit.co/sfx/preview/mixkit-bell-notification-933.mp3',
-      error: 'https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-946.mp3',
-      offline: 'https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3'
+      success: 'https://www.soundjay.com/buttons/sounds/button-09.mp3',
+      error: 'https://www.soundjay.com/buttons/sounds/button-10.mp3',
+      offline: 'https://www.soundjay.com/buttons/sounds/beep-02.mp3'
     };
-
     function playSound(type) {
-      console.log(`Trying to play sound: ${type} from ${sounds[type]}`); // Debug log
       const audio = new Audio(sounds[type]);
-      audio.volume = 0.4;
-      audio.play().then(() => {
-        console.log(`Sound played successfully: ${type}`);
-      }).catch(err => {
-        console.error(`Sound play failed: ${type} - Error: ${err.message}`);
-      });
+      audio.volume = 0.5;
+      audio.play().catch(() => {});
     }
 
-    // Toast Notification Function
-    function showToast(message, type = 'error', duration = 4500) {
+    // Original Toast Function (now appears from top)
+    function showToast(message, type = 'info', duration = 4000) {
       const container = $('toast-container');
       const toast = document.createElement('div');
       toast.classList.add('toast', type);
-
-      let icon = 'fa-circle-exclamation';
-      if (type === 'success') icon = 'fa-circle-check';
-      else if (type === 'offline') icon = 'fa-wifi';
-
       toast.innerHTML = `
-        <i class="fas ${icon}"></i>
-        <div class="message">${message}</div>
-        <span class="close-btn" onclick="this.parentElement.classList.remove('show'); setTimeout(()=>this.parentElement.remove(),400)">&times;</span>
+        <span>${message}</span>
+        <span class="close-btn" onclick="this.parentElement.remove()">×</span>
       `;
-
       container.appendChild(toast);
       setTimeout(() => toast.classList.add('show'), 100);
 
-      // Play sound
       if (type in sounds) playSound(type);
 
       if (duration > 0) {
@@ -264,16 +238,14 @@
       }
     }
 
-    // Phone validation
     const isValidPhone = p => /^\d{10}$/.test(p.trim());
     const API_BASE = '';
 
-    // Signup Handler
+    // Signup
     $('btnSignup').onclick = async () => {
       const name = $('signupName').value.trim();
       const phone = $('signupPhone').value.trim();
       const password = $('signupPassword').value;
-
       if (!name || !phone || !password) return showToast('Please fill all fields', 'error');
       if (!isValidPhone(phone)) return showToast('Enter a valid 10-digit phone number', 'error');
 
@@ -285,33 +257,23 @@
           body: JSON.stringify({ name, phone, password })
         });
         const data = await res.json();
-
-        if (!res.ok || !data.success) {
-          if (!navigator.onLine) throw new Error('No internet connection');
-          throw new Error(data.message || 'Signup failed');
-        }
-
+        if (!data.success) throw new Error(data.message || 'Signup failed');
         showToast(`Account created successfully! Welcome ${name}`, 'success', 5000);
         setTimeout(() => location.href = 'index.html', 1500);
       } catch (err) {
         let msg = err.message || 'Something went wrong';
         let type = 'error';
-        if (msg.toLowerCase().includes('internet') || msg.toLowerCase().includes('network')) {
-          msg = 'No internet connection';
-          type = 'offline';
-        }
+        if (msg.toLowerCase().includes('internet')) { msg = 'No internet connection'; type = 'offline'; }
         showToast(msg, type);
       } finally {
-        stop();
-        hideLoading();
+        stop(); hideLoading();
       }
     };
 
-    // Login Handler
+    // Login
     $('btnLogin').onclick = async () => {
       const phone = $('loginPhone').value.trim();
       const password = $('loginPassword').value;
-
       if (!phone || !password) return showToast('Please fill all fields', 'error');
       if (!isValidPhone(phone)) return showToast('Enter a valid 10-digit phone number', 'error');
 
@@ -323,39 +285,26 @@
           body: JSON.stringify({ phone, password })
         });
         const data = await res.json();
-
-        if (!res.ok || !data.success) {
-          if (!navigator.onLine) throw new Error('No internet connection');
-          throw new Error(data.message || 'Invalid credentials');
-        }
-
+        if (!data.success) throw new Error(data.message || 'Invalid credentials');
         localStorage.setItem('chatpoint_user', JSON.stringify(data.user));
         showToast('Login successful! Welcome back', 'success', 4000);
         setTimeout(() => location.href = 'index.html', 1200);
       } catch (err) {
         let msg = err.message || 'Login failed';
         let type = 'error';
-        if (msg.toLowerCase().includes('internet') || msg.toLowerCase().includes('network')) {
-          msg = 'No internet connection';
-          type = 'offline';
-        } else if (msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('wrong')) {
-          msg = 'Wrong phone number or password';
-        }
+        if (msg.toLowerCase().includes('internet')) { msg = 'No internet connection'; type = 'offline'; }
+        else if (msg.toLowerCase().includes('wrong') || msg.toLowerCase().includes('invalid')) msg = 'Wrong phone number or password';
         showToast(msg, type);
       } finally {
-        stop();
-        hideLoading();
+        stop(); hideLoading();
       }
     };
 
-    // Enter key support
+    // Enter key
     document.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
-        if (signupForm.style.display !== 'none') {
-          $('btnSignup').click();
-        } else {
-          $('btnLogin').click();
-        }
+        if ($('signupForm').style.display !== 'none') $('btnSignup').click();
+        else $('btnLogin').click();
       }
     });
   </script>
