@@ -2,8 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Updated viewport for proper mobile fit, initial scale, and to minimize unwanted zooming -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="title" content="Categories — ChatPoint" />
   <title>Categories — ChatPoint</title>
+  
+  <!-- PWA / Add to Home Screen enhancements for app-like experience -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#4CAF50" />
+
   <style>
     /* ===================== RESET & BASE ===================== */
     * {
@@ -18,6 +27,7 @@
       font-family: 'Segoe UI', Arial, sans-serif;
       background: #f4f6f9;
       overscroll-behavior: none;
+      touch-action: manipulation; /* Improves responsiveness and helps prevent unwanted zoom on double-tap */
     }
     img {
       max-width: 100%;
@@ -31,7 +41,7 @@
     .container {
       width: 100%;
       max-width: 420px;
-      min-height: 100dvh;
+      min-height: 100dvh; /* Use dvh for dynamic viewport height (better on mobile) */
       background: #ffffff;
       display: flex;
       flex-direction: column;
@@ -57,7 +67,7 @@
       padding: 6px;
       background: #fff;
       border-bottom: 1px solid #eee;
-      gap: 8px; /* Better spacing */
+      gap: 8px;
     }
     .tab {
       flex: 1;
@@ -73,7 +83,6 @@
       background: rgba(76, 175, 80, 0.12);
       color: #4CAF50;
     }
-    /* New: OFFERS as a highlighted button */
     .tab-offers {
       background: linear-gradient(135deg, #ff9800, #f57c00) !important;
       color: #fff !important;
@@ -151,7 +160,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      height: 100dvh;
       text-align: center;
       padding: 20px;
       color: #e74c3c;
@@ -213,7 +222,6 @@
     </header>
     <div class="tabs">
       <div class="tab active">All</div>
-      <!-- OFFERS is now a clickable button linking to offer.html -->
       <div class="tab tab-offers" onclick="window.location.href='offer.html'">
         OFFERS 🔥
       </div>
