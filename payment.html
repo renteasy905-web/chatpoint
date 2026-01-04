@@ -61,6 +61,16 @@
       border-bottom: 1px dashed var(--border);
       font-size: 0.95rem;
     }
+    .delivery-info {
+      text-align: center;
+      padding: 0.8rem;
+      margin: 0.8rem 0;
+      background: rgba(0, 255, 157, 0.1);
+      border-radius: 8px;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
     .total-row {
       font-weight: bold;
       font-size: 1.3rem;
@@ -101,11 +111,10 @@
 </head>
 <body>
   <div class="container" id="mainContainer"></div>
-
   <script>
     const CART_KEY = "chatpoint_cart";
     const USER_KEY = "chatpoint_user";
-    const API_BASE = window.location.origin; // Use same origin as your app
+    const API_BASE = window.location.origin;
     const PRIMARY = "9632367397";
     const BACKUP = "8088975913";
 
@@ -148,8 +157,16 @@
         }
       }
 
-      const deliveryCharge = overallTotal >= 69 ? 0 : 30;
+      // Updated rules
+      const FREE_DELIVERY_MIN = 100;
+      const DELIVERY_CHARGE = 12;
+
+      const deliveryCharge = overallTotal >= FREE_DELIVERY_MIN ? 0 : DELIVERY_CHARGE;
       const grandTotal = overallTotal + deliveryCharge;
+
+      // Calculate how much more needed for free delivery
+      const amountNeeded = FREE_DELIVERY_MIN - overallTotal;
+      const showDeliveryMessage = overallTotal < FREE_DELIVERY_MIN && amountNeeded > 0;
 
       window.tempOrderData = { itemsArray, overallTotal, deliveryCharge, grandTotal, shopName };
 
@@ -184,8 +201,22 @@
             </div>
           `).join('')}
           <div class="cart-item"><span>Subtotal</span><span>₹${overallTotal.toFixed(2)}</span></div>
-          <div class="cart-item"><span>Delivery</span><span>${deliveryCharge === 0 ? '<strong style="color:var(--accent)">FREE</strong>' : '₹' + deliveryCharge}</span></div>
-          <div class="total-row cart-item"><span>Grand Total</span><span>₹${grandTotal.toFixed(2)}</span></div>
+
+          ${showDeliveryMessage ? `
+            <div class="delivery-info">
+              Add items worth ₹${amountNeeded.toFixed(2)} more to reach ₹${FREE_DELIVERY_MIN} and get <strong>FREE delivery</strong>!
+            </div>
+          ` : ''}
+
+          <div class="cart-item">
+            <span>Delivery</span>
+            <span>${deliveryCharge === 0 ? '<strong style="color:var(--accent)">FREE</strong>' : '₹' + deliveryCharge}</span>
+          </div>
+
+          <div class="total-row cart-item">
+            <span>Grand Total</span>
+            <span>₹${grandTotal.toFixed(2)}</span>
+          </div>
         </div>
 
         <button id="placeOrderBtn" class="btn">Place Order (Cash on Delivery)</button>
@@ -208,20 +239,18 @@
       const { itemsArray, grandTotal, shopName } = window.tempOrderData;
       const user = JSON.parse(localStorage.getItem(USER_KEY));
 
-      // Safely extract userId
       let userId = null;
       if (user && user._id && /^[a-f0-9]{24}$/i.test(user._id)) {
         userId = user._id;
       }
 
-      // Build cart exactly as server expects
       const cart = { [shopName]: {} };
       itemsArray.forEach(item => {
         cart[shopName][item.name] = { qty: item.quantity, price: item.price };
       });
 
       const orderData = {
-        userId, // This links order to user → tracking works!
+        userId,
         name,
         phone,
         address1,
@@ -242,30 +271,23 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(orderData)
         });
-
         const data = await res.json();
         console.log("Response:", data);
 
         if (res.ok && data.success) {
           showSuccess("Order Placed Successfully! 🎉");
-
-          // Clear cart
           localStorage.removeItem(CART_KEY);
 
-          // Prepare WhatsApp message (same as before)
           const itemsList = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
           const message = `New Order!\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nTotal: ₹${grandTotal}\n\nPlease confirm soon!`;
           const encoded = encodeURIComponent(message);
 
-          // Send to both numbers
           setTimeout(() => window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, '_blank'), 1000);
           setTimeout(() => window.open(`https://wa.me/91${BACKUP}?text=${encoded}`, '_blank'), 2000);
 
-          // Redirect to tracking page after 3 seconds
           setTimeout(() => {
             window.location.href = "tracking.html";
           }, 3000);
-
         } else {
           throw new Error(data.message || "Server error");
         }
