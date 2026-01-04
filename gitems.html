@@ -1,176 +1,334 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Grocery Items — ChatPoint</title>
-<style>
-:root{
-  --primary:#2563eb;--bg:#f8fafc;--card:#ffffff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;--radius:16px;--shadow:0 8px 22px rgba(0,0,0,.08);
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;font-family:system-ui;background:var(--bg);color:var(--text);padding-bottom:110px;}
-.header{position:sticky;top:0;z-index:20;background:#fff;display:flex;align-items:center;gap:14px;padding:14px 16px;box-shadow:0 2px 10px rgba(0,0,0,.06);}
-.back{font-size:26px;cursor:pointer;color:var(--primary)}
-.title{font-size:20px;font-weight:600;flex:1}
-.cart-icon{font-size:24px;position:relative;cursor:pointer}
-.cart-count{position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;width:18px;height:18px;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;padding:16px;}
-@media(min-width:480px){.grid{grid-template-columns:repeat(3,1fr)}}
-.item{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;transition:transform .25s;}
-.item:active{transform:scale(.97)}
-.item img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#f1f5f9;cursor:zoom-in;}
-.info{padding:12px 12px 8px;flex:1;}
-.name{font-size:14px;font-weight:600;line-height:1.35;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.price{display:flex;align-items:center;gap:8px;font-weight:700;}
-.original-price{color:#94a3b8;text-decoration:line-through;font-size:14px;}
-.offer-price{color:var(--primary);font-size:18px;}
-.action{padding:10px 12px 14px;display:flex;justify-content:flex-end;}
-.add-btn{background:var(--primary);color:#fff;border:none;width:44px;height:44px;border-radius:50%;font-size:22px;font-weight:700;cursor:pointer;position:relative;overflow:hidden;}
-.add-btn:active{transform:scale(.9)}
-.add-btn svg{position:absolute;inset:0;pointer-events:none;opacity:0;}
-.add-btn.active svg{animation:ripple .6s ease;}
-@keyframes ripple{0%{opacity:.4;transform:scale(.4)}100%{opacity:0;transform:scale(2)}}
-.bottom-cart-bar{position:fixed;bottom:12px;left:50%;transform:translateX(-50%) translateY(120%);background:#fff;width:calc(100%-24px);max-width:420px;padding:14px 16px;border-radius:22px;box-shadow:0 12px 28px rgba(0,0,0,.18);display:flex;justify-content:space-between;align-items:center;transition:.4s cubic-bezier(.25,.8,.25,1);}
-.bottom-cart-bar.visible{transform:translateX(-50%)}
-.cart-summary{font-weight:600}
-.cart-price{color:var(--primary);font-size:18px}
-.view-cart-btn{background:var(--primary);color:#fff;border:none;padding:12px 24px;border-radius:24px;font-size:16px;font-weight:600;}
-.loading-state{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted);}
+  <meta charset="UTF-8">
+  <!-- Optimized viewport: fits mobile perfectly, prevents unwanted zooming -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="title" content="Grocery Items — ChatPoint">
+  <title>Grocery Items — ChatPoint</title>
 
-/* Full-screen image viewer */
-.image-viewer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.95);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  display: none;
-}
-.image-viewer img {
-  max-width: 90%;
-  max-height: 75vh;
-  object-fit: contain;
-  border-radius: 12px;
-}
-.image-viewer-back {
-  margin-top: 30px;
-  padding: 12px 32px;
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 24px;
-  font-size: 18px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-.image-viewer-back:hover {
-  background: #1d4ed8;
-}
-</style>
+  <!-- PWA / Add to Home Screen enhancements -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#2563eb">
+
+  <style>
+    :root{
+      --primary:#2563eb;--bg:#f8fafc;--card:#ffffff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;--radius:16px;--shadow:0 8px 22px rgba(0,0,0,.08);
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html, body{
+      margin:0;
+      height:100%;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      overscroll-behavior:none;
+      touch-action:manipulation; /* Improves responsiveness & reduces accidental zoom */
+    }
+    body{
+      padding-bottom:110px;
+      min-height:100dvh; /* Better full-height handling on mobile browsers */
+    }
+    .header{
+      position:sticky;
+      top:0;
+      z-index:20;
+      background:#fff;
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:14px 16px;
+      box-shadow:0 2px 10px rgba(0,0,0,.06);
+    }
+    .back{font-size:26px;cursor:pointer;color:var(--primary)}
+    .title{font-size:20px;font-weight:600;flex:1}
+    .cart-icon{font-size:24px;position:relative;cursor:pointer}
+    .cart-count{
+      position:absolute;top:-6px;right:-6px;
+      background:#ef4444;color:#fff;
+      width:18px;height:18px;border-radius:50%;
+      font-size:11px;font-weight:700;
+      display:flex;align-items:center;justify-content:center;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:16px;
+      padding:16px;
+    }
+    @media(min-width:480px){
+      .grid{grid-template-columns:repeat(3,1fr)}
+    }
+    .item{
+      background:var(--card);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      transition:transform .25s;
+    }
+    .item:active{transform:scale(.97)}
+    .item img{
+      width:100%;
+      aspect-ratio:1/1;
+      object-fit:cover;
+      background:#f1f5f9;
+      cursor:zoom-in;
+    }
+    .info{
+      padding:12px 12px 8px;
+      flex:1;
+    }
+    .name{
+      font-size:14px;
+      font-weight:600;
+      line-height:1.35;
+      margin-bottom:6px;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+    }
+    .price{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-weight:700;
+    }
+    .original-price{
+      color:#94a3b8;
+      text-decoration:line-through;
+      font-size:14px;
+    }
+    .offer-price{
+      color:var(--primary);
+      font-size:18px;
+    }
+    .action{
+      padding:10px 12px 14px;
+      display:flex;
+      justify-content:flex-end;
+    }
+    .add-btn{
+      background:var(--primary);
+      color:#fff;
+      border:none;
+      width:44px;
+      height:44px;
+      border-radius:50%;
+      font-size:22px;
+      font-weight:700;
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+    }
+    .add-btn:active{transform:scale(.9)}
+    .add-btn svg{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      opacity:0;
+    }
+    .add-btn.active svg{
+      animation:ripple .6s ease;
+    }
+    @keyframes ripple{
+      0%{opacity:.4;transform:scale(.4)}
+      100%{opacity:0;transform:scale(2)}
+    }
+    .bottom-cart-bar{
+      position:fixed;
+      bottom:12px;
+      left:50%;
+      transform:translateX(-50%) translateY(120%);
+      background:#fff;
+      width:calc(100% - 24px);
+      max-width:420px;
+      padding:14px 16px;
+      border-radius:22px;
+      box-shadow:0 12px 28px rgba(0,0,0,.18);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      transition:.4s cubic-bezier(.25,.8,.25,1);
+      z-index:30;
+    }
+    .bottom-cart-bar.visible{
+      transform:translateX(-50%) translateY(0);
+    }
+    .cart-summary{font-weight:600}
+    .cart-price{color:var(--primary);font-size:18px}
+    .view-cart-btn{
+      background:var(--primary);
+      color:#fff;
+      border:none;
+      padding:12px 24px;
+      border-radius:24px;
+      font-size:16px;
+      font-weight:600;
+      cursor:pointer;
+    }
+    .loading-state{
+      grid-column:1/-1;
+      text-align:center;
+      padding:60px 20px;
+      color:var(--muted);
+    }
+
+    /* Full-screen image viewer */
+    .image-viewer {
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:rgba(0,0,0,0.95);
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      z-index:1000;
+      display:none;
+    }
+    .image-viewer img {
+      max-width:90%;
+      max-height:75vh;
+      object-fit:contain;
+      border-radius:12px;
+    }
+    .image-viewer-back {
+      margin-top:30px;
+      padding:12px 32px;
+      background:var(--primary);
+      color:white;
+      border:none;
+      border-radius:24px;
+      font-size:18px;
+      font-weight:600;
+      cursor:pointer;
+      box-shadow:0 4px 15px rgba(0,0,0,0.3);
+    }
+    .image-viewer-back:hover {
+      background:#1d4ed8;
+    }
+  </style>
 </head>
 <body>
-<div class="header">
-  <div class="back" onclick="history.back()">←</div>
-  <div class="title" id="categoryName">Loading...</div>
-  <div class="cart-icon" onclick="goCart()">🛒<span class="cart-count" id="cartCount">0</span></div>
-</div>
-<div class="grid" id="itemsGrid"></div>
-<div class="bottom-cart-bar" id="cartBar">
-  <div class="cart-summary"><span id="cartItems">0 Items</span> • <span class="cart-price" id="cartPrice">₹0</span></div>
-  <button class="view-cart-btn" onclick="goCart()">View Cart</button>
-</div>
+  <div class="header">
+    <div class="back" onclick="history.back()">←</div>
+    <div class="title" id="categoryName">Loading...</div>
+    <div class="cart-icon" onclick="goCart()">🛒<span class="cart-count" id="cartCount">0</span></div>
+  </div>
 
-<!-- Full-screen image viewer overlay -->
-<div id="imageViewer" class="image-viewer">
-  <img id="fullImage" src="" alt="Full item image">
-  <button class="image-viewer-back" onclick="closeImageViewer()">Back</button>
-</div>
+  <div class="grid" id="itemsGrid"></div>
 
-<script>
-let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+  <div class="bottom-cart-bar" id="cartBar">
+    <div class="cart-summary"><span id="cartItems">0 Items</span> • <span class="cart-price" id="cartPrice">₹0</span></div>
+    <button class="view-cart-btn" onclick="goCart()">View Cart</button>
+  </div>
 
-async function load() {
-  const cat = localStorage.getItem('selectedCategory') || 'Items';
-  document.getElementById('categoryName').textContent = cat;
-  document.getElementById('itemsGrid').innerHTML = '<div class="loading-state">Loading...</div>';
+  <!-- Full-screen image viewer overlay -->
+  <div id="imageViewer" class="image-viewer">
+    <img id="fullImage" src="" alt="Full item image">
+    <button class="image-viewer-back" onclick="closeImageViewer()">Back</button>
+  </div>
 
-  const res = await fetch('/api/items/' + encodeURIComponent(cat));
-  const data = await res.json();
+  <script>
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-  document.getElementById('itemsGrid').innerHTML = data.items.map(i => {
-    const priceToUse = i.offerPrice || i.price;
-    const originalToShow = i.originalPrice || i.price;
-    const showStrikethrough = i.originalPrice && i.originalPrice > i.offerPrice;
-    const escapedImg = i.imageUrl.replace(/'/g, "\\'");
-    const escapedName = i.name.replace(/'/g, "\\'");
+    async function load() {
+      const cat = localStorage.getItem('selectedCategory') || 'Items';
+      document.getElementById('categoryName').textContent = cat;
+      document.getElementById('itemsGrid').innerHTML = '<div class="loading-state">Loading...</div>';
 
-    return `
-      <div class="item">
-        <img src="${i.imageUrl}" onerror="this.src='https://placehold.co/300x300?text=No+Image'" onclick="openImageViewer('${escapedImg}')">
-        <div class="info">
-          <div class="name">${i.name}</div>
-          <div class="price">
-            ${showStrikethrough ? `<span class="original-price">₹${originalToShow}</span>` : ''}
-            <span class="offer-price">₹${priceToUse}</span>
-          </div>
-        </div>
-        <div class="action">
-          <button class="add-btn" onclick="add('${i._id}','${escapedName}',${priceToUse},this)">
-            +
-            <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="white"/></svg>
-          </button>
-        </div>
-      </div>
-    `;
-  }).join('');
+      try {
+        const res = await fetch('/api/items/' + encodeURIComponent(cat));
+        const data = await res.json();
 
-  updateCartUI();
-}
+        document.getElementById('itemsGrid').innerHTML = data.items.map(i => {
+          const priceToUse = i.offerPrice || i.price;
+          const originalToShow = i.originalPrice || i.price;
+          const showStrikethrough = i.originalPrice && i.originalPrice > i.offerPrice;
+          const escapedImg = i.imageUrl.replace(/'/g, "\\'");
+          const escapedName = i.name.replace(/'/g, "\\'");
 
-function openImageViewer(imageSrc) {
-  const viewer = document.getElementById('imageViewer');
-  const fullImg = document.getElementById('fullImage');
-  fullImg.src = imageSrc;
-  fullImg.onerror = () => {
-    fullImg.src = 'https://placehold.co/600x800?text=No+Image';
-  };
-  viewer.style.display = 'flex';
-}
+          return `
+            <div class="item">
+              <img src="${i.imageUrl}" onerror="this.src='https://placehold.co/300x300?text=No+Image'" alt="${i.name}" onclick="openImageViewer('${escapedImg}')">
+              <div class="info">
+                <div class="name">${i.name}</div>
+                <div class="price">
+                  ${showStrikethrough ? `<span class="original-price">₹${originalToShow}</span>` : ''}
+                  <span class="offer-price">₹${priceToUse}</span>
+                </div>
+              </div>
+              <div class="action">
+                <button class="add-btn" onclick="add('${i._id}','${escapedName}',${priceToUse},this)">
+                  +
+                  <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="white"/></svg>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        document.getElementById('itemsGrid').innerHTML = '<div class="loading-state">Failed to load items</div>';
+      }
 
-function closeImageViewer() {
-  document.getElementById('imageViewer').style.display = 'none';
-}
+      updateCartUI();
+    }
 
-function add(id, name, price, btn) {
-  let item = cart.find(x => x.id === id);
-  if (item) item.qty++;
-  else cart.push({ id, name, price, qty: 1, img: btn.parentElement.previousElementSibling.previousElementSibling.querySelector('img').src });
-  localStorage.setItem('cart', JSON.stringify(cart));
-  btn.classList.add('active');
-  setTimeout(() => btn.classList.remove('active'), 600);
-  updateCartUI();
-}
+    function openImageViewer(imageSrc) {
+      const viewer = document.getElementById('imageViewer');
+      const fullImg = document.getElementById('fullImage');
+      fullImg.src = imageSrc;
+      fullImg.onerror = () => {
+        fullImg.src = 'https://placehold.co/600x800?text=No+Image';
+      };
+      viewer.style.display = 'flex';
+    }
 
-function updateCartUI() {
-  const items = cart.reduce((s, i) => s + i.qty, 0);
-  const total = cart.reduce((s, i) => s + i.qty * i.price, 0);
-  document.getElementById('cartCount').textContent = items;
-  document.getElementById('cartItems').textContent = items + ' Items';
-  document.getElementById('cartPrice').textContent = '₹' + total;
-  document.getElementById('cartBar').classList.toggle('visible', items > 0);
-}
+    function closeImageViewer() {
+      document.getElementById('imageViewer').style.display = 'none';
+    }
 
-function goCart() { location.href = 'gcart.html'; }
+    function add(id, name, price, btn) {
+      let item = cart.find(x => x.id === id);
+      if (item) item.qty++;
+      else cart.push({ 
+        id, 
+        name, 
+        price, 
+        qty: 1, 
+        img: btn.closest('.item').querySelector('img').src 
+      });
 
-load();
-</script>
+      localStorage.setItem('cart', JSON.stringify(cart));
+
+      btn.classList.add('active');
+      setTimeout(() => btn.classList.remove('active'), 600);
+
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const items = cart.reduce((s, i) => s + i.qty, 0);
+      const total = cart.reduce((s, i) => s + i.qty * i.price, 0);
+
+      document.getElementById('cartCount').textContent = items;
+      document.getElementById('cartItems').textContent = items + ' Items';
+      document.getElementById('cartPrice').textContent = '₹' + total;
+      document.getElementById('cartBar').classList.toggle('visible', items > 0);
+    }
+
+    function goCart() { 
+      location.href = 'gcart.html'; 
+    }
+
+    load();
+  </script>
 </body>
 </html>
