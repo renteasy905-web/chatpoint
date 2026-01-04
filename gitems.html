@@ -6,13 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <meta name="title" content="Grocery Items — ChatPoint">
   <title>Grocery Items — ChatPoint</title>
-
   <!-- PWA / Add to Home Screen enhancements -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="theme-color" content="#2563eb">
-
   <style>
     :root{
       --primary:#2563eb;--bg:#f8fafc;--card:#ffffff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;--radius:16px;--shadow:0 8px 22px rgba(0,0,0,.08);
@@ -25,11 +23,11 @@
       background:var(--bg);
       color:var(--text);
       overscroll-behavior:none;
-      touch-action:manipulation; /* Improves responsiveness & reduces accidental zoom */
+      touch-action:manipulation;
     }
     body{
       padding-bottom:110px;
-      min-height:100dvh; /* Better full-height handling on mobile browsers */
+      min-height:100dvh;
     }
     .header{
       position:sticky;
@@ -177,8 +175,6 @@
       padding:60px 20px;
       color:var(--muted);
     }
-
-    /* Full-screen image viewer */
     .image-viewer {
       position:fixed;
       top:0;
@@ -211,9 +207,6 @@
       cursor:pointer;
       box-shadow:0 4px 15px rgba(0,0,0,0.3);
     }
-    .image-viewer-back:hover {
-      background:#1d4ed8;
-    }
   </style>
 </head>
 <body>
@@ -222,22 +215,21 @@
     <div class="title" id="categoryName">Loading...</div>
     <div class="cart-icon" onclick="goCart()">🛒<span class="cart-count" id="cartCount">0</span></div>
   </div>
-
   <div class="grid" id="itemsGrid"></div>
-
   <div class="bottom-cart-bar" id="cartBar">
     <div class="cart-summary"><span id="cartItems">0 Items</span> • <span class="cart-price" id="cartPrice">₹0</span></div>
     <button class="view-cart-btn" onclick="goCart()">View Cart</button>
   </div>
-
-  <!-- Full-screen image viewer overlay -->
   <div id="imageViewer" class="image-viewer">
     <img id="fullImage" src="" alt="Full item image">
     <button class="image-viewer-back" onclick="closeImageViewer()">Back</button>
   </div>
 
   <script>
-    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    // Always get fresh cart from localStorage
+    function getCart() {
+      return JSON.parse(localStorage.getItem('cart') || '[]');
+    }
 
     async function load() {
       const cat = localStorage.getItem('selectedCategory') || 'Items';
@@ -278,16 +270,14 @@
         document.getElementById('itemsGrid').innerHTML = '<div class="loading-state">Failed to load items</div>';
       }
 
-      updateCartUI();
+      updateCartUI(); // Refresh UI with latest cart
     }
 
     function openImageViewer(imageSrc) {
       const viewer = document.getElementById('imageViewer');
       const fullImg = document.getElementById('fullImage');
       fullImg.src = imageSrc;
-      fullImg.onerror = () => {
-        fullImg.src = 'https://placehold.co/600x800?text=No+Image';
-      };
+      fullImg.onerror = () => fullImg.src = 'https://placehold.co/600x800?text=No+Image';
       viewer.style.display = 'flex';
     }
 
@@ -296,25 +286,27 @@
     }
 
     function add(id, name, price, btn) {
+      let cart = getCart();
       let item = cart.find(x => x.id === id);
-      if (item) item.qty++;
-      else cart.push({ 
-        id, 
-        name, 
-        price, 
-        qty: 1, 
-        img: btn.closest('.item').querySelector('img').src 
-      });
-
+      if (item) {
+        item.qty++;
+      } else {
+        cart.push({
+          id,
+          name,
+          price,
+          qty: 1,
+          img: btn.closest('.item').querySelector('img').src
+        });
+      }
       localStorage.setItem('cart', JSON.stringify(cart));
-
       btn.classList.add('active');
       setTimeout(() => btn.classList.remove('active'), 600);
-
       updateCartUI();
     }
 
     function updateCartUI() {
+      const cart = getCart();
       const items = cart.reduce((s, i) => s + i.qty, 0);
       const total = cart.reduce((s, i) => s + i.qty * i.price, 0);
 
@@ -324,9 +316,16 @@
       document.getElementById('cartBar').classList.toggle('visible', items > 0);
     }
 
-    function goCart() { 
-      location.href = 'gcart.html'; 
+    function goCart() {
+      location.href = 'gcart.html';
     }
+
+    // Handle back/forward cache and focus (when returning from cart)
+    window.addEventListener('pageshow', (e) => {
+      if (e.persisted) window.location.reload();
+      else updateCartUI();
+    });
+    window.addEventListener('focus', updateCartUI);
 
     load();
   </script>
