@@ -402,4 +402,3 @@ app.listen(PORT, "0.0.0.0", () => {
   console.log(`Categories: http://localhost:${PORT}/categories.html`);
   console.log(`Tracking: http://localhost:${PORT}/tracking.html`);
 });
-i got my old code
