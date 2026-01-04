@@ -94,10 +94,10 @@
     .progress-bar { height: 10px; background: rgba(255,255,255,0.15); border-radius: 10px; overflow: hidden; margin: 20px 0; }
     .progress-fill { height: 100%; width: 0%; background: var(--primary); border-radius: 10px; transition: width 0.4s ease; }
 
-    /* Toast Styles */
+    /* Toast Styles (Now on TOP-RIGHT) */
     #toast-container {
       position: fixed;
-      bottom: 30px;
+      top: 30px;
       right: 30px;
       z-index: 10000;
       display: flex;
@@ -117,7 +117,7 @@
       color: white;
       font-weight: 600;
       opacity: 0;
-      transform: translateY(100px);
+      transform: translateY(-100px); /* Slide from top */
       transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
       pointer-events: all;
     }
@@ -146,7 +146,7 @@
       .card { padding: 28px 24px; border-radius: 16px; }
       .brand span { font-size: 28px; }
       .lead { font-size: 20px; }
-      #toast-container { bottom: 20px; right: 20px; left: 20px; }
+      #toast-container { top: 20px; right: 20px; left: 20px; }
       .toast { min-width: auto; }
     }
   </style>
@@ -216,7 +216,7 @@
       setTimeout(() => { loading.classList.remove('active'); progress.style.width = '0%'; }, 500);
     }
 
-    // Sound Effects
+    // Sound Effects (verified URLs - should play post-click)
     const sounds = {
       success: 'https://assets.mixkit.co/sfx/preview/mixkit-bell-notification-933.mp3',
       error: 'https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-946.mp3',
@@ -224,10 +224,13 @@
     };
 
     function playSound(type) {
+      console.log(`Trying to play sound: ${type} from ${sounds[type]}`); // Debug log
       const audio = new Audio(sounds[type]);
-      audio.volume = 0.4; // Pleasant volume
-      audio.play().catch(() => {
-        // Silent if browser blocks (very rare after user interaction)
+      audio.volume = 0.4;
+      audio.play().then(() => {
+        console.log(`Sound played successfully: ${type}`);
+      }).catch(err => {
+        console.error(`Sound play failed: ${type} - Error: ${err.message}`);
       });
     }
 
