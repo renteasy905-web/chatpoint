@@ -1,451 +1,323 @@
-require("dotenv").config();
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const path = require("path");
-const bodyParser = require("body-parser");
-const crypto = require("crypto");
-const multer = require("multer");
-const cloudinary = require("cloudinary").v2;
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
-
-const app = express();
-const PORT = process.env.PORT || 5000;
-
-// =============== CLOUDINARY CONFIG ===============
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "djlkwjeb2",
-  api_key: process.env.CLOUDINARY_API_KEY || "942326953292277",
-  api_secret: process.env.CLOUDINARY_API_SECRET || "GC0SO2VrcpdMSLGzQsYjLZ1SAZg",
-});
-
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: (req, file) => {
-    if (file.fieldname === "categoryImage") {
-      return {
-        folder: "grocery_categories",
-        allowed_formats: ["jpg", "jpeg", "png", "webp"],
-        transformation: [{ width: 600, height: 600, crop: "fill" }],
-      };
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ChatPoint — Login / Signup</title>
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root {
+      --bg: #3a3337;
+      --card: #d9e0ae;
+      --text: #1a1a1a;
+      --muted: #666666;
+      --primary: #128e7d;
+      --primary-light: #e9ecec;
+      --radius: 18px;
+      --shadow: 0 16px 48px rgba(0,0,0,0.35);
+      --transition: all 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
     }
-    return {
-      folder: "grocery_items",
-      allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"],
-      transformation: [{ width: 800, height: 800, crop: "limit" }],
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      background-image:
+        radial-gradient(circle at 20% 80%, rgba(226,55,68,0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.03) 0%, transparent 40%),
+        repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.01) 20px, rgba(255,255,255,0.01) 40px);
+      overflow-x: hidden;
+    }
+    .bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .bg-canvas svg { position: absolute; opacity: 0.07; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5)); mix-blend-mode: soft-light; will-change: transform; }
+    .svg-1 { left: 8%; top: 15%; width: 120px; animation: float 28s infinite linear; }
+    .svg-2 { right: 12%; top: 65%; width: 90px; animation: float 32s infinite linear reverse; animation-delay: 4s; }
+    .svg-3 { left: 18%; top: 70%; width: 140px; animation: float 30s infinite linear; animation-delay: 8s; }
+    .svg-4 { right: 15%; top: 10%; width: 80px; animation: float 26s infinite linear reverse; animation-delay: 2s; }
+    @keyframes float { 0%,100% { transform: translateY(20vh) rotate(0deg) scale(0.9); } 50% { transform: translateY(-18vh) rotate(180deg) scale(1.1); } }
+    .container { width: 100%; max-width: 420px; z-index: 10; position: relative; }
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 36px 32px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(0,0,0,0.06);
+      text-align: center;
+    }
+    .brand { display: flex; align-items: center; justify-content: center; gap: 6px; margin-bottom: 20px; }
+    .brand span { font-size: 32px; font-weight: 900; color: var(--primary); }
+    .lead { font-size: 22px; font-weight: 700; color: #222; margin-bottom: 24px; }
+    .form-group { margin-bottom: 16px; text-align: left; }
+    .input {
+      width: 100%; padding: 16px 18px; border-radius: 12px;
+      border: 1.5px solid #e0e0e0; background: #fafafa;
+      font-size: 16px; color: var(--text); outline: none;
+      transition: var(--transition);
+    }
+    .input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); background: white; }
+    .btn {
+      width: 100%; padding: 16px; margin-top: 12px;
+      background: var(--primary); color: white;
+      border: none; border-radius: 12px; font-weight: 800; font-size: 17px;
+      cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;
+      transition: var(--transition);
+      box-shadow: 0 8px 24px rgba(226,55,68,0.4);
+    }
+    .btn:hover { background: #d32f3b; transform: translateY(-3px); }
+    .toggle-text { margin-top: 20px; font-size: 14.5px; color: var(--muted); }
+    .toggle-text a { color: var(--primary); font-weight: 700; text-decoration: none; }
+    .toggle-text a:hover { color: #c6303c; text-decoration: underline; }
+    #loadingOverlay {
+      position: fixed; inset: 0; background: rgba(18,18,18,0.95);
+      backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 9999;
+    }
+    #loadingOverlay.active { display: flex; }
+    .loader { width: 90%; max-width: 400px; text-align: center; color: white; }
+    .progress-bar { height: 10px; background: rgba(255,255,255,0.15); border-radius: 10px; overflow: hidden; margin: 20px 0; }
+    .progress-fill { height: 100%; width: 0%; background: var(--primary); border-radius: 10px; transition: width 0.4s ease; }
+
+    /* Toast on TOP-RIGHT */
+    #toast-container {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: none;
+    }
+    .toast {
+      min-width: 320px;
+      max-width: 400px;
+      padding: 16px 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: white;
+      font-weight: 600;
+      opacity: 0;
+      transform: translateY(-100px);
+      transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+      pointer-events: all;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast i { font-size: 24px; }
+    .toast .message { flex: 1; }
+    .toast .close-btn { cursor: pointer; font-size: 20px; opacity: 0.7; transition: opacity 0.2s; }
+    .toast .close-btn:hover { opacity: 1; }
+    .toast.success { background: #2d8a3d; }
+    .toast.error { background: #c42b2b; }
+    .toast.offline { background: #b36b00; }
+
+    @media (max-width: 480px) {
+      .card { padding: 28px 24px; border-radius: 16px; }
+      .brand span { font-size: 28px; }
+      .lead { font-size: 20px; }
+      #toast-container { top: 20px; right: 20px; left: 20px; }
+      .toast { min-width: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-canvas" aria-hidden="true">
+    <!-- Your background SVGs unchanged -->
+    <svg class="svg-1" viewBox="0 0 64 64"><defs><linearGradient id="g1"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><path d="M32 6 L54 46 A26 26 0 0 1 10 46 Z" stroke="url(#g1)" stroke-width="3" fill="none"/><circle cx="26" cy="36" r="3" fill="#e23744"/><circle cx="36" cy="34" r="3" fill="#e23744"/></svg>
+    <svg class="svg-2" viewBox="0 0 64 64"><defs><linearGradient id="g2"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><rect x="12" y="20" width="40" height="8" rx="4" stroke="url(#g2)" stroke-width="3" fill="none"/><rect x="12" y="34" width="40" height="8" rx="4" stroke="url(#g2)" stroke-width="3" fill="none"/></svg>
+    <svg class="svg-3" viewBox="0 0 64 64"><defs><linearGradient id="g3"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><rect x="18" y="18" width="28" height="28" rx="6" stroke="url(#g3)" stroke-width="3" fill="none"/><path d="M24 18 Q32 6 40 18" stroke="url(#g3)" stroke-width="3" fill="none"/></svg>
+    <svg class="svg-4" viewBox="0 0 64 64"><defs><linearGradient id="g4"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><rect x="20" y="16" width="24" height="10" rx="4" stroke="url(#g4)" stroke-width="2.8" fill="none"/><rect x="24" y="26" width="4" height="18" fill="#e23744"/><rect x="30" y="26" width="4" height="18" fill="#e23744"/><rect x="36" y="26" width="4" height="18" fill="#e23744"/></svg>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="brand"><span>Chat</span><span>Point</span></div>
+      <div id="loginForm">
+        <div class="lead">Welcome back!</div>
+        <div class="form-group"><input type="tel" id="loginPhone" class="input" placeholder="Phone number" maxlength="10" inputmode="numeric" /></div>
+        <div class="form-group"><input type="password" id="loginPassword" class="input" placeholder="Password" /></div>
+        <button class="btn" id="btnLogin">Login</button>
+        <div class="toggle-text">New to ChatPoint? <a href="#" id="showSignup">Create account</a></div>
+      </div>
+      <div id="signupForm" style="display:none">
+        <div class="lead">Join ChatPoint</div>
+        <div class="form-group"><input type="text" id="signupName" class="input" placeholder="Full name" /></div>
+        <div class="form-group"><input type="tel" id="signupPhone" class="input" placeholder="Phone number" maxlength="10" inputmode="numeric" /></div>
+        <div class="form-group"><input type="password" id="signupPassword" class="input" placeholder="Create password" /></div>
+        <button class="btn" id="btnSignup">Sign Up</button>
+        <div class="toggle-text">Have an account? <a href="#" id="showLogin">Sign in</a></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="loadingOverlay">
+    <div class="loader">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div id="loaderText">Connecting...</div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const loginForm = $('loginForm');
+    const signupForm = $('signupForm');
+    const loading = $('loadingOverlay');
+    const progress = $('progressFill');
+    const loaderText = $('loaderText');
+
+    $('showSignup').onclick = e => { e.preventDefault(); loginForm.style.display = 'none'; signupForm.style.display = 'block'; };
+    $('showLogin').onclick = e => { e.preventDefault(); signupForm.style.display = 'none'; loginForm.style.display = 'block'; };
+
+    function showLoading() {
+      loading.classList.add('active');
+      let w = 10;
+      const int = setInterval(() => { w = Math.min(w + 7, 94); progress.style.width = w + '%'; }, 300);
+      let dots = 0;
+      const textInt = setInterval(() => { loaderText.textContent = 'Connecting' + '.'.repeat((dots++ % 3) + 1); }, 500);
+      return () => { clearInterval(int); clearInterval(textInt); };
+    }
+    function hideLoading() {
+      progress.style.width = '100%';
+      setTimeout(() => { loading.classList.remove('active'); progress.style.width = '0%'; }, 500);
+    }
+
+    // Reliable working sound URLs (direct MP3, no ads)
+    const sounds = {
+      success: 'https://www.soundjay.com/buttons/sounds/button-09.mp3',   // Nice ding
+      error:   'https://www.soundjay.com/buttons/sounds/button-10.mp3',   // Error beep
+      offline: 'https://www.soundjay.com/buttons/sounds/beep-02.mp3'      // Warning beep
     };
-  },
-});
 
-const upload = multer({ storage: storage });
+    function playSound(type) {
+      const audio = new Audio(sounds[type]);
+      audio.volume = 0.5;
+      audio.play().catch(e => console.warn('Sound blocked:', e));
+    }
 
-// =============== MIDDLEWARE ===============
-app.use(cors({ origin: "*", credentials: true }));
-app.use(bodyParser.json({ limit: "10mb" }));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(__dirname));
+    function showToast(message, type = 'error', duration = 4500) {
+      const container = $('toast-container');
+      const toast = document.createElement('div');
+      toast.classList.add('toast', type);
 
-// =============== MONGO DB CONNECTION ===============
-mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => {
-    console.error("MongoDB Error:", err);
-    process.exit(1);
-  });
+      let icon = 'fa-circle-exclamation';
+      if (type === 'success') icon = 'fa-circle-check';
+      else if (type === 'offline') icon = 'fa-wifi';
 
-// =============== MODELS ===============
-const User = mongoose.model(
-  "User",
-  new mongoose.Schema(
-    {
-      name: String,
-      phone: { type: String, required: true, unique: true },
-      password: String,
-    },
-    { timestamps: true }
-  )
-);
+      toast.innerHTML = `
+        <i class="fas ${icon}"></i>
+        <div class="message">${message}</div>
+        <span class="close-btn" onclick="this.parentElement.classList.remove('show'); setTimeout(()=>this.parentElement.remove(),400)">&times;</span>
+      `;
 
-const GroceryCategory = mongoose.model(
-  "GroceryCategory",
-  new mongoose.Schema({
-    name: { type: String, required: true, unique: true },
-    imageUrl: { type: String, required: true },
-  })
-);
+      container.appendChild(toast);
+      setTimeout(() => toast.classList.add('show'), 100);
 
-// UPDATED SCHEMA: Added originalPrice and offerPrice
-const GroceryItem = mongoose.model(
-  "GroceryItem",
-  new mongoose.Schema({
-    category: { type: String, required: true },
-    name: { type: String, required: true },
-    price: { type: Number, required: true }, // Legacy fallback
-    originalPrice: { type: Number },         // New: For strikethrough (e.g., 55)
-    offerPrice: { type: Number },            // New: Actual selling price (e.g., 50)
-    imageUrl: { type: String, required: true },
-  })
-);
+      if (type in sounds) playSound(type);
 
-const Shop = mongoose.model("Shop", new mongoose.Schema({
-  type: { type: String, default: "shop" },
-  shopName: String,
-  ownerName: String,
-  mobile: String,
-  items: [{ name: String, price: Number, description: String, imageUrl: [String] }],
-  date: { type: Date, default: Date.now },
-}));
-
-// Order Schema with progress
-const Order = mongoose.model("Order", new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
-  user: { name: String, phone: String },
-  shop: String,
-  items: [{ name: String, price: Number, quantity: Number }],
-  totalAmount: Number,
-  deliveryCharge: Number,
-  address: { name: String, phone: String, line1: String, line2: String },
-  paymentMethod: { type: String, default: "cash" },
-  status: { type: String, default: "pending" },
-  progress: { type: Number, default: 0 },
-  date: { type: Date, default: Date.now },
-}));
-
-// =============== ADMIN PASSWORD ===============
-const ADMIN_PASSWORD = "Brand"; // CHANGE THIS IN PRODUCTION!
-
-// =============== UNIVERSAL ORDER SAVE ===============
-const saveOrderUniversal = async (req, res) => {
-  try {
-    const body = req.body;
-    let userId = body.userId || body.user_id || null;
-    const name = body.name || body.customer_name;
-    const phone = body.phone || body.customer_phone;
-    const address1 = body.address1 || body.address || body.line1;
-    const address2 = body.address2 || body.line2 || "";
-    const grandTotal = Number(body.grandTotal || body.totalAmount || body.total);
-    const cart = body.cart || body.items;
-
-    if (!name || !phone || !address1) return res.status(400).json({ success: false, message: "Missing name, phone or address" });
-    if (!grandTotal || isNaN(grandTotal) || grandTotal <= 0) return res.status(400).json({ success: false, message: "Invalid total amount" });
-    if (!cart || typeof cart !== 'object' || Object.keys(cart).length === 0) return res.status(400).json({ success: false, message: "Empty cart" });
-
-    let items = [];
-    let shopName = null;
-    for (const shop in cart) {
-      if (!shopName) shopName = shop;
-      for (const itemName in cart[shop]) {
-        const item = cart[shop][itemName];
-        const qty = item.qty || item.quantity || 0;
-        const price = Number(item.price);
-        if (qty > 0 && !isNaN(price)) {
-          items.push({ name: itemName, price, quantity: qty });
-        }
+      if (duration > 0) {
+        setTimeout(() => {
+          toast.classList.remove('show');
+          setTimeout(() => toast.remove(), 400);
+        }, duration);
       }
     }
-    if (items.length === 0) return res.status(400).json({ success: false, message: "No valid items" });
 
-    const order = new Order({
-      userId: userId || null,
-      user: { name, phone },
-      shop: shopName || "ChatPoint",
-      items,
-      totalAmount: grandTotal,
-      deliveryCharge: grandTotal >= 69 ? 0 : 30,
-      address: { name, phone, line1: address1, line2: address2 },
-      paymentMethod: body.paymentMethod || "cash",
-      progress: 0
-    });
+    const isValidPhone = p => /^\d{10}$/.test(p.trim());
+    const API_BASE = '';
 
-    await order.save();
-    console.log(`NEW ORDER → #${order._id} | ₹${grandTotal} | ${name}`);
-    res.json({ success: true, orderId: order._id });
-  } catch (err) {
-    console.error("Order save error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-};
+    $('btnSignup').onclick = async () => {
+      const name = $('signupName').value.trim();
+      const phone = $('signupPhone').value.trim();
+      const password = $('signupPassword').value;
 
-// =============== API ENDPOINTS ===============
-app.get("/api/categories", async (req, res) => {
-  try {
-    const cats = await GroceryCategory.find().sort({ name: 1 });
-    res.json({
-      success: true,
-      categories: cats.map(c => ({ name: c.name, imageUrl: c.imageUrl }))
-    });
-  } catch (e) {
-    console.error(e);
-    res.json({ success: true, categories: [] });
-  }
-});
+      if (!name || !phone || !password) return showToast('Please fill all fields', 'error');
+      if (!isValidPhone(phone)) return showToast('Enter a valid 10-digit phone number', 'error');
 
-// UPDATED: Returns originalPrice and offerPrice with fallbacks
-app.get("/api/items/:category", async (req, res) => {
-  try {
-    const category = decodeURIComponent(req.params.category);
-    const items = await GroceryItem.find({ category });
+      const stop = showLoading();
+      try {
+        const res = await fetch(API_BASE + '/api/user/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, phone, password })
+        });
+        const data = await res.json();
 
-    // Format items for frontend compatibility
-    const formattedItems = items.map(item => {
-      const obj = item.toObject();
-      return {
-        ...obj,
-        originalPrice: obj.originalPrice || obj.price,     // Show strikethrough if exists
-        offerPrice: obj.offerPrice || obj.price,           // This is what goes to cart
-      };
-    });
+        if (!res.ok || !data.success) {
+          if (!navigator.onLine) throw new Error('No internet connection');
+          throw new Error(data.message || 'Signup failed');
+        }
 
-    res.json({ success: true, items: formattedItems });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false });
-  }
-});
-
-// UPDATED: Accepts originalPrice and offerPrice from admin form
-app.post("/api/admin/add-item", upload.fields([
-  { name: "image", maxCount: 1 },
-  { name: "categoryImage", maxCount: 1 }
-]), async (req, res) => {
-  const { password, category, name, originalPrice, offerPrice } = req.body;
-  if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false, message: "Wrong password" });
-
-  try {
-    if (!req.files["image"] || !req.files["image"][0]) {
-      return res.status(400).json({ success: false, message: "Item image required" });
-    }
-    const itemImageUrl = req.files["image"][0].path;
-
-    if (req.files["categoryImage"] && req.files["categoryImage"][0]) {
-      const catImageUrl = req.files["categoryImage"][0].path;
-      await GroceryCategory.findOneAndUpdate(
-        { name: category.trim() },
-        { name: category.trim(), imageUrl: catImageUrl },
-        { upsert: true, new: true }
-      );
-    } else {
-      const existing = await GroceryCategory.findOne({ name: category.trim() });
-      if (!existing) return res.status(400).json({ success: false, message: "Category not found. Upload photo to create new." });
-    }
-
-    const newItem = new GroceryItem({
-      category: category.trim(),
-      name: name.trim(),
-      price: Number(offerPrice || originalPrice), // fallback compatibility
-      originalPrice: Number(originalPrice),
-      offerPrice: Number(offerPrice),
-      imageUrl: itemImageUrl,
-    });
-    await newItem.save();
-    res.json({ success: true, item: newItem });
-  } catch (e) {
-    console.error("Add item error:", e);
-    res.status(500).json({ success: false, message: e.message || "Server error" });
-  }
-});
-
-// UPDATED: Now updates both originalPrice and offerPrice
-app.post("/api/admin/edit-item", async (req, res) => {
-  const { password, itemId, originalPrice, offerPrice } = req.body;
-  if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false });
-
-  try {
-    const updateData = {
-      originalPrice: originalPrice ? Number(originalPrice) : undefined,
-      offerPrice: offerPrice ? Number(offerPrice) : undefined,
-      price: offerPrice ? Number(offerPrice) : undefined, // keep legacy field updated
+        showToast(`Account created successfully! Welcome ${name}`, 'success', 5000);
+        setTimeout(() => location.href = 'index.html', 1500);
+      } catch (err) {
+        let msg = err.message || 'Something went wrong';
+        let type = 'error';
+        if (msg.toLowerCase().includes('internet') || msg.toLowerCase().includes('network')) {
+          msg = 'No internet connection';
+          type = 'offline';
+        }
+        showToast(msg, type);
+      } finally {
+        stop();
+        hideLoading();
+      }
     };
 
-    // Remove undefined fields
-    Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
+    $('btnLogin').onclick = async () => {
+      const phone = $('loginPhone').value.trim();
+      const password = $('loginPassword').value;
 
-    const updated = await GroceryItem.findByIdAndUpdate(itemId, updateData, { new: true });
-    if (!updated) return res.status(404).json({ success: false });
+      if (!phone || !password) return showToast('Please fill all fields', 'error');
+      if (!isValidPhone(phone)) return showToast('Enter a valid 10-digit phone number', 'error');
 
-    res.json({ success: true, item: updated });
-  } catch (e) {
-    res.status(500).json({ success: false });
-  }
-});
+      const stop = showLoading();
+      try {
+        const res = await fetch(API_BASE + '/api/user/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, password })
+        });
+        const data = await res.json();
 
-app.delete("/api/admin/delete-item/:id", async (req, res) => {
-  const { password } = req.query;
-  if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false });
-  try {
-    await GroceryItem.findByIdAndDelete(req.params.id);
-    res.json({ success: true });
-  } catch (e) {
-    res.status(500).json({ success: false });
-  }
-});
+        if (!res.ok || !data.success) {
+          if (!navigator.onLine) throw new Error('No internet connection');
+          throw new Error(data.message || 'Invalid credentials');
+        }
 
-app.post("/api/save-order", saveOrderUniversal);
-app.post("/api/place-order", saveOrderUniversal);
-app.post("/api/checkout", saveOrderUniversal);
-app.post("/api/order", saveOrderUniversal);
+        localStorage.setItem('chatpoint_user', JSON.stringify(data.user));
+        showToast('Login successful! Welcome back', 'success', 4000);
+        setTimeout(() => location.href = 'index.html', 1200);
+      } catch (err) {
+        let msg = err.message || 'Login failed';
+        let type = 'error';
+        if (msg.toLowerCase().includes('internet') || msg.toLowerCase().includes('network')) {
+          msg = 'No internet connection';
+          type = 'offline';
+        } else if (msg.toLowerCase().includes('wrong') || msg.toLowerCase().includes('invalid')) {
+          msg = 'Wrong phone number or password';
+        }
+        showToast(msg, type);
+      } finally {
+        stop();
+        hideLoading();
+      }
+    };
 
-app.post("/api/user/signup", async (req, res) => {
-  try {
-    const { name, phone, password } = req.body;
-    if (!name || !phone || !password) return res.status(400).json({ success: false });
-    const exists = await User.findOne({ phone });
-    if (exists) return res.status(400).json({ success: false, message: "Phone already registered" });
-    const hash = crypto.createHash("sha256").update(password).digest("hex");
-    const user = new User({ name, phone, password: hash });
-    await user.save();
-    res.json({ success: true });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false });
-  }
-});
-
-app.post("/api/user/login", async (req, res) => {
-  try {
-    const { phone, password } = req.body;
-    const hash = crypto.createHash("sha256").update(password).digest("hex");
-    const user = await User.findOne({ phone, password: hash });
-    if (!user) return res.status(401).json({ success: false, message: "Wrong credentials" });
-    res.json({
-      success: true,
-      user: { _id: user._id.toString(), name: user.name, phone: user.phone }
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        if (signupForm.style.display !== 'none') $('btnSignup').click();
+        else $('btnLogin').click();
+      }
     });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false });
-  }
-});
-
-app.get("/api/shops", async (req, res) => {
-  try {
-    const shops = await Shop.find({ type: "shop" }).sort({ date: -1 }).lean();
-    res.json({ success: true, shops });
-  } catch (e) {
-    res.status(500).json({ success: false });
-  }
-});
-
-app.get("/api/delivery-orders", async (req, res) => {
-  try {
-    const orders = await Order.find({ status: { $in: ["pending", "confirmed"] } }).sort({ date: -1 }).limit(50).lean();
-    res.json({ success: true, orders });
-  } catch (e) {
-    res.status(500).json({ success: false });
-  }
-});
-
-app.get("/api/all-delivery-orders", async (req, res) => {
-  try {
-    const orders = await Order.find({}).sort({ date: -1 }).limit(1000).lean();
-    res.json({ success: true, orders });
-  } catch (e) {
-    res.status(500).json({ success: false });
-  }
-});
-
-app.post("/api/update-order-progress", async (req, res) => {
-  try {
-    const { orderId, progress } = req.body;
-    if (!orderId || progress < 0 || progress > 4) {
-      return res.status(400).json({ success: false, message: "Invalid data" });
-    }
-    const updated = await Order.findByIdAndUpdate(
-      orderId,
-      { progress: Number(progress) },
-      { new: true }
-    );
-    if (!updated) return res.status(404).json({ success: false, message: "Order not found" });
-    console.log(`Order ${orderId} → Progress ${progress}/4`);
-    res.json({ success: true, order: updated });
-  } catch (err) {
-    console.error("Progress update error:", err);
-    res.status(500).json({ success: false });
-  }
-});
-
-app.post("/api/update-order-status", async (req, res) => {
-  try {
-    const { orderId, status } = req.body;
-    if (!["confirmed", "delivered", "cancelled"].includes(status)) return res.status(400).json({ success: false });
-    const result = await Order.findByIdAndUpdate(orderId, { status }, { new: true });
-    if (!result) return res.status(404).json({ success: false });
-    console.log(`Order ${orderId} → ${status}`);
-    res.json({ success: true });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false });
-  }
-});
-
-app.delete("/api/delete-order", async (req, res) => {
-  try {
-    const { orderId } = req.body;
-    if (!orderId) return res.status(400).json({ success: false });
-    const result = await Order.findByIdAndDelete(orderId);
-    if (!result) return res.status(404).json({ success: false });
-    console.log(`Order ${orderId} DELETED`);
-    res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false });
-  }
-});
-
-app.get("/api/my-orders", async (req, res) => {
-  try {
-    const userId = req.headers["x-user-id"];
-    let query = {};
-    if (userId) {
-      query = { userId };
-    } else {
-      return res.json({ success: true, orders: [] });
-    }
-    const orders = await Order.find(query).sort({ date: -1 }).lean();
-    res.json({ success: true, orders });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false });
-  }
-});
-
-app.get("/api/order/:id", async (req, res) => {
-  try {
-    const order = await Order.findById(req.params.id).lean();
-    if (!order) return res.status(404).json({ success: false, message: "Order not found" });
-    res.json({ success: true, order });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false });
-  }
-});
-
-app.get("/api/admin/users", async (req, res) => {
-  try {
-    const users = await User.find({}, { name: 1, phone: 1, _id: 0 }).sort({ createdAt: -1 });
-    res.json({ users });
-  } catch (e) {
-    res.status(500).json({ success: false });
-  }
-});
-
-// =============== SERVE PAGES ===============
-const pages = ["index", "gitems", "adminportal", "gcart", "privacy", "delivery", "orders", "cart", "payment", "login", "admin", "items", "tracking", "categories"];
-
-pages.forEach((p) => {
-  const route = p === "index" ? "/" : `/${p}.html`;
-  const file = p === "index" ? "index.html" : `${p}.html`;
-  app.get(route, (req, res) => res.sendFile(path.join(__dirname, file)));
-});
-
-app.get("*", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
-
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`Categories: http://localhost:${PORT}/categories.html`);
-  console.log(`Tracking: http://localhost:${PORT}/tracking.html`);
-});
+  </script>
+</body>
+</html>
