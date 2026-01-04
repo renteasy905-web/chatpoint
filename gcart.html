@@ -49,23 +49,23 @@
     .total-row { display: flex; justify-content: space-between; font-size: 17px; margin-bottom: 16px; }
     .grand-total { font-size: 22px; font-weight: bold; color: var(--primary); padding-top: 12px; border-top: 2px solid var(--border); }
 
-    /* NEW: Coupon UI - Input or Applied Tag */
+    /* Updated: Coupon area with Apply button below input */
     .coupon-area {
       margin-bottom: 20px;
     }
-    .coupon-input-group {
-      display: flex;
-      gap: 10px;
+    .coupon-input-wrapper {
+      margin-bottom: 12px;
     }
     .coupon-input {
-      flex: 1;
+      width: 100%;
       padding: 14px;
       border: 1px solid var(--border);
       border-radius: var(--radius);
       font-size: 16px;
     }
     .coupon-btn {
-      padding: 0 20px;
+      width: 100%;
+      padding: 14px;
       background: var(--primary);
       color: white;
       border: none;
@@ -77,7 +77,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(16, 185, 129, 0.15); /* Light green background */
+      background: rgba(16, 185, 129, 0.15);
       color: var(--success);
       padding: 12px 16px;
       border-radius: var(--radius);
@@ -129,11 +129,13 @@
           <span id="subtotal">₹0</span>
         </div>
 
-        <!-- NEW: Dynamic Coupon Area -->
+        <!-- Updated: Apply button below the input field -->
         <div class="coupon-area">
-          <div id="couponInputGroup" class="coupon-input-group">
-            <input type="text" id="couponCode" class="coupon-input" placeholder="Enter coupon code">
-            <button class="coupon-btn" onclick="applyCoupon()">Apply</button>
+          <div id="couponInputGroup">
+            <div class="coupon-input-wrapper">
+              <input type="text" id="couponCode" class="coupon-input" placeholder="Enter coupon code">
+            </div>
+            <button class="coupon-btn" onclick="applyCoupon()">Apply Coupon</button>
           </div>
           <div id="appliedCouponTag" class="applied-coupon-tag" style="display:none;">
             <span id="appliedCouponText"></span>
@@ -182,8 +184,6 @@
     }
 
     function renderCart() {
-      // ... (unchanged - your existing renderCart code for items)
-
       const cartItemsDiv = document.getElementById('cartItems');
       const emptyCartDiv = document.getElementById('emptyCart');
       const totalSection = document.getElementById('totalSection');
@@ -214,13 +214,24 @@
       `).join('');
 
       calculateTotal();
-      updateCouponUI(); // NEW: Refresh coupon view
+      updateCouponUI();
     }
 
-    function updateQty(index, change) { /* unchanged */ }
-    function removeItem(index) { /* unchanged */ }
+    function updateQty(index, change) {
+      cart[index].qty += change;
+      if (cart[index].qty <= 0) cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      renderCart();
+    }
 
-    // NEW: Update coupon input/tag visibility
+    function removeItem(index) {
+      if (confirm("Remove this item from cart?")) {
+        cart.splice(index, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCart();
+      }
+    }
+
     function updateCouponUI() {
       const inputGroup = document.getElementById('couponInputGroup');
       const tag = document.getElementById('appliedCouponTag');
@@ -231,12 +242,11 @@
         tag.style.display = 'flex';
         tagText.textContent = `Coupon "${appliedCoupon.code.toUpperCase()}" applied!`;
       } else {
-        inputGroup.style.display = 'flex';
+        inputGroup.style.display = 'block';
         tag.style.display = 'none';
       }
     }
 
-    // NEW: Remove coupon
     function removeCoupon() {
       appliedCoupon = null;
       document.getElementById('couponMsg').textContent = '';
@@ -247,7 +257,7 @@
     }
 
     function applyCoupon() {
-      if (appliedCoupon) return; // Prevent re-applying
+      if (appliedCoupon) return;
 
       const code = document.getElementById('couponCode').value.trim().toLowerCase();
       const msgDiv = document.getElementById('couponMsg');
@@ -294,7 +304,6 @@
     }
 
     function calculateTotal() {
-      // ... (your existing calculateTotal logic - unchanged)
       const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
       let discount = 0;
       if (appliedCoupon) {
@@ -328,7 +337,52 @@
     }
 
     async function placeOrder() {
-      // ... (unchanged)
+      const name = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const address = document.getElementById('address').value.trim();
+      if (!name || !phone || !address) return alert("Please fill in all the details");
+      const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+      if (subtotal < MIN_ORDER) return alert(`Minimum order amount is ₹${MIN_ORDER}`);
+
+      let discount = 0;
+      if (appliedCoupon) {
+        let applicableAmount = subtotal;
+        if (appliedCoupon.category === "fmcg") {
+          applicableAmount = cart.filter(item => FMCG_ITEMS.some(f => item.name.toLowerCase().includes(f)))
+            .reduce((sum, item) => sum + item.price * item.qty, 0);
+        }
+        discount = Math.min((applicableAmount * appliedCoupon.value) / 100, appliedCoupon.maxDiscount || Infinity);
+      }
+      const grandTotal = Math.round(subtotal - discount + FIXED_DELIVERY);
+
+      const cartObj = { "ChatPoint": {} };
+      cart.forEach(item => cartObj["ChatPoint"][item.name] = { price: item.price, qty: item.qty });
+
+      const body = {
+        name, phone, address1: address, grandTotal, cart: cartObj,
+        coupon: appliedCoupon ? appliedCoupon.code.toUpperCase() : null,
+        discountAmount: discount,
+        userId: user?._id || null,
+        customer_name: user?.name || name,
+        customer_phone: user?.phone || phone
+      };
+
+      try {
+        const res = await fetch("/api/order", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+        const data = await res.json();
+        if (data.success) {
+          alert("Order placed successfully! 🎉");
+          localStorage.removeItem('cart');
+          cart = [];
+          appliedCoupon = null;
+          renderCart();
+          window.location.href = 'tracking.html';
+        } else {
+          alert("Order failed: " + (data.message || "Please try again"));
+        }
+      } catch (err) {
+        alert("Network error. Please check your connection.");
+      }
     }
 
     window.addEventListener('pageshow', (e) => {
