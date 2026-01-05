@@ -157,7 +157,6 @@
       border-color: var(--primary);
     }
     .search-bar .icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--primary);pointer-events:none;z-index:1}
-    /* Rest of your original styles unchanged */
     .grid{
       display: grid;
       gap: 16px;
@@ -253,7 +252,7 @@
         <ellipse fill="#FFCC80" cx="32" cy="46" rx="20" ry="10"/>
       </g>
     </svg>
-    <!-- Add your other 4 floating SVGs here -->
+    <!-- Add your other floating SVGs if you have them -->
   </div>
   <header role="banner">
     <button id="navBtn" class="nav-btn" aria-label="Open menu">
@@ -265,7 +264,7 @@
     </div>
   </header>
   
-  <!-- === TOP AD BANNER (High visibility after header) === -->
+  <!-- === TOP AD BANNER === -->
   <div class="ad-container top-ad">
     <ins class="adsbygoogle"
          style="display:block"
@@ -297,7 +296,6 @@
       <div class="quote">"Food is symbolic of love when words are inadequate." – Alan D. Wolfelt</div>
       <div class="quote-author">Life & Food Wisdom</div>
     </section>
-    <!-- Bigger & More Attractive Food/Grocery Buttons -->
     <div class="tab-switch" role="tablist" aria-label="Food or Grocery">
       <a href="#" id="foodBtn" class="tab-btn food" role="tab" aria-selected="true" onclick="event.preventDefault()">
         <i class="fas fa-utensils"></i> Food
@@ -317,7 +315,7 @@
     <section class="grid" id="grid" aria-live="polite" aria-label="Shops list"></section>
   </main>
   
-  <!-- === BOTTOM AD ANCHOR (Sticky visibility) === -->
+  <!-- === BOTTOM AD === -->
   <div class="ad-container bottom-ad">
     <ins class="adsbygoogle"
          style="display:block"
@@ -331,6 +329,29 @@
   </div>
   
   <footer>© 2025 Chat Point • Made with Passion</footer>
+
   <script src="index.js"></script>
+
+  <!-- PREMIUM AUTO-REDIRECT SCRIPT -->
+  <script>
+    window.addEventListener('load', () => {
+      const userData = localStorage.getItem('chatpoint_user');
+      if (!userData) {
+        // Not logged in → go to login
+        location.href = 'login.html';
+        return;
+      }
+
+      const user = JSON.parse(userData);
+
+      // If user is premium, redirect to premium page
+      if (user.isPremium) {
+        const currentPath = location.pathname;
+        if (!currentPath.includes('pindex.html')) {
+          location.href = 'pindex.html';
+        }
+      }
+    });
+  </script>
 </body>
 </html>
