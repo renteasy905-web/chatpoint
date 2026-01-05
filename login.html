@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
+    /* === YOUR ORIGINAL STYLES (unchanged) === */
     :root {
       --bg: #3a3337;
       --card: #d9e0ae;
@@ -94,7 +95,6 @@
     .progress-bar { height: 10px; background: rgba(255,255,255,0.15); border-radius: 10px; overflow: hidden; margin: 20px 0; }
     .progress-fill { height: 100%; width: 0%; background: var(--primary); border-radius: 10px; transition: width 0.4s ease; }
 
-    /* Original Toast Style - Now on TOP-RIGHT */
     #toast-container {
       position: fixed;
       top: 30px;
@@ -127,7 +127,6 @@
     .toast.success { background-color: #4caf50; }
     .toast.error   { background-color: #f44336; }
     .toast.offline { background-color: #ff9800; }
-
     .toast .close-btn {
       cursor: pointer;
       font-size: 18px;
@@ -147,6 +146,7 @@
 </head>
 <body>
   <div class="bg-canvas" aria-hidden="true">
+    <!-- Your SVGs unchanged -->
     <svg class="svg-1" viewBox="0 0 64 64"><defs><linearGradient id="g1"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><path d="M32 6 L54 46 A26 26 0 0 1 10 46 Z" stroke="url(#g1)" stroke-width="3" fill="none"/><circle cx="26" cy="36" r="3" fill="#e23744"/><circle cx="36" cy="34" r="3" fill="#e23744"/></svg>
     <svg class="svg-2" viewBox="0 0 64 64"><defs><linearGradient id="g2"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><rect x="12" y="20" width="40" height="8" rx="4" stroke="url(#g2)" stroke-width="3" fill="none"/><rect x="12" y="34" width="40" height="8" rx="4" stroke="url(#g2)" stroke-width="3" fill="none"/></svg>
     <svg class="svg-3" viewBox="0 0 64 64"><defs><linearGradient id="g3"><stop offset="0" stop-color="#e23744"/><stop offset="1" stop-color="#ff6b35"/></linearGradient></defs><rect x="18" y="18" width="28" height="28" rx="6" stroke="url(#g3)" stroke-width="3" fill="none"/><path d="M24 18 Q32 6 40 18" stroke="url(#g3)" stroke-width="3" fill="none"/></svg>
@@ -185,12 +185,26 @@
 
   <script>
     const $ = id => document.getElementById(id);
+    const API_BASE = ''; // or window.location.origin if needed
+
+    // === AUTO REDIRECT IF ALREADY LOGGED IN ===
+    window.addEventListener('load', () => {
+      const stored = localStorage.getItem('chatpoint_user');
+      if (stored) {
+        const user = JSON.parse(stored);
+        if (user.isPremium) {
+          location.href = 'pindex.html';
+        } else {
+          location.href = 'index.html';
+        }
+      }
+    });
 
     // Toggle forms
     $('showSignup').onclick = e => { e.preventDefault(); $('loginForm').style.display = 'none'; $('signupForm').style.display = 'block'; };
     $('showLogin').onclick = e => { e.preventDefault(); $('signupForm').style.display = 'none'; $('loginForm').style.display = 'block'; };
 
-    // Loading
+    // Loading functions (unchanged)
     function showLoading() {
       $('loadingOverlay').classList.add('active');
       let w = 10;
@@ -204,7 +218,7 @@
       setTimeout(() => { $('loadingOverlay').classList.remove('active'); $('progressFill').style.width = '0%'; }, 500);
     }
 
-    // Reliable sounds
+    // Toast & Sound (unchanged)
     const sounds = {
       success: 'https://www.soundjay.com/buttons/sounds/button-09.mp3',
       error: 'https://www.soundjay.com/buttons/sounds/button-10.mp3',
@@ -215,21 +229,14 @@
       audio.volume = 0.5;
       audio.play().catch(() => {});
     }
-
-    // Original Toast Function (now appears from top)
     function showToast(message, type = 'info', duration = 4000) {
       const container = $('toast-container');
       const toast = document.createElement('div');
       toast.classList.add('toast', type);
-      toast.innerHTML = `
-        <span>${message}</span>
-        <span class="close-btn" onclick="this.parentElement.remove()">×</span>
-      `;
+      toast.innerHTML = `<span>${message}</span><span class="close-btn" onclick="this.parentElement.remove()">×</span>`;
       container.appendChild(toast);
       setTimeout(() => toast.classList.add('show'), 100);
-
       if (type in sounds) playSound(type);
-
       if (duration > 0) {
         setTimeout(() => {
           toast.classList.remove('show');
@@ -239,9 +246,8 @@
     }
 
     const isValidPhone = p => /^\d{10}$/.test(p.trim());
-    const API_BASE = '';
 
-    // Signup
+    // Signup (unchanged except redirect to index.html)
     $('btnSignup').onclick = async () => {
       const name = $('signupName').value.trim();
       const phone = $('signupPhone').value.trim();
@@ -270,7 +276,7 @@
       }
     };
 
-    // Login
+    // Login - NOW WITH PREMIUM REDIRECT
     $('btnLogin').onclick = async () => {
       const phone = $('loginPhone').value.trim();
       const password = $('loginPassword').value;
@@ -286,9 +292,18 @@
         });
         const data = await res.json();
         if (!data.success) throw new Error(data.message || 'Invalid credentials');
+
+        // Save user with isPremium flag
         localStorage.setItem('chatpoint_user', JSON.stringify(data.user));
+
         showToast('Login successful! Welcome back', 'success', 4000);
-        setTimeout(() => location.href = 'index.html', 1200);
+
+        // Redirect based on premium status
+        if (data.user.isPremium) {
+          setTimeout(() => location.href = 'pindex.html', 1200);
+        } else {
+          setTimeout(() => location.href = 'index.html', 1200);
+        }
       } catch (err) {
         let msg = err.message || 'Login failed';
         let type = 'error';
@@ -300,7 +315,7 @@
       }
     };
 
-    // Enter key
+    // Enter key support
     document.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
         if ($('signupForm').style.display !== 'none') $('btnSignup').click();
