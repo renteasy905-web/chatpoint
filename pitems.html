@@ -3,21 +3,22 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Items | Chat Point</title>
+  <title>Premium Items | Chat Point</title>
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <style>
     :root {
-      --bg-light: #f8f9fa;
+      --bg-light: #fff8e1;
       --card-bg: #ffffff;
-      --text-dark: #212529;
-      --text-muted: #6c757d;
+      --text-dark: #1e293b;
+      --text-muted: #64748b;
       --brand-red: #dc3545;
-      --brand-yellow: #ffc107;
-      --accent-green: #28a745;
+      --brand-yellow: #f59e0b;
+      --accent-green: #10b981;
+      --premium-gold: #f59e0b;
       --shadow-sm: 0 4px 12px rgba(0,0,0,0.08);
-      --shadow-lg: 0 12px 30px rgba(0,0,0,0.12);
+      --shadow-lg: 0 12px 30px rgba(245,158,11,0.15);
       --radius-lg: 24px;
       --radius-md: 16px;
       --transition: 0.3s ease;
@@ -25,32 +26,37 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Outfit', sans-serif; background: var(--bg-light); min-height: 100vh; padding-bottom: 100px; }
     header {
-      background: white; padding: 1rem; box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 10;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b); padding: 1rem; box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 10;
+      color: white;
     }
     .header-top {
       display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;
     }
-    .back-btn { background: none; border: none; font-size: 1.6rem; cursor: pointer; }
+    .back-btn { background: none; border: none; font-size: 1.6rem; color: white; cursor: pointer; }
     .icons { display: flex; gap: 1.5rem; }
-    .icon-btn { font-size: 1.4rem; color: var(--text-muted); cursor: pointer; }
+    .icon-btn { font-size: 1.4rem; color: white; opacity: 0.9; cursor: pointer; }
     .cart-btn {
-      background: var(--brand-yellow); color: black; padding: 0.6rem 1rem;
+      background: white; color: #f59e0b; padding: 0.6rem 1rem;
       border-radius: 50px; font-weight: 700; border: none; cursor: pointer;
-      display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(255,199,7,0.3);
+      display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
-    .shop-title { font-size: 2rem; font-weight: 800; color: var(--text-dark); }
+    .shop-title { font-size: 2rem; font-weight: 800; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .premium-badge-header {
+      font-size: 1rem; background: rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 20px; font-weight: 700;
+    }
     .hero-container {
-      margin: 1rem; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg);
+      margin: 1rem; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-lg); border: 3px solid var(--premium-gold);
     }
     .hero-img { width: 100%; height: 300px; object-fit: cover; }
     .items-section {
       padding: 0 1rem;
     }
-    .section-title { font-size: 1.5rem; font-weight: 700; margin: 1.5rem 0 1rem; color: var(--text-dark); }
+    .section-title { font-size: 1.7rem; font-weight: 800; margin: 1.5rem 0 1rem; color: var(--text-dark); text-align: center; }
+    .premium-note { text-align: center; color: var(--premium-gold); font-weight: 700; margin-bottom: 1rem; font-size: 1.1rem; }
     .items-list { display: flex; flex-direction: column; gap: 1rem; }
     .item-card {
       background: var(--card-bg); border-radius: var(--radius-lg); padding: 1rem; box-shadow: var(--shadow-sm);
-      display: flex; align-items: center; gap: 1rem; position: relative;
+      display: flex; align-items: center; gap: 1rem; position: relative; border: 2px solid #ffec8b;
     }
     .item-img { width: 90px; height: 90px; object-fit: cover; border-radius: var(--radius-md); }
     .item-info { flex: 1; }
@@ -62,38 +68,38 @@
       text-decoration: line-through; color: var(--text-muted); font-size: 0.95rem;
     }
     .discount-badge {
-      background: var(--accent-green); color: white; padding: 2px 8px; border-radius: 6px;
-      font-size: 0.8rem; font-weight: 700;
+      background: var(--accent-green); color: white; padding: 4px 10px; border-radius: 8px;
+      font-size: 0.9rem; font-weight: 800;
     }
-    .final-price { font-size: 1.3rem; font-weight: 800; color: var(--text-dark); }
+    .final-price { font-size: 1.4rem; font-weight: 800; color: var(--premium-gold); }
     .quantity-controls {
       display: flex; align-items: center; gap: 1rem;
     }
     .qty-btn {
-      width: 36px; height: 36px; border-radius: 50%; background: #f1f1f1; border: none;
-      font-size: 1.3rem; display: grid; place-items: center; cursor: pointer;
+      width: 40px; height: 40px; border-radius: 50%; background: #f1f1f1; border: none;
+      font-size: 1.4rem; display: grid; place-items: center; cursor: pointer;
     }
-    .qty-number { font-size: 1.2rem; font-weight: 700; min-width: 40px; text-align: center; }
-    .item-total { font-size: 1.4rem; font-weight: 800; color: var(--text-dark); }
+    .qty-number { font-size: 1.3rem; font-weight: 700; min-width: 50px; text-align: center; }
+    .item-total { font-size: 1.5rem; font-weight: 800; color: var(--text-dark); }
     .remove-btn {
-      font-size: 1.3rem; color: var(--text-muted); cursor: pointer; position: absolute; top: 1rem; right: 1rem;
+      font-size: 1.4rem; color: var(--text-muted); cursor: pointer; position: absolute; top: 1rem; right: 1rem;
     }
     .cart-bar {
       position: fixed; bottom: 0; left: 0; right: 0; background: white;
       padding: 1rem; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); border-top-left-radius: var(--radius-lg);
-      border-top-right-radius: var(--radius-lg);
+      border-top-right-radius: var(--radius-lg); border-top: 4px solid var(--premium-gold);
     }
     .total-row {
       display: flex; justify-content: space-between; margin-bottom: 1rem;
     }
-    .total-label { font-size: 1.1rem; }
-    .total-amount { font-size: 1.6rem; font-weight: 800; }
+    .total-label { font-size: 1.2rem; font-weight: 600; }
+    .total-amount { font-size: 1.8rem; font-weight: 800; color: var(--premium-gold); }
     .checkout-btn {
-      background: var(--brand-yellow); color: black; border: none; width: 100%;
-      padding: 1rem; border-radius: 50px; font-size: 1.2rem; font-weight: 900; cursor: pointer;
-      box-shadow: 0 6px 16px rgba(255,199,7,0.3);
+      background: var(--premium-gold); color: white; border: none; width: 100%;
+      padding: 1.2rem; border-radius: 50px; font-size: 1.3rem; font-weight: 900; cursor: pointer;
+      box-shadow: 0 8px 20px rgba(245,158,11,0.4);
     }
-    .empty-message { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 1.1rem; }
+    .empty-message { text-align: center; padding: 3rem; color: var(--text-muted); font-size: 1.2rem; }
     @media (max-width: 480px) {
       .shop-title { font-size: 1.8rem; }
       .hero-img { height: 250px; }
@@ -107,60 +113,248 @@
     <div class="header-top">
       <button class="back-btn" id="backBtn">←</button>
       <div class="icons">
-        <i class="icon-btn fas fa-search"></i>
-        <!-- Updated Cart Button with proper styling and link -->
+        <i class="icon-btn fas fa-crown"></i>
         <button class="cart-btn" id="topCartBtn">
           🛒 Cart
         </button>
       </div>
     </div>
-    <div class="shop-title" id="shopName">Loading...</div>
+    <div class="shop-title" id="shopName">Premium Loading...</div>
+    <div style="text-align:center; margin-top:8px;">
+      <span class="premium-badge-header">PREMIUM EXCLUSIVE ⭐</span>
+    </div>
   </header>
 
   <div class="hero-container">
-    <img id="heroImage" src="" alt="Shop Hero" class="hero-img">
+    <img id="heroImage" src="" alt="Premium Shop Hero" class="hero-img">
   </div>
 
   <section class="items-section">
-    <h2 class="section-title">Our Popular Items</h2>
+    <div class="premium-note">⭐ Premium Members Get Extra ₹20 OFF on Every Item! ⭐</div>
+    <h2 class="section-title">Exclusive Premium Menu</h2>
     <div class="items-list" id="itemsGrid"></div>
   </section>
 
   <div class="cart-bar" id="cartBar" style="display:none;">
     <div class="total-row">
-      <span class="total-label">Total</span>
+      <span class="total-label">Premium Total</span>
       <span class="total-amount" id="cartTotal">₹0</span>
     </div>
-    <button class="checkout-btn" id="checkoutBtn">Checkout →</button>
+    <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout →</button>
   </div>
 
   <script>
-    // Login check
+    // PREMIUM PROTECTION
+    window.addEventListener('load', () => {
+      const userData = localStorage.getItem('chatpoint_user');
+      if (!userData) {
+        location.href = 'login.html';
+        return;
+      }
+      const user = JSON.parse(userData);
+      if (!user.isPremium) {
+        location.href = 'index.html';
+      }
+    });
+
     const user = JSON.parse(localStorage.getItem("chatpoint_user") || "null");
     const isLoggedIn = user && user._id;
 
-    // ₹5 discount for logged-in users
-    const DISCOUNT = 5;
+    const PREMIUM_DISCOUNT = 20;
 
-    // Hero images (same as before)
     const heroImages = {
       "Chat Point": "https://images.unsplash.com/photo-1607013251379-e6eecfffe234?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
       "Sangambar Udupi Hotel": "https://images.unsplash.com/photo-1631518739571-821f9d2e1256?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
       "Nandi Grand Hotels": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
       "Pizza Spot": "https://images.pexels.com/photos/905847/pexels-photo-905847.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-      "Fly Pizza": "https://images.pexels.com/photos/315755/pexels-photo-315755.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "connect with pizza": "https://images.pexels.com/photos/315755/pexels-photo-315755.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
       "Mister Chef": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
       "Hasanamba Iyengar Bakery": "https://images.unsplash.com/photo-1558326567-7d2f25e34b3f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
       "Dolphin Hotel": "https://images.unsplash.com/photo-1593253784648-f79b5c6ab968?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80"
     };
 
-    // ALL ITEMS — BASE PRICE + ₹10 (same as your last version)
+    // ALL ITEMS WITH +₹10 PRICE
     const shopData = {
-      // Your full shopData object with +₹10 on every price (copy from previous message)
-      // Keeping it short here — use the same data you had before with +10
+      "Chat Point": [
+        { name: "Nuggets", price: 98, image: "Nuggets.jpg" },
+        { name: "Akoo tikki(burger)+ onion pizza + cheese sandwich + fry momos", price: 310, image: "Aloo-Tikki-Burger.jpg" },
+        { name: "Veg roll + paneer puff + veg sandwich + Paneer burger + 750ml water bottel", price: 239, image: "Paneer-Burger.jpg" },
+        { name: "2 cake roll + chocolate bun + honey cake (1p) + 2 egg/veg puff + 250 coca cola ", price: 155, image: "combo.JPG" },
+        { name: "veggiee pizza + French fries + coca cola 250ml", price: 289, image: "Veggie-Lover.jpg" },
+        { name: "Jeera rice", price: 169, image: "Jeera-Rice.jpg" },
+        { name: "veg biryani + 750ml water botel", price: 199, image: "Veg-Biriyani.jpg" },
+        { name: "Kantilal rice + 750ml water bottel", price: 179, image: "Kantilal-Rice.jpg" }
+      ],
+      "Sangambar Udupi Hotel": [
+        { name: "Plain Dosa", price: 95, image: "Plain-Dosa.JPG" },
+        { name: "Masala Dosa", price: 105, image: "Masala-Dosa.JPG" },
+        { name: "Benne Dosa", price: 105, image: "Benne-Dosa.jpg" },
+        { name: "Benne Masala Dosa", price: 125, image: "Benne-Masala-Dosa.jpg" },
+        { name: "Mysore Masala Dosa", price: 125, image: "Mysore-Masala-Dosa.jpg" },
+        { name: "Paneer Masala Dosa", price: 125, image: "Paneer-Masala-Dosa.jpg" },
+        { name: "Gobi 65", price: 145, image: "Gobi-65.jpg" },
+        { name: "Gobi Manchurian", price: 135, image: "Gobi-Manchurian.jpg" },
+        { name: "Mushroom Manchurian", price: 195, image: "Mushroom-Manchurian.jpg" },
+        { name: "Paneer Manchurian", price: 215, image: "Paneer-Manchurian.jpg" },
+        { name: "Veg Manchurian", price: 115, image: "Veg-Manchurian.jpg" }
+      ],
+      "Nandi Grand Hotels": [
+        { name: "Shira", price: 45, image: "shira.JPG" },
+        { name: "Poori", price: 80, image: "poori.JPG" },
+        { name: "Full Meals", price: 105, image: "full-meals.JPG" },
+        { name: "Onion Dosa", price: 85, image: "onion-dosa.JPG" },
+        { name: "Utappa", price: 85, image: "utappa.JPG" },
+        { name: "Mysore Bonda", price: 85, image: "Mysore-Bonda.jpg" },
+        { name: "Mangalore Buns", price: 85, image: "mangalore-buns.JPG" },
+        { name: "Paneer Dosa", price: 90, image: "paneer-dosa.JPG" },
+        { name: "Cheese Dosa", price: 85, image: "chess-dosa.jpg" },
+        { name: "Chou Chou Bath", price: 80, image: "chou-chou-bath.JPG" }
+      ],
+      "Pizza Spot": [
+        { name: "Nuggets", price: 95, image: "Nuggets.jpg" },
+        { name: "French Fries", price: 105, image: "French-Fries.jpg" },
+        { name: "Masala Fries", price: 115, image: "Masala-Fries.jpg" },
+        { name: "Smiley Fries", price: 115, image: "Smiley-Fries.jpg" },
+        { name: "Pizza Spot Special", price: 365, image: "Pizza-Spot-Special.jpg" },
+        { name: "Burger Classic", price: 95, image: "Burger-Classic.jpg" },
+        { name: "Aloo Tikki Burger", price: 95, image: "Aloo-Tikki-Burger.jpg" },
+        { name: "Paneer Burger", price: 105, image: "Paneer-Burger.jpg" },
+        { name: "Double Decker Burger", price: 135, image: "Double-Decker-Burger.jpg" },
+        { name: "Pizza Spot Special Burger", price: 365, image: "Pizza-Spot-Special-Burger.jpg" },
+        { name: "Margherita", price: 174, image: "Margherita.jpg" },
+        { name: "Veggie", price: 187, image: "Veggie.jpg" },
+        { name: "Veggie Lover", price: 284, image: "Veggie-Lover.jpg" },
+        { name: "Sweet Corn", price: 255, image: "Sweet-Corn.jpg" },
+        { name: "Baby Corn", price: 245, image: "Baby-Corn.jpg" },
+        { name: "Tandoori Paneer", price: 245, image: "Tandoori-Paneer.jpg" },
+        { name: "Steam Momos", price: 85, image: "Steam-Momos.jpg" },
+        { name: "Fried Momos", price: 95, image: "Fried-Momos.jpg" },
+        { name: "Kurkure Momos", price: 115, image: "Kurkure-Momos.jpg" },
+        { name: "Veg Sandwich", price: 85, image: "Veg-Sandwich.jpg" },
+        { name: "Cheese Sandwich", price: 95, image: "Cheese-Sandwich.jpg" },
+        { name: "Sweet Corn Sandwich", price: 95, image: "Sweet-Corn-Sandwich.jpg" },
+        { name: "Paneer Tandoori Sandwich", price: 105, image: "Paneer-Tandoori-Sandwich.jpg" },
+        { name: "Club Sandwich", price: 135, image: "Club-Sandwich.jpg" },
+        { name: "Pizza Spot Special Sandwich", price: 155, image: "Pizza-Spot-Special-Sandwich.jpg" },
+        { name: "Pav Bhaji", price: 77, image: "Pav-Bhaji.jpg" },
+        { name: "Cheese Pav Bhaji", price: 97, image: "Cheese-Pav-Bhaji.jpg" },
+        { name: "Veg Roll", price: 87, image: "Veg-Roll.jpg" },
+        { name: "Sweet Corn Roll", price: 107, image: "Sweet-Corn-Roll.jpg" },
+        { name: "Paneer Roll", price: 125, image: "Paneer-Roll.jpg" }
+      ],
+      "connect with pizza": [
+        { name: "Margharita pizza", price: 165, image: "Margherita.jpg" },
+        { name: "Corn cheese", price: 189, image: "Sweet-Corn.jpg" },
+        { name: "Corn cheese big", price: 349, image: "Sweet-Corn.jpg" },
+        { name: "paneer Tikka", price: 279, image: "Tandoori-Paneer.jpg" },
+        { name: "Veggie lovers", price: 289, image: "Veggie-Lover.jpg" },
+        { name: "special pizza", price: 370, image: "Pizza-Spot-Special.jpg" }
+      ],
+      "Mister Chef": [
+        { name: "VEG-Sandwiich", price: 70, image: "VEG-Sandwiich.jpg" },
+        { name: "Cheese-Sandwiich", price: 80, image: "Cheese-Sandwiich.jpg" },
+        { name: "Sweet Corn-Sandwiich", price: 80, image: "Sweet Corn-Sandwiich.jpg" },
+        { name: "MushRoom-Sandwiich", price: 85, image: "MushRoom-Sandwiich.jpg" },
+        { name: "Paneer-Sandwiich", price: 90, image: "Paneer-Sandwiich.jpg" },
+        { name: "Nuggets", price: 80, image: "Nuggets.jpg" },
+        { name: "french-Frics", price: 105, image: "french-Frics.jpg" },
+        { name: "masala-Frics", price: 105, image: "Masala-Fries.jpg" },
+        { name: "Classic-Burger", price: 80, image: "Classic-Burger.jpg" },
+        { name: "Aloo Tikki-burger", price: 90, image: "Aloo-Tikki-Burger.jpg" },
+        { name: "paneer-burger", price: 109, image: "Paneer-Burger.jpg" },
+        { name: "Chees-burger", price: 109, image: "Chees-burger.jpg" },
+        { name: "Double Decker-burger", price: 129, image: "Double Decker-burger.jpg" },
+        { name: "Margherita-Pizza", price: 165, image: "Margherita-Pizza.jpg" },
+        { name: "Veggie-burger", price: 179, image: "Veggie-burger.jpg" }
+      ],
+      "Hasanamba Iyengar Bakery": [
+        { name: "Rasmalai Cake", price: 760, image: "Rasmalai-Cake.jpg" },
+        { name: "Irish Coffee Cake", price: 760, image: "Irish-Coffee-Cake.jpg" },
+        { name: "Black Forest Cake", price: 660, image: "Black-Forest.jpg" },
+        { name: "American Nuts Cake", price: 760, image: "American-Nuts-Cake.jpg" },
+        { name: "French Vanilla Cake", price: 710, image: "French-Vanilla-Cake.jpg" },
+        { name: "Pineapple Cake", price: 660, image: "Pineapple-Cake.jpg" },
+        { name: "Strawberry Cake", price: 660, image: "Strawberry-Cake.jpg" },
+        { name: "Death by Chocolate Cake", price: 710, image: "Chocolate-Truffle-Cake.jpg" },
+        { name: "Butterscotch Cake", price: 660, image: "Butterscotch-Cake.jpg" },
+        { name: "Veg Pizza", price: 185, image: "Veg-Pizza.jpg" },
+        { name: "Margherita", price: 175, image: "Margherita.jpg" },
+        { name: "Paneer Pizza", price: 235, image: "Tandoori-Paneer.jpg" },
+        { name: "Golden Corn Pizza", price: 245, image: "Sweet-Corn.jpg" },
+        { name: "Sweet Corn Pizza", price: 235, image: "Sweet-Corn.jpg" },
+        { name: "Baby Corn Pizza", price: 235, image: "Baby-Corn.jpg" },
+        { name: "Classic Veg Burger", price: 85, image: "Burger-Classic.jpg" },
+        { name: "Cheese Burger", price: 95, image: "Paneer-Burger.jpg" },
+        { name: "Paneer Tandoori Burger", price: 95, image: "Paneer-Burger.jpg" },
+        { name: "Cheese Sandwich", price: 85, image: "Cheese-Sandwich.jpg" },
+        { name: "Veg Sandwich", price: 76, image: "Veg-Sandwich.jpg" },
+        { name: "Mango Cake", price: 610, image: "Mango-Cake.jpg" }
+      ],
+      "Dolphin Hotel": [
+        { name: "CKN Soup", price: 190, image: "https://www.culinaryhill.com/wp-content/uploads/2021/01/Mexican-Chicken-Soup-Culinary-Hill-1200x800-1.jpg" },
+        { name: "MTN Soup", price: 190, image: "https://i.ytimg.com/vi/Ddf91Qg23Yw/sddefault.jpg" },
+        { name: "CKN Lolipop", price: 220, image: "https://127619560.cdn6.editmysite.com/uploads/1/2/7/6/127619560/3P7A5OQMAEDJGTRVNSHFGNVT.png" },
+        { name: "CKN 65", price: 240, image: "https://www.indianhealthyrecipes.com/wp-content/uploads/2022/03/chicken-65-restaurant-style-500x375.jpg" },
+        { name: "CKN 65 B-Less", price: 300, image: "https://www.teaforturmeric.com/wp-content/uploads/2024/05/Chicken-65-11-480x270.jpg" },
+        { name: "CKN 65 Half", price: 190, image: "https://swatisani.net/kitchen/wp-content/uploads/2014/11/1200px-Chicken_65_Dish.jpg" },
+        { name: "CKN 65 Full", price: 340, image: "https://www.indianhealthyrecipes.com/wp-content/uploads/2022/03/chicken-65-restaurant-style-500x375.jpg" },
+        { name: "CKN Manchuri", price: 1040, image: "https://www.indianhealthyrecipes.com/wp-content/uploads/2015/07/chicken-manchurian-1-500x375.jpg" },
+        { name: "CKN Manchuri Half", price: 540, image: "https://i.ytimg.com/vi/4j4EqyLtlJg/hqdefault.jpg" },
+        { name: "CKN Manchuri Full", price: 2040, image: "https://pupswithchopsticks.com/wp-content/uploads/chicken-manchurian-tnnew-480x270.webp" },
+        { name: "CKN Chilly Half", price: 190, image: "https://maunikagowardhan.co.uk/wp-content/uploads/2014/11/Indo-Chinese-Chilli-Chicken-scaled.jpg" },
+        { name: "CKN Chilly Full", price: 1040, image: "https://www.indianhealthyrecipes.com/wp-content/uploads/2018/07/chilli-chicken-recipe-500x375.jpg" },
+        { name: "CKN Tikka", price: 540, image: "https://i.ytimg.com/vi/jx0vr2cghf0/maxresdefault.jpg" },
+        { name: "CKN Tandoori Half", price: 540, image: "https://maunikagowardhan.co.uk/wp-content/uploads/2012/08/Tandoori-Chicken.jpg" },
+        { name: "CKN Tandoori Full", price: 1040, image: "https://www.easycookingwithmolly.com/wp-content/uploads/2023/11/air-fryer-whole-tandoori-chicken-3.jpg" },
+        { name: "CKN Kabbab", price: 290, image: "https://www.ndtv.com/cooks/images/chicken.seekh.jpg" },
+        { name: "CKN Masala", price: 190, image: "https://www.seriouseats.com/thmb/DbQHUK2yNCALBnZE-H1M2AKLkok=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/chicken-tikka-masala-for-the-grill-recipe-hero-2_1-cb493f49e30140efbffec162d5f2d1d7.JPG" },
+        { name: "CKN Handi Half", price: 540, image: "https://dobbernationloves.com/wp-content/uploads/2021/09/Chicken-Handi-15-480x270.jpeg" },
+        { name: "CKN Handi Full", price: 1040, image: "https://i.ytimg.com/vi/lM2SiBHDzUg/sddefault.jpg" },
+        { name: "CKN Kolhapuri", price: 200, image: "https://i.ytimg.com/vi/UYDc6AgK0xo/hq720.jpg" },
+        { name: "CKN Hydrabadi", price: 200, image: "https://i.ytimg.com/vi/2gJzexM1Jv8/maxresdefault.jpg" },
+        { name: "CKN Hydrabadi Half", price: 540, image: "https://i.ytimg.com/vi/u5la59Tv2bs/hq720.jpg" },
+        { name: "CKN Hydrabadi Full", price: 1040, image: "https://i.ytimg.com/vi/2gJzexM1Jv8/maxresdefault.jpg" },
+        { name: "CKN Sukka", price: 260, image: "https://i.ytimg.com/vi/A68t574c48Y/maxresdefault.jpg" },
+        { name: "CKN Sukka Half", price: 640, image: "http://www.vishualfoodie.com/wp-content/uploads/2015/01/IMG_4906.jpg" },
+        { name: "CKN Sukka Full", price: 1240, image: "https://i.ytimg.com/vi/A68t574c48Y/maxresdefault.jpg" },
+        { name: "Egg Chilly", price: 180, image: "https://i.ytimg.com/vi/KX4vL4hU970/maxresdefault.jpg" },
+        { name: "Egg Manchuri", price: 180, image: "https://i.ytimg.com/vi/9nqnf3m1wOY/sddefault.jpg" },
+        { name: "Egg Pakoda", price: 150, image: "https://c.ndtvimg.com/2020-10/3c0q88h_egg-bonda_625x300_13_October_20.jpg" },
+        { name: "Egg 65", price: 170, image: "https://i.ytimg.com/vi/7I35ooHVDXI/hq720.jpg" },
+        { name: "Egg Burji", price: 120, image: "https://www.seriouseats.com/thmb/_UpZJf-wE0Vr5jNOpBPPC_FyzcA=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/anda-bhurji-spicy-indian-scrambled-eggs-recipe-step-06-b861178e6c5546559667743aa64a187f.jpg" },
+        { name: "Egg Omlet", price: 110, image: "https://maunikagowardhan.co.uk/wp-content/uploads/2012/09/Masala-Omelette-32.jpg" },
+        { name: "Egg Half Fry", price: 100, image: "https://www.seriouseats.com/thmb/RLhIA1_2ZVdLa-uPVV9YRt75g20=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__recipes__images__2017__07__20170728-sunny-side-up-eggs-vicky-wasik-d07c5480d72e49cc85689c1d6d88495e.jpg" },
+        { name: "Boiled Egg (2 pcs)", price: 80, image: "https://eggs.ca/wp-content/uploads/2024/06/peeling.jpg" },
+        { name: "Boiled Egg (1 pc)", price: 60, image: "https://eggs.ca/wp-content/uploads/2024/06/peeling.jpg" },
+        { name: "Egg Masala", price: 160, image: "https://i.ytimg.com/vi/0bs7u1CLKy8/hq720.jpg" },
+        { name: "Egg Hydrabadi", price: 170, image: "https://ranveerbrar.com/wp-content/uploads/2021/08/egg-curry-scaled-scaled.jpg" },
+        { name: "Egg Makhanwala", price: 170, image: "https://rumkisgoldenspoon.com/wp-content/uploads/2023/04/Egg-butter-masala-recipe.jpg" },
+        { name: "Egg Kolhapuri", price: 180, image: "https://swatisani.net/kitchen/wp-content/uploads/2015/09/IMG_9112.jpg" },
+        { name: "Egg Maharaja", price: 190, image: "https://i.ytimg.com/vi/t2mC2iXOoLY/hq720.jpg" },
+        { name: "Egg Kheema", price: 190, image: "https://maunikagowardhan.co.uk/wp-content/uploads/2015/06/Kheema-per-eeda-2-scaled.jpg" },
+        { name: "Egg Moglai", price: 180, image: "https://i.ytimg.com/vi/CTec9OSqxdA/maxresdefault.jpg" },
+        { name: "Egg DK", price: 190, image: "https://i.ytimg.com/vi/0bs7u1CLKy8/hq720.jpg" },
+        { name: "Egg Kabbab", price: 190, image: "https://www.harighotra.co.uk/images/recipes/hero/Nagris_kebab_hero.png" },
+        { name: "Mtn Masala", price: 260, image: "https://i.ytimg.com/vi/Z8C1fGkVwWI/maxresdefault.jpg" },
+        { name: "Mtn Handi Half", price: 640, image: "https://www.flourandspiceblog.com/wp-content/uploads/2020/05/Mutton-Handi-3-500x375.jpg" },
+        { name: "Mtn Handi Full", price: 1240, image: "http://spicyworld.in/recipeimages/mutton-handi.jpg" },
+        { name: "Mtn Hydrabadi", price: 260, image: "https://i.ytimg.com/vi/G_B1Py4dNR8/maxresdefault.jpg" },
+        { name: "Mtn Makhanwala", price: 270, image: "https://i.ytimg.com/vi/orfotVw6aZQ/sddefault.jpg" },
+        { name: "Mtn Kheema", price: 260, image: "https://i.guim.co.uk/img/media/4721de0b9491e4abeb767527de943a22551fb5c6/0_1513_8774_5266/master/8774.jpg" },
+        { name: "Mtn Kolhapuri", price: 270, image: "https://c.ndtvimg.com/2023-07/i5kuo9ho_kolhapuri_625x300_09_July_23.jpg" },
+        { name: "Mtn Maharaja", price: 280, image: "https://i.ytimg.com/vi/nWgBso3AkOU/maxresdefault.jpg" },
+        { name: "Mtn Sukka", price: 270, image: "https://spiceindiaonline.com/wp-content/uploads/2018/11/Mutton-Chukka-Varuval-1.jpg" },
+        { name: "Mtn Sukka Half", price: 280, image: "https://www.thetinytaster.com/wp-content/uploads/2021/11/PXL_20211031_071852938-scaled.jpg" },
+        { name: "Mtn Sukka Full", price: 300, image: "https://spiceindiaonline.com/wp-content/uploads/2018/11/Mutton-Chukka-Varuval-1.jpg" },
+        { name: "Fish Fry", price: 190, image: "https://www.aromaandessence.com/wp-content/uploads/2023/12/Fish-fry-2.webp" },
+        { name: "Fish Curry", price: 200, image: "https://www.thedeliciouscrescent.com/wp-content/uploads/2023/07/Fish-Curry-4.jpg" },
+        { name: "Egg Fried Rice", price: 190, image: "https://www.sharmispassions.com/wp-content/uploads/2013/04/EggFriedRice4-500x375.jpg" },
+        { name: "Egg Biryani", price: 200, image: "https://www.indianhealthyrecipes.com/wp-content/uploads/2020/02/instant-pot-egg-biryani.jpg" },
+        { name: "CKN Biryani", price: 240, image: "https://www.foodandwine.com/thmb/QRYKO8zoBeWhLCvkxuTgOo8zu0s=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Chicken-Biryani-FT-RECIPE0823-9d51c6e665ec4c9daa45162841e2f034.jpg" },
+        { name: "Mutton Biryani", price: 270, image: "https://maunikagowardhan.co.uk/wp-content/uploads/2012/01/Lamb-Biryani-2-scaled.jpg" }
+      ]
     };
 
-    // Get shop from URL (same as before)
     const urlParams = new URLSearchParams(location.search);
     let requestedShop = decodeURIComponent(urlParams.get("shop") || "").trim();
 
@@ -176,8 +370,8 @@
       }
     }
 
-    document.getElementById("shopName").textContent = shopName || "Shop Not Found";
-    document.getElementById("heroImage").src = heroImages[shopName] || "https://via.placeholder.com/1200x300?text=Delicious+Food";
+    document.getElementById("shopName").textContent = shopName ? `${shopName} (Premium)` : "Premium Shop";
+    document.getElementById("heroImage").src = heroImages[shopName] || "https://via.placeholder.com/1200x300/ffd700/ffffff?text=Premium+Exclusive";
 
     let cart = JSON.parse(localStorage.getItem("chatpoint_cart") || "{}");
 
@@ -203,7 +397,7 @@
         return;
       }
       if (!cart[shop]) cart[shop] = {};
-      const finalPrice = displayedPrice - DISCOUNT;
+      const finalPrice = displayedPrice - PREMIUM_DISCOUNT;
       if (!cart[shop][name]) cart[shop][name] = { qty: 0, finalPrice: finalPrice };
       cart[shop][name].qty = Math.max(0, cart[shop][name].qty + delta);
       if (cart[shop][name].qty === 0) delete cart[shop][name];
@@ -216,14 +410,14 @@
       const container = document.getElementById("itemsGrid");
       container.innerHTML = "";
       if (shopItems.length === 0) {
-        container.innerHTML = "<div class='empty-message'>No items available</div>";
+        container.innerHTML = "<div class='empty-message'>No premium items available</div>";
         return;
       }
 
       shopItems.forEach(item => {
         const originalPrice = item.price - 10;
         const displayedPrice = item.price;
-        const finalPrice = displayedPrice - DISCOUNT;
+        const finalPrice = displayedPrice - PREMIUM_DISCOUNT;
         const qty = (cart[shopName] && cart[shopName][item.name]) ? cart[shopName][item.name].qty : 0;
         const total = qty * finalPrice;
 
@@ -231,12 +425,12 @@
         div.className = "item-card";
         div.innerHTML = `
           <img src="images/${item.image}" alt="${item.name}" class="item-img" 
-               onerror="this.src='https://via.placeholder.com/90?text=Food'">
+               onerror="this.src='https://via.placeholder.com/90?text=Premium'">
           <div class="item-info">
             <div class="item-name">${item.name}</div>
             <div class="price-row">
               <span class="original-price">₹${originalPrice}</span>
-              <span class="discount-badge">₹5 OFF</span>
+              <span class="discount-badge">₹20 OFF</span>
               <span class="final-price">₹${finalPrice}</span>
             </div>
             <div class="quantity-controls">
@@ -255,16 +449,9 @@
     renderItems();
     updateCartBar();
 
-    // Back button
     document.getElementById("backBtn").onclick = () => history.back();
-
-    // Checkout button (bottom bar)
     document.getElementById("checkoutBtn").onclick = () => location.href = "cart.html";
-
-    // NEW: Top Cart Button Click → Go to cart.html
-    document.getElementById("topCartBtn").onclick = () => {
-      location.href = "cart.html";
-    };
+    document.getElementById("topCartBtn").onclick = () => location.href = "cart.html";
   </script>
 </body>
 </html>
