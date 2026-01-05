@@ -96,7 +96,6 @@
     @keyframes flash { from { background: rgba(239, 68, 68, 0.98); } to { background: rgba(220, 38, 38, 1); } }
     .new-order-alert small { font-size: 2rem; margin-top: 2rem; }
 
-    /* Progress Buttons Styling */
     .progress-btns {
       display: flex;
       gap: 0.8rem;
@@ -244,7 +243,6 @@ Welcome to the family!`);
       }
     }
 
-    // Render Order Card (unchanged)
     function renderOrderCard(order) {
       order.progress = order.progress || 0;
 
@@ -333,7 +331,6 @@ Welcome to the family!`);
       `;
     }
 
-    // UPDATED: Users rendering with Make Premium button
     function renderUsers() {
       if (allUsers.length === 0) {
         usersContainer.innerHTML = '<div class="empty"><p>No registered users yet.</p></div>';
@@ -423,48 +420,90 @@ Welcome to the family!`);
       }
     }
 
-    // Button Click Handler (orders + premium button)
+    // FULLY WORKING ORDER BUTTON HANDLER
     document.addEventListener('click', async (e) => {
-      // Existing order actions...
-      const btn = e.target.closest('button[data-action]');
-      if (btn) {
-        // Your existing order handling code here (unchanged)
-        // ... (keep all your original order button logic)
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+
+      const orderId = btn.dataset.id;
+      const action = btn.dataset.action;
+      const phone = btn.dataset.phone;
+      const name = btn.dataset.name;
+
+      btn.disabled = true;
+
+      let success = false;
+
+      if (action === 'confirm') {
+        success = await updateOrderStatus(orderId, 'confirmed');
+        if (success) {
+          openWhatsApp(phone, confirmMessage(name));
+          alert("Order confirmed & WhatsApp sent!");
+        }
+      } else if (action === 'delivered') {
+        success = await updateOrderStatus(orderId, 'delivered');
+        if (success) {
+          openWhatsApp(phone, deliveredMessage);
+          alert("Order marked delivered & WhatsApp sent!");
+        }
+      } else if (action === 'cancel') {
+        if (confirm("Cancel this order?")) {
+          success = await updateOrderStatus(orderId, 'cancelled');
+          if (success) alert("Order cancelled");
+        }
+      } else if (action === 'progress') {
+        const progress = parseInt(btn.dataset.progress);
+        success = await updateOrderProgress(orderId, progress);
+        if (success) alert(`Progress updated to step ${progress}`);
+      } else if (action === 'delete') {
+        if (confirm("Delete this order permanently?")) {
+          success = await deleteOrder(orderId);
+          if (success) alert("Order deleted");
+        }
       }
 
-      // NEW: Make Premium button
+      if (success || action === 'cancel') {
+        fetchData(); // Refresh list
+      } else if (!success) {
+        alert("Action failed. Try again.");
+      }
+
+      btn.disabled = false;
+    });
+
+    // Make Premium button
+    document.addEventListener('click', async (e) => {
       const premiumBtn = e.target.closest('.make-premium-btn');
-      if (premiumBtn) {
-        const phone = premiumBtn.dataset.phone;
-        if (!confirm(`Make user ${phone} a PREMIUM member?`)) return;
+      if (!premiumBtn) return;
 
-        premiumBtn.disabled = true;
-        premiumBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
+      const phone = premiumBtn.dataset.phone;
+      if (!confirm(`Make user ${phone} a PREMIUM member?`)) return;
 
-        try {
-          const res = await fetch(`${API_BASE}/api/admin/make-premium`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ password: 'Brand', phone }) // Change 'Brand' if your admin password is different
-          });
-          const data = await res.json();
+      premiumBtn.disabled = true;
+      premiumBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing...`;
 
-          if (data.success) {
-            alert("User is now Premium! ⭐");
-            // Refresh users
-            const usersRes = await fetch(`${API_BASE}/api/admin/users?t=${Date.now()}`);
-            const usersData = await usersRes.json();
-            if (usersData.users) allUsers = usersData.users;
-            renderUsers();
-          } else {
-            alert("Failed: " + (data.message || "Try again"));
-          }
-        } catch (err) {
-          alert("Network error");
-        } finally {
-          premiumBtn.disabled = false;
-          premiumBtn.innerHTML = `<i class="fas fa-crown"></i> Make Premium`;
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/make-premium`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: 'Brand', phone })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          alert("User is now Premium! ⭐");
+          const usersRes = await fetch(`${API_BASE}/api/admin/users?t=${Date.now()}`);
+          const usersData = await usersRes.json();
+          if (usersData.users) allUsers = usersData.users;
+          renderUsers();
+        } else {
+          alert("Failed: " + (data.message || "Try again"));
         }
+      } catch (err) {
+        alert("Network error");
+      } finally {
+        premiumBtn.disabled = false;
+        premiumBtn.innerHTML = `<i class="fas fa-crown"></i> Make Premium`;
       }
     });
 
