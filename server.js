@@ -65,7 +65,12 @@ const User = mongoose.model(
       name: String,
       phone: { type: String, required: true, unique: true },
       password: String,
-      isPremium: String, // NEW FIELD: "yes" for premium users
+      isPremium: String,           // Legacy: "yes" or undefined
+      premiumType: {               // NEW: "far" or "local"
+        type: String,
+        enum: ["far", "local", null],
+        default: null
+      }
     },
     { timestamps: true }
   )
@@ -86,8 +91,8 @@ const GroceryItem = mongoose.model(
     category: { type: String, required: true },
     name: { type: String, required: true },
     price: { type: Number, required: true }, // Legacy fallback
-    originalPrice: { type: Number }, // New: For strikethrough (e.g., 55)
-    offerPrice: { type: Number }, // New: Actual selling price (e.g., 50)
+    originalPrice: { type: Number }, // For strikethrough
+    offerPrice: { type: Number },    // Actual selling price
     imageUrl: { type: String, required: true },
   })
 );
@@ -137,6 +142,7 @@ const saveOrderUniversal = async (req, res) => {
 
     let items = [];
     let shopName = null;
+
     for (const shop in cart) {
       if (!shopName) shopName = shop;
       for (const itemName in cart[shop]) {
@@ -172,18 +178,27 @@ const saveOrderUniversal = async (req, res) => {
   }
 };
 
-// =============== NEW API: Make User Premium ===============
+// =============== UPDATED: Make User Premium with Type ===============
 app.post("/api/admin/make-premium", async (req, res) => {
-  const { password, phone } = req.body;
+  const { password, phone, premiumType } = req.body;
 
   if (password !== ADMIN_PASSWORD) {
     return res.status(401).json({ success: false, message: "Wrong admin password" });
   }
 
+  if (!["far", "local"].includes(premiumType)) {
+    return res.status(400).json({ success: false, message: "Invalid premiumType. Must be 'far' or 'local'" });
+  }
+
   try {
     const updatedUser = await User.findOneAndUpdate(
       { phone },
-      { $set: { isPremium: "yes" } },
+      { 
+        $set: { 
+          isPremium: "yes",
+          premiumType: premiumType  // "far" or "local"
+        } 
+      },
       { new: true }
     );
 
@@ -191,7 +206,12 @@ app.post("/api/admin/make-premium", async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    res.json({ success: true, message: "User upgraded to Premium!" });
+    console.log(`User ${phone} upgraded to ${premiumType.toUpperCase()} PREMIUM`);
+    res.json({ 
+      success: true, 
+      message: `User upgraded to ${premiumType.toUpperCase()} Premium!`,
+      user: updatedUser 
+    });
   } catch (err) {
     console.error("Make premium error:", err);
     res.status(500).json({ success: false });
@@ -212,7 +232,6 @@ app.get("/api/categories", async (req, res) => {
   }
 });
 
-// UPDATED: Returns originalPrice and offerPrice with fallbacks
 app.get("/api/items/:category", async (req, res) => {
   try {
     const category = decodeURIComponent(req.params.category);
@@ -232,7 +251,6 @@ app.get("/api/items/:category", async (req, res) => {
   }
 });
 
-// UPDATED: Accepts originalPrice and offerPrice from admin form
 app.post("/api/admin/add-item", upload.fields([
   { name: "image", maxCount: 1 },
   { name: "categoryImage", maxCount: 1 }
@@ -276,7 +294,6 @@ app.post("/api/admin/add-item", upload.fields([
   }
 });
 
-// UPDATED: Now updates both originalPrice and offerPrice
 app.post("/api/admin/edit-item", async (req, res) => {
   const { password, itemId, originalPrice, offerPrice } = req.body;
   if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false });
@@ -287,7 +304,6 @@ app.post("/api/admin/edit-item", async (req, res) => {
       offerPrice: offerPrice ? Number(offerPrice) : undefined,
       price: offerPrice ? Number(offerPrice) : undefined,
     };
-
     Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
 
     const updated = await GroceryItem.findByIdAndUpdate(itemId, updateData, { new: true });
@@ -349,7 +365,8 @@ app.post("/api/user/login", async (req, res) => {
         _id: user._id.toString(),
         name: user.name,
         phone: user.phone,
-        isPremium: user.isPremium === "yes"  // SEND PREMIUM STATUS
+        isPremium: user.isPremium === "yes",
+        premiumType: user.premiumType || null  // Send premium type to frontend
       }
     });
   } catch (e) {
@@ -391,15 +408,12 @@ app.post("/api/update-order-progress", async (req, res) => {
     if (!orderId || progress < 0 || progress > 4) {
       return res.status(400).json({ success: false, message: "Invalid data" });
     }
-
     const updated = await Order.findByIdAndUpdate(
       orderId,
       { progress: Number(progress) },
       { new: true }
     );
-
     if (!updated) return res.status(404).json({ success: false, message: "Order not found" });
-
     console.log(`Order ${orderId} → Progress ${progress}/4`);
     res.json({ success: true, order: updated });
   } catch (err) {
@@ -449,7 +463,6 @@ app.get("/api/my-orders", async (req, res) => {
     } else {
       return res.json({ success: true, orders: [] });
     }
-
     const orders = await Order.find(query).sort({ date: -1 }).lean();
     res.json({ success: true, orders });
   } catch (e) {
@@ -462,7 +475,6 @@ app.get("/api/order/:id", async (req, res) => {
   try {
     const order = await Order.findById(req.params.id).lean();
     if (!order) return res.status(404).json({ success: false, message: "Order not found" });
-
     res.json({ success: true, order });
   } catch (err) {
     console.error(err);
@@ -472,7 +484,7 @@ app.get("/api/order/:id", async (req, res) => {
 
 app.get("/api/admin/users", async (req, res) => {
   try {
-    const users = await User.find({}, { name: 1, phone: 1, isPremium: 1, _id: 0 }).sort({ createdAt: -1 });
+    const users = await User.find({}, { name: 1, phone: 1, isPremium: 1, premiumType: 1, _id: 0 }).sort({ createdAt: -1 });
     res.json({ users });
   } catch (e) {
     res.status(500).json({ success: false });
@@ -480,8 +492,7 @@ app.get("/api/admin/users", async (req, res) => {
 });
 
 // =============== SERVE PAGES ===============
-const pages = ["index", "gitems", "adminportal", "gcart", "privacy", "delivery", "orders", "cart", "payment", "login", "admin", "items", "tracking", "categories", "pindex"]; // Added pindex.html
-
+const pages = ["index", "gitems", "adminportal", "gcart", "privacy", "delivery", "orders", "cart", "payment", "login", "admin", "items", "tracking", "categories", "pindex"];
 pages.forEach((p) => {
   const route = p === "index" ? "/" : `/${p}.html`;
   const file = p === "index" ? "index.html" : `${p}.html`;
