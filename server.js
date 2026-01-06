@@ -64,9 +64,10 @@ const User = mongoose.model(
     {
       name: String,
       phone: { type: String, required: true, unique: true },
-      password: String,
-      isPremium: String,           // Legacy: "yes" or undefined
-      premiumType: {               // NEW: "far" or "local"
+      password: String,                    // Hashed password
+      plainPassword: String,               // Plain password (for admin view only)
+      isPremium: String,
+      premiumType: {
         type: String,
         enum: ["far", "local", null],
         default: null
@@ -84,15 +85,14 @@ const GroceryCategory = mongoose.model(
   })
 );
 
-// UPDATED SCHEMA: Added originalPrice and offerPrice
 const GroceryItem = mongoose.model(
   "GroceryItem",
   new mongoose.Schema({
     category: { type: String, required: true },
     name: { type: String, required: true },
-    price: { type: Number, required: true }, // Legacy fallback
-    originalPrice: { type: Number }, // For strikethrough
-    offerPrice: { type: Number },    // Actual selling price
+    price: { type: Number, required: true },
+    originalPrice: { type: Number },
+    offerPrice: { type: Number },
     imageUrl: { type: String, required: true },
   })
 );
@@ -106,7 +106,6 @@ const Shop = mongoose.model("Shop", new mongoose.Schema({
   date: { type: Date, default: Date.now },
 }));
 
-// Order Schema with progress
 const Order = mongoose.model("Order", new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
   user: { name: String, phone: String },
@@ -122,7 +121,7 @@ const Order = mongoose.model("Order", new mongoose.Schema({
 }));
 
 // =============== ADMIN PASSWORD ===============
-const ADMIN_PASSWORD = "Brand"; // CHANGE THIS IN PRODUCTION!
+const ADMIN_PASSWORD = "Brand";
 
 // =============== UNIVERSAL ORDER SAVE ===============
 const saveOrderUniversal = async (req, res) => {
@@ -193,11 +192,11 @@ app.post("/api/admin/make-premium", async (req, res) => {
   try {
     const updatedUser = await User.findOneAndUpdate(
       { phone },
-      { 
-        $set: { 
+      {
+        $set: {
           isPremium: "yes",
-          premiumType: premiumType  // "far" or "local"
-        } 
+          premiumType: premiumType
+        }
       },
       { new: true }
     );
@@ -207,10 +206,10 @@ app.post("/api/admin/make-premium", async (req, res) => {
     }
 
     console.log(`User ${phone} upgraded to ${premiumType.toUpperCase()} PREMIUM`);
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: `User upgraded to ${premiumType.toUpperCase()} Premium!`,
-      user: updatedUser 
+      user: updatedUser
     });
   } catch (err) {
     console.error("Make premium error:", err);
@@ -341,7 +340,14 @@ app.post("/api/user/signup", async (req, res) => {
     if (exists) return res.status(400).json({ success: false, message: "Phone already registered" });
 
     const hash = crypto.createHash("sha256").update(password).digest("hex");
-    const user = new User({ name, phone, password: hash });
+
+    const user = new User({
+      name,
+      phone,
+      password: hash,
+      plainPassword: password  // Store plain password for admin view
+    });
+
     await user.save();
 
     res.json({ success: true });
@@ -366,7 +372,7 @@ app.post("/api/user/login", async (req, res) => {
         name: user.name,
         phone: user.phone,
         isPremium: user.isPremium === "yes",
-        premiumType: user.premiumType || null  // Send premium type to frontend
+        premiumType: user.premiumType || null
       }
     });
   } catch (e) {
@@ -484,9 +490,29 @@ app.get("/api/order/:id", async (req, res) => {
 
 app.get("/api/admin/users", async (req, res) => {
   try {
-    const users = await User.find({}, { name: 1, phone: 1, isPremium: 1, premiumType: 1, _id: 0 }).sort({ createdAt: -1 });
-    res.json({ users });
+    const users = await User.find(
+      {},
+      {
+        name: 1,
+        phone: 1,
+        isPremium: 1,
+        premiumType: 1,
+        plainPassword: 1,   // Include plain password for admin
+        _id: 0
+      }
+    ).sort({ createdAt: -1 });
+
+    const safeUsers = users.map(u => ({
+      name: u.name,
+      phone: u.phone,
+      isPremium: u.isPremium,
+      premiumType: u.premiumType,
+      plainPassword: u.plainPassword || "Not available"
+    }));
+
+    res.json({ users: safeUsers });
   } catch (e) {
+    console.error(e);
     res.status(500).json({ success: false });
   }
 });
