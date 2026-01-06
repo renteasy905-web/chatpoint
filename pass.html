@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delivery Portal | ChatPoint</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --primary: #3b82f6;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --whatsapp: #25D366;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 100px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
+    .header {
+      position: sticky; top: 0; background: var(--bg); z-index: 10;
+      padding: 1rem 0; border-bottom: 2px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .logout-btn {
+      background: var(--danger); color: white; padding: 0.6rem 1.2rem;
+      border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; gap: 0.4rem; font-size: 0.95rem;
+    }
+    .logout-btn:hover { background: #dc2626; }
+    .filter-tabs {
+      display: flex; gap: 0.8rem; margin: 1.5rem 0; flex-wrap: wrap;
+      overflow-x: auto; padding-bottom: 0.5rem;
+    }
+    .filter-tabs::-webkit-scrollbar { display: none; }
+    .filter-btn {
+      padding: 0.7rem 1.4rem; border: none; border-radius: 0.6rem;
+      background: #334155; color: var(--text-muted); font-weight: 600;
+      cursor: pointer; transition: all 0.2s; font-size: 0.95rem;
+    }
+    .filter-btn.active {
+      background: var(--primary); color: white;
+      box-shadow: 0 0 15px rgba(59,130,246,0.5);
+    }
+    .card {
+      background: var(--card-bg); border-radius: 0.75rem;
+      padding: 1.5rem; margin-bottom: 1rem; border: 1px solid var(--border);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: transform 0.2s;
+    }
+    .card:hover { transform: translateY(-4px); }
+    .btn {
+      padding: 0.6rem 1.2rem; border: none; border-radius: 0.5rem;
+      font-weight: 600; cursor: pointer; font-size: 0.9rem;
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-whatsapp { background: var(--whatsapp); color: white; padding: 0.5rem 1rem; font-size: 0.85rem; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .badge {
+      padding: 0.3rem 0.8rem; font-size: 0.8rem; border-radius: 0.4rem;
+      font-weight: 700;
+    }
+    .badge-pending { background: #451a03; color: #fcd34d; }
+    .badge-confirmed { background: var(--primary); color: white; }
+    .badge-delivered { background: var(--success); color: white; }
+    .badge-cancelled { background: var(--danger); color: white; }
+    .loader {
+      border: 5px solid #1e293b; border-top: 5px solid var(--primary);
+      border-radius: 50%; width: 40px; height: 40px;
+      animation: spin 1s linear infinite; margin: 2rem auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty { text-align: center; color: var(--text-muted); padding: 3rem; font-size: 1.1rem; }
+
+    /* New: Password reveal style */
+    .user-password {
+      font-family: monospace;
+      background: #000;
+      color: #0f0;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      margin-top: 4px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div id="bigAlert" class="new-order-alert">
+    <div>NEW ORDER!</div>
+    <small>Check the portal now!</small>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <h1>Delivery Portal</h1>
+      <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+
+    <div class="filter-tabs">
+      <button class="filter-btn active" data-filter="active">Active Orders</button>
+      <button class="filter-btn" data-filter="delivered">Delivered</button>
+      <button class="filter-btn" data-filter="cancelled">Cancelled</button>
+      <button class="filter-btn" data-filter="all">All Orders</button>
+      <button class="filter-btn" data-filter="users">Users</button>
+    </div>
+
+    <div id="loading">
+      <div class="loader"></div>
+      <p style="text-align:center; color:#94a3b8;">Loading...</p>
+    </div>
+
+    <div id="orders-container"></div>
+    <div id="users-container" style="display:none;"></div>
+    <div id="empty" class="empty" style="display:none;">
+      <p>No items in this section.</p>
+    </div>
+  </div>
+
+  <audio id="loudSound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" preload="auto"></audio>
+
+  <script>
+    const API_BASE = window.location.origin;
+    const REFRESH_INTERVAL = 5000;
+    let allOrders = [];
+    let allUsers = [];
+    let currentFilter = 'active';
+    let previousPendingCount = 0;
+
+    const $ = s => document.querySelector(s);
+    const ordersContainer = $('#orders-container');
+    const usersContainer = $('#users-container');
+    const loadingEl = $('#loading');
+    const bigAlert = $('#bigAlert');
+    const loudSound = $('#loudSound');
+
+    function openWhatsApp(phone, message) {
+      if (!phone) return alert("Phone number missing");
+      let cleaned = phone.replace(/\D/g, '');
+      if (cleaned.startsWith('0')) cleaned = '91' + cleaned.slice(1);
+      else if (!cleaned.startsWith('91')) cleaned = '91' + cleaned;
+      window.open(`https://wa.me/${cleaned}?text=${encodeURIComponent(message)}`, '_blank');
+    }
+
+    function showBigAlert() {
+      bigAlert.style.display = 'flex';
+      loudSound.currentTime = 0;
+      loudSound.play();
+      setTimeout(() => bigAlert.style.display = 'none', 10000);
+    }
+
+    async function fetchData() {
+      try {
+        const [ordersRes, usersRes] = await Promise.all([
+          fetch(`${API_BASE}/api/all-delivery-orders?t=${Date.now()}`),
+          fetch(`${API_BASE}/api/admin/users?t=${Date.now()}`)
+        ]);
+        const ordersData = await ordersRes.json();
+        const usersData = await usersRes.json();
+
+        if (ordersData.success && Array.isArray(ordersData.orders)) {
+          const pendingCount = ordersData.orders.filter(o => o.status === 'pending').length;
+          if (pendingCount > previousPendingCount && pendingCount > 0) showBigAlert();
+          previousPendingCount = pendingCount;
+          allOrders = ordersData.orders
+            .map(o => ({ ...o, progress: o.progress || 0 }))
+            .sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+
+        if (usersData.users && Array.isArray(usersData.users)) {
+          allUsers = usersData.users;
+        }
+
+        applyView();
+      } catch (err) {
+        console.error("Fetch error:", err);
+        ordersContainer.innerHTML = '<div class="empty">Failed to load data. Retrying...</div>';
+      }
+    }
+
+    function renderUsers() {
+      if (allUsers.length === 0) {
+        usersContainer.innerHTML = '<div class="empty"><p>No registered users yet.</p></div>';
+        return;
+      }
+
+      usersContainer.innerHTML = allUsers.map((user, i) => {
+        return `
+          <div style="background:#1e293b;padding:1.2rem;margin-bottom:1rem;border-radius:0.75rem;border:1px solid #334155;display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:1rem;">
+            <div style="flex:1;">
+              <strong style="font-size:1.1rem;">${i+1}. ${user.name || 'No Name'}</strong><br>
+              <small style="color:#94a3b8;">${user.phone}</small><br>
+              <div class="user-password">Password: ${user.plainPassword || 'Not available'}</div>
+            </div>
+            <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;">
+              <button class="btn btn-whatsapp" onclick="openWhatsApp('${user.phone}', 'Hello! Your ChatPoint login: Phone: ${user.phone}, Password: ${user.plainPassword || 'Not set'}')">
+                <i class="fab fa-whatsapp"></i> Send Login
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function applyView() {
+      loadingEl.style.display = 'none';
+      if (currentFilter === 'users') {
+        ordersContainer.style.display = 'none';
+        usersContainer.style.display = 'block';
+        renderUsers();
+        $('#empty').style.display = 'none';
+      } else {
+        usersContainer.style.display = 'none';
+        ordersContainer.style.display = 'block';
+        const filtered = allOrders.filter(o => {
+          if (currentFilter === 'all') return true;
+          if (currentFilter === 'active') return ['pending', 'confirmed'].includes(o.status);
+          return o.status === currentFilter;
+        });
+        if (filtered.length === 0) {
+          ordersContainer.innerHTML = '';
+          $('#empty').style.display = 'block';
+        } else {
+          $('#empty').style.display = 'none';
+          ordersContainer.innerHTML = filtered.map(renderOrderCard).join('');
+        }
+      }
+    }
+
+    // ... (rest of your order rendering and actions remain unchanged)
+
+    // Start
+    fetchData();
+    setInterval(fetchData, REFRESH_INTERVAL);
+  </script>
+</body>
+</html>
