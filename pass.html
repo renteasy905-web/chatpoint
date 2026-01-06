@@ -86,8 +86,22 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .empty { text-align: center; color: var(--text-muted); padding: 3rem; font-size: 1.1rem; }
-
-    /* New: Password reveal style */
+    .new-order-alert {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(239, 68, 68, 0.98); color: white; z-index: 99999;
+      display: none; flex-direction: column; justify-content: center; align-items: center;
+      font-size: 4rem; font-weight: 900; animation: flash 0.8s infinite alternate;
+      backdrop-filter: blur(5px);
+    }
+    @keyframes flash { from { background: rgba(239, 68, 68, 0.98); } to { background: rgba(220, 38, 38, 1); } }
+    .new-order-alert small { font-size: 2rem; margin-top: 2rem; }
+    .progress-btns {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
     .user-password {
       font-family: monospace;
       background: #000;
@@ -130,6 +144,10 @@
     <div id="empty" class="empty" style="display:none;">
       <p>No items in this section.</p>
     </div>
+
+    <div style="text-align:center; color:#64748b; font-size:0.85rem; margin-top:2rem;">
+      Auto-refresh every 5 seconds • New orders trigger alert
+    </div>
   </div>
 
   <audio id="loudSound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" preload="auto"></audio>
@@ -164,33 +182,131 @@
       setTimeout(() => bigAlert.style.display = 'none', 10000);
     }
 
-    async function fetchData() {
+    async function updateOrderStatus(orderId, status) {
       try {
-        const [ordersRes, usersRes] = await Promise.all([
-          fetch(`${API_BASE}/api/all-delivery-orders?t=${Date.now()}`),
-          fetch(`${API_BASE}/api/admin/users?t=${Date.now()}`)
-        ]);
-        const ordersData = await ordersRes.json();
-        const usersData = await usersRes.json();
-
-        if (ordersData.success && Array.isArray(ordersData.orders)) {
-          const pendingCount = ordersData.orders.filter(o => o.status === 'pending').length;
-          if (pendingCount > previousPendingCount && pendingCount > 0) showBigAlert();
-          previousPendingCount = pendingCount;
-          allOrders = ordersData.orders
-            .map(o => ({ ...o, progress: o.progress || 0 }))
-            .sort((a, b) => new Date(b.date) - new Date(a.date));
-        }
-
-        if (usersData.users && Array.isArray(usersData.users)) {
-          allUsers = usersData.users;
-        }
-
-        applyView();
+        const res = await fetch(`${API_BASE}/api/update-order-status`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId, status })
+        });
+        const data = await res.json();
+        return data.success;
       } catch (err) {
-        console.error("Fetch error:", err);
-        ordersContainer.innerHTML = '<div class="empty">Failed to load data. Retrying...</div>';
+        console.error("Update failed:", err);
+        return false;
       }
+    }
+
+    async function updateOrderProgress(orderId, progress) {
+      try {
+        const res = await fetch(`${API_BASE}/api/update-order-progress`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId, progress })
+        });
+        const data = await res.json();
+        return data.success;
+      } catch (err) {
+        console.error("Progress update failed:", err);
+        return false;
+      }
+    }
+
+    async function deleteOrder(orderId) {
+      try {
+        const res = await fetch(`${API_BASE}/api/delete-order`, {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId })
+        });
+        const data = await res.json();
+        return data.success;
+      } catch (err) {
+        console.error("Delete failed:", err);
+        return false;
+      }
+    }
+
+    function renderOrderCard(order) {
+      order.progress = order.progress || 0;
+      const itemsHtml = order.items.map(i => `
+        <div style="display:flex;justify-content:space-between;font-size:0.9rem;color:#cbd5e1;margin-top:0.4rem;">
+          <span>${i.name} × ${i.quantity}</span>
+          <span>₹${(i.price * i.quantity).toFixed(2)}</span>
+        </div>
+      `).join('');
+
+      let actions = '';
+      let progressButtons = '';
+      const attrs = `data-id="${order._id}" data-phone="${order.user.phone}" data-name="${order.user.name}"`;
+
+      if (order.status === 'pending') {
+        actions = `
+          <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
+            <button class="btn btn-primary" ${attrs} data-action="confirm">Confirm</button>
+            <button class="btn btn-success" ${attrs} data-action="delivered">Delivered</button>
+            <button class="btn btn-danger" ${attrs} data-action="cancel">Cancel</button>
+          </div>`;
+      } else if (order.status === 'confirmed') {
+        if (order.progress < 4) {
+          progressButtons = `
+            <div class="progress-btns">
+              ${[1,2,3,4].map(num => {
+                let bg = '#475569';
+                if (order.progress >= num) bg = 'var(--success)';
+                else if (order.progress === num - 1) bg = 'var(--primary)';
+                return `<button class="btn" style="width:50px;height:50px;border-radius:50%;background:${bg};color:white;font-size:1.2rem;"
+                         ${order.progress >= num ? 'disabled' : ''}
+                         ${attrs} data-action="progress" data-progress="${num}">
+                  ${num}
+                </button>`;
+              }).join('')}
+            </div>`;
+        }
+        actions = `
+          <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
+            <button class="btn btn-success" ${attrs} data-action="delivered">Mark Delivered</button>
+            <button class="btn btn-danger" ${attrs} data-action="cancel">Cancel</button>
+          </div>`;
+      } else if (order.status === 'delivered' || order.status === 'cancelled') {
+        actions = `
+          <div style="display:flex;gap:0.5rem;margin-top:1rem;">
+            <button class="btn btn-warning" ${attrs} data-action="delete">
+              <i class="fas fa-trash-alt"></i> Delete Order
+            </button>
+          </div>`;
+      }
+
+      const statusBadge = {
+        pending: '<span class="badge badge-pending">Pending</span>',
+        confirmed: '<span class="badge badge-confirmed">Confirmed</span>',
+        delivered: '<span class="badge badge-delivered">Delivered</span>',
+        cancelled: '<span class="badge badge-cancelled">Cancelled</span>'
+      }[order.status] || '<span class="badge badge-pending">Unknown</span>';
+
+      return `
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem;">
+            <div>
+              <strong style="font-size:1.1rem;">Order #${order._id.slice(-6)}</strong>
+              <span style="margin-left:0.5rem;font-size:0.8rem;color:#94a3b8;">${new Date(order.date).toLocaleString()}</span>
+            </div>
+            ${statusBadge}
+          </div>
+          <div style="font-size:0.9rem;line-height:1.6;">
+            <p><strong>Customer:</strong> ${order.user.name} (${order.user.phone})</p>
+            <p><strong>Address:</strong> ${order.address.line1}${order.address.line2 ? ', ' + order.address.line2 : ''}</p>
+            <p><strong>Shop:</strong> ${order.shop || 'ChatPoint'}</p>
+          </div>
+          <div style="margin-top:0.8rem;">${itemsHtml}</div>
+          <div style="display:flex;justify-content:space-between;font-weight:bold;font-size:1.25rem;margin-top:0.8rem;color:white;">
+            <span>Grand Total</span>
+            <span>₹${order.totalAmount?.toFixed(2) || '0.00'}</span>
+          </div>
+          ${progressButtons}
+          ${actions}
+        </div>
+      `;
     }
 
     function renderUsers() {
@@ -200,15 +316,18 @@
       }
 
       usersContainer.innerHTML = allUsers.map((user, i) => {
+        const isPremium = user.isPremium === "yes";
+        const premiumBadge = isPremium ? `<span class="badge" style="background:#f59e0b;color:white;margin-left:0.8rem;">PREMIUM ${user.premiumType?.toUpperCase() || ''} ⭐</span>` : '';
         return `
           <div style="background:#1e293b;padding:1.2rem;margin-bottom:1rem;border-radius:0.75rem;border:1px solid #334155;display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:1rem;">
             <div style="flex:1;">
               <strong style="font-size:1.1rem;">${i+1}. ${user.name || 'No Name'}</strong><br>
               <small style="color:#94a3b8;">${user.phone}</small><br>
               <div class="user-password">Password: ${user.plainPassword || 'Not available'}</div>
+              ${premiumBadge}
             </div>
             <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;">
-              <button class="btn btn-whatsapp" onclick="openWhatsApp('${user.phone}', 'Hello! Your ChatPoint login: Phone: ${user.phone}, Password: ${user.plainPassword || 'Not set'}')">
+              <button class="btn btn-whatsapp" onclick="openWhatsApp('${user.phone}', 'Hello! Your ChatPoint login details:\\nPhone: ${user.phone}\\nPassword: ${user.plainPassword || 'Not set'}')">
                 <i class="fab fa-whatsapp"></i> Send Login
               </button>
             </div>
@@ -242,7 +361,103 @@
       }
     }
 
-    // ... (rest of your order rendering and actions remain unchanged)
+    async function fetchData() {
+      try {
+        const [ordersRes, usersRes] = await Promise.all([
+          fetch(`${API_BASE}/api/all-delivery-orders?t=${Date.now()}`),
+          fetch(`${API_BASE}/api/admin/users?t=${Date.now()}`)
+        ]);
+        const ordersData = await ordersRes.json();
+        const usersData = await usersRes.json();
+
+        if (ordersData.success && Array.isArray(ordersData.orders)) {
+          const pendingCount = ordersData.orders.filter(o => o.status === 'pending').length;
+          if (pendingCount > previousPendingCount && pendingCount > 0) showBigAlert();
+          previousPendingCount = pendingCount;
+          allOrders = ordersData.orders
+            .map(o => ({ ...o, progress: o.progress || 0 }))
+            .sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+
+        if (usersData.users && Array.isArray(usersData.users)) {
+          allUsers = usersData.users;
+        }
+
+        applyView();
+      } catch (err) {
+        console.error("Fetch error:", err);
+        ordersContainer.innerHTML = '<div class="empty">Failed to load data. Retrying...</div>';
+      }
+    }
+
+    // Order Actions Handler
+    document.addEventListener('click', async (e) => {
+      const btn = e.target.closest('[data-action]');
+      if (!btn) return;
+
+      const orderId = btn.dataset.id;
+      const action = btn.dataset.action;
+      const phone = btn.dataset.phone;
+      const name = btn.dataset.name;
+
+      btn.disabled = true;
+
+      let success = false;
+
+      if (action === 'confirm') {
+        success = await updateOrderStatus(orderId, 'confirmed');
+        if (success) {
+          openWhatsApp(phone, `Hi ${name}! 😊\nYour order on ChatPoint has been confirmed!\nWe'll prepare it soon. 🚀\nThanks for shopping with us!`);
+          alert("Order confirmed & WhatsApp sent!");
+        }
+      } else if (action === 'delivered') {
+        success = await updateOrderStatus(orderId, 'delivered');
+        if (success) {
+          openWhatsApp(phone, `Great news! 🎉\nYour ChatPoint order has been delivered.\nEnjoy your items!\nOrder again at chatpoint.shop 🌟`);
+          alert("Order marked delivered & WhatsApp sent!");
+        }
+      } else if (action === 'cancel') {
+        if (confirm("Cancel this order?")) {
+          success = await updateOrderStatus(orderId, 'cancelled');
+          if (success) alert("Order cancelled");
+        }
+      } else if (action === 'progress') {
+        const progress = parseInt(btn.dataset.progress);
+        success = await updateOrderProgress(orderId, progress);
+        if (success) alert(`Progress updated to step ${progress}`);
+      } else if (action === 'delete') {
+        if (confirm("Delete this order permanently?")) {
+          success = await deleteOrder(orderId);
+          if (success) alert("Order deleted");
+        }
+      }
+
+      if (success || action === 'cancel') {
+        fetchData();
+      } else if (!success) {
+        alert("Action failed. Try again.");
+      }
+
+      btn.disabled = false;
+    });
+
+    // Filter Buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        applyView();
+      });
+    });
+
+    // Logout
+    $('#logoutBtn').onclick = () => {
+      if (confirm('Logout from delivery portal?')) {
+        localStorage.clear();
+        location.href = 'login.html';
+      }
+    };
 
     // Start
     fetchData();
