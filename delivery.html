@@ -15,6 +15,7 @@
       --muted: #888888;
       --accent: #00ff9d;
       --accent2: #ff2e63;
+      --danger: #ff6b6b;
       --glow: 0 0 20px rgba(0, 255, 157, 0.3);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -61,6 +62,16 @@
       border-bottom: 1px dashed var(--border);
       font-size: 0.95rem;
     }
+    .min-order-note {
+      text-align: center;
+      padding: 0.8rem;
+      margin: 1rem 0;
+      background: rgba(255, 107, 107, 0.15);
+      border-radius: 8px;
+      color: var(--danger);
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
     .total-row {
       font-weight: bold;
       font-size: 1.3rem;
@@ -83,7 +94,7 @@
       transition: all 0.3s;
     }
     .btn:hover { transform: translateY(-3px); box-shadow: var(--glow); }
-    .btn:disabled { background: #555; cursor: not-allowed; transform: none; }
+    .btn:disabled { background: #555; cursor: not-allowed; transform: none; opacity: 0.7; }
     .msg {
       text-align: center;
       padding: 1rem;
@@ -107,6 +118,7 @@
     const API_BASE = window.location.origin;
     const PRIMARY = "9632367397";
     const BACKUP = "8088975913";
+    const MIN_ORDER = 129;
 
     function checkLogin() {
       const user = JSON.parse(localStorage.getItem(USER_KEY) || "null");
@@ -147,8 +159,10 @@
         }
       }
 
-      // No delivery charge anymore
+      // No delivery charge — Grand Total = Subtotal
       const grandTotal = overallTotal;
+      const canCheckout = overallTotal >= MIN_ORDER;
+      const amountNeeded = MIN_ORDER - overallTotal;
 
       window.tempOrderData = { itemsArray, overallTotal, grandTotal, shopName };
 
@@ -156,6 +170,7 @@
         <h2>Checkout</h2>
         <div id="successMsg" class="msg success"></div>
         <div id="errorMsg" class="msg error"></div>
+
         <div class="form-group">
           <label>Name *</label>
           <input type="text" id="name" value="${user.name || ''}" required />
@@ -172,6 +187,7 @@
           <label>Address Line 2 (Optional)</label>
           <textarea id="address2" rows="2" placeholder="Landmark, Area"></textarea>
         </div>
+
         <div class="cart-summary">
           <h3 style="margin-bottom:1rem;color:var(--accent);">Order Summary</h3>
           ${itemsArray.map(it => `
@@ -181,15 +197,27 @@
             </div>
           `).join('')}
           <div class="cart-item"><span>Subtotal</span><span>₹${overallTotal.toFixed(2)}</span></div>
+
+          ${!canCheckout ? `
+            <div class="min-order-note">
+              Add ₹${amountNeeded.toFixed(2)} more to reach minimum order of ₹${MIN_ORDER}
+            </div>
+          ` : ''}
+
           <div class="total-row cart-item">
             <span>Grand Total</span>
             <span>₹${grandTotal.toFixed(2)}</span>
           </div>
         </div>
-        <button id="placeOrderBtn" class="btn">Place Order (Cash on Delivery)</button>
+
+        <button id="placeOrderBtn" class="btn" ${!canCheckout ? 'disabled' : ''}>
+          Place Order (Cash on Delivery)
+        </button>
       `;
 
-      document.getElementById("placeOrderBtn").onclick = placeOrder;
+      if (canCheckout) {
+        document.getElementById("placeOrderBtn").onclick = placeOrder;
+      }
     }
 
     async function placeOrder() {
@@ -203,7 +231,13 @@
         return;
       }
 
-      const { itemsArray, grandTotal, shopName } = window.tempOrderData;
+      const { itemsArray, grandTotal, overallTotal, shopName } = window.tempOrderData;
+
+      if (overallTotal < MIN_ORDER) {
+        showError(`Minimum order amount is ₹${MIN_ORDER}`);
+        return;
+      }
+
       const user = JSON.parse(localStorage.getItem(USER_KEY));
       let userId = null;
       if (user && user._id && /^[a-f0-9]{24}$/i.test(user._id)) {
@@ -225,8 +259,6 @@
         cart
       };
 
-      console.log("Sending order:", orderData);
-
       const btn = document.getElementById("placeOrderBtn");
       btn.disabled = true;
       btn.innerHTML = "Placing Order...";
@@ -238,7 +270,6 @@
           body: JSON.stringify(orderData)
         });
         const data = await res.json();
-        console.log("Response:", data);
 
         if (res.ok && data.success) {
           showSuccess("Order Placed Successfully! 🎉");
@@ -250,9 +281,7 @@
 
           setTimeout(() => window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, '_blank'), 1000);
           setTimeout(() => window.open(`https://wa.me/91${BACKUP}?text=${encoded}`, '_blank'), 2000);
-          setTimeout(() => {
-            window.location.href = "tracking.html";
-          }, 3000);
+          setTimeout(() => window.location.href = "tracking.html", 3000);
         } else {
           throw new Error(data.message || "Server error");
         }
