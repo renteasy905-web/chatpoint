@@ -49,12 +49,16 @@
         .item-details { color:#666; font-size:14px; margin-top:4px; }
         .item-price { color:#4CAF50; font-weight:bold; font-size:16px; }
 
-        /* Tracking Section */
-        .track-btn {
+        /* Buttons */
+        .track-btn, .pay-btn {
             width:100%; background:#4CAF50; color:white; border:none;
             padding:16px; font-size:18px; font-weight:bold; border-radius:0;
             cursor:pointer;
         }
+        .pay-btn {
+            background:#6f42c1; /* PhonePe purple */
+        }
+        .pay-btn:hover { background:#5a32a3; }
         .track-btn:disabled { background:#ccc; cursor:not-allowed; }
 
         .tracking-section { display:none; }
@@ -132,7 +136,7 @@
             document.getElementById('noLogin').style.display = 'block';
         } else {
             fetchUserOrders();
-            setInterval(fetchUserOrders, 10000);
+            setInterval(fetchUserOrders, 10000); // Refresh every 10 seconds
         }
 
         async function fetchUserOrders() {
@@ -154,13 +158,34 @@
             }
         }
 
+        function payWithPhonePe(amount, orderId) {
+            const upiID = '9632367397@ybl';
+            const payeeName = encodeURIComponent('ChatPoint');
+            const transactionNote = encodeURIComponent(`ChatPoint Order #${orderId.slice(-6)} Payment`);
+            const transactionRef = 'CHAT' + Date.now();
+
+            const phonepeLink = `phonepe://pay?pa=${upiID}&pn=${payeeName}&am=${amount}&tn=${transactionNote}&tr=${transactionRef}&cu=INR`;
+
+            // Open PhonePe app
+            window.location.href = phonepeLink;
+
+            // Fallback: if not opened, offer generic UPI
+            setTimeout(() => {
+                if (confirm('PhonePe not opened? Try with any UPI app?')) {
+                    const genericLink = `upi://pay?pa=${upiID}&pn=${payeeName}&am=${amount}&tn=${transactionNote}&tr=${transactionRef}&cu=INR`;
+                    window.location.href = genericLink;
+                }
+            }, 2000);
+        }
+
         function renderOrders(orders) {
             document.getElementById('loading').style.display = 'none';
 
             const list = document.getElementById('ordersList');
             list.innerHTML = orders.map(order => {
                 const progress = order.progress || 0;
-                const isTrackable = order.status === 'confirmed' || order.status === 'delivered';
+                const isTrackable = order.status === 'confirmed' || order.status === 'out_for_delivery' || order.status === 'delivered';
+                const shortId = order._id.slice(-6);
 
                 const positions = [
                     { left: '15%', top: '70%' },
@@ -188,72 +213,81 @@
 
                 // Build items list
                 let itemsHtml = '';
-                if (order.items && order.items.length > 0) {
-                    itemsHtml = order.items.map(item => `
-                        <div class="item-row">
-                            <div class="item-info">
-                                <div class="item-name">${item.name}</div>
-                                <div class="item-details">Quantity: ${item.quantity}</div>
-                            </div>
-                            <div class="item-price">₹${item.price * item.quantity}</div>
-                        </div>
-                    `).join('');
+                if (order.cart && order.cart.ChatPoint) {
+                    const items = order.cart.ChatPoint;
+                    for (const name in items) {
+                        const item = items[name];
+                        itemsHtml += `
+                            <div class="item-row">
+                                <div class="item-info">
+                                    <div class="item-name">${name}</div>
+                                    <div class="item-details">Quantity: ${item.qty}</div>
+                                </div>
+                                <div class="item-price">₹${item.price * item.qty}</div>
+                            </div>`;
+                    }
                 }
 
                 return `
-                  <div class="order-card">
-                    <div class="order-header">
-                      <div class="order-id">Order #${order._id.slice(-6)}</div>
-                      <div class="order-status ${statusClass}">${statusText}</div>
-                    </div>
-
-                    <!-- Items List -->
-                    <div class="items-section">
-                        <h3 style="margin:0 0 16px 0; color:#333;">Your Items</h3>
-                        ${itemsHtml || '<div style="text-align:center;color:#888;padding:20px;">No items found</div>'}
-                    </div>
-
-                    <!-- Pending Message -->
-                    ${order.status === 'pending' ? `
-                      <div style="padding:20px; text-align:center; background:#fff9e6; color:#e67e22; font-size:16px;">
-                        ⏳ Waiting for shop confirmation
-                      </div>
-                    ` : ''}
-
-                    <!-- Tracking for Confirmed/Delivered -->
-                    ${isTrackable ? `
-                      <button class="track-btn" onclick="toggleTracking(this)">Track Order</button>
-
-                      <div class="tracking-section">
-                        <div class="map-container">
-                          <img src="https://images.unsplash.com/photo-1569336415965-7d80c2e3ff2a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Map" class="map-bg">
-                          <div class="path">
-                            <svg class="path-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-                              <path class="dotted-line" d="M15 70 Q 30 50, 50 45 T 80 20" />
-                            </svg>
-                          </div>
-                          <div class="pin store-pin"><i class="fas fa-store"></i></div>
-                          <div class="pin customer-pin"><i class="fas fa-map-marker-alt"></i></div>
-                          <div class="bike" style="left:${pos.left};top:${pos.top};">${bikeIcon}</div>
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div class="order-id">Order #${shortId}</div>
+                            <div class="order-status ${statusClass}">${statusText}</div>
                         </div>
 
-                        <div class="status-box">
-                          <div class="status-title">${messages[progress] || 'On the way'}</div>
-                          <div class="eta">${etas[progress] || '~15 min'}</div>
-
-                          <div class="progress-steps">
-                            ${[1,2,3,4].map(num => `
-                              <div class="step ${progress >= num ? 'active' : ''}">
-                                <div class="step-circle">${num}</div>
-                                <div class="step-label">${['Prepared','Picked','On Way','Delivered'][num-1]}</div>
-                              </div>
-                            `).join('')}
-                          </div>
+                        <!-- Items List -->
+                        <div class="items-section">
+                            <h3 style="margin:0 0 16px 0; color:#333;">Your Items</h3>
+                            ${itemsHtml || '<div style="text-align:center;color:#888;padding:20px;">No items found</div>'}
                         </div>
-                      </div>
-                    ` : ''}
-                  </div>
-                `;
+
+                        <!-- Pay Now Button for Pending Orders -->
+                        ${order.status === 'pending' ? `
+                            <button class="pay-btn" onclick="payWithPhonePe(${order.grandTotal}, '${order._id}')">
+                                Pay Now ₹${order.grandTotal} via PhonePe
+                            </button>
+                        ` : ''}
+
+                        <!-- Pending Message -->
+                        ${order.status === 'pending' ? `
+                            <div style="padding:20px; text-align:center; background:#fff9e6; color:#e67e22; font-size:16px;">
+                                ⏳ Waiting for shop confirmation
+                            </div>
+                        ` : ''}
+
+                        <!-- Tracking Section -->
+                        ${isTrackable ? `
+                            <button class="track-btn" onclick="toggleTracking(this)">Track Order</button>
+
+                            <div class="tracking-section">
+                                <div class="map-container">
+                                    <img src="https://images.unsplash.com/photo-1569336415965-7d80c2e3ff2a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Map" class="map-bg">
+                                    <div class="path">
+                                        <svg class="path-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                            <path class="dotted-line" d="M15 70 Q 30 50, 50 45 T 80 20" />
+                                        </svg>
+                                    </div>
+                                    <div class="pin store-pin"><i class="fas fa-store"></i></div>
+                                    <div class="pin customer-pin"><i class="fas fa-map-marker-alt"></i></div>
+                                    <div class="bike" style="left:${pos.left};top:${pos.top};">${bikeIcon}</div>
+                                </div>
+
+                                <div class="status-box">
+                                    <div class="status-title">${messages[progress] || 'On the way'}</div>
+                                    <div class="eta">${etas[progress] || '~15 min'}</div>
+
+                                    <div class="progress-steps">
+                                        ${[1,2,3,4].map(num => `
+                                            <div class="step ${progress >= num ? 'active' : ''}">
+                                                <div class="step-circle">${num}</div>
+                                                <div class="step-label">${['Prepared','Picked','On Way','Delivered'][num-1]}</div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>`;
             }).join('');
         }
 
