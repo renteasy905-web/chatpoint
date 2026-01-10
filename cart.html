@@ -6,8 +6,11 @@
     <title>My Cart • ChatPoint</title>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap" rel="stylesheet"></noscript>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
-        /* --- E-COMMERCE / FOOD DELIVERY THEME (Zomato Red + Flipkart Blue) --- */
         :root {
             --bg: #FAFAFA;
             --card: #FFFFFF;
@@ -21,7 +24,7 @@
             --radius-lg: 8px;
             --transition-fast: 0.25s ease-in-out;
         }
-    
+
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Outfit', sans-serif;
@@ -47,7 +50,7 @@
             background: linear-gradient(90deg, var(--secondary), #4b94ff);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-    
+
         .back-btn {
             width: 2.5rem; height: 2.5rem;
             background: rgba(0, 0, 0, 0.05);
@@ -63,6 +66,7 @@
             background: var(--secondary); color: var(--card); outline: none;
             box-shadow: 0 0 8px rgba(40, 116, 240, 0.5);
         }
+
         .header-cart-info { font-weight: 700; color: var(--text-dark); display: flex; align-items: center; }
         .cart-badge {
             margin-left: 0.5rem; padding: 0.2rem 0.5rem;
@@ -81,6 +85,7 @@
             border: 1px solid var(--border-light);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
+
         .shop-name {
             font-size: 1.375rem; font-weight: 800;
             color: var(--text-dark);
@@ -88,11 +93,13 @@
             border-bottom: 1px solid var(--border-light);
             display: flex; align-items: center; gap: 0.625rem;
         }
+
         .cart-item {
             display: flex; align-items: center; gap: 1rem;
             padding: 1rem 0;
             border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
         }
+
         .item-name {
             flex: 1; font-weight: 600; font-size: 1.0625rem;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -115,24 +122,25 @@
             font-size: 1.5rem;
             font-weight: 600;
         }
-    
+
         .qbtn:first-child { border-radius: var(--radius-lg) 0 0 var(--radius-lg); border-right: 1px solid var(--border-light); }
         .qbtn:last-child { border-radius: 0 var(--radius-lg) var(--radius-lg) 0; border-left: 1px solid var(--border-light); }
-    
+
         .qbtn:hover {
             background: rgba(226, 55, 68, 0.1);
-            color: var(--primary); outline: none;
         }
+
         .qty {
             min-width: 1.875rem; text-align: center; font-weight: 700;
             color: var(--text-dark); font-size: 1.125rem;
         }
-    
+
         .item-price {
             font-weight: 800; font-size: 1.25rem;
             color: var(--primary);
             min-width: 6rem; text-align: right; letter-spacing: -0.5px;
         }
+
         .shop-subtotal {
             text-align: right; margin-top: 0.75rem;
             color: var(--text-muted); font-weight: 600; font-size: 1rem;
@@ -145,6 +153,7 @@
             border-top: 1px solid var(--border-light);
             box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
         }
+
         .total-section {
             max-width: 50rem; margin: 0 auto 1rem;
             padding: 1rem;
@@ -152,36 +161,48 @@
             border: 1px solid rgba(226, 55, 68, 0.3);
             border-radius: var(--radius-lg); text-align: center;
         }
+
         .grand-total {
             font-size: 2rem; font-weight: 900;
             color: var(--primary);
             margin: 0.3rem 0; letter-spacing: 1px;
         }
+
         .delivery-info {
             margin-top: 0.75rem;
             font-size: 1.1rem;
             color: var(--text-muted);
         }
+
         .delivery-info strong {
             color: var(--primary);
         }
-        .actions { max-width: 50rem; margin: 0 auto; display: flex; gap: 1rem; }
+
+        .actions { 
+            max-width: 50rem; 
+            margin: 0 auto; 
+            display: flex; 
+            gap: 1rem; 
+        }
+
         .btn {
             flex: 1; padding: 1rem; border: none; border-radius: var(--radius-lg);
             font-weight: 700; font-size: 1.0625rem; cursor: pointer;
             transition: var(--transition-fast); letter-spacing: 0.5px;
         }
-    
+
         .btn:focus-visible {
             outline: 3px solid var(--secondary);
             outline-offset: 3px;
         }
+
         .btn-clear {
             background: var(--danger);
-            color: var(--card); box-shadow: 0 2px 5px rgba(233, 87, 63, 0.4);
+            color: var(--card); 
+            box-shadow: 0 2px 5px rgba(233, 87, 63, 0.4);
         }
         .btn-clear:hover { background: #d34c38; transform: translateY(-1px); }
-    
+
         .btn-payment {
             background: var(--primary);
             color: var(--card);
@@ -189,7 +210,11 @@
         }
         .btn-payment:hover { background: #d0303b; transform: translateY(-1px); box-shadow: 0 6px 15px rgba(226, 55, 68, 0.6); }
 
-        .empty-cart { padding: 5rem 1.25rem; color: var(--text-muted); text-align: center; }
+        .empty-cart { 
+            padding: 5rem 1.25rem; 
+            color: var(--text-muted); 
+            text-align: center; 
+        }
         .empty-cart i { font-size: 5rem; color: #CCC; margin-bottom: 1.25rem; display: block; }
         .empty-cart p { font-size: 1.375rem; font-weight: 700; margin-bottom: 0.5rem; }
         .empty-cart a {
@@ -210,20 +235,16 @@
                 gap: 0.5rem 1rem;
                 padding: 0.75rem 0;
             }
-            .item-name { grid-area: name; white-space: normal; overflow: visible; text-overflow: clip; }
+            .item-name { grid-area: name; white-space: normal; }
             .item-price { grid-area: price; min-width: unset; }
-            .quantity { grid-area: qty; width: 100%; justify-content: space-between; font-size: 1rem; }
-            .qbtn { width: 2.25rem; height: 2.25rem; font-size: 1.2rem; }
-            .totals-actions-wrapper { padding: 0.75rem; }
-            .actions { flex-direction: column; gap: 0.75rem; }
-            .total-section { padding: 0.75rem; margin-bottom: 0.75rem; }
-            .grand-total { font-size: 1.75rem; }
+            .quantity { grid-area: qty; width: 100%; justify-content: space-between; }
         }
     </style>
 </head>
 <body>
+
     <header>
-        <button class="back-btn" onclick="history.back()" aria-label="Go back to the previous page">←</button>
+        <button class="back-btn" onclick="history.back()" aria-label="Go back">←</button>
         <div class="brand"><span>Chat</span>Point</div>
         <div class="header-cart-info">
             My Cart
@@ -232,8 +253,7 @@
     </header>
 
     <main>
-        <div class="cart-container" id="cartContainer" role="region" aria-live="polite" aria-label="Shopping Cart Contents">
-        </div>
+        <div class="cart-container" id="cartContainer"></div>
     </main>
 
     <div class="totals-actions-wrapper" id="totalsActionsWrapper" style="display: none;">
@@ -252,26 +272,28 @@
 
     <script>
         const CART_KEY = "chatpoint_cart";
-        const USER_KEY = "user"; // ← Key where login info is stored
+        const USER_KEY = "user";
 
-        // Minimum delivery charges
+        // Delivery constants
         const MIN_DELIVERY_NORMAL = 129;
         const MIN_DELIVERY_PREMIUM = 69;
-        const MIN_DELIVERY_FAR = 129 + 18; // 147
+        const MIN_DELIVERY_FAR = 147;
 
         let cart = loadCart();
+        let minDelivery = getMinDelivery(); // calculated once
+
+        // DOM cache
         const container = document.getElementById("cartContainer");
         const badge = document.getElementById("cartBadge");
-        const totalsActionsWrapper = document.getElementById("totalsActionsWrapper");
-        const floatingGrandTotal = document.getElementById("floatingGrandTotal");
-        const minDeliveryFeeEl = document.getElementById("minDeliveryFee");
+        const totalsWrapper = document.getElementById("totalsActionsWrapper");
+        const grandTotalEl = document.getElementById("floatingGrandTotal");
+        const minDeliveryEl = document.getElementById("minDeliveryFee");
 
         function loadCart() {
             try {
-                const storedCart = localStorage.getItem(CART_KEY);
-                return storedCart ? JSON.parse(storedCart) : {};
-            } catch (error) {
-                console.error("Error loading cart:", error);
+                const stored = localStorage.getItem(CART_KEY);
+                return stored ? JSON.parse(stored) : {};
+            } catch {
                 return {};
             }
         }
@@ -279,49 +301,18 @@
         function saveCart() {
             try {
                 localStorage.setItem(CART_KEY, JSON.stringify(cart));
-            } catch (error) {
-                console.error("Error saving cart:", error);
-            }
+            } catch {}
             updateBadge();
         }
 
         function updateBadge() {
-            const total = Object.values(cart).flatMap(s => Object.values(s)).reduce((a, i) => a + i.qty, 0);
-            badge.textContent = total;
-            badge.style.display = total > 0 ? 'inline' : 'none';
+            const totalQty = Object.values(cart)
+                .flatMap(shop => Object.values(shop))
+                .reduce((sum, item) => sum + (item.qty || 0), 0);
+            badge.textContent = totalQty;
+            badge.style.display = totalQty > 0 ? 'inline' : 'none';
         }
 
-        function changeQty(shop, name, price, delta) {
-            if (!cart[shop]) cart[shop] = {};
-            if (!cart[shop][name]) cart[shop][name] = {qty: 0, price};
-        
-            const item = cart[shop][name];
-            const newQty = Math.max(0, item.qty + delta);
-            item.qty = newQty;
-            if (newQty === 0) delete cart[shop][name];
-            if (Object.keys(cart[shop]).length === 0) delete cart[shop];
-        
-            saveCart();
-            renderCart();
-        }
-
-        function clearCart() {
-            if (confirm('Are you sure you want to clear your entire cart?')) {
-                cart = {};
-                localStorage.removeItem(CART_KEY);
-                renderCart();
-            }
-        }
-
-        function formatCurrency(amount) {
-            return amount.toLocaleString('en-IN', { 
-                style: 'currency', 
-                currency: 'INR', 
-                minimumFractionDigits: 0 
-            });
-        }
-
-        // ── Premium Delivery Logic ───────────────────────────────────────
         function getMinDelivery() {
             const userStr = localStorage.getItem(USER_KEY);
             if (!userStr) return MIN_DELIVERY_NORMAL;
@@ -329,91 +320,135 @@
             try {
                 const user = JSON.parse(userStr);
                 if (user?.isPremium?.toLowerCase() === "yes") {
-                    if (user?.premiumType?.toLowerCase() === "far") {
-                        return MIN_DELIVERY_FAR;
-                    }
-                    return MIN_DELIVERY_PREMIUM;
+                    return user?.premiumType?.toLowerCase() === "far" 
+                        ? MIN_DELIVERY_FAR 
+                        : MIN_DELIVERY_PREMIUM;
                 }
-            } catch (e) {
-                console.error("Invalid user data in storage", e);
+            } catch {}
+            return MIN_DELIVERY_NORMAL;
+        }
+
+        function formatCurrency(amount) {
+            return amount.toLocaleString('en-IN', {
+                style: 'currency',
+                currency: 'INR',
+                minimumFractionDigits: 0
+            });
+        }
+
+        function changeQty(shop, name, price, delta) {
+            if (!cart[shop]) cart[shop] = {};
+            if (!cart[shop][name]) cart[shop][name] = { qty: 0, price };
+
+            const item = cart[shop][name];
+            const newQty = Math.max(0, item.qty + delta);
+
+            if (newQty === 0) {
+                delete cart[shop][name];
+                if (Object.keys(cart[shop]).length === 0) delete cart[shop];
+            } else {
+                item.qty = newQty;
             }
 
-            return MIN_DELIVERY_NORMAL;
+            saveCart();
+            updateTotalsOnly();
+        }
+
+        function updateTotalsOnly() {
+            let itemsTotal = 0;
+
+            for (const shop in cart) {
+                for (const name in cart[shop]) {
+                    const item = cart[shop][name];
+                    itemsTotal += (item.qty || 0) * item.price;
+                }
+            }
+
+            const displayTotal = itemsTotal + minDelivery;
+
+            grandTotalEl.textContent = formatCurrency(displayTotal);
+            grandTotalEl.title = `Items: ${formatCurrency(itemsTotal)} + Delivery: ${formatCurrency(minDelivery)}`;
+
+            if (itemsTotal === 0) {
+                totalsWrapper.style.display = 'none';
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-bag"></i>
+                        <p>Your cart is empty</p>
+                        <a href="index.html">Explore Menu</a>
+                    </div>`;
+            }
         }
 
         function renderCart() {
             container.innerHTML = "";
-            let grandTotal = 0;
+            let itemsTotal = 0;
 
             if (Object.keys(cart).length === 0) {
                 container.innerHTML = `
                     <div class="empty-cart">
-                        <i class="fas fa-shopping-bag" aria-hidden="true"></i>
+                        <i class="fas fa-shopping-bag"></i>
                         <p>Your cart is empty</p>
-                        <a href="index.html" role="button">Explore Menu</a>
+                        <a href="index.html">Explore Menu</a>
                     </div>`;
-                totalsActionsWrapper.style.display = 'none';
+                totalsWrapper.style.display = 'none';
                 return;
             }
 
             for (const shop in cart) {
                 let shopTotal = 0;
-                const items = cart[shop];
-                const shopContentWrapper = document.createElement("div");
-            
-                shopContentWrapper.innerHTML = `
+                const shopDiv = document.createElement("div");
+
+                shopDiv.innerHTML = `
                     <div class="shop-name">
-                        <i class="fas fa-store" aria-hidden="true"></i> 
+                        <i class="fas fa-store"></i>
                         Store ${shop}
                     </div>`;
 
                 let itemsHtml = '';
-                for (const name in items) {
-                    const {qty, price} = items[name];
+                for (const name in cart[shop]) {
+                    const { qty, price } = cart[shop][name];
                     const total = qty * price;
                     shopTotal += total;
-                    grandTotal += total;
+                    itemsTotal += total;
 
                     const safeName = name.replace(/'/g, "\\'");
-                    const formattedTotal = formatCurrency(total);
-
                     itemsHtml += `
-                        <div class="cart-item" role="listitem">
+                        <div class="cart-item">
                             <div class="item-name" title="${name}">${name}</div>
-                            <div class="item-price">${formattedTotal}</div>
-                            <div class="quantity" role="group" aria-label="Quantity controls for ${name}">
-                                <button class="qbtn" onclick="changeQty('${shop}','${safeName}',${price},-1)" aria-label="Decrease">
-                                    −
-                                </button>
-                                <div class="qty" aria-live="polite">${qty}</div>
-                                <button class="qbtn" onclick="changeQty('${shop}','${safeName}',${price},1)" aria-label="Increase">
-                                    +
-                                </button>
+                            <div class="item-price">${formatCurrency(total)}</div>
+                            <div class="quantity">
+                                <button class="qbtn" onclick="changeQty('${shop}','${safeName}',${price},-1)">−</button>
+                                <div class="qty">${qty}</div>
+                                <button class="qbtn" onclick="changeQty('${shop}','${safeName}',${price},1)">+</button>
                             </div>
                         </div>`;
                 }
-            
-                shopContentWrapper.innerHTML += itemsHtml;
-                const formattedSubtotal = formatCurrency(shopTotal);
-                shopContentWrapper.innerHTML += `
-                    <div class="shop-subtotal">Subtotal ${formattedSubtotal}</div>`;
-                
-                container.appendChild(shopContentWrapper);
+
+                shopDiv.innerHTML += itemsHtml + `
+                    <div class="shop-subtotal">Subtotal ${formatCurrency(shopTotal)}</div>`;
+
+                container.appendChild(shopDiv);
             }
 
-            // Delivery fee logic
-            const minDelivery = getMinDelivery();
-            minDeliveryFeeEl.textContent = formatCurrency(minDelivery);
+            minDeliveryEl.textContent = formatCurrency(minDelivery);
 
-            // Show items total + delivery note
-            const displayTotal = grandTotal + minDelivery;
-            floatingGrandTotal.textContent = formatCurrency(displayTotal);
-            floatingGrandTotal.title = `Items: ${formatCurrency(grandTotal)} + Delivery: ${formatCurrency(minDelivery)}`;
+            const displayTotal = itemsTotal + minDelivery;
+            grandTotalEl.textContent = formatCurrency(displayTotal);
+            grandTotalEl.title = `Items: ${formatCurrency(itemsTotal)} + Delivery: ${formatCurrency(minDelivery)}`;
 
-            totalsActionsWrapper.style.display = 'block';
+            totalsWrapper.style.display = 'block';
         }
 
-        // Initial render
+        function clearCart() {
+            if (confirm('Are you sure you want to clear your entire cart?')) {
+                cart = {};
+                localStorage.removeItem(CART_KEY);
+                renderCart(); // full reset on clear
+            }
+        }
+
+        // Start
         renderCart();
         updateBadge();
     </script>
