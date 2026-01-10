@@ -4,126 +4,210 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checkout | ChatPoint</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+
     <style>
         :root {
-            --bg: #0a0a0a;
-            --card: #111111;
-            --border: #222222;
-            --text: #e0e0e0;
-            --muted: #888888;
-            --accent: #00ff9d;
-            --accent2: #ff2e63;
-            --danger: #ff6b6b;
-            --glow: 0 0 20px rgba(0, 255, 157, 0.3);
+            --bg:           #FDFBF7;
+            --card:         #FFFFFF;
+            --primary:      #C93C2E;
+            --primary-dark: #B32F24;
+            --text:         #2A241D;
+            --text-muted:   #706A62;
+            --border:       #E8DFD3;
+            --danger:       #D95F45;
+            --radius:       16px;
+            --shadow-sm:    0 4px 16px rgba(0,0,0,0.06);
+            --shadow-md:    0 8px 32px rgba(0,0,0,0.08);
+            --transition:   all 0.25s ease;
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
             font-family: 'Outfit', sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            padding: 1rem;
+            padding: 1.2rem;
+            line-height: 1.6;
         }
+
         .container {
-            max-width: 600px;
+            max-width: 620px;
             margin: 0 auto;
             background: var(--card);
-            border-radius: 16px;
-            padding: 2rem;
+            border-radius: var(--radius);
+            padding: 2.2rem;
             border: 1px solid var(--border);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: var(--shadow-md);
         }
-        h2 { text-align: center; margin-bottom: 1.5rem; color: var(--accent); font-size: 1.8rem; }
-        .form-group { margin-bottom: 1.2rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 1.8rem;
+            color: var(--primary);
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .form-group { margin-bottom: 1.4rem; }
+
+        label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
         input, textarea {
             width: 100%;
-            padding: 0.9rem;
-            border-radius: 10px;
+            padding: 1rem;
+            border-radius: 12px;
             border: 1px solid var(--border);
-            background: #1a1a1a;
-            color: var(--text);
-            font-size: 1rem;
+            background: #fffef9;
+            font-size: 1.05rem;
+            transition: var(--transition);
         }
-        input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: var(--glow); }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(201,60,46,0.15);
+        }
+
         .cart-summary {
-            background: #1a1a1a;
-            padding: 1.2rem;
-            border-radius: 10px;
-            margin: 1.5rem 0;
-            border: 1px solid var(--border);
+            background: rgba(201,60,46,0.03);
+            padding: 1.5rem;
+            border-radius: 14px;
+            margin: 1.8rem 0;
+            border: 1px solid rgba(201,60,46,0.15);
         }
+
         .cart-item {
             display: flex;
             justify-content: space-between;
-            padding: 0.6rem 0;
+            padding: 0.8rem 0;
             border-bottom: 1px dashed var(--border);
-            font-size: 0.95rem;
+            font-size: 1.05rem;
         }
+
+        .delivery-free {
+            color: #2e7d32;
+            font-weight: 700;
+        }
+
         .min-order-note {
             text-align: center;
-            padding: 0.8rem;
-            margin: 1rem 0;
-            background: rgba(255, 107, 107, 0.15);
-            border-radius: 8px;
+            padding: 1rem;
+            margin: 1.2rem 0;
+            background: rgba(217,95,69,0.1);
+            border: 1px solid rgba(217,95,69,0.3);
+            border-radius: 12px;
             color: var(--danger);
-            font-weight: 600;
-            font-size: 0.95rem;
+            font-weight: 700;
+            font-size: 1.05rem;
         }
+
         .total-row {
-            font-weight: bold;
-            font-size: 1.3rem;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 2px solid var(--accent);
-            color: var(--accent);
+            display: flex;
+            justify-content: space-between;
+            font-weight: 800;
+            font-size: 1.5rem;
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
+            border-top: 2px solid var(--primary);
+            color: var(--primary);
         }
+
         .btn {
             width: 100%;
-            padding: 1.1rem;
-            font-size: 1.2rem;
+            padding: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 700;
             border: none;
-            border-radius: 12px;
-            background: var(--accent);
-            color: #000;
+            border-radius: 14px;
+            background: var(--primary);
+            color: white;
             cursor: pointer;
-            margin-top: 1.5rem;
-            transition: all 0.3s;
+            margin-top: 1.8rem;
+            transition: var(--transition);
+            box-shadow: 0 6px 20px rgba(201,60,46,0.25);
         }
-        .btn:hover { transform: translateY(-3px); box-shadow: var(--glow); }
-        .btn:disabled { background: #555; cursor: not-allowed; transform: none; opacity: 0.7; }
+
+        .btn:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+
+        .btn:disabled {
+            background: #d0c5b8;
+            cursor: not-allowed;
+            box-shadow: none;
+            opacity: 0.8;
+        }
+
         .msg {
             text-align: center;
-            padding: 1rem;
-            border-radius: 10px;
+            padding: 1.2rem;
+            border-radius: 12px;
             margin: 1rem 0;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             display: none;
         }
-        .success { background: #003322; color: var(--accent); border: 1px solid var(--accent); }
-        .error { background: #330000; color: #ff6b6b; border: 1px solid #ff4444; }
-        .login-required { text-align: center; padding: 4rem 1rem; color: var(--muted); }
-        .login-required a { color: var(--accent); font-weight: 700; text-decoration: none; }
+
+        .success { background: rgba(0,150,100,0.15); color: #006644; border: 1px solid rgba(0,150,100,0.3); }
+        .error   { background: rgba(217,95,69,0.12); color: var(--danger); border: 1px solid rgba(217,95,69,0.35); }
+
+        .login-required {
+            text-align: center;
+            padding: 6rem 1.5rem;
+            color: var(--text-muted);
+            font-size: 1.3rem;
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 1.6rem; }
+        }
     </style>
 </head>
 <body>
+
     <div class="container" id="mainContainer"></div>
 
     <script>
         const CART_KEY = "chatpoint_cart";
-        const USER_KEY = "chatpoint_user"; // ← same as cart page
-        const API_BASE = window.location.origin;
-        const PRIMARY = "9632367397";
-        const BACKUP = "8088975913";
+        const USER_KEY = "chatpoint_user";
 
-        // Minimum order values based on premium status
-        const MIN_ORDER_NORMAL = 129;
-        const MIN_ORDER_PREMIUM = 69;
-        const MIN_ORDER_FAR = 129 + 18; // 147
+        const MIN_ORDER_NORMAL     = 129;
+        const MIN_ORDER_PREMIUM    = 69;
+        const MIN_ORDER_FAR        = 129;
+
+        const DELIVERY_NORMAL      = 0;      // free for normal & normal premium
+        const DELIVERY_FAR_PREMIUM = 18;     // only far pays 18₹
+
+        const PRIMARY = "9632367397";
+        const BACKUP  = "8088975913";
+        const API_BASE = window.location.origin;
+
+        function getDeliveryCharge() {
+            const userStr = localStorage.getItem(USER_KEY);
+            if (!userStr) return DELIVERY_NORMAL;
+
+            try {
+                const user = JSON.parse(userStr);
+                if (user?.isPremium?.toLowerCase() === "yes" &&
+                    user?.premiumType?.toLowerCase() === "far") {
+                    return DELIVERY_FAR_PREMIUM;
+                }
+            } catch (e) {
+                console.error("Invalid user data", e);
+            }
+            return DELIVERY_NORMAL; // free for everyone else
+        }
 
         function getMinOrder() {
             const userStr = localStorage.getItem(USER_KEY);
@@ -132,14 +216,11 @@
             try {
                 const user = JSON.parse(userStr);
                 if (user?.isPremium?.toLowerCase() === "yes") {
-                    if (user?.premiumType?.toLowerCase() === "far") {
-                        return MIN_ORDER_FAR;
-                    }
-                    return MIN_ORDER_PREMIUM;
+                    return user?.premiumType?.toLowerCase() === "far" 
+                        ? MIN_ORDER_FAR 
+                        : MIN_ORDER_PREMIUM;
                 }
-            } catch (e) {
-                console.error("Invalid user data", e);
-            }
+            } catch {}
             return MIN_ORDER_NORMAL;
         }
 
@@ -158,17 +239,22 @@
 
         function renderForm(user) {
             const cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
+
             if (Object.keys(cart).length === 0) {
                 document.getElementById("mainContainer").innerHTML = `
-                    <div style="text-align:center;padding:4rem;color:#888">
+                    <div style="text-align:center; padding:6rem 2rem; color:var(--text-muted);">
                         <h3>Cart is Empty</h3>
-                        <p><a href="index.html" style="color:var(--accent);font-weight:700">Go Shopping</a></p>
+                        <p style="margin:1rem 0;">
+                            <a href="index.html" style="color:var(--primary); font-weight:700;">
+                                Start Shopping →
+                            </a>
+                        </p>
                     </div>`;
                 return;
             }
 
             let itemsArray = [];
-            let overallTotal = 0;
+            let subtotal = 0;
             let shopName = "ChatPoint";
 
             for (const shop in cart) {
@@ -176,21 +262,23 @@
                 for (const itemName in cart[shop]) {
                     const item = cart[shop][itemName];
                     if (item.qty > 0) {
-                        overallTotal += item.price * item.qty;
+                        subtotal += item.price * item.qty;
                         itemsArray.push({ name: itemName, price: item.price, quantity: item.qty });
                     }
                 }
             }
 
-            const MIN_ORDER = getMinOrder();
-            const grandTotal = overallTotal; // still no extra delivery charge shown
-            const canCheckout = overallTotal >= MIN_ORDER;
-            const amountNeeded = MIN_ORDER - overallTotal;
+            const minOrder = getMinOrder();
+            const deliveryCharge = getDeliveryCharge();
+            const grandTotal = subtotal + deliveryCharge;
+            const canCheckout = subtotal >= minOrder;
+            const amountNeeded = minOrder - subtotal;
 
-            window.tempOrderData = { itemsArray, overallTotal, grandTotal, shopName, minOrder: MIN_ORDER };
+            window.tempOrderData = { itemsArray, subtotal, shopName, minOrder, deliveryCharge, grandTotal };
 
             document.getElementById("mainContainer").innerHTML = `
                 <h2>Checkout</h2>
+
                 <div id="successMsg" class="msg success"></div>
                 <div id="errorMsg" class="msg error"></div>
 
@@ -198,39 +286,56 @@
                     <label>Name *</label>
                     <input type="text" id="name" value="${user.name || ''}" required />
                 </div>
+
                 <div class="form-group">
                     <label>Phone *</label>
                     <input type="tel" id="phone" value="${user.phone || ''}" required />
                 </div>
+
                 <div class="form-group">
                     <label>Address Line 1 *</label>
                     <textarea id="address1" rows="3" required placeholder="House no., Building, Street"></textarea>
                 </div>
+
                 <div class="form-group">
                     <label>Address Line 2 (Optional)</label>
-                    <textarea id="address2" rows="2" placeholder="Landmark, Area"></textarea>
+                    <textarea id="address2" rows="2" placeholder="Landmark, Area, Nearby"></textarea>
                 </div>
 
                 <div class="cart-summary">
-                    <h3 style="margin-bottom:1rem;color:var(--accent);">Order Summary</h3>
+                    <h3 style="margin-bottom:1.2rem; color:var(--primary); font-weight:700;">
+                        Order Summary
+                    </h3>
+
                     ${itemsArray.map(it => `
                         <div class="cart-item">
                             <span>${it.name} × ${it.quantity}</span>
-                            <span>₹${(it.price * it.quantity).toFixed(2)}</span>
+                            <span>₹${Math.round(it.price * it.quantity)}</span>
                         </div>
                     `).join('')}
-                    <div class="cart-item"><span>Subtotal</span><span>₹${overallTotal.toFixed(2)}</span></div>
+
+                    <div class="cart-item" style="font-weight:600;">
+                        <span>Subtotal</span>
+                        <span>₹${Math.round(subtotal)}</span>
+                    </div>
+
+                    <div class="cart-item" style="font-weight:600;">
+                        <span>Delivery Charge</span>
+                        <span class="${deliveryCharge === 0 ? 'delivery-free' : ''}">
+                            ${deliveryCharge === 0 ? 'FREE' : '₹' + deliveryCharge}
+                        </span>
+                    </div>
 
                     ${!canCheckout ? `
                         <div class="min-order-note">
-                            Add ₹${amountNeeded.toFixed(2)} more to reach minimum order of ₹${MIN_ORDER}
-                            ${MIN_ORDER !== MIN_ORDER_NORMAL ? ' (Premium benefit applied)' : ''}
+                            Add ₹${Math.round(amountNeeded)} more to reach minimum order of ₹${minOrder}
+                            ${minOrder === MIN_ORDER_PREMIUM ? ' (Premium benefit)' : ''}
                         </div>
                     ` : ''}
 
-                    <div class="total-row cart-item">
+                    <div class="total-row">
                         <span>Grand Total</span>
-                        <span>₹${grandTotal.toFixed(2)}</span>
+                        <span>₹${Math.round(grandTotal)}</span>
                     </div>
                 </div>
 
@@ -255,9 +360,9 @@
                 return;
             }
 
-            const { itemsArray, grandTotal, overallTotal, shopName, minOrder } = window.tempOrderData;
+            const { itemsArray, subtotal, shopName, minOrder, deliveryCharge, grandTotal } = window.tempOrderData;
 
-            if (overallTotal < minOrder) {
+            if (subtotal < minOrder) {
                 showError(`Minimum order amount is ₹${minOrder}`);
                 return;
             }
@@ -280,7 +385,8 @@
                 address1,
                 address2: address2 || "",
                 grandTotal,
-                cart
+                cart,
+                deliveryCharge
             };
 
             const btn = document.getElementById("placeOrderBtn");
@@ -293,6 +399,7 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(orderData)
                 });
+
                 const data = await res.json();
 
                 if (res.ok && data.success) {
@@ -300,7 +407,8 @@
                     localStorage.removeItem(CART_KEY);
 
                     const itemsList = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
-                    const message = `New Order!\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nTotal: ₹${grandTotal}\n\nPlease confirm soon!`;
+                    const deliveryText = deliveryCharge === 0 ? "FREE Delivery" : `Delivery: ₹${deliveryCharge}`;
+                    const message = `New Order!\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nSubtotal: ₹${Math.round(subtotal)}\n${deliveryText}\nTotal: ₹${Math.round(grandTotal)}\n\nPlease confirm soon!`;
                     const encoded = encodeURIComponent(message);
 
                     setTimeout(() => window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, '_blank'), 1000);
@@ -314,7 +422,8 @@
                 showError("Failed to save online. Sending via WhatsApp...");
 
                 const itemsList = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
-                const fallbackMsg = `(Online Failed)\nNew Order\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nTotal: ₹${grandTotal}`;
+                const deliveryText = deliveryCharge === 0 ? "FREE Delivery" : `Delivery: ₹${deliveryCharge}`;
+                const fallbackMsg = `(Online Failed)\nNew Order\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nSubtotal: ₹${Math.round(subtotal)}\n${deliveryText}\nTotal: ₹${Math.round(grandTotal)}`;
                 const encoded = encodeURIComponent(fallbackMsg);
                 window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, '_blank');
             }
