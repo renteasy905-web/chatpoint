@@ -4,97 +4,322 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>My Cart • ChatPoint</title>
-   
-    <!-- Fonts -->
+
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
-   
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        /* ──────────────────────────────────────── */
-        /* Your original styles kept intact + additions */
-        :root {
-            --bg: #FDFBF7;
-            --card: #FFFFFF;
-            --primary: #C93C2E;
-            --primary-dark: #B32F24;
-            --secondary: #3A6EA5;
-            --text: #2A241D;
-            --text-muted: #706A62;
-            --border: #E8DFD3;
-            --danger: #D95F45;
-            --highlight: #FFFACD; /* light yellow for water bottle highlight */
-            --radius-xl: 18px;
-            --radius-lg: 12px;
-            --shadow-sm: 0 2px 12px rgba(0,0,0,0.06);
-            --shadow-md: 0 8px 32px rgba(0,0,0,0.07);
-            --transition: all 0.22s ease;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.5; }
-        /* ... your existing header, main, cart-container, cart-item, quantity, etc. styles remain the same ... */
 
-        /* New styles for delivery & water bottle nudge */
-        .delivery-notice {
-            background: rgba(201,60,46,0.08);
-            border: 1px solid rgba(201,60,46,0.3);
-            border-radius: var(--radius-lg);
-            padding: 1rem;
-            margin: 1.2rem 0;
-            text-align: center;
-            font-weight: 600;
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg: #fdfbf7;
+            --card: #ffffff;
+            --primary: #e63946;
+            --primary-dark: #d00000;
+            --accent: #f4a261;
+            --success: #2a9d8f;
+            --text: #1d3557;
+            --muted: #6c757d;
+            --border: rgba(255,255,255,0.25);
+            --glass: rgba(255,255,255,0.7);
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --radius: 20px;
+            --transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .delivery-waived {
-            background: rgba(56,142,60,0.12);
-            border-color: #388e3c;
-            color: #1b5e20;
+
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #fdfbf7 0%, #fffaf0 100%);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.6;
         }
-        .water-bottle-card {
-            background: var(--highlight);
-            border: 2px dashed var(--primary);
-            border-radius: var(--radius-lg);
-            padding: 1rem;
-            margin: 1.5rem 0;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(201,60,46,0.15);
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
-        .water-bottle-card h4 {
+
+        .brand {
+            font-size: 2.1rem;
+            font-weight: 900;
+            letter-spacing: -1px;
             color: var(--primary);
-            margin-bottom: 0.6rem;
         }
-        .add-water-btn {
-            background: var(--primary);
-            color: white;
+
+        .back-btn {
+            width: 48px;
+            height: 48px;
+            background: rgba(233,57,70,0.08);
             border: none;
-            padding: 0.8rem 1.6rem;
-            border-radius: 12px;
-            font-weight: 700;
+            border-radius: 14px;
+            font-size: 1.8rem;
+            color: var(--primary);
             cursor: pointer;
-            margin-top: 0.8rem;
             transition: var(--transition);
         }
-        .add-water-btn:hover { background: var(--primary-dark); transform: scale(1.05); }
+
+        .back-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.08);
+        }
+
+        .cart-badge {
+            background: var(--primary);
+            color: white;
+            padding: 0.35rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: 800;
+        }
+
+        main {
+            padding: 1.5rem;
+            max-width: 720px;
+            margin: 0 auto;
+            padding-bottom: 160px;
+        }
+
+        .cart-container {
+            background: var(--card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(233,57,70,0.1);
+        }
+
+        .section-title {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1.2rem 1.5rem;
+            font-size: 1.35rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            transition: var(--transition);
+        }
+
+        .cart-item:hover {
+            background: rgba(233,57,70,0.03);
+        }
+
+        .item-name {
+            flex: 1;
+            font-weight: 600;
+            font-size: 1.15rem;
+        }
+
+        .item-price {
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--primary);
+            min-width: 100px;
+            text-align: right;
+        }
+
+        .quantity {
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(233,57,70,0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-left: 1.2rem;
+        }
+
+        .qbtn {
+            width: 42px;
+            height: 42px;
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            font-size: 1.6rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .qbtn:hover {
+            background: rgba(233,57,70,0.12);
+        }
+
+        .qty {
+            min-width: 50px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.15rem;
+            padding: 0 0.8rem;
+        }
+
+        .delivery-status {
+            padding: 1.2rem;
+            margin: 0.8rem 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: rgba(233,57,70,0.06);
+            border: 1px solid rgba(233,57,70,0.2);
+        }
+
+        .delivery-waived {
+            background: rgba(42,157,143,0.12);
+            border-color: rgba(42,157,143,0.3);
+            color: #1b5e20;
+        }
+
+        .water-bottle-promo {
+            margin: 1.5rem;
+            background: linear-gradient(135deg, #fffaf0, #fff8e1);
+            border: 2px dashed var(--accent);
+            border-radius: 20px;
+            padding: 1.6rem;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(244,162,97,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .water-bottle-promo::before {
+            content: "SAVE ₹22–25!";
+            position: absolute;
+            top: -12px;
+            right: -32px;
+            background: var(--accent);
+            color: white;
+            padding: 0.4rem 3.5rem;
+            font-size: 0.9rem;
+            font-weight: 800;
+            transform: rotate(45deg);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .water-bottle-promo h3 {
+            color: var(--primary);
+            font-size: 1.4rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .add-water-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 1rem;
+            box-shadow: 0 6px 20px rgba(233,57,70,0.3);
+            transition: var(--transition);
+        }
+
+        .add-water-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(233,57,70,0.45);
+        }
+
+        .totals-actions-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.12);
+            padding: 1.2rem;
+            z-index: 90;
+        }
+
+        .grand-total {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: var(--primary);
+            text-align: center;
+            margin: 0.6rem 0;
+            letter-spacing: -1px;
+        }
+
+        .btn {
+            padding: 1.3rem;
+            border: none;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 1.18rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-clear {
+            background: #e76f51;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-payment {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 8px 24px rgba(233,57,70,0.35);
+            flex: 2;
+        }
+
+        .btn-payment:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px rgba(233,57,70,0.5);
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 8rem 2rem;
+            color: var(--muted);
+        }
+
+        .empty-cart i { font-size: 8rem; color: rgba(233,57,70,0.15); margin-bottom: 1.5rem; }
+        .empty-cart p { font-size: 1.8rem; font-weight: 700; margin-bottom: 1.5rem; }
+
+        @media (max-width: 520px) {
+            main { padding: 1rem 0.8rem; }
+            .cart-item { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .quantity { margin-left: 0; width: 100%; justify-content: center; }
+        }
     </style>
 </head>
 <body>
+
     <header>
-        <button class="back-btn" onclick="history.back()" aria-label="Go back">←</button>
-        <div class="brand"><span>Chat</span>Point</div>
-        <div class="header-cart-info">
-            My Cart
-            <span class="cart-badge" id="cartBadge" style="display:none;">0</span>
+        <button class="back-btn" onclick="history.back()">←</button>
+        <div class="brand">ChatPoint</div>
+        <div>
+            My Cart <span class="cart-badge" id="cartBadge">0</span>
         </div>
     </header>
+
     <main>
         <div class="cart-container" id="cartContainer"></div>
     </main>
-    <div class="totals-actions-wrapper" id="totalsActionsWrapper" style="display: none;">
-        <div class="total-section">
-            <div style="font-size:1.18rem; opacity:0.8; margin-bottom:0.4rem;">Total Amount</div>
-            <div class="grand-total" id="floatingGrandTotal">₹0</div>
-        </div>
-        <div class="actions">
+
+    <div class="totals-actions-wrapper" id="totalsActionsWrapper" style="display:none;">
+        <div class="grand-total" id="floatingGrandTotal">₹0</div>
+        <div style="display:flex; gap:1rem; margin-top:1rem;">
             <button class="btn btn-clear" onclick="clearCart()">Clear Cart</button>
             <button class="btn btn-payment" id="proceedBtn" onclick="location.href='payment.html'">
                 Proceed to Payment
@@ -104,22 +329,14 @@
 
     <script>
         const CART_KEY = "chatpoint_cart";
-        const WATER_BOTTLE = { name: "1L Water Bottle", price: 13, shop: "Special Add-on" }; // Fake shop for simplicity
+        const WATER = { name: "1L Pure Water Bottle", price: 13, shop: "_special_" };
 
-        let cart = loadCart();
+        let cart = JSON.parse(localStorage.getItem(CART_KEY)) || {};
 
         const container = document.getElementById("cartContainer");
         const badge = document.getElementById("cartBadge");
         const totalsWrapper = document.getElementById("totalsActionsWrapper");
         const grandTotalEl = document.getElementById("floatingGrandTotal");
-        const proceedBtn = document.getElementById("proceedBtn");
-
-        function loadCart() {
-            try {
-                const stored = localStorage.getItem(CART_KEY);
-                return stored ? JSON.parse(stored) : {};
-            } catch { return {}; }
-        }
 
         function saveCart() {
             localStorage.setItem(CART_KEY, JSON.stringify(cart));
@@ -127,174 +344,154 @@
         }
 
         function updateBadge() {
-            const totalQty = Object.values(cart)
-                .flatMap(shop => Object.values(shop))
-                .reduce((sum, item) => sum + (item.qty || 0), 0);
-            badge.textContent = totalQty;
-            badge.style.display = totalQty > 0 ? 'inline' : 'none';
+            let count = 0;
+            Object.values(cart).forEach(shop => {
+                Object.values(shop).forEach(item => count += item.qty || 0);
+            });
+            badge.textContent = count;
         }
 
-        function formatCurrency(amount) {
-            return '₹' + amount.toLocaleString('en-IN', { minimumFractionDigits: 0 });
-        }
+        function format(n) { return '₹' + n.toLocaleString('en-IN'); }
 
         function changeQty(shop, name, price, delta) {
             if (!cart[shop]) cart[shop] = {};
-            if (!cart[shop][name]) cart[shop][name] = { qty: 0, price };
-            const item = cart[shop][name];
-            item.qty = Math.max(0, item.qty + delta);
-            if (item.qty === 0) {
-                delete cart[shop][name];
-                if (Object.keys(cart[shop]).length === 0) delete cart[shop];
-            }
+            if (!cart[shop][name]) cart[shop][name] = {qty:0, price};
+            cart[shop][name].qty = Math.max(0, (cart[shop][name].qty || 0) + delta);
+            if (cart[shop][name].qty === 0) delete cart[shop][name];
+            if (Object.keys(cart[shop]).length === 0) delete cart[shop];
             saveCart();
             renderCart();
         }
 
-        function addWaterBottle() {
-            const shop = WATER_BOTTLE.shop;
-            const name = WATER_BOTTLE.name;
-            const price = WATER_BOTTLE.price;
-            if (!cart[shop]) cart[shop] = {};
-            if (!cart[shop][name]) cart[shop][name] = { qty: 0, price };
-            cart[shop][name].qty += 1;
+        function addWater() {
+            if (!cart[WATER.shop]) cart[WATER.shop] = {};
+            if (!cart[WATER.shop][WATER.name]) cart[WATER.shop][WATER.name] = {qty:0, price:WATER.price};
+            cart[WATER.shop][WATER.name].qty += 1;
             saveCart();
             renderCart();
         }
 
-        function hasWaterBottle() {
-            return !!cart[WATER_BOTTLE.shop]?.[WATER_BOTTLE.name]?.qty > 0;
+        function hasWater() {
+            return (cart[WATER.shop]?.[WATER.name]?.qty || 0) > 0;
         }
 
-        function calculateSubtotal() {
-            let subtotal = 0;
-            for (const shop in cart) {
-                if (shop === WATER_BOTTLE.shop) continue; // exclude bottle from main subtotal for threshold
-                for (const name in cart[shop]) {
-                    subtotal += cart[shop][name].qty * cart[shop][name].price;
+        function getMainSubtotal() {
+            let sum = 0;
+            for (let shop in cart) {
+                if (shop === WATER.shop) continue;
+                for (let name in cart[shop]) {
+                    sum += cart[shop][name].qty * cart[shop][name].price;
                 }
             }
-            return subtotal;
+            return sum;
         }
 
-        function getDeliveryCharge(subtotal) {
-            if (hasWaterBottle()) return 0;
-            return subtotal < 100 ? 25 : 22;
+        function getDelivery() {
+            if (hasWater()) return 0;
+            return getMainSubtotal() < 100 ? 25 : 22;
         }
 
-        function calculateGrandTotal() {
-            let subtotal = 0;
-            let bottleTotal = 0;
-            for (const shop in cart) {
-                for (const name in cart[shop]) {
-                    const itemTotal = cart[shop][name].qty * cart[shop][name].price;
-                    if (shop === WATER_BOTTLE.shop && name === WATER_BOTTLE.name) {
-                        bottleTotal += itemTotal;
-                    } else {
-                        subtotal += itemTotal;
-                    }
+        function getGrandTotal() {
+            let total = 0;
+            for (let shop in cart) {
+                for (let name in cart[shop]) {
+                    total += cart[shop][name].qty * cart[shop][name].price;
                 }
             }
-            const delivery = getDeliveryCharge(subtotal);
-            // Add taxes/packaging here if you have them, e.g. + Math.round(subtotal * 0.05)
-            return subtotal + bottleTotal + delivery;
+            total += getDelivery();
+            // Add taxes, packaging etc. here later
+            return total;
         }
 
         function renderCart() {
             container.innerHTML = "";
-            const mainSubtotal = calculateSubtotal();
-            const deliveryCharge = getDeliveryCharge(mainSubtotal);
-            const grandTotal = calculateGrandTotal();
-            const hasBottle = hasWaterBottle();
+
+            let mainSub = getMainSubtotal();
+            let delivery = getDelivery();
+            let grand = getGrandTotal();
+            let hasB = hasWater();
 
             if (Object.keys(cart).length === 0) {
                 container.innerHTML = `
                     <div class="empty-cart">
-                        <i class="fas fa-shopping-bag"></i>
-                        <p>Your cart is empty</p>
-                        <a href="index.html">Explore Menu</a>
+                        <i class="fas fa-shopping-bag fa-6x"></i>
+                        <p>Your cart feels lonely...</p>
+                        <a href="index.html" style="color:var(--primary);font-weight:700;">Add something delicious!</a>
                     </div>`;
                 totalsWrapper.style.display = 'none';
                 return;
             }
 
-            let html = '';
-            for (const shop in cart) {
-                if (shop === WATER_BOTTLE.shop) continue; // show bottle separately
-                let shopTotal = 0;
-                html += `
-                    <div class="shop-name">
-                        <i class="fas fa-store"></i> Store ${shop}
-                    </div>`;
-                for (const name in cart[shop]) {
-                    const { qty, price } = cart[shop][name];
-                    const total = qty * price;
-                    shopTotal += total;
-                    const safeName = name.replace(/'/g, "\\'");
+            let html = '<div class="section-title"><i class="fas fa-shopping-cart"></i> Your Items</div>';
+
+            for (let shop in cart) {
+                if (shop === WATER.shop) continue;
+                html += `<div style="padding:1rem 1.5rem; background:rgba(233,57,70,0.02);">
+                    <div style="font-weight:800; color:var(--primary); margin-bottom:1rem;">${shop}</div>`;
+
+                for (let name in cart[shop]) {
+                    let item = cart[shop][name];
+                    let itemTotal = item.qty * item.price;
                     html += `
                         <div class="cart-item">
-                            <div class="item-name" title="${name}">${name}</div>
-                            <div class="item-price">${formatCurrency(total)}</div>
+                            <div class="item-name">${name}</div>
+                            <div class="item-price">${format(itemTotal)}</div>
                             <div class="quantity">
-                                <button class="qbtn" onclick="changeQty('${shop}','${safeName}',${price},-1)">−</button>
-                                <div class="qty">${qty}</div>
-                                <button class="qbtn" onclick="changeQty('${shop}','${safeName}',${price},1)">+</button>
+                                <button class="qbtn" onclick="changeQty('${shop}','${name.replace(/'/g,"\\'")}',${item.price},-1)">−</button>
+                                <div class="qty">${item.qty}</div>
+                                <button class="qbtn" onclick="changeQty('${shop}','${name.replace(/'/g,"\\'")}',${item.price},1)">+</button>
                             </div>
                         </div>`;
                 }
-                html += `<div class="shop-subtotal">Subtotal ${formatCurrency(shopTotal)}</div>`;
+                html += '</div>';
             }
 
-            // Delivery charge display
+            // Delivery status
             html += `
-                <div class="delivery-notice ${hasBottle ? 'delivery-waived' : ''}">
-                    ${hasBottle 
-                        ? '<strong>Delivery charge waived!</strong> (Thanks for adding Water Bottle)' 
-                        : `Delivery Charge: ${formatCurrency(deliveryCharge)}`}
+                <div class="delivery-status ${hasB ? 'delivery-waived' : ''}">
+                    ${hasB 
+                        ? '<i class="fas fa-check-circle"></i> Free Delivery Unlocked!' 
+                        : `<i class="fas fa-truck"></i> Delivery: ${format(delivery)}`}
                 </div>`;
 
-            // Water bottle nudge / display
-            if (!hasBottle) {
+            // Water bottle promo
+            if (!hasB) {
+                let needed = mainSub < 100 ? (100 - mainSub) : 0;
                 html += `
-                    <div class="water-bottle-card">
-                        <h4>Beat the Delivery Charge!</h4>
-                        <p>Add <strong>1L Water Bottle</strong> for just ₹13 → <strong>FREE Delivery</strong></p>
-                        <button class="add-water-btn" onclick="addWaterBottle()">
-                            <i class="fas fa-plus"></i> Add 1L Water Bottle ₹13
+                    <div class="water-bottle-promo">
+                        <h3>Beat Delivery Charges!</h3>
+                        <p style="margin:0.8rem 0;">Add <strong>1L Water Bottle</strong> for just ₹13<br>and get <strong>FREE DELIVERY</strong></p>
+                        <button class="add-water-btn" onclick="addWater()">
+                            <i class="fas fa-bottle-water"></i> Add 1L Water Bottle – ₹13
                         </button>
                     </div>`;
             } else {
-                // Show bottle as added item
-                const bottleQty = cart[WATER_BOTTLE.shop][WATER_BOTTLE.name].qty;
-                const bottleTotal = bottleQty * 13;
+                let qty = cart[WATER.shop][WATER.name].qty;
                 html += `
-                    <div class="cart-item" style="background:#f8f9fa; border-left:4px solid #388e3c;">
-                        <div class="item-name">1L Water Bottle (Free Delivery)</div>
-                        <div class="item-price">${formatCurrency(bottleTotal)}</div>
+                    <div class="cart-item" style="background:rgba(42,157,143,0.08); border-left:5px solid var(--success);">
+                        <div class="item-name"><i class="fas fa-bottle-water" style="color:var(--success); margin-right:0.6rem;"></i>1L Water Bottle</div>
+                        <div class="item-price">${format(qty * 13)}</div>
                         <div class="quantity">
-                            <button class="qbtn" onclick="changeQty('${WATER_BOTTLE.shop}','${WATER_BOTTLE.name}',13,-1)">−</button>
-                            <div class="qty">${bottleQty}</div>
-                            <button class="qbtn" onclick="changeQty('${WATER_BOTTLE.shop}','${WATER_BOTTLE.name}',13,1)">+</button>
+                            <button class="qbtn" onclick="changeQty('${WATER.shop}','${WATER.name}',13,-1)">−</button>
+                            <div class="qty">${qty}</div>
+                            <button class="qbtn" onclick="changeQty('${WATER.shop}','${WATER.name}',13,1)">+</button>
                         </div>
                     </div>`;
             }
 
             container.innerHTML = html;
-
-            grandTotalEl.textContent = formatCurrency(grandTotal);
-            proceedBtn.disabled = Object.keys(cart).length === 0;
+            grandTotalEl.textContent = format(grand);
             totalsWrapper.style.display = 'block';
         }
 
         function clearCart() {
-            if (confirm('Clear entire cart?')) {
+            if (confirm("Clear your cart?")) {
                 cart = {};
                 localStorage.removeItem(CART_KEY);
                 renderCart();
             }
         }
 
-        // Start
         renderCart();
         updateBadge();
     </script>
