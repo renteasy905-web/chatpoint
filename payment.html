@@ -4,28 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checkout | ChatPoint</title>
-
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
-
     <style>
         :root {
-            --bg:           #FDFBF7;
-            --card:         #FFFFFF;
-            --primary:      #C93C2E;
+            --bg: #FDFBF7;
+            --card: #FFFFFF;
+            --primary: #C93C2E;
             --primary-dark: #B32F24;
-            --text:         #2A241D;
-            --text-muted:   #706A62;
-            --border:       #E8DFD3;
-            --danger:       #D95F45;
-            --radius:       16px;
-            --shadow-sm:    0 4px 16px rgba(0,0,0,0.06);
-            --shadow-md:    0 8px 32px rgba(0,0,0,0.08);
-            --transition:   all 0.25s ease;
+            --text: #2A241D;
+            --text-muted: #706A62;
+            --border: #E8DFD3;
+            --danger: #D95F45;
+            --radius: 16px;
+            --shadow-sm: 0 4px 16px rgba(0,0,0,0.06);
+            --shadow-md: 0 8px 32px rgba(0,0,0,0.08);
+            --transition: all 0.25s ease;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             font-family: 'Outfit', sans-serif;
             background: var(--bg);
@@ -34,7 +30,6 @@
             padding: 1.2rem;
             line-height: 1.6;
         }
-
         .container {
             max-width: 620px;
             margin: 0 auto;
@@ -44,7 +39,6 @@
             border: 1px solid var(--border);
             box-shadow: var(--shadow-md);
         }
-
         h2 {
             text-align: center;
             margin-bottom: 1.8rem;
@@ -52,16 +46,13 @@
             font-size: 2rem;
             font-weight: 800;
         }
-
         .form-group { margin-bottom: 1.4rem; }
-
         label {
             display: block;
             margin-bottom: 0.6rem;
             font-weight: 600;
             font-size: 1.05rem;
         }
-
         input, textarea {
             width: 100%;
             padding: 1rem;
@@ -71,13 +62,11 @@
             font-size: 1.05rem;
             transition: var(--transition);
         }
-
         input:focus, textarea:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(201,60,46,0.15);
         }
-
         .cart-summary {
             background: rgba(201,60,46,0.03);
             padding: 1.5rem;
@@ -85,7 +74,6 @@
             margin: 1.8rem 0;
             border: 1px solid rgba(201,60,46,0.15);
         }
-
         .cart-item {
             display: flex;
             justify-content: space-between;
@@ -93,24 +81,10 @@
             border-bottom: 1px dashed var(--border);
             font-size: 1.05rem;
         }
-
         .delivery-free {
             color: #2e7d32;
             font-weight: 700;
         }
-
-        .min-order-note {
-            text-align: center;
-            padding: 1rem;
-            margin: 1.2rem 0;
-            background: rgba(217,95,69,0.1);
-            border: 1px solid rgba(217,95,69,0.3);
-            border-radius: 12px;
-            color: var(--danger);
-            font-weight: 700;
-            font-size: 1.05rem;
-        }
-
         .total-row {
             display: flex;
             justify-content: space-between;
@@ -121,7 +95,6 @@
             border-top: 2px solid var(--primary);
             color: var(--primary);
         }
-
         .btn {
             width: 100%;
             padding: 1.3rem;
@@ -136,19 +109,16 @@
             transition: var(--transition);
             box-shadow: 0 6px 20px rgba(201,60,46,0.25);
         }
-
         .btn:hover:not(:disabled) {
             background: var(--primary-dark);
             transform: translateY(-3px);
         }
-
         .btn:disabled {
             background: #d0c5b8;
             cursor: not-allowed;
             box-shadow: none;
             opacity: 0.8;
         }
-
         .msg {
             text-align: center;
             padding: 1.2rem;
@@ -158,71 +128,28 @@
             font-size: 1.15rem;
             display: none;
         }
-
         .success { background: rgba(0,150,100,0.15); color: #006644; border: 1px solid rgba(0,150,100,0.3); }
-        .error   { background: rgba(217,95,69,0.12); color: var(--danger); border: 1px solid rgba(217,95,69,0.35); }
-
+        .error { background: rgba(217,95,69,0.12); color: var(--danger); border: 1px solid rgba(217,95,69,0.35); }
         .login-required {
             text-align: center;
             padding: 6rem 1.5rem;
             color: var(--text-muted);
             font-size: 1.3rem;
         }
-
         @media (max-width: 480px) {
             .container { padding: 1.6rem; }
         }
     </style>
 </head>
 <body>
-
     <div class="container" id="mainContainer"></div>
 
     <script>
         const CART_KEY = "chatpoint_cart";
         const USER_KEY = "chatpoint_user";
-
-        const MIN_ORDER_NORMAL     = 129;
-        const MIN_ORDER_PREMIUM    = 69;
-        const MIN_ORDER_FAR        = 129;
-
-        const DELIVERY_NORMAL      = 0;      // free for normal & normal premium
-        const DELIVERY_FAR_PREMIUM = 18;     // only far pays 18₹
-
         const PRIMARY = "9632367397";
-        const BACKUP  = "8088975913";
+        const BACKUP = "8088975913";
         const API_BASE = window.location.origin;
-
-        function getDeliveryCharge() {
-            const userStr = localStorage.getItem(USER_KEY);
-            if (!userStr) return DELIVERY_NORMAL;
-
-            try {
-                const user = JSON.parse(userStr);
-                if (user?.isPremium?.toLowerCase() === "yes" &&
-                    user?.premiumType?.toLowerCase() === "far") {
-                    return DELIVERY_FAR_PREMIUM;
-                }
-            } catch (e) {
-                console.error("Invalid user data", e);
-            }
-            return DELIVERY_NORMAL; // free for everyone else
-        }
-
-        function getMinOrder() {
-            const userStr = localStorage.getItem(USER_KEY);
-            if (!userStr) return MIN_ORDER_NORMAL;
-
-            try {
-                const user = JSON.parse(userStr);
-                if (user?.isPremium?.toLowerCase() === "yes") {
-                    return user?.premiumType?.toLowerCase() === "far" 
-                        ? MIN_ORDER_FAR 
-                        : MIN_ORDER_PREMIUM;
-                }
-            } catch {}
-            return MIN_ORDER_NORMAL;
-        }
 
         function checkLogin() {
             const user = JSON.parse(localStorage.getItem(USER_KEY) || "null");
@@ -239,7 +166,6 @@
 
         function renderForm(user) {
             const cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
-
             if (Object.keys(cart).length === 0) {
                 document.getElementById("mainContainer").innerHTML = `
                     <div style="text-align:center; padding:6rem 2rem; color:var(--text-muted);">
@@ -268,17 +194,13 @@
                 }
             }
 
-            const minOrder = getMinOrder();
-            const deliveryCharge = getDeliveryCharge();
+            const deliveryCharge = 0; // always free now
             const grandTotal = subtotal + deliveryCharge;
-            const canCheckout = subtotal >= minOrder;
-            const amountNeeded = minOrder - subtotal;
 
-            window.tempOrderData = { itemsArray, subtotal, shopName, minOrder, deliveryCharge, grandTotal };
+            window.tempOrderData = { itemsArray, subtotal, shopName, deliveryCharge, grandTotal };
 
             document.getElementById("mainContainer").innerHTML = `
                 <h2>Checkout</h2>
-
                 <div id="successMsg" class="msg success"></div>
                 <div id="errorMsg" class="msg error"></div>
 
@@ -286,17 +208,14 @@
                     <label>Name *</label>
                     <input type="text" id="name" value="${user.name || ''}" required />
                 </div>
-
                 <div class="form-group">
                     <label>Phone *</label>
                     <input type="tel" id="phone" value="${user.phone || ''}" required />
                 </div>
-
                 <div class="form-group">
                     <label>Address Line 1 *</label>
                     <textarea id="address1" rows="3" required placeholder="House no., Building, Street"></textarea>
                 </div>
-
                 <div class="form-group">
                     <label>Address Line 2 (Optional)</label>
                     <textarea id="address2" rows="2" placeholder="Landmark, Area, Nearby"></textarea>
@@ -306,47 +225,32 @@
                     <h3 style="margin-bottom:1.2rem; color:var(--primary); font-weight:700;">
                         Order Summary
                     </h3>
-
                     ${itemsArray.map(it => `
                         <div class="cart-item">
                             <span>${it.name} × ${it.quantity}</span>
                             <span>₹${Math.round(it.price * it.quantity)}</span>
                         </div>
                     `).join('')}
-
                     <div class="cart-item" style="font-weight:600;">
                         <span>Subtotal</span>
                         <span>₹${Math.round(subtotal)}</span>
                     </div>
-
                     <div class="cart-item" style="font-weight:600;">
                         <span>Delivery Charge</span>
-                        <span class="${deliveryCharge === 0 ? 'delivery-free' : ''}">
-                            ${deliveryCharge === 0 ? 'FREE' : '₹' + deliveryCharge}
-                        </span>
+                        <span class="delivery-free">FREE</span>
                     </div>
-
-                    ${!canCheckout ? `
-                        <div class="min-order-note">
-                            Add ₹${Math.round(amountNeeded)} more to reach minimum order of ₹${minOrder}
-                            ${minOrder === MIN_ORDER_PREMIUM ? ' (Premium benefit)' : ''}
-                        </div>
-                    ` : ''}
-
                     <div class="total-row">
                         <span>Grand Total</span>
                         <span>₹${Math.round(grandTotal)}</span>
                     </div>
                 </div>
 
-                <button id="placeOrderBtn" class="btn" ${!canCheckout ? 'disabled' : ''}>
+                <button id="placeOrderBtn" class="btn">
                     Place Order (Cash on Delivery)
                 </button>
             `;
 
-            if (canCheckout) {
-                document.getElementById("placeOrderBtn").onclick = placeOrder;
-            }
+            document.getElementById("placeOrderBtn").onclick = placeOrder;
         }
 
         async function placeOrder() {
@@ -360,12 +264,7 @@
                 return;
             }
 
-            const { itemsArray, subtotal, shopName, minOrder, deliveryCharge, grandTotal } = window.tempOrderData;
-
-            if (subtotal < minOrder) {
-                showError(`Minimum order amount is ₹${minOrder}`);
-                return;
-            }
+            const { itemsArray, subtotal, shopName, deliveryCharge, grandTotal } = window.tempOrderData;
 
             const user = JSON.parse(localStorage.getItem(USER_KEY));
             let userId = null;
@@ -407,10 +306,10 @@
                     localStorage.removeItem(CART_KEY);
 
                     const itemsList = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
-                    const deliveryText = deliveryCharge === 0 ? "FREE Delivery" : `Delivery: ₹${deliveryCharge}`;
+                    const deliveryText = "FREE Delivery";
                     const message = `New Order!\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nSubtotal: ₹${Math.round(subtotal)}\n${deliveryText}\nTotal: ₹${Math.round(grandTotal)}\n\nPlease confirm soon!`;
-                    const encoded = encodeURIComponent(message);
 
+                    const encoded = encodeURIComponent(message);
                     setTimeout(() => window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, '_blank'), 1000);
                     setTimeout(() => window.open(`https://wa.me/91${BACKUP}?text=${encoded}`, '_blank'), 2000);
                     setTimeout(() => window.location.href = "tracking.html", 3000);
@@ -422,8 +321,8 @@
                 showError("Failed to save online. Sending via WhatsApp...");
 
                 const itemsList = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
-                const deliveryText = deliveryCharge === 0 ? "FREE Delivery" : `Delivery: ₹${deliveryCharge}`;
-                const fallbackMsg = `(Online Failed)\nNew Order\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nSubtotal: ₹${Math.round(subtotal)}\n${deliveryText}\nTotal: ₹${Math.round(grandTotal)}`;
+                const fallbackMsg = `(Online Failed)\nNew Order\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nSubtotal: ₹${Math.round(subtotal)}\nFREE Delivery\nTotal: ₹${Math.round(grandTotal)}`;
+
                 const encoded = encodeURIComponent(fallbackMsg);
                 window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, '_blank');
             }
