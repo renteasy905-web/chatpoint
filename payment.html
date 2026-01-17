@@ -151,6 +151,37 @@
         const BACKUP = "8088975913";
         const API_BASE = window.location.origin;
 
+        // ────────────────────────────────────────────────
+        // Delivery logic — exactly the same as in cart page
+        // ────────────────────────────────────────────────
+        const WATER = {
+            shop: "_special_",
+            name: "1L Pure Water Bottle",
+            price: 13
+        };
+
+        function hasWater(cart) {
+            return (cart?.[WATER.shop]?.[WATER.name]?.qty || 0) > 0;
+        }
+
+        function getMainSubtotal(cart) {
+            let sum = 0;
+            for (const shop in cart) {
+                if (shop === WATER.shop) continue;
+                for (const name in cart[shop]) {
+                    const item = cart[shop][name];
+                    sum += (item.price || 0) * (item.qty || 0);
+                }
+            }
+            return sum;
+        }
+
+        function getDeliveryCharge(cart) {
+            if (hasWater(cart)) return 0;
+            const mainSub = getMainSubtotal(cart);
+            return mainSub < 100 ? 25 : 22;
+        }
+
         function checkLogin() {
             const user = JSON.parse(localStorage.getItem(USER_KEY) || "null");
             if (!user || !user.phone) {
@@ -166,6 +197,7 @@
 
         function renderForm(user) {
             const cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
+
             if (Object.keys(cart).length === 0) {
                 document.getElementById("mainContainer").innerHTML = `
                     <div style="text-align:center; padding:6rem 2rem; color:var(--text-muted);">
@@ -181,10 +213,10 @@
 
             let itemsArray = [];
             let subtotal = 0;
-            let shopName = "ChatPoint";
+            let shopName = "ChatPoint"; // fallback
 
             for (const shop in cart) {
-                shopName = shop;
+                shopName = shop; // take the last non-special shop or first one
                 for (const itemName in cart[shop]) {
                     const item = cart[shop][itemName];
                     if (item.qty > 0) {
@@ -194,7 +226,7 @@
                 }
             }
 
-            const deliveryCharge = 0; // always free now
+            const deliveryCharge = getDeliveryCharge(cart);
             const grandTotal = subtotal + deliveryCharge;
 
             window.tempOrderData = { itemsArray, subtotal, shopName, deliveryCharge, grandTotal };
@@ -237,7 +269,9 @@
                     </div>
                     <div class="cart-item" style="font-weight:600;">
                         <span>Delivery Charge</span>
-                        <span class="delivery-free">FREE</span>
+                        <span ${deliveryCharge === 0 ? 'class="delivery-free"' : ''}>
+                            ${deliveryCharge === 0 ? 'FREE' : '₹' + deliveryCharge}
+                        </span>
                     </div>
                     <div class="total-row">
                         <span>Grand Total</span>
@@ -265,7 +299,6 @@
             }
 
             const { itemsArray, subtotal, shopName, deliveryCharge, grandTotal } = window.tempOrderData;
-
             const user = JSON.parse(localStorage.getItem(USER_KEY));
             let userId = null;
             if (user && user._id && /^[a-f0-9]{24}$/i.test(user._id)) {
@@ -276,6 +309,16 @@
             itemsArray.forEach(item => {
                 cart[shopName][item.name] = { qty: item.quantity, price: item.price };
             });
+
+            // If water is present, include it in the order cart too
+            const savedCart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
+            if (hasWater(savedCart)) {
+                if (!cart[WATER.shop]) cart[WATER.shop] = {};
+                cart[WATER.shop][WATER.name] = {
+                    qty: savedCart[WATER.shop][WATER.name].qty,
+                    price: WATER.price
+                };
+            }
 
             const orderData = {
                 userId,
@@ -306,7 +349,7 @@
                     localStorage.removeItem(CART_KEY);
 
                     const itemsList = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
-                    const deliveryText = "FREE Delivery";
+                    const deliveryText = deliveryCharge === 0 ? "FREE Delivery" : `Delivery: ₹${deliveryCharge}`;
                     const message = `New Order!\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nSubtotal: ₹${Math.round(subtotal)}\n${deliveryText}\nTotal: ₹${Math.round(grandTotal)}\n\nPlease confirm soon!`;
 
                     const encoded = encodeURIComponent(message);
@@ -321,7 +364,7 @@
                 showError("Failed to save online. Sending via WhatsApp...");
 
                 const itemsList = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
-                const fallbackMsg = `(Online Failed)\nNew Order\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nSubtotal: ₹${Math.round(subtotal)}\nFREE Delivery\nTotal: ₹${Math.round(grandTotal)}`;
+                const fallbackMsg = `(Online Failed)\nNew Order\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nSubtotal: ₹${Math.round(subtotal)}\n${deliveryCharge === 0 ? 'FREE Delivery' : 'Delivery: ₹' + deliveryCharge}\nTotal: ₹${Math.round(grandTotal)}`;
 
                 const encoded = encodeURIComponent(fallbackMsg);
                 window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, '_blank');
