@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Live Phone Screen Share</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+    #video {
+      width: 100vw;
+      height: 100vh;
+      object-fit: contain;
+      background: black;
+    }
+    #startButton {
+      padding: 16px 32px;
+      font-size: 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,123,255,0.4);
+    }
+    #startButton:active {
+      transform: scale(0.95);
+    }
+    .info {
+      margin-top: 20px;
+      text-align: center;
+      padding: 0 20px;
+      font-size: 16px;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+
+  <video id="video" autoplay playsinline muted></video>
+
+  <button id="startButton">🔴 Start Live Screen Share</button>
+  <div class="info" id="info">
+    Tap the button above → Choose "Share Screen" or "Entire Screen"<br>
+    Your phone screen will appear here in real-time
+  </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const button = document.getElementById('startButton');
+    const info = document.getElementById('info');
+
+    button.onclick = async () => {
+      button.style.display = 'none';
+      info.textContent = 'Requesting screen sharing permission...';
+
+      try {
+        // This is the magic API that asks for screen sharing
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: {
+            cursor: "always"  // shows the mouse/touch cursor
+          },
+          audio: false       // set true if you also want device audio
+        });
+
+        video.srcObject = stream;
+
+        // Optional: make it look better on phones
+        video.style.transform = window.innerWidth < window.innerHeight ? 'rotate(90deg)' : 'none';
+
+        info.textContent = '🔴 LIVE – Your screen is being shared';
+
+        // When user stops sharing (clicks "Stop sharing" in browser)
+        stream.getVideoTracks()[0].addEventListener('ended', () => {
+          info.textContent = 'Sharing stopped. Tap button to start again.';
+          button.style.display = 'block';
+          video.srcObject = null;
+        });
+
+      } catch (err) {
+        console.error(err);
+        info.textContent = 'Permission denied or error: ' + err.message;
+        button.style.display = 'block';
+      }
+    };
+  </script>
+</body>
+</html>
