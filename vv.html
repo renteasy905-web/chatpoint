@@ -2,104 +2,133 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Share Screen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Watch Shared Screen</title>
   <style>
     body {
       margin: 0;
       height: 100vh;
-      background: #111;
+      background: #000;
       color: white;
       font-family: system-ui, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      padding: 20px;
     }
-    h1 { margin: 0 0 30px; font-size: 28px; }
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: black;
+      display: none;
+    }
+    #form {
+      text-align: center;
+      padding: 30px;
+      background: rgba(0,0,0,0.6);
+      border-radius: 16px;
+      max-width: 90%;
+    }
+    input {
+      padding: 14px;
+      font-size: 18px;
+      width: 100%;
+      max-width: 400px;
+      margin: 15px 0;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background: #222;
+      color: white;
+    }
     button {
-      padding: 18px 40px;
+      padding: 16px 40px;
       font-size: 20px;
-      background: #0066ff;
+      background: #00cc66;
       color: white;
       border: none;
       border-radius: 12px;
       cursor: pointer;
     }
     button:disabled { opacity: 0.5; cursor: not-allowed; }
-    #status { font-size: 18px; margin: 30px 0; min-height: 60px; }
-    #myid {
-      font-size: 32px;
-      font-weight: bold;
-      color: #00ff88;
-      word-break: break-all;
-      margin: 20px 0;
-      padding: 12px;
-      background: #222;
-      border-radius: 8px;
+    #status {
+      font-size: 20px;
+      margin: 25px 0;
+      min-height: 60px;
     }
   </style>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 <body>
 
-  <h1>Share Your Screen</h1>
-  <button id="shareBtn">Start Sharing</button>
-  <div id="status">Click above to begin</div>
-  <div>Your sharing ID:<br><span id="myid">— waiting —</span></div>
+  <video id="remoteVideo" autoplay playsinline controls></video>
+
+  <div id="form">
+    <h2>Watch Live Screen</h2>
+    <input type="text" id="peerIdInput" placeholder="Paste sharing ID here" />
+    <br>
+    <button id="connectBtn">Connect</button>
+    <div id="status">Enter ID and connect</div>
+  </div>
 
   <script>
-    const shareBtn = document.getElementById('shareBtn');
+    const video = document.getElementById('remoteVideo');
     const status = document.getElementById('status');
-    const myIdDiv = document.getElementById('myid');
+    const input = document.getElementById('peerIdInput');
+    const btn = document.getElementById('connectBtn');
+    const form = document.getElementById('form');
 
     let peer;
-    let screenStream;
+    let call;
 
-    peer = new Peer();
+    function createSilentStream() {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      osc.frequency.value = 0;
+      const dest = ctx.createMediaStreamDestination();
+      osc.connect(dest);
+      osc.start();
+      return dest.stream;
+    }
 
-    peer.on('open', (id) => {
-      myIdDiv.textContent = id;
-      status.textContent = 'Give this ID to the viewer';
-    });
-
-    peer.on('error', (err) => {
-      status.textContent = 'Error: ' + err.message;
-    });
-
-    shareBtn.onclick = async () => {
-      shareBtn.disabled = true;
-      status.textContent = 'Waiting for permission...';
-
-      try {
-        screenStream = await navigator.mediaDevices.getDisplayMedia({
-          video: { cursor: "always" },
-          audio: false
-        });
-
-        status.textContent = 'Successful – screen is now shared';
-        shareBtn.style.display = 'none'; // hide button after success
-
-        // Answer incoming viewer calls with the screen stream
-        peer.on('call', (call) => {
-          call.answer(screenStream);
-          call.on('error', (e) => console.error('Call error (sharer side):', e));
-          call.on('close', () => console.log('Viewer left'));
-        });
-
-        // If user stops sharing via browser UI
-        screenStream.getVideoTracks()[0].addEventListener('ended', () => {
-          status.textContent = 'Sharing stopped. Refresh page to start again.';
-          shareBtn.style.display = 'block';
-          shareBtn.disabled = false;
-        });
-
-      } catch (err) {
-        status.textContent = 'Permission denied or failed: ' + err.name;
-        shareBtn.disabled = false;
+    btn.onclick = () => {
+      const targetId = input.value.trim();
+      if (!targetId) {
+        status.textContent = 'Please enter an ID';
+        return;
       }
+
+      btn.disabled = true;
+      status.textContent = 'Connecting...';
+
+      peer = new Peer({ debug: 2 });
+
+      peer.on('open', () => {
+        const dummy = createSilentStream();
+        call = peer.call(targetId, dummy);
+
+        call.on('stream', (remoteStream) => {
+          video.srcObject = remoteStream;
+          video.style.display = 'block';
+          form.style.display = 'none';
+          status.textContent = 'Connected – watching live';
+        });
+
+        call.on('close', () => {
+          status.textContent = 'Connection closed';
+          btn.disabled = false;
+        });
+
+        call.on('error', (err) => {
+          status.textContent = 'Error: ' + err.message;
+          btn.disabled = false;
+        });
+      });
+
+      peer.on('error', (err) => {
+        status.textContent = 'Connection problem: ' + err.type;
+        btn.disabled = false;
+      });
     };
   </script>
 </body>
