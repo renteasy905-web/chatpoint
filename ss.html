@@ -2,14 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Screen Sharer - Share Your Phone Screen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Screen Sharer - Share Phone/PC Screen</title>
   <style>
-    body { margin:0; background:#000; color:white; font-family:sans-serif; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-    video { width:100vw; height:100vh; object-fit:contain; background:black; }
-    button { padding:16px 32px; font-size:20px; background:#007bff; color:white; border:none; border-radius:12px; margin:20px; }
-    #info { text-align:center; padding:0 20px; font-size:16px; }
-    #roomCode { font-size:28px; font-weight:bold; color:#0f0; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: #000;
+      color: white;
+      font-family: sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    video {
+      width: 100vw;
+      height: 100vh;
+      object-fit: contain;
+      background: black;
+    }
+    button {
+      padding: 16px 32px;
+      font-size: 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin: 20px;
+    }
+    #status {
+      text-align: center;
+      font-size: 18px;
+      padding: 0 20px;
+    }
+    #peerId {
+      font-size: 28px;
+      font-weight: bold;
+      color: #0f0;
+      margin: 10px;
+    }
   </style>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
@@ -17,73 +51,73 @@
 
   <video id="preview" autoplay playsinline muted></video>
 
-  <button id="startBtn">Start Sharing My Screen</button>
-  <div id="info">
-    <p>Your sharing code (give this to the viewer):</p>
-    <div id="roomCode">— waiting —</div>
-  </div>
+  <div id="status">Tap below to start sharing your screen</div>
+  <button id="startBtn">Start Screen Share</button>
+  <div>Sharing Code (give to viewer):</div>
+  <div id="peerId">— waiting —</div>
 
   <script>
     const video = document.getElementById('preview');
     const startBtn = document.getElementById('startBtn');
-    const roomCodeDiv = document.getElementById('roomCode');
-    let peer;
-    let conn;
-    let screenStream;
+    const status = document.getElementById('status');
+    const peerIdDiv = document.getElementById('peerId');
 
-    // Generate or use a simple room code (you can make it random or fixed)
-    const roomCode = Math.random().toString(36).substring(2, 10); // e.g. "a7b9c2d4"
-    roomCodeDiv.textContent = roomCode;
+    let peer;
+    let screenStream;
+    let currentCall;
+
+    // Use random short ID or let PeerJS generate one
+    peer = new Peer();  // PeerJS will generate ID automatically
+
+    peer.on('open', (id) => {
+      peerIdDiv.textContent = id;
+      status.textContent = 'Ready. Share this code with the viewer:';
+    });
+
+    peer.on('error', (err) => {
+      status.textContent = 'Error: ' + err.message;
+      console.error(err);
+    });
 
     startBtn.onclick = async () => {
       startBtn.disabled = true;
-      startBtn.textContent = "Sharing in progress...";
+      status.textContent = 'Requesting screen permission...';
 
       try {
-        // Capture screen
         screenStream = await navigator.mediaDevices.getDisplayMedia({
           video: { cursor: "always" },
           audio: false
         });
 
         video.srcObject = screenStream;
-        roomCodeDiv.textContent = roomCode; // show code again
+        status.textContent = '🔴 Sharing live – do NOT close this tab';
 
-        // Initialize PeerJS
-        peer = new Peer(roomCode); // use roomCode as PeerJS ID
+        // Handle incoming calls from viewers
+        peer.on('call', (call) => {
+          call.answer(screenStream);  // Send the screen stream back
+          currentCall = call;
 
-        peer.on('open', (id) => {
-          console.log('My peer ID is: ' + id);
-          alert('Share this code with viewer: ' + id);
-        });
+          call.on('close', () => {
+            status.textContent += '\nViewer disconnected.';
+          });
 
-        peer.on('connection', (connection) => {
-          conn = connection;
-          conn.on('open', () => {
-            // When viewer connects, send them the screen stream
-            conn.on('open', () => {
-              // PeerJS can send MediaStream directly in data channel mode, but simplest is to add to call
-              const call = peer.call(conn.peer, screenStream);
-              call.on('stream', remoteStream => {
-                // not needed here (we're the sharer)
-              });
-            });
+          call.on('error', (err) => {
+            console.error('Call error:', err);
           });
         });
 
-        // Handle stop sharing
+        // When user stops sharing in browser UI
         screenStream.getVideoTracks()[0].addEventListener('ended', () => {
-          alert('You stopped sharing.');
+          status.textContent = 'You stopped sharing. Refresh to start again.';
           startBtn.disabled = false;
-          startBtn.textContent = "Start Sharing My Screen";
           video.srcObject = null;
-          if (peer) peer.destroy();
+          if (currentCall) currentCall.close();
         });
 
       } catch (err) {
-        alert('Permission denied or error: ' + err.message);
+        status.textContent = 'Permission denied / error: ' + err.message;
         startBtn.disabled = false;
-        startBtn.textContent = "Start Sharing My Screen";
+        console.error(err);
       }
     };
   </script>
