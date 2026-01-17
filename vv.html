@@ -2,138 +2,103 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Watch Live Screen Share</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Share Screen</title>
   <style>
     body {
       margin: 0;
-      background: #000;
-      color: white;
-      font-family: sans-serif;
       height: 100vh;
+      background: #111;
+      color: white;
+      font-family: system-ui, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
+      text-align: center;
+      padding: 20px;
     }
-    video {
-      width: 100vw;
-      height: 100vh;
-      object-fit: contain;
-      background: black;
-      display: none;
-    }
-    input, button {
-      padding: 14px 28px;
-      font-size: 18px;
-      margin: 12px;
-      border-radius: 8px;
-      border: none;
-    }
+    h1 { margin: 0 0 30px; font-size: 28px; }
     button {
-      background: #28a745;
+      padding: 18px 40px;
+      font-size: 20px;
+      background: #0066ff;
       color: white;
+      border: none;
+      border-radius: 12px;
       cursor: pointer;
     }
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    #status {
-      font-size: 20px;
-      text-align: center;
-      padding: 0 20px;
-      margin: 20px;
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    #status { font-size: 18px; margin: 30px 0; min-height: 60px; }
+    #myid {
+      font-size: 32px;
+      font-weight: bold;
+      color: #00ff88;
+      word-break: break-all;
+      margin: 20px 0;
+      padding: 12px;
+      background: #222;
+      border-radius: 8px;
     }
   </style>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 <body>
 
-  <video id="remoteVideo" autoplay playsinline controls></video>
-  <div id="status">Enter the sharer's Peer ID to watch live</div>
-
-  <input type="text" id="peerInput" placeholder="Paste Peer ID here (e.g. abcde-fghij-klmno)" />
-  <button id="connectBtn">Connect & Watch</button>
+  <h1>Share Your Screen</h1>
+  <button id="shareBtn">Start Sharing</button>
+  <div id="status">Click above to begin</div>
+  <div>Your sharing ID:<br><span id="myid">— waiting —</span></div>
 
   <script>
-    const video = document.getElementById('remoteVideo');
+    const shareBtn = document.getElementById('shareBtn');
     const status = document.getElementById('status');
-    const peerInput = document.getElementById('peerInput');
-    const connectBtn = document.getElementById('connectBtn');
+    const myIdDiv = document.getElementById('myid');
 
     let peer;
-    let call;
+    let screenStream;
 
-    // Creates a silent dummy audio track (no permission popup)
-    function createDummyStream() {
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioCtx.createOscillator();
-        oscillator.frequency.value = 0; // silent
-        const destination = audioCtx.createMediaStreamDestination();
-        oscillator.connect(destination);
-        oscillator.start();
-        return destination.stream;
-      } catch (e) {
-        console.error('Dummy stream creation failed:', e);
-        // Fallback: empty stream
-        return new MediaStream();
-      }
-    }
+    peer = new Peer();
 
-    connectBtn.onclick = async () => {
-      const targetId = peerInput.value.trim();
-      if (!targetId) {
-        status.textContent = 'Enter a valid Peer ID';
-        return;
-      }
+    peer.on('open', (id) => {
+      myIdDiv.textContent = id;
+      status.textContent = 'Give this ID to the viewer';
+    });
 
-      connectBtn.disabled = true;
-      status.textContent = 'Connecting to PeerJS... (may take 5–15 seconds)';
+    peer.on('error', (err) => {
+      status.textContent = 'Error: ' + err.message;
+    });
+
+    shareBtn.onclick = async () => {
+      shareBtn.disabled = true;
+      status.textContent = 'Waiting for permission...';
 
       try {
-        peer = new Peer({
-          debug: 2  // More logs — open console (F12) to see what's happening
+        screenStream = await navigator.mediaDevices.getDisplayMedia({
+          video: { cursor: "always" },
+          audio: false
         });
 
-        peer.on('open', (myId) => {
-          status.textContent = `Your temp ID: ${myId} — Calling sharer now...`;
+        status.textContent = 'Successful – screen is now shared';
+        shareBtn.style.display = 'none'; // hide button after success
 
-          const dummyStream = createDummyStream();
-
-          call = peer.call(targetId, dummyStream);
-
-          call.on('stream', (remoteStream) => {
-            console.log('Got remote screen stream!', remoteStream);
-            video.srcObject = remoteStream;
-            video.style.display = 'block';
-            status.textContent = '🔴 LIVE — Screen is streaming';
-          });
-
-          call.on('close', () => {
-            status.textContent = 'Connection closed (sharer stopped sharing?)';
-            video.style.display = 'none';
-            connectBtn.disabled = false;
-          });
-
-          call.on('error', (err) => {
-            status.textContent = 'Call error: ' + (err.message || err.type || 'unknown');
-            console.error('Call error:', err);
-            connectBtn.disabled = false;
-          });
+        // Answer incoming viewer calls with the screen stream
+        peer.on('call', (call) => {
+          call.answer(screenStream);
+          call.on('error', (e) => console.error('Call error (sharer side):', e));
+          call.on('close', () => console.log('Viewer left'));
         });
 
-        peer.on('error', (err) => {
-          status.textContent = 'PeerJS failed: ' + (err.message || err.type);
-          console.error('Peer error:', err);
-          connectBtn.disabled = false;
+        // If user stops sharing via browser UI
+        screenStream.getVideoTracks()[0].addEventListener('ended', () => {
+          status.textContent = 'Sharing stopped. Refresh page to start again.';
+          shareBtn.style.display = 'block';
+          shareBtn.disabled = false;
         });
 
       } catch (err) {
-        status.textContent = 'Error starting: ' + err.message;
-        console.error(err);
-        connectBtn.disabled = false;
+        status.textContent = 'Permission denied or failed: ' + err.name;
+        shareBtn.disabled = false;
       }
     };
   </script>
