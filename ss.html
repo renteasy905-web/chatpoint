@@ -2,96 +2,88 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Live Phone Screen Share</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Screen Sharer - Share Your Phone Screen</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: #000;
-      color: white;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      touch-action: manipulation;
-    }
-    #video {
-      width: 100vw;
-      height: 100vh;
-      object-fit: contain;
-      background: black;
-    }
-    #startButton {
-      padding: 16px 32px;
-      font-size: 20px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(0,123,255,0.4);
-    }
-    #startButton:active {
-      transform: scale(0.95);
-    }
-    .info {
-      margin-top: 20px;
-      text-align: center;
-      padding: 0 20px;
-      font-size: 16px;
-      opacity: 0.8;
-    }
+    body { margin:0; background:#000; color:white; font-family:sans-serif; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    video { width:100vw; height:100vh; object-fit:contain; background:black; }
+    button { padding:16px 32px; font-size:20px; background:#007bff; color:white; border:none; border-radius:12px; margin:20px; }
+    #info { text-align:center; padding:0 20px; font-size:16px; }
+    #roomCode { font-size:28px; font-weight:bold; color:#0f0; }
   </style>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 </head>
 <body>
 
-  <video id="video" autoplay playsinline muted></video>
+  <video id="preview" autoplay playsinline muted></video>
 
-  <button id="startButton">🔴 Start Live Screen Share</button>
-  <div class="info" id="info">
-    Tap the button above → Choose "Share Screen" or "Entire Screen"<br>
-    Your phone screen will appear here in real-time
+  <button id="startBtn">Start Sharing My Screen</button>
+  <div id="info">
+    <p>Your sharing code (give this to the viewer):</p>
+    <div id="roomCode">— waiting —</div>
   </div>
 
   <script>
-    const video = document.getElementById('video');
-    const button = document.getElementById('startButton');
-    const info = document.getElementById('info');
+    const video = document.getElementById('preview');
+    const startBtn = document.getElementById('startBtn');
+    const roomCodeDiv = document.getElementById('roomCode');
+    let peer;
+    let conn;
+    let screenStream;
 
-    button.onclick = async () => {
-      button.style.display = 'none';
-      info.textContent = 'Requesting screen sharing permission...';
+    // Generate or use a simple room code (you can make it random or fixed)
+    const roomCode = Math.random().toString(36).substring(2, 10); // e.g. "a7b9c2d4"
+    roomCodeDiv.textContent = roomCode;
+
+    startBtn.onclick = async () => {
+      startBtn.disabled = true;
+      startBtn.textContent = "Sharing in progress...";
 
       try {
-        // This is the magic API that asks for screen sharing
-        const stream = await navigator.mediaDevices.getDisplayMedia({
-          video: {
-            cursor: "always"  // shows the mouse/touch cursor
-          },
-          audio: false       // set true if you also want device audio
+        // Capture screen
+        screenStream = await navigator.mediaDevices.getDisplayMedia({
+          video: { cursor: "always" },
+          audio: false
         });
 
-        video.srcObject = stream;
+        video.srcObject = screenStream;
+        roomCodeDiv.textContent = roomCode; // show code again
 
-        // Optional: make it look better on phones
-        video.style.transform = window.innerWidth < window.innerHeight ? 'rotate(90deg)' : 'none';
+        // Initialize PeerJS
+        peer = new Peer(roomCode); // use roomCode as PeerJS ID
 
-        info.textContent = '🔴 LIVE – Your screen is being shared';
+        peer.on('open', (id) => {
+          console.log('My peer ID is: ' + id);
+          alert('Share this code with viewer: ' + id);
+        });
 
-        // When user stops sharing (clicks "Stop sharing" in browser)
-        stream.getVideoTracks()[0].addEventListener('ended', () => {
-          info.textContent = 'Sharing stopped. Tap button to start again.';
-          button.style.display = 'block';
+        peer.on('connection', (connection) => {
+          conn = connection;
+          conn.on('open', () => {
+            // When viewer connects, send them the screen stream
+            conn.on('open', () => {
+              // PeerJS can send MediaStream directly in data channel mode, but simplest is to add to call
+              const call = peer.call(conn.peer, screenStream);
+              call.on('stream', remoteStream => {
+                // not needed here (we're the sharer)
+              });
+            });
+          });
+        });
+
+        // Handle stop sharing
+        screenStream.getVideoTracks()[0].addEventListener('ended', () => {
+          alert('You stopped sharing.');
+          startBtn.disabled = false;
+          startBtn.textContent = "Start Sharing My Screen";
           video.srcObject = null;
+          if (peer) peer.destroy();
         });
 
       } catch (err) {
-        console.error(err);
-        info.textContent = 'Permission denied or error: ' + err.message;
-        button.style.display = 'block';
+        alert('Permission denied or error: ' + err.message);
+        startBtn.disabled = false;
+        startBtn.textContent = "Start Sharing My Screen";
       }
     };
   </script>
