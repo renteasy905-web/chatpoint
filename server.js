@@ -64,14 +64,14 @@ const User = mongoose.model(
     {
       name: String,
       phone: { type: String, required: true, unique: true },
-      password: String,                    // Hashed password
-      plainPassword: String,               // Plain password (for admin view only)
+      password: String, // Hashed password
+      plainPassword: String, // Plain password (for admin view only)
       isPremium: String,
       premiumType: {
         type: String,
         enum: ["far", "local", null],
-        default: null
-      }
+        default: null,
+      },
     },
     { timestamps: true }
   )
@@ -97,28 +97,47 @@ const GroceryItem = mongoose.model(
   })
 );
 
-const Shop = mongoose.model("Shop", new mongoose.Schema({
-  type: { type: String, default: "shop" },
-  shopName: String,
-  ownerName: String,
-  mobile: String,
-  items: [{ name: String, price: Number, description: String, imageUrl: [String] }],
-  date: { type: Date, default: Date.now },
-}));
+const Shop = mongoose.model(
+  "Shop",
+  new mongoose.Schema({
+    type: { type: String, default: "shop" },
+    shopName: String,
+    ownerName: String,
+    mobile: String,
+    items: [{ name: String, price: Number, description: String, imageUrl: [String] }],
+    date: { type: Date, default: Date.now },
+  })
+);
 
-const Order = mongoose.model("Order", new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
-  user: { name: String, phone: String },
-  shop: String,
-  items: [{ name: String, price: Number, quantity: Number }],
-  totalAmount: Number,
-  deliveryCharge: Number,
-  address: { name: String, phone: String, line1: String, line2: String },
-  paymentMethod: { type: String, default: "cash" },
-  status: { type: String, default: "pending" },
-  progress: { type: Number, default: 0 },
-  date: { type: Date, default: Date.now },
-}));
+const Order = mongoose.model(
+  "Order",
+  new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
+    user: { name: String, phone: String },
+    shop: String,
+    items: [{ name: String, price: Number, quantity: Number }],
+    totalAmount: Number,
+    deliveryCharge: Number,
+    address: { name: String, phone: String, line1: String, line2: String },
+    paymentMethod: { type: String, default: "cash" },
+    status: { type: String, default: "pending" },
+    progress: { type: Number, default: 0 },
+    date: { type: Date, default: Date.now },
+
+    // ─── NEW FIELDS ADDED FOR DELIVERY PARTNER & PROFIT ───────────────────────
+    deliveredBy: {
+      type: String,
+      enum: ["Suraj", "Guru", null],
+      default: null,
+    },
+    profitAmount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    // ────────────────────────────────────────────────────────────────────────────
+  })
+);
 
 // =============== ADMIN PASSWORD ===============
 const ADMIN_PASSWORD = "Brand";
@@ -135,9 +154,12 @@ const saveOrderUniversal = async (req, res) => {
     const grandTotal = Number(body.grandTotal || body.totalAmount || body.total);
     const cart = body.cart || body.items;
 
-    if (!name || !phone || !address1) return res.status(400).json({ success: false, message: "Missing name, phone or address" });
-    if (!grandTotal || isNaN(grandTotal) || grandTotal <= 0) return res.status(400).json({ success: false, message: "Invalid total amount" });
-    if (!cart || typeof cart !== 'object' || Object.keys(cart).length === 0) return res.status(400).json({ success: false, message: "Empty cart" });
+    if (!name || !phone || !address1)
+      return res.status(400).json({ success: false, message: "Missing name, phone or address" });
+    if (!grandTotal || isNaN(grandTotal) || grandTotal <= 0)
+      return res.status(400).json({ success: false, message: "Invalid total amount" });
+    if (!cart || typeof cart !== "object" || Object.keys(cart).length === 0)
+      return res.status(400).json({ success: false, message: "Empty cart" });
 
     let items = [];
     let shopName = null;
@@ -165,7 +187,7 @@ const saveOrderUniversal = async (req, res) => {
       deliveryCharge: grandTotal >= 69 ? 0 : 30,
       address: { name, phone, line1: address1, line2: address2 },
       paymentMethod: body.paymentMethod || "cash",
-      progress: 0
+      progress: 0,
     });
 
     await order.save();
@@ -195,8 +217,8 @@ app.post("/api/admin/make-premium", async (req, res) => {
       {
         $set: {
           isPremium: "yes",
-          premiumType: premiumType
-        }
+          premiumType: premiumType,
+        },
       },
       { new: true }
     );
@@ -209,7 +231,7 @@ app.post("/api/admin/make-premium", async (req, res) => {
     res.json({
       success: true,
       message: `User upgraded to ${premiumType.toUpperCase()} Premium!`,
-      user: updatedUser
+      user: updatedUser,
     });
   } catch (err) {
     console.error("Make premium error:", err);
@@ -223,7 +245,7 @@ app.get("/api/categories", async (req, res) => {
     const cats = await GroceryCategory.find().sort({ name: 1 });
     res.json({
       success: true,
-      categories: cats.map(c => ({ name: c.name, imageUrl: c.imageUrl }))
+      categories: cats.map((c) => ({ name: c.name, imageUrl: c.imageUrl })),
     });
   } catch (e) {
     console.error(e);
@@ -235,7 +257,7 @@ app.get("/api/items/:category", async (req, res) => {
   try {
     const category = decodeURIComponent(req.params.category);
     const items = await GroceryItem.find({ category });
-    const formattedItems = items.map(item => {
+    const formattedItems = items.map((item) => {
       const obj = item.toObject();
       return {
         ...obj,
@@ -250,48 +272,52 @@ app.get("/api/items/:category", async (req, res) => {
   }
 });
 
-app.post("/api/admin/add-item", upload.fields([
-  { name: "image", maxCount: 1 },
-  { name: "categoryImage", maxCount: 1 }
-]), async (req, res) => {
-  const { password, category, name, originalPrice, offerPrice } = req.body;
-  if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false, message: "Wrong password" });
+app.post(
+  "/api/admin/add-item",
+  upload.fields([
+    { name: "image", maxCount: 1 },
+    { name: "categoryImage", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    const { password, category, name, originalPrice, offerPrice } = req.body;
+    if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false, message: "Wrong password" });
 
-  try {
-    if (!req.files["image"] || !req.files["image"][0]) {
-      return res.status(400).json({ success: false, message: "Item image required" });
+    try {
+      if (!req.files["image"] || !req.files["image"][0]) {
+        return res.status(400).json({ success: false, message: "Item image required" });
+      }
+
+      const itemImageUrl = req.files["image"][0].path;
+
+      if (req.files["categoryImage"] && req.files["categoryImage"][0]) {
+        const catImageUrl = req.files["categoryImage"][0].path;
+        await GroceryCategory.findOneAndUpdate(
+          { name: category.trim() },
+          { name: category.trim(), imageUrl: catImageUrl },
+          { upsert: true, new: true }
+        );
+      } else {
+        const existing = await GroceryCategory.findOne({ name: category.trim() });
+        if (!existing) return res.status(400).json({ success: false, message: "Category not found. Upload photo to create new." });
+      }
+
+      const newItem = new GroceryItem({
+        category: category.trim(),
+        name: name.trim(),
+        price: Number(offerPrice || originalPrice),
+        originalPrice: Number(originalPrice),
+        offerPrice: Number(offerPrice),
+        imageUrl: itemImageUrl,
+      });
+
+      await newItem.save();
+      res.json({ success: true, item: newItem });
+    } catch (e) {
+      console.error("Add item error:", e);
+      res.status(500).json({ success: false, message: e.message || "Server error" });
     }
-
-    const itemImageUrl = req.files["image"][0].path;
-
-    if (req.files["categoryImage"] && req.files["categoryImage"][0]) {
-      const catImageUrl = req.files["categoryImage"][0].path;
-      await GroceryCategory.findOneAndUpdate(
-        { name: category.trim() },
-        { name: category.trim(), imageUrl: catImageUrl },
-        { upsert: true, new: true }
-      );
-    } else {
-      const existing = await GroceryCategory.findOne({ name: category.trim() });
-      if (!existing) return res.status(400).json({ success: false, message: "Category not found. Upload photo to create new." });
-    }
-
-    const newItem = new GroceryItem({
-      category: category.trim(),
-      name: name.trim(),
-      price: Number(offerPrice || originalPrice),
-      originalPrice: Number(originalPrice),
-      offerPrice: Number(offerPrice),
-      imageUrl: itemImageUrl,
-    });
-
-    await newItem.save();
-    res.json({ success: true, item: newItem });
-  } catch (e) {
-    console.error("Add item error:", e);
-    res.status(500).json({ success: false, message: e.message || "Server error" });
   }
-});
+);
 
 app.post("/api/admin/edit-item", async (req, res) => {
   const { password, itemId, originalPrice, offerPrice } = req.body;
@@ -303,7 +329,7 @@ app.post("/api/admin/edit-item", async (req, res) => {
       offerPrice: offerPrice ? Number(offerPrice) : undefined,
       price: offerPrice ? Number(offerPrice) : undefined,
     };
-    Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
+    Object.keys(updateData).forEach((key) => updateData[key] === undefined && delete updateData[key]);
 
     const updated = await GroceryItem.findByIdAndUpdate(itemId, updateData, { new: true });
     if (!updated) return res.status(404).json({ success: false });
@@ -345,7 +371,7 @@ app.post("/api/user/signup", async (req, res) => {
       name,
       phone,
       password: hash,
-      plainPassword: password  // Store plain password for admin view
+      plainPassword: password, // Store plain password for admin view
     });
 
     await user.save();
@@ -372,8 +398,8 @@ app.post("/api/user/login", async (req, res) => {
         name: user.name,
         phone: user.phone,
         isPremium: user.isPremium === "yes",
-        premiumType: user.premiumType || null
-      }
+        premiumType: user.premiumType || null,
+      },
     });
   } catch (e) {
     console.error(e);
@@ -392,7 +418,10 @@ app.get("/api/shops", async (req, res) => {
 
 app.get("/api/delivery-orders", async (req, res) => {
   try {
-    const orders = await Order.find({ status: { $in: ["pending", "confirmed"] } }).sort({ date: -1 }).limit(50).lean();
+    const orders = await Order.find({ status: { $in: ["pending", "confirmed"] } })
+      .sort({ date: -1 })
+      .limit(50)
+      .lean();
     res.json({ success: true, orders });
   } catch (e) {
     res.status(500).json({ success: false });
@@ -414,11 +443,7 @@ app.post("/api/update-order-progress", async (req, res) => {
     if (!orderId || progress < 0 || progress > 4) {
       return res.status(400).json({ success: false, message: "Invalid data" });
     }
-    const updated = await Order.findByIdAndUpdate(
-      orderId,
-      { progress: Number(progress) },
-      { new: true }
-    );
+    const updated = await Order.findByIdAndUpdate(orderId, { progress: Number(progress) }, { new: true });
     if (!updated) return res.status(404).json({ success: false, message: "Order not found" });
     console.log(`Order ${orderId} → Progress ${progress}/4`);
     res.json({ success: true, order: updated });
@@ -428,19 +453,61 @@ app.post("/api/update-order-progress", async (req, res) => {
   }
 });
 
+// ─────────────────────────────────────────────────────────────
+// UPDATED ENDPOINT: Handles status + deliveredBy + profitAmount
+// ─────────────────────────────────────────────────────────────
 app.post("/api/update-order-status", async (req, res) => {
   try {
-    const { orderId, status } = req.body;
-    if (!["confirmed", "delivered", "cancelled"].includes(status)) return res.status(400).json({ success: false });
+    const { orderId, status, deliveredBy, profitAmount } = req.body;
 
-    const result = await Order.findByIdAndUpdate(orderId, { status }, { new: true });
-    if (!result) return res.status(404).json({ success: false });
+    if (!orderId) {
+      return res.status(400).json({ success: false, message: "orderId is required" });
+    }
 
-    console.log(`Order ${orderId} → ${status}`);
+    const updateData = {};
+
+    if (status) {
+      if (!["confirmed", "delivered", "cancelled"].includes(status)) {
+        return res.status(400).json({ success: false, message: "Invalid status value" });
+      }
+      updateData.status = status;
+    }
+
+    // Special validation & update when marking as delivered
+    if (status === "delivered") {
+      if (!deliveredBy || !["Suraj", "Guru"].includes(deliveredBy)) {
+        return res.status(400).json({
+          success: false,
+          message: "When marking delivered, 'deliveredBy' must be 'Suraj' or 'Guru'",
+        });
+      }
+
+      if (profitAmount === undefined || typeof profitAmount !== "number" || profitAmount < 0) {
+        return res.status(400).json({
+          success: false,
+          message: "When marking delivered, 'profitAmount' must be a non-negative number",
+        });
+      }
+
+      updateData.deliveredBy = deliveredBy;
+      updateData.profitAmount = profitAmount;
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(orderId, { $set: updateData }, { new: true, runValidators: true });
+
+    if (!updatedOrder) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+
+    console.log(
+      `Order ${orderId} updated → status: ${status || "unchanged"}, ` +
+        `deliveredBy: ${deliveredBy || "—"}, profit: ₹${profitAmount || "—"}`
+    );
+
     res.json({ success: true });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false });
+  } catch (err) {
+    console.error("Update order status error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
@@ -497,17 +564,17 @@ app.get("/api/admin/users", async (req, res) => {
         phone: 1,
         isPremium: 1,
         premiumType: 1,
-        plainPassword: 1,   // Include plain password for admin
-        _id: 0
+        plainPassword: 1,
+        _id: 0,
       }
     ).sort({ createdAt: -1 });
 
-    const safeUsers = users.map(u => ({
+    const safeUsers = users.map((u) => ({
       name: u.name,
       phone: u.phone,
       isPremium: u.isPremium,
       premiumType: u.premiumType,
-      plainPassword: u.plainPassword || "Not available"
+      plainPassword: u.plainPassword || "Not available",
     }));
 
     res.json({ users: safeUsers });
@@ -518,7 +585,24 @@ app.get("/api/admin/users", async (req, res) => {
 });
 
 // =============== SERVE PAGES ===============
-const pages = ["index", "gitems", "adminportal", "gcart", "privacy", "delivery", "orders", "cart", "payment", "login", "admin", "items", "tracking", "categories", "pindex"];
+const pages = [
+  "index",
+  "gitems",
+  "adminportal",
+  "gcart",
+  "privacy",
+  "delivery",
+  "orders",
+  "cart",
+  "payment",
+  "login",
+  "admin",
+  "items",
+  "tracking",
+  "categories",
+  "pindex",
+];
+
 pages.forEach((p) => {
   const route = p === "index" ? "/" : `/${p}.html`;
   const file = p === "index" ? "index.html" : `${p}.html`;
