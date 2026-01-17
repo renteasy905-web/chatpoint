@@ -21,7 +21,7 @@
       height: 100vh;
       object-fit: contain;
       background: black;
-      display: none;
+      display: none; /* shown only when stream arrives */
     }
     input, button {
       padding: 14px 28px;
@@ -35,6 +35,9 @@
       color: white;
       cursor: pointer;
     }
+    button:disabled {
+      background: #555;
+    }
     #status {
       font-size: 20px;
       text-align: center;
@@ -47,7 +50,7 @@
 <body>
 
   <video id="remoteVideo" autoplay playsinline controls></video>
-  <div id="status">Enter the sharing code to watch</div>
+  <div id="status">Enter the sharing code from the sharer page</div>
 
   <input type="text" id="peerInput" placeholder="Paste sharing code here" />
   <button id="connectBtn">Connect & Watch</button>
@@ -61,52 +64,68 @@
     let peer;
     let call;
 
+    // Create silent dummy stream (no mic/camera permission needed)
+    function createDummyStream() {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      oscillator.frequency.setValueAtTime(0, audioCtx.currentTime); // frequency 0 = silence
+      const destination = audioCtx.createMediaStreamDestination();
+      oscillator.connect(destination);
+      oscillator.start();
+      return destination.stream;
+    }
+
     connectBtn.onclick = async () => {
       const targetId = peerInput.value.trim();
       if (!targetId) {
-        status.textContent = 'Please enter a valid code';
+        status.textContent = 'Please enter a valid sharing code';
         return;
       }
 
       connectBtn.disabled = true;
-      status.textContent = 'Connecting...';
+      status.textContent = 'Initializing connection...';
 
       try {
-        peer = new Peer();  // Viewer gets random temp ID
+        peer = new Peer({
+          debug: 2  // enable more console logs for debugging
+        });
 
-        peer.on('open', () => {
-          status.textContent = 'Calling sharer...';
+        peer.on('open', (myId) => {
+          status.textContent = `Peer connected (your temp ID: ${myId}). Calling sharer...`;
 
-          // For one-way screen share: answerer (viewer) sends NO stream or empty
-          call = peer.call(targetId, null);  // null = one-way receive only
+          const dummy = createDummyStream();
+
+          call = peer.call(targetId, dummy);
 
           call.on('stream', (remoteStream) => {
+            console.log('Received remote stream:', remoteStream);
             video.srcObject = remoteStream;
             video.style.display = 'block';
-            status.textContent = '🔴 LIVE – Watching screen now';
+            status.textContent = '🔴 LIVE – Watching shared screen';
           });
 
           call.on('close', () => {
-            status.textContent = 'Connection closed by sharer.';
+            status.textContent = 'Call ended (sharer stopped or disconnected)';
             video.style.display = 'none';
             connectBtn.disabled = false;
           });
 
           call.on('error', (err) => {
-            status.textContent = 'Call failed: ' + err.message;
-            console.error(err);
+            status.textContent = 'Call error: ' + err.message;
+            console.error('Call error:', err);
             connectBtn.disabled = false;
           });
         });
 
         peer.on('error', (err) => {
-          status.textContent = 'Connection error: ' + err.type;
-          console.error(err);
+          status.textContent = 'PeerJS connection failed: ' + err.type + ' – ' + err.message;
+          console.error('Peer error:', err);
           connectBtn.disabled = false;
         });
 
       } catch (err) {
-        status.textContent = 'Failed: ' + err.message;
+        status.textContent = 'Setup failed: ' + err.message;
+        console.error(err);
         connectBtn.disabled = false;
       }
     };
