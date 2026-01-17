@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Watch Shared Screen Live</title>
+  <style>
+    body { margin:0; background:#000; color:white; font-family:sans-serif; height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+    video { width:100vw; height:100vh; object-fit:contain; background:black; }
+    input, button { padding:12px 24px; font-size:18px; margin:10px; border-radius:8px; border:none; }
+    button { background:#28a745; color:white; }
+    #status { font-size:20px; margin:20px; }
+  </style>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+</head>
+<body>
+
+  <video id="remoteVideo" autoplay playsinline></video>
+  <div id="status">Enter the sharing code to watch live</div>
+
+  <input type="text" id="roomInput" placeholder="Enter sharing code here" />
+  <button id="connectBtn">Connect & Watch</button>
+
+  <script>
+    const video = document.getElementById('remoteVideo');
+    const status = document.getElementById('status');
+    const roomInput = document.getElementById('roomInput');
+    const connectBtn = document.getElementById('connectBtn');
+
+    let peer;
+    let call;
+
+    connectBtn.onclick = () => {
+      const targetId = roomInput.value.trim();
+      if (!targetId) return alert('Enter a code!');
+
+      status.textContent = 'Connecting...';
+
+      peer = new Peer(); // viewer doesn't need fixed ID
+
+      peer.on('open', () => {
+        // Connect and request stream
+        call = peer.call(targetId, null); // call without local stream
+
+        call.on('stream', (remoteStream) => {
+          video.srcObject = remoteStream;
+          status.textContent = '🔴 LIVE – Watching shared screen';
+        });
+
+        call.on('close', () => {
+          status.textContent = 'Connection closed.';
+        });
+
+        call.on('error', (err) => {
+          status.textContent = 'Error: ' + err.message;
+        });
+      });
+
+      peer.on('error', (err) => {
+        status.textContent = 'Peer error: ' + err.type;
+      });
+    };
+  </script>
+</body>
+</html>
