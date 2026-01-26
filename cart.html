@@ -19,9 +19,9 @@
             --muted: #6c757d;
             --border: rgba(255,255,255,0.25);
             --glass: rgba(255,255,255,0.7);
-            --shadow: 0 8px 24px rgba(0,0,0,0.08);
-            --radius: 16px;
-            --transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow: 0 6px 18px rgba(0,0,0,0.07);
+            --radius: 14px;
+            --transition: all 0.25s ease;
         }
         * { margin:0; padding:0; box-sizing:border-box; }
         body {
@@ -29,177 +29,174 @@
             background: linear-gradient(135deg, #fdfbf7 0%, #fffaf0 100%);
             color: var(--text);
             min-height: 100vh;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
+            line-height: 1.45;
+            font-size: 14px;
         }
         header {
             position: sticky;
             top: 0;
             z-index: 100;
             background: rgba(255,255,255,0.96);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0,0,0,0.06);
-            padding: 0.8rem 1rem;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 0.7rem 1rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
-        .brand { font-size: 1.8rem; font-weight: 900; color: var(--primary); }
+        .brand { font-size: 1.7rem; font-weight: 900; color: var(--primary); }
         .back-btn {
-            width: 40px; height: 40px; background: rgba(230,57,70,0.1);
-            border: none; border-radius: 10px; font-size: 1.6rem; color: var(--primary);
+            width: 38px; height: 38px; background: rgba(230,57,70,0.08);
+            border: none; border-radius: 10px; font-size: 1.5rem; color: var(--primary);
             cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
         .cart-badge {
-            background: var(--primary); color: white; padding: 0.25rem 0.65rem;
-            border-radius: 50px; font-size: 0.85rem; font-weight: 800;
+            background: var(--primary); color: white; padding: 0.2rem 0.6rem;
+            border-radius: 50px; font-size: 0.8rem; font-weight: 800;
         }
         main {
-            padding: 0.8rem 0.9rem;
+            padding: 0.7rem 0.8rem;
             max-width: 100%;
             margin: 0 auto;
-            padding-bottom: 200px;
+            padding-bottom: 180px;
         }
         .cart-container {
             background: var(--card);
             border-radius: var(--radius);
             overflow: hidden;
             box-shadow: var(--shadow);
-            border: 1px solid rgba(230,57,70,0.08);
         }
         .section-title {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white; padding: 1rem 1.2rem; font-size: 1.25rem; font-weight: 800;
-            display: flex; align-items: center; gap: 0.6rem;
+            color: white; padding: 0.9rem 1.1rem; font-size: 1.15rem; font-weight: 800;
+            display: flex; align-items: center; gap: 0.5rem;
         }
         .cart-item {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            padding: 1rem 1.1rem;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            gap: 0.8rem;
+            padding: 0.9rem 1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            gap: 0.7rem;
         }
         .item-name {
             flex: 1 1 100%;
             font-weight: 600;
-            font-size: 1.05rem;
-            line-height: 1.4;
-            margin-bottom: 0.4rem;
+            font-size: 0.95rem;
+            line-height: 1.35;
+            margin-bottom: 0.3rem;
         }
         .item-price {
             font-weight: 800;
-            font-size: 1.15rem;
+            font-size: 1.05rem;
             color: var(--primary);
-            min-width: 80px;
+            min-width: 70px;
             text-align: right;
         }
         .quantity {
             display: flex;
             align-items: center;
-            border: 1px solid rgba(230,57,70,0.3);
+            border: 1px solid rgba(230,57,70,0.25);
             border-radius: 10px;
             overflow: hidden;
         }
         .qbtn {
-            width: 40px; height: 40px; background: transparent; border: none;
-            color: var(--primary); font-size: 1.5rem; cursor: pointer;
+            width: 36px; height: 36px; background: transparent; border: none;
+            color: var(--primary); font-size: 1.4rem; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
         }
-        .qbtn:hover { background: rgba(230,57,70,0.12); }
+        .qbtn:hover { background: rgba(230,57,70,0.1); }
         .qty {
-            min-width: 45px;
+            min-width: 40px;
             text-align: center;
             font-weight: 700;
-            font-size: 1.05rem;
-            padding: 0 0.6rem;
+            font-size: 0.95rem;
+            padding: 0 0.5rem;
         }
         .delivery-status {
-            padding: 1rem; margin: 0.6rem 1rem;
-            border-radius: 12px; text-align: center; font-weight: 700; font-size: 1rem;
-            background: rgba(230,57,70,0.05); border: 1px solid rgba(230,57,70,0.15);
+            padding: 0.9rem; margin: 0.6rem 0.9rem;
+            border-radius: 12px; text-align: center; font-weight: 700; font-size: 0.95rem;
+            background: rgba(230,57,70,0.04); border: 1px solid rgba(230,57,70,0.12);
         }
         .delivery-waived {
-            background: rgba(42,157,143,0.1); border-color: rgba(42,157,143,0.25); color: #1b5e20;
+            background: rgba(42,157,143,0.08); border-color: rgba(42,157,143,0.2); color: #1b5e20;
         }
         .water-bottle-promo {
-            margin: 1rem; padding: 1.3rem;
+            margin: 0.9rem; padding: 1.1rem;
             background: linear-gradient(135deg, #fffaf0, #fff8e1);
-            border: 2px dashed var(--accent); border-radius: 16px;
-            text-align: center; box-shadow: 0 6px 18px rgba(244,162,97,0.12);
+            border: 2px dashed var(--accent); border-radius: 14px;
+            text-align: center; box-shadow: 0 5px 14px rgba(244,162,97,0.1);
         }
-        .water-bottle-promo h3 { color: var(--primary); font-size: 1.25rem; margin-bottom: 0.5rem; }
+        .water-bottle-promo h3 { color: var(--primary); font-size: 1.15rem; margin-bottom: 0.4rem; }
         .add-water-btn {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white; border: none; padding: 0.9rem 1.6rem;
-            border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer;
-            margin-top: 0.8rem; box-shadow: 0 4px 14px rgba(230,57,70,0.25);
+            color: white; border: none; padding: 0.8rem 1.4rem;
+            border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer;
+            margin-top: 0.7rem; box-shadow: 0 3px 10px rgba(230,57,70,0.2);
         }
-        .add-water-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(230,57,70,0.35); }
         .coupon-section {
-            margin: 1rem; padding: 1.2rem;
-            background: white; border-radius: 16px; box-shadow: var(--shadow);
-            border: 1px solid rgba(230,57,70,0.1);
+            margin: 0.9rem; padding: 1rem;
+            background: white; border-radius: 14px; box-shadow: var(--shadow);
+            border: 1px solid rgba(230,57,70,0.08);
         }
-        .coupon-section h3 { font-size: 1.2rem; color: var(--primary); margin-bottom: 0.8rem; }
+        .coupon-section h3 { font-size: 1.1rem; color: var(--primary); margin-bottom: 0.7rem; }
         .coupon-input-group {
-            display: flex; flex-direction: column; gap: 0.8rem;
+            display: flex; flex-direction: column; gap: 0.7rem;
         }
         .coupon-input {
-            padding: 0.9rem 1.1rem; border: 2px solid #ddd;
-            border-radius: 12px; font-size: 1rem; outline: none;
+            padding: 0.8rem 1rem; border: 2px solid #ddd;
+            border-radius: 10px; font-size: 0.95rem; outline: none;
         }
-        .coupon-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(230,57,70,0.15); }
+        .coupon-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(230,57,70,0.12); }
         .coupon-btn {
             background: var(--primary); color: white; border: none;
-            padding: 0.9rem; border-radius: 12px; font-weight: 700;
-            cursor: pointer; font-size: 1rem;
+            padding: 0.8rem; border-radius: 10px; font-weight: 700;
+            cursor: pointer; font-size: 0.95rem;
         }
-        .coupon-message { font-size: 0.95rem; margin-top: 0.5rem; min-height: 1.3em; }
+        .coupon-message { font-size: 0.9rem; margin-top: 0.4rem; min-height: 1.2em; }
         .coupon-success { color: var(--success); font-weight: 600; }
         .coupon-error { color: #e63946; }
         .totals-actions-wrapper {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
-            border-top: 1px solid rgba(0,0,0,0.07); box-shadow: 0 -6px 20px rgba(0,0,0,0.1);
-            padding: 0.9rem 0.8rem; z-index: 90;
+            background: rgba(255,255,255,0.96); backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0,0,0,0.06); box-shadow: 0 -5px 16px rgba(0,0,0,0.08);
+            padding: 0.8rem 0.7rem; z-index: 90;
         }
         .grand-total {
-            font-size: 2.4rem; font-weight: 900; color: var(--primary);
-            text-align: center; margin: 0.4rem 0; letter-spacing: -0.6px;
+            font-size: 2.1rem; font-weight: 900; color: var(--primary);
+            text-align: center; margin: 0.3rem 0; letter-spacing: -0.5px;
         }
         .discount-line {
-            font-size: 1rem; color: var(--success); text-align: center;
-            margin-bottom: 0.6rem; font-weight: 600;
+            font-size: 0.95rem; color: var(--success); text-align: center;
+            margin-bottom: 0.5rem; font-weight: 600;
         }
         .btn {
-            padding: 1rem; border: none; border-radius: 12px;
-            font-weight: 700; font-size: 1.05rem; cursor: pointer;
+            padding: 0.9rem; border: none; border-radius: 12px;
+            font-weight: 700; font-size: 0.98rem; cursor: pointer;
             transition: var(--transition);
         }
         .btn-clear { background: #e76f51; color: white; flex: 1; }
         .btn-payment {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white; box-shadow: 0 5px 16px rgba(230,57,70,0.3); flex: 2;
+            color: white; box-shadow: 0 4px 12px rgba(230,57,70,0.25); flex: 2;
         }
-        .btn-payment:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(230,57,70,0.4); }
+        .btn-payment:hover { transform: translateY(-1px); }
         .empty-cart {
-            text-align: center; padding: 8rem 1.5rem 5rem; color: var(--muted);
+            text-align: center; padding: 7rem 1.2rem 5rem; color: var(--muted);
         }
-        .empty-cart i { font-size: 6.5rem; color: rgba(230,57,70,0.15); margin-bottom: 1.2rem; }
-        .empty-cart p { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.2rem; }
+        .empty-cart i { font-size: 5.5rem; color: rgba(230,57,70,0.12); margin-bottom: 1rem; }
+        .empty-cart p { font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; }
 
-        /* Mobile-first adjustments */
+        /* Mobile-first tweaks */
         @media (min-width: 480px) {
             .coupon-input-group { flex-direction: row; }
-            .coupon-btn { padding: 0.9rem 1.8rem; }
-            .grand-total { font-size: 2.8rem; }
+            .coupon-btn { padding: 0.8rem 1.6rem; }
+            .grand-total { font-size: 2.4rem; }
             .cart-item { flex-wrap: nowrap; }
             .item-name { flex: 1 1 auto; margin-bottom: 0; }
         }
         @media (min-width: 720px) {
-            main { padding: 1.4rem 1.2rem; max-width: 720px; }
+            main { max-width: 720px; padding: 1.2rem 1.4rem; }
         }
     </style>
 </head>
@@ -219,10 +216,10 @@
     <div class="totals-actions-wrapper" id="totalsActionsWrapper" style="display:none;">
         <div class="grand-total" id="floatingGrandTotal">₹0</div>
         <div id="discountLine" class="discount-line" style="display:none;"></div>
-        <div style="display:flex; flex-wrap:wrap; gap:0.8rem; margin-top:0.8rem;">
+        <div style="display:flex; flex-wrap:wrap; gap:0.7rem; margin-top:0.7rem;">
             <button class="btn btn-clear" onclick="clearCart()">Clear Cart</button>
             <button class="btn btn-payment" id="proceedBtn" onclick="location.href='payment.html'">
-                Proceed to Payment
+                Pay Now
             </button>
         </div>
     </div>
@@ -311,13 +308,13 @@
             const code = (input.value || "").trim().toUpperCase();
 
             if (!code) {
-                msg.textContent = "Enter a coupon code.";
+                msg.textContent = "Enter code";
                 msg.className = "coupon-message coupon-error";
                 return;
             }
 
             if (appliedCouponDiscount > 0) {
-                msg.textContent = "Coupon already applied!";
+                msg.textContent = "Already applied";
                 msg.className = "coupon-message coupon-error";
                 return;
             }
@@ -333,13 +330,14 @@
                 }
 
                 appliedCouponDiscount = discount;
-                msg.textContent = `Success! ₹${discount} off applied (Republic Day Special) 🎉`;
+                msg.textContent = `₹${discount} off applied! 🎉`;
                 msg.className = "coupon-message coupon-success";
                 input.disabled = true;
+                input.value = code;
                 saveCart();
                 renderCart();
             } else {
-                msg.textContent = "Invalid code. Try REPUBLIC77";
+                msg.textContent = "Invalid code";
                 msg.className = "coupon-message coupon-error";
             }
         }
@@ -354,8 +352,8 @@
             if (Object.keys(cart).length === 0) {
                 container.innerHTML = `
                     <div class="empty-cart">
-                        <i class="fas fa-shopping-bag fa-6x"></i>
-                        <p>Your cart is empty</p>
+                        <i class="fas fa-shopping-bag fa-5x"></i>
+                        <p>Cart is empty</p>
                         <a href="index.html" style="color:var(--primary);font-weight:700;">Browse Menu</a>
                     </div>`;
                 totalsWrapper.style.display = 'none';
@@ -366,8 +364,8 @@
 
             for (let shop in cart) {
                 if (shop === WATER.shop) continue;
-                html += `<div style="padding:1rem 1.2rem; background:rgba(230,57,70,0.02);">
-                    <div style="font-weight:800; color:var(--primary); margin-bottom:0.8rem;">${shop}</div>`;
+                html += `<div style="padding:0.9rem 1rem; background:rgba(230,57,70,0.02);">
+                    <div style="font-weight:800; color:var(--primary); margin-bottom:0.7rem; font-size:1.05rem;">${shop}</div>`;
                 for (let name in cart[shop]) {
                     let item = cart[shop][name];
                     let itemTotal = item.qty * item.price;
@@ -388,24 +386,24 @@
             html += `
                 <div class="delivery-status ${hasB ? 'delivery-waived' : ''}">
                     ${hasB
-                        ? '<i class="fas fa-check-circle"></i> Free Delivery Unlocked!'
+                        ? '<i class="fas fa-check-circle"></i> Free Delivery!'
                         : `<i class="fas fa-truck"></i> Delivery: ${format(delivery)}`}
                 </div>`;
 
             if (!hasB) {
                 html += `
                     <div class="water-bottle-promo">
-                        <h3>Skip Delivery Fee!</h3>
-                        <p>Add <strong>1L Water Bottle</strong> for ₹13<br>and get <strong>FREE DELIVERY</strong></p>
+                        <h3>Skip Delivery Fee</h3>
+                        <p>Add 1L Water Bottle ₹13 → Free Delivery</p>
                         <button class="add-water-btn" onclick="addWater()">
-                            <i class="fas fa-bottle-water"></i> Add 1L Water – ₹13
+                            <i class="fas fa-bottle-water"></i> Add Water – ₹13
                         </button>
                     </div>`;
             } else {
                 let qty = cart[WATER.shop][WATER.name].qty;
                 html += `
-                    <div class="cart-item" style="background:rgba(42,157,143,0.08); border-left:5px solid var(--success);">
-                        <div class="item-name"><i class="fas fa-bottle-water" style="color:var(--success); margin-right:0.6rem;"></i>1L Water Bottle</div>
+                    <div class="cart-item" style="background:rgba(42,157,143,0.08); border-left:4px solid var(--success);">
+                        <div class="item-name"><i class="fas fa-bottle-water" style="color:var(--success); margin-right:0.5rem;"></i>1L Water Bottle</div>
                         <div class="item-price">${format(qty * 13)}</div>
                         <div class="quantity">
                             <button class="qbtn" onclick="changeQty('${WATER.shop}','${WATER.name}',13,-1)">−</button>
@@ -418,9 +416,9 @@
             // Coupon section
             html += `
                 <div class="coupon-section">
-                    <h3>Apply Coupon</h3>
+                    <h3>Have Coupon?</h3>
                     <div class="coupon-input-group">
-                        <input type="text" id="couponInput" class="coupon-input" placeholder="Enter code" />
+                        <input type="text" id="couponInput" class="coupon-input" placeholder="REPUBLIC77" />
                         <button class="coupon-btn" onclick="applyCoupon()">Apply</button>
                     </div>
                     <div id="couponMessage" class="coupon-message"></div>
@@ -429,7 +427,7 @@
             container.innerHTML = html;
 
             if (appliedCouponDiscount > 0) {
-                discountLine.textContent = `Coupon Discount: -₹${appliedCouponDiscount}`;
+                discountLine.textContent = `Coupon: -₹${appliedCouponDiscount}`;
                 discountLine.style.display = "block";
             } else {
                 discountLine.style.display = "none";
@@ -440,7 +438,7 @@
         }
 
         function clearCart() {
-            if (confirm("Clear cart? Coupon will also reset.")) {
+            if (confirm("Clear cart?")) {
                 cart = {};
                 appliedCouponDiscount = 0;
                 localStorage.removeItem(CART_KEY);
