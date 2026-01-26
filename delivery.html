@@ -32,10 +32,32 @@
       padding: 1rem 0; border-bottom: 2px solid var(--border);
       display: flex; justify-content: space-between; align-items: center;
     }
+    .header-left { font-size: 1.6rem; font-weight: 700; }
+    .header-right {
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+    }
+    .header-btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+    .btn-users {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-users:hover { background: #2563eb; }
     .logout-btn {
-      background: var(--danger); color: white; padding: 0.6rem 1.2rem;
-      border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer;
-      display: flex; align-items: center; gap: 0.4rem; font-size: 0.95rem;
+      background: var(--danger);
+      color: white;
     }
     .logout-btn:hover { background: #dc2626; }
     .filter-tabs {
@@ -112,8 +134,15 @@
 
   <div class="container">
     <div class="header">
-      <h1>Delivery Portal</h1>
-      <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      <div class="header-left">Delivery Portal</div>
+      <div class="header-right">
+        <button class="header-btn btn-users" id="usersBtn">
+          <i class="fas fa-users"></i> Users
+        </button>
+        <button class="header-btn logout-btn" id="logoutBtn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
     </div>
 
     <div class="filter-tabs">
@@ -129,6 +158,7 @@
     </div>
 
     <div id="orders-container"></div>
+
     <div id="empty" class="empty" style="display:none;">
       <p>No orders in this section.</p>
     </div>
@@ -141,11 +171,25 @@
   <audio id="loudSound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3" preload="auto"></audio>
 
   <script>
+    // ────────────────────────────────────────────────
+    //  Users button handler (replace with real link)
+    // ────────────────────────────────────────────────
+    document.getElementById('usersBtn').onclick = () => {
+      // Change this to your actual users/customers page
+      alert("Users/Customers section coming soon!\n\nYou can link this to: users.html or /dashboard/users");
+      // Example real redirect:
+      // window.location.href = 'users.html';
+      // or
+      // window.location.href = '/dashboard/users';
+    };
+
+    // Rest of your original script remains the same
     const API_BASE = window.location.origin;
     const REFRESH_INTERVAL = 5000;
     let allOrders = [];
     let currentFilter = 'active';
     let previousPendingCount = 0;
+
     const $ = s => document.querySelector(s);
     const ordersContainer = $('#orders-container');
     const loadingEl = $('#loading');
@@ -154,12 +198,20 @@
 
     const deliveredMessage = encodeURIComponent(`Great news! 🎉\nYour ChatPoint order has been delivered.\nEnjoy your items!\nOrder again soon! 🌟`);
 
-    function openWhatsApp(phone, message) {
-      if (!phone) return alert("Phone number missing");
+    function openWhatsApp(phone, message = '') {
+      if (!phone) {
+        alert("Phone number missing");
+        return;
+      }
       let cleaned = phone.replace(/\D/g, '');
       if (cleaned.startsWith('0')) cleaned = '91' + cleaned.slice(1);
       else if (!cleaned.startsWith('91')) cleaned = '91' + cleaned;
-      window.open(`https://wa.me/${cleaned}?text=${message}`, '_blank');
+
+      const url = message 
+        ? `https://wa.me/${cleaned}?text=${message}`
+        : `https://wa.me/${cleaned}`;
+      
+      window.open(url, '_blank');
     }
 
     function showBigAlert() {
@@ -174,7 +226,6 @@
         const body = { orderId, status };
         if (deliveredBy !== null) body.deliveredBy = deliveredBy;
         if (profitAmount !== null) body.profitAmount = profitAmount;
-
         const res = await fetch(`${API_BASE}/api/update-order-status`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -190,7 +241,8 @@
 
     function renderOrderCard(order) {
       order.progress = order.progress || 0;
-      const itemsHtml = order.items.map(i => `
+      
+      const itemsHtml = (order.items || []).map(i => `
         <div style="display:flex;justify-content:space-between;font-size:0.9rem;color:#cbd5e1;margin-top:0.4rem;">
           <span>${i.name} × ${i.quantity}</span>
           <span>₹${(i.price * i.quantity).toFixed(2)}</span>
@@ -199,8 +251,12 @@
 
       let actions = '';
       let progressButtons = '';
+      const attrs = `data-id="${order._id}" data-phone="${order.user?.phone || ''}" data-name="${order.user?.name || ''}"`;
 
-      const attrs = `data-id="${order._id}" data-phone="${order.user.phone}" data-name="${order.user.name}"`;
+      const chatBtn = `
+        <button class="btn btn-whatsapp" ${attrs} data-action="chat">
+          <i class="fab fa-whatsapp"></i> Chat with Customer
+        </button>`;
 
       if (order.status === 'pending') {
         actions = `
@@ -208,8 +264,10 @@
             <button class="btn btn-primary" ${attrs} data-action="confirm">Confirm</button>
             <button class="btn btn-success" ${attrs} data-action="delivered">Delivered</button>
             <button class="btn btn-danger" ${attrs} data-action="cancel">Cancel</button>
+            ${chatBtn}
           </div>`;
-      } else if (order.status === 'confirmed') {
+      } 
+      else if (order.status === 'confirmed') {
         if (order.progress < 4) {
           progressButtons = `
             <div class="progress-btns">
@@ -229,13 +287,16 @@
           <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
             <button class="btn btn-success" ${attrs} data-action="delivered">Mark Delivered</button>
             <button class="btn btn-danger" ${attrs} data-action="cancel">Cancel</button>
+            ${chatBtn}
           </div>`;
-      } else if (order.status === 'delivered' || order.status === 'cancelled') {
+      } 
+      else if (order.status === 'delivered' || order.status === 'cancelled') {
         actions = `
-          <div style="display:flex;gap:0.5rem;margin-top:1rem;">
+          <div style="display:flex;gap:0.5rem;margin-top:1rem;flex-wrap:wrap;">
             <button class="btn btn-warning" ${attrs} data-action="delete">
               <i class="fas fa-trash-alt"></i> Delete Order
             </button>
+            ${chatBtn}
           </div>`;
       }
 
@@ -269,8 +330,8 @@
             ${statusBadge}
           </div>
           <div style="font-size:0.9rem;line-height:1.6;">
-            <p><strong>Customer:</strong> ${order.user.name} (${order.user.phone})</p>
-            <p><strong>Address:</strong> ${order.address.line1}${order.address.line2 ? ', ' + order.address.line2 : ''}</p>
+            <p><strong>Customer:</strong> ${order.user?.name || '—'} (${order.user?.phone || '—'})</p>
+            <p><strong>Address:</strong> ${order.address?.line1 || ''}${order.address?.line2 ? ', ' + order.address.line2 : ''}</p>
             <p><strong>Shop:</strong> ${order.shop || 'ChatPoint'}</p>
           </div>
           <div style="margin-top:0.8rem;">${itemsHtml}</div>
@@ -281,8 +342,7 @@
           ${deliveredInfo}
           ${progressButtons}
           ${actions}
-        </div>
-      `;
+        </div>`;
     }
 
     function applyView() {
@@ -310,7 +370,6 @@
           const pendingCount = data.orders.filter(o => o.status === 'pending').length;
           if (pendingCount > previousPendingCount && pendingCount > 0) showBigAlert();
           previousPendingCount = pendingCount;
-
           allOrders = data.orders
             .map(o => ({ ...o, progress: o.progress || 0 }))
             .sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -332,52 +391,54 @@
       const name = btn.dataset.name;
 
       btn.disabled = true;
-
       let success = false;
 
-      if (action === 'confirm') {
+      if (action === 'chat') {
+        openWhatsApp(phone);
+      }
+      else if (action === 'confirm') {
         success = await updateOrderStatus(orderId, 'confirmed');
         if (success) {
           openWhatsApp(phone, `Hi ${name}! 😊\nYour order on ChatPoint has been confirmed!\nWe'll prepare it soon. 🚀`);
           alert("Order confirmed & WhatsApp sent!");
         }
-      } else if (action === 'delivered') {
+      }
+      else if (action === 'delivered') {
         let partner = prompt("Enter delivery partner name (Suraj or Guru):")?.trim();
         if (!["Suraj", "Guru"].includes(partner)) {
           alert("Invalid name. Only 'Suraj' or 'Guru' allowed.");
           btn.disabled = false;
           return;
         }
-
         let profitStr = prompt(`Enter profit amount for this order (₹)`);
         let profit = parseFloat(profitStr);
-
         if (isNaN(profit) || profit < 0) {
           alert("Please enter a valid non-negative number for profit.");
           btn.disabled = false;
           return;
         }
-
         if (!confirm(`Mark as Delivered?\n\nPartner: ${partner}\nProfit: ₹${profit.toFixed(2)}`)) {
           btn.disabled = false;
           return;
         }
-
         success = await updateOrderStatus(orderId, 'delivered', partner, profit);
         if (success) {
           openWhatsApp(phone, deliveredMessage);
           alert(`Order marked delivered!\nDelivered by: ${partner}\nProfit: ₹${profit.toFixed(2)}`);
         }
-      } else if (action === 'cancel') {
+      }
+      else if (action === 'cancel') {
         if (confirm("Cancel this order?")) {
           success = await updateOrderStatus(orderId, 'cancelled');
           if (success) alert("Order cancelled");
         }
-      } else if (action === 'progress') {
+      }
+      else if (action === 'progress') {
         const progress = parseInt(btn.dataset.progress);
-        success = await updateOrderStatus(orderId, null, null, null, progress); // progress-only update can be added if needed
+        success = await updateOrderStatus(orderId, null, null, null, progress);
         if (success) alert(`Progress updated to step ${progress}`);
-      } else if (action === 'delete') {
+      }
+      else if (action === 'delete') {
         if (confirm("Delete this order permanently?")) {
           const res = await fetch(`${API_BASE}/api/delete-order`, {
             method: 'DELETE',
@@ -390,13 +451,10 @@
         }
       }
 
-      if (success) {
-        fetchData();
-      } else if (action !== 'cancel') {
-        alert("Action failed. Try again.");
-      }
-
       btn.disabled = false;
+      if (success && action !== 'chat') {
+        fetchData();
+      }
     });
 
     document.querySelectorAll('.filter-btn').forEach(btn => {
