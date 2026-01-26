@@ -19,7 +19,6 @@
         .back { font-size:28px; cursor:pointer; color:#4CAF50; }
         .title { font-size:20px; font-weight:bold; flex:1; }
         .container { padding:20px; max-width:600px; margin:0 auto; }
-
         .order-card {
             background:white; border-radius:12px; margin:16px 0; overflow:hidden;
             box-shadow:0 4px 10px rgba(0,0,0,0.08);
@@ -33,7 +32,6 @@
         .status-pending { color:#e67e22; }
         .status-delivered { color:#27ae60; }
         .status-cancelled { color:#c0392b; }
-
         /* Items List */
         .items-section {
             padding:20px; background:#f9f9f9;
@@ -48,7 +46,6 @@
         .item-name { font-weight:600; font-size:16px; }
         .item-details { color:#666; font-size:14px; margin-top:4px; }
         .item-price { color:#4CAF50; font-weight:bold; font-size:16px; }
-
         /* Buttons */
         .track-btn, .pay-btn {
             width:100%; background:#4CAF50; color:white; border:none;
@@ -60,10 +57,8 @@
         }
         .pay-btn:hover { background:#5a32a3; }
         .track-btn:disabled { background:#ccc; cursor:not-allowed; }
-
         .tracking-section { display:none; }
         .tracking-section.active { display:block; }
-
         .map-container {
             position:relative; height:300px; background:#e0e0e0; overflow:hidden;
         }
@@ -78,11 +73,9 @@
             position:absolute; font-size:28px; color:black;
             transform:translate(-50%,-50%); transition:all 1s ease-in-out; z-index:5;
         }
-
         .status-box { text-align:center; padding:20px; background:white; }
         .status-title { font-size:18px; font-weight:bold; color:#333; }
         .eta { font-size:16px; color:#ff4500; font-weight:bold; margin:10px 0; }
-
         .progress-steps {
             display:flex; justify-content:space-between; padding:20px;
         }
@@ -95,7 +88,6 @@
         .step.active .step-circle { background:#ff4500; }
         .step-label { font-size:12px; color:#666; }
         .step.active .step-label { color:#ff4500; font-weight:bold; }
-
         .no-login, .no-orders {
             text-align:center; padding:80px 20px; color:#e74c3c; font-size:18px;
         }
@@ -108,23 +100,19 @@
         <div class="back" onclick="history.back()">←</div>
         <div class="title">My Orders & Tracking</div>
     </div>
-
     <div class="container">
         <div id="loading" class="loader">
             <i class="fas fa-spinner fa-spin fa-3x"></i>
             <p>Loading your orders...</p>
         </div>
-
         <div id="noLogin" class="no-login" style="display:none;">
             <p>You need to login to view your orders</p>
             <p><a href="login.html">Login Now →</a></p>
         </div>
-
         <div id="noOrders" class="no-orders" style="display:none;">
             <p>No orders found</p>
             <p><a href="index.html">Start Shopping →</a></p>
         </div>
-
         <div id="ordersList"></div>
     </div>
 
@@ -145,7 +133,6 @@
                     headers: { 'x-user-id': loggedUser._id }
                 });
                 const data = await res.json();
-
                 if (data.success && data.orders && data.orders.length > 0) {
                     renderOrders(data.orders);
                 } else {
@@ -163,13 +150,8 @@
             const payeeName = encodeURIComponent('ChatPoint');
             const transactionNote = encodeURIComponent(`ChatPoint Order #${orderId.slice(-6)} Payment`);
             const transactionRef = 'CHAT' + Date.now();
-
             const phonepeLink = `phonepe://pay?pa=${upiID}&pn=${payeeName}&am=${amount}&tn=${transactionNote}&tr=${transactionRef}&cu=INR`;
-
-            // Open PhonePe app
             window.location.href = phonepeLink;
-
-            // Fallback: if not opened, offer generic UPI
             setTimeout(() => {
                 if (confirm('PhonePe not opened? Try with any UPI app?')) {
                     const genericLink = `upi://pay?pa=${upiID}&pn=${payeeName}&am=${amount}&tn=${transactionNote}&tr=${transactionRef}&cu=INR`;
@@ -178,10 +160,68 @@
             }, 2000);
         }
 
+        // Flexible function to get items HTML from different possible structures
+        function getItemsHtml(order) {
+            let items = [];
+
+            // 1. Most common: order.items as array
+            if (Array.isArray(order.items)) {
+                items = order.items;
+            }
+            // 2. Sometimes called products
+            else if (Array.isArray(order.products)) {
+                items = order.products;
+            }
+            // 3. Nested cart
+            else if (order.cart) {
+                if (Array.isArray(order.cart.items)) {
+                    items = order.cart.items;
+                } else if (Array.isArray(order.cart.products)) {
+                    items = order.cart.products;
+                }
+                // 4. Your old format: order.cart.ChatPoint = { "Item Name": {qty, price}, ... }
+                else if (order.cart.ChatPoint && typeof order.cart.ChatPoint === 'object') {
+                    return Object.entries(order.cart.ChatPoint).map(([name, item]) => {
+                        const qty = item.qty || 1;
+                        const price = item.price || 0;
+                        return `
+                            <div class="item-row">
+                                <div class="item-info">
+                                    <div class="item-name">${name}</div>
+                                    <div class="item-details">Quantity: ${qty}</div>
+                                </div>
+                                <div class="item-price">₹${(price * qty).toFixed(0)}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // If we have array of items
+            if (items.length > 0) {
+                return items.map(item => {
+                    const name = item.name || item.title || item.productName || 'Item';
+                    const qty = item.qty || item.quantity || 1;
+                    const price = item.price || item.unitPrice || item.discountedPrice || 0;
+                    return `
+                        <div class="item-row">
+                            <div class="item-info">
+                                <div class="item-name">${name}</div>
+                                <div class="item-details">Quantity: ${qty}</div>
+                            </div>
+                            <div class="item-price">₹${(price * qty).toFixed(0)}</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            return '<div style="text-align:center;color:#888;padding:20px;">No items found in this order</div>';
+        }
+
         function renderOrders(orders) {
             document.getElementById('loading').style.display = 'none';
-
             const list = document.getElementById('ordersList');
+
             list.innerHTML = orders.map(order => {
                 const progress = order.progress || 0;
                 const isTrackable = order.status === 'confirmed' || order.status === 'out_for_delivery' || order.status === 'delivered';
@@ -211,54 +251,32 @@
                 let statusClass = `status-${order.status}`;
                 let statusText = order.status.charAt(0).toUpperCase() + order.status.slice(1);
 
-                // Build items list
-                let itemsHtml = '';
-                if (order.cart && order.cart.ChatPoint) {
-                    const items = order.cart.ChatPoint;
-                    for (const name in items) {
-                        const item = items[name];
-                        itemsHtml += `
-                            <div class="item-row">
-                                <div class="item-info">
-                                    <div class="item-name">${name}</div>
-                                    <div class="item-details">Quantity: ${item.qty}</div>
-                                </div>
-                                <div class="item-price">₹${item.price * item.qty}</div>
-                            </div>`;
-                    }
-                }
-
                 return `
                     <div class="order-card">
                         <div class="order-header">
                             <div class="order-id">Order #${shortId}</div>
                             <div class="order-status ${statusClass}">${statusText}</div>
                         </div>
-
-                        <!-- Items List -->
+                        <!-- Items List - NOW WORKING -->
                         <div class="items-section">
                             <h3 style="margin:0 0 16px 0; color:#333;">Your Items</h3>
-                            ${itemsHtml || '<div style="text-align:center;color:#888;padding:20px;">No items found</div>'}
+                            ${getItemsHtml(order)}
                         </div>
-
                         <!-- Pay Now Button for Pending Orders -->
                         ${order.status === 'pending' ? `
                             <button class="pay-btn" onclick="payWithPhonePe(${order.grandTotal}, '${order._id}')">
                                 Pay Now ₹${order.grandTotal} via PhonePe
                             </button>
                         ` : ''}
-
                         <!-- Pending Message -->
                         ${order.status === 'pending' ? `
                             <div style="padding:20px; text-align:center; background:#fff9e6; color:#e67e22; font-size:16px;">
                                 ⏳ Waiting for shop confirmation
                             </div>
                         ` : ''}
-
                         <!-- Tracking Section -->
                         ${isTrackable ? `
                             <button class="track-btn" onclick="toggleTracking(this)">Track Order</button>
-
                             <div class="tracking-section">
                                 <div class="map-container">
                                     <img src="https://images.unsplash.com/photo-1569336415965-7d80c2e3ff2a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Map" class="map-bg">
@@ -271,11 +289,9 @@
                                     <div class="pin customer-pin"><i class="fas fa-map-marker-alt"></i></div>
                                     <div class="bike" style="left:${pos.left};top:${pos.top};">${bikeIcon}</div>
                                 </div>
-
                                 <div class="status-box">
                                     <div class="status-title">${messages[progress] || 'On the way'}</div>
                                     <div class="eta">${etas[progress] || '~15 min'}</div>
-
                                     <div class="progress-steps">
                                         ${[1,2,3,4].map(num => `
                                             <div class="step ${progress >= num ? 'active' : ''}">
