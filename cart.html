@@ -19,8 +19,8 @@
             --muted: #6c757d;
             --border: rgba(255,255,255,0.25);
             --glass: rgba(255,255,255,0.7);
-            --shadow: 0 10px 30px rgba(0,0,0,0.08);
-            --radius: 20px;
+            --shadow: 0 8px 24px rgba(0,0,0,0.08);
+            --radius: 16px;
             --transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
         }
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -29,163 +29,177 @@
             background: linear-gradient(135deg, #fdfbf7 0%, #fffaf0 100%);
             color: var(--text);
             min-height: 100vh;
-            line-height: 1.55;
+            line-height: 1.5;
             -webkit-font-smoothing: antialiased;
         }
         header {
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(255,255,255,0.94);
+            background: rgba(255,255,255,0.96);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(0,0,0,0.06);
-            padding: 0.9rem 1rem;
+            padding: 0.8rem 1rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
-        .brand { font-size: 2rem; font-weight: 900; letter-spacing: -0.8px; color: var(--primary); }
+        .brand { font-size: 1.8rem; font-weight: 900; color: var(--primary); }
         .back-btn {
-            width: 44px; height: 44px; background: rgba(233,57,70,0.09); border: none;
-            border-radius: 12px; font-size: 1.7rem; color: var(--primary); cursor: pointer;
-            transition: var(--transition); display: flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; background: rgba(230,57,70,0.1);
+            border: none; border-radius: 10px; font-size: 1.6rem; color: var(--primary);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
         }
-        .back-btn:hover, .back-btn:active { background: var(--primary); color: white; transform: scale(1.06); }
         .cart-badge {
-            background: var(--primary); color: white; padding: 0.3rem 0.75rem;
-            border-radius: 50px; font-size: 0.9rem; font-weight: 800;
+            background: var(--primary); color: white; padding: 0.25rem 0.65rem;
+            border-radius: 50px; font-size: 0.85rem; font-weight: 800;
         }
-        main { padding: 1rem 0.9rem; max-width: 760px; margin: 0 auto; padding-bottom: 220px; }
+        main {
+            padding: 0.8rem 0.9rem;
+            max-width: 100%;
+            margin: 0 auto;
+            padding-bottom: 200px;
+        }
         .cart-container {
-            background: var(--card); border-radius: var(--radius); overflow: hidden;
-            box-shadow: var(--shadow); border: 1px solid rgba(233,57,70,0.08);
+            background: var(--card);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(230,57,70,0.08);
         }
         .section-title {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white; padding: 1.1rem 1.3rem; font-size: 1.3rem; font-weight: 800;
-            display: flex; align-items: center; gap: 0.7rem;
+            color: white; padding: 1rem 1.2rem; font-size: 1.25rem; font-weight: 800;
+            display: flex; align-items: center; gap: 0.6rem;
         }
         .cart-item {
-            display: flex; align-items: center; padding: 1.1rem 1.3rem;
-            border-bottom: 1px solid rgba(0,0,0,0.05); transition: var(--transition); gap: 0.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            padding: 1rem 1.1rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            gap: 0.8rem;
         }
-        .cart-item:hover { background: rgba(233,57,70,0.025); }
-        .item-name { flex: 1; font-weight: 600; font-size: 1.1rem; line-height: 1.4; }
-        .item-price { font-weight: 800; font-size: 1.25rem; color: var(--primary); min-width: 90px; text-align: right; }
+        .item-name {
+            flex: 1 1 100%;
+            font-weight: 600;
+            font-size: 1.05rem;
+            line-height: 1.4;
+            margin-bottom: 0.4rem;
+        }
+        .item-price {
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--primary);
+            min-width: 80px;
+            text-align: right;
+        }
         .quantity {
-            display: flex; align-items: center; border: 1px solid rgba(233,57,70,0.3);
-            border-radius: 12px; overflow: hidden; flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(230,57,70,0.3);
+            border-radius: 10px;
+            overflow: hidden;
         }
         .qbtn {
-            width: 46px; height: 46px; background: transparent; border: none;
-            color: var(--primary); font-size: 1.7rem; cursor: pointer;
-            transition: var(--transition); display: flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; background: transparent; border: none;
+            color: var(--primary); font-size: 1.5rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
         }
-        .qbtn:hover, .qbtn:active { background: rgba(233,57,70,0.14); }
-        .qty { min-width: 52px; text-align: center; font-weight: 700; font-size: 1.12rem; padding: 0 0.7rem; }
+        .qbtn:hover { background: rgba(230,57,70,0.12); }
+        .qty {
+            min-width: 45px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.05rem;
+            padding: 0 0.6rem;
+        }
         .delivery-status {
-            padding: 1.1rem; margin: 0.7rem 1.2rem; border-radius: 14px;
-            text-align: center; font-weight: 700; font-size: 1.05rem;
-            background: rgba(233,57,70,0.05); border: 1px solid rgba(233,57,70,0.18);
+            padding: 1rem; margin: 0.6rem 1rem;
+            border-radius: 12px; text-align: center; font-weight: 700; font-size: 1rem;
+            background: rgba(230,57,70,0.05); border: 1px solid rgba(230,57,70,0.15);
         }
         .delivery-waived {
-            background: rgba(42,157,143,0.1); border-color: rgba(42,157,143,0.28); color: #1b5e20;
+            background: rgba(42,157,143,0.1); border-color: rgba(42,157,143,0.25); color: #1b5e20;
         }
         .water-bottle-promo {
-            margin: 1.2rem; background: linear-gradient(135deg, #fffaf0, #fff8e1);
-            border: 2px dashed var(--accent); border-radius: 18px; padding: 1.5rem;
-            text-align: center; box-shadow: 0 7px 22px rgba(244,162,97,0.14);
-            position: relative; overflow: hidden;
+            margin: 1rem; padding: 1.3rem;
+            background: linear-gradient(135deg, #fffaf0, #fff8e1);
+            border: 2px dashed var(--accent); border-radius: 16px;
+            text-align: center; box-shadow: 0 6px 18px rgba(244,162,97,0.12);
         }
-        .water-bottle-promo::before {
-            content: "SAVE ₹22–25!"; position: absolute; top: -11px; right: -30px;
-            background: var(--accent); color: white; padding: 0.35rem 3.2rem;
-            font-size: 0.85rem; font-weight: 800; transform: rotate(45deg);
-            box-shadow: 0 3px 10px rgba(0,0,0,0.14);
-        }
-        .water-bottle-promo h3 { color: var(--primary); font-size: 1.35rem; margin-bottom: 0.55rem; }
+        .water-bottle-promo h3 { color: var(--primary); font-size: 1.25rem; margin-bottom: 0.5rem; }
         .add-water-btn {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white; border: none; padding: 0.95rem 1.9rem; border-radius: 14px;
-            font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 0.9rem;
-            box-shadow: 0 5px 18px rgba(233,57,70,0.28); transition: var(--transition);
+            color: white; border: none; padding: 0.9rem 1.6rem;
+            border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer;
+            margin-top: 0.8rem; box-shadow: 0 4px 14px rgba(230,57,70,0.25);
         }
-        .add-water-btn:hover, .add-water-btn:active {
-            transform: translateY(-2px); box-shadow: 0 10px 28px rgba(233,57,70,0.42);
-        }
+        .add-water-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(230,57,70,0.35); }
         .coupon-section {
-            margin: 1.2rem; padding: 1.2rem;
+            margin: 1rem; padding: 1.2rem;
             background: white; border-radius: 16px; box-shadow: var(--shadow);
-            border: 1px solid rgba(233,57,70,0.12);
+            border: 1px solid rgba(230,57,70,0.1);
         }
-        .coupon-section h3 {
-            font-size: 1.25rem; color: var(--primary); margin-bottom: 0.9rem;
-        }
+        .coupon-section h3 { font-size: 1.2rem; color: var(--primary); margin-bottom: 0.8rem; }
         .coupon-input-group {
-            display: flex; gap: 0.8rem; margin-bottom: 0.9rem;
+            display: flex; flex-direction: column; gap: 0.8rem;
         }
         .coupon-input {
-            flex: 1; padding: 0.9rem 1.2rem; border: 2px solid #ddd;
-            border-radius: 12px; font-size: 1.05rem; outline: none;
-            transition: border-color 0.25s;
+            padding: 0.9rem 1.1rem; border: 2px solid #ddd;
+            border-radius: 12px; font-size: 1rem; outline: none;
         }
-        .coupon-input:focus {
-            border-color: var(--primary); box-shadow: 0 0 0 3px rgba(230,57,70,0.15);
-        }
+        .coupon-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(230,57,70,0.15); }
         .coupon-btn {
             background: var(--primary); color: white; border: none;
-            padding: 0 1.6rem; border-radius: 12px; font-weight: 700;
-            cursor: pointer; transition: var(--transition);
+            padding: 0.9rem; border-radius: 12px; font-weight: 700;
+            cursor: pointer; font-size: 1rem;
         }
-        .coupon-btn:hover { background: var(--primary-dark); }
-        .coupon-message {
-            font-size: 0.95rem; margin-top: 0.6rem; min-height: 1.3em;
-        }
+        .coupon-message { font-size: 0.95rem; margin-top: 0.5rem; min-height: 1.3em; }
         .coupon-success { color: var(--success); font-weight: 600; }
         .coupon-error { color: #e63946; }
         .totals-actions-wrapper {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(255,255,255,0.96); backdrop-filter: blur(16px);
-            border-top: 1px solid rgba(0,0,0,0.07); box-shadow: 0 -8px 26px rgba(0,0,0,0.11);
-            padding: 1rem 0.9rem; z-index: 90;
+            background: rgba(255,255,255,0.96); backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(0,0,0,0.07); box-shadow: 0 -6px 20px rgba(0,0,0,0.1);
+            padding: 0.9rem 0.8rem; z-index: 90;
         }
         .grand-total {
-            font-size: 2.6rem; font-weight: 900; color: var(--primary);
-            text-align: center; margin: 0.5rem 0; letter-spacing: -0.8px;
+            font-size: 2.4rem; font-weight: 900; color: var(--primary);
+            text-align: center; margin: 0.4rem 0; letter-spacing: -0.6px;
         }
         .discount-line {
-            font-size: 1.1rem; color: var(--success); text-align: center;
+            font-size: 1rem; color: var(--success); text-align: center;
             margin-bottom: 0.6rem; font-weight: 600;
         }
         .btn {
-            padding: 1.15rem; border: none; border-radius: 14px;
-            font-weight: 700; font-size: 1.12rem; cursor: pointer;
+            padding: 1rem; border: none; border-radius: 12px;
+            font-weight: 700; font-size: 1.05rem; cursor: pointer;
             transition: var(--transition);
         }
         .btn-clear { background: #e76f51; color: white; flex: 1; }
         .btn-payment {
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white; box-shadow: 0 7px 22px rgba(233,57,70,0.32); flex: 2.2;
+            color: white; box-shadow: 0 5px 16px rgba(230,57,70,0.3); flex: 2;
         }
-        .btn-payment:hover, .btn-payment:active {
-            transform: translateY(-3px); box-shadow: 0 14px 36px rgba(233,57,70,0.48);
-        }
+        .btn-payment:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(230,57,70,0.4); }
         .empty-cart {
-            text-align: center; padding: 9rem 1.8rem 6rem; color: var(--muted);
+            text-align: center; padding: 8rem 1.5rem 5rem; color: var(--muted);
         }
-        .empty-cart i { font-size: 7.5rem; color: rgba(233,57,70,0.14); margin-bottom: 1.4rem; }
-        .empty-cart p { font-size: 1.7rem; font-weight: 700; margin-bottom: 1.4rem; }
-        @media (min-width: 520px) {
-            main { padding: 1.4rem 1.2rem; }
-            .cart-item { gap: 1rem; }
-            .grand-total { font-size: 2.9rem; }
-            .btn { font-size: 1.18rem; padding: 1.3rem; }
+        .empty-cart i { font-size: 6.5rem; color: rgba(230,57,70,0.15); margin-bottom: 1.2rem; }
+        .empty-cart p { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.2rem; }
+
+        /* Mobile-first adjustments */
+        @media (min-width: 480px) {
+            .coupon-input-group { flex-direction: row; }
+            .coupon-btn { padding: 0.9rem 1.8rem; }
+            .grand-total { font-size: 2.8rem; }
+            .cart-item { flex-wrap: nowrap; }
+            .item-name { flex: 1 1 auto; margin-bottom: 0; }
         }
         @media (min-width: 720px) {
-            main { padding: 1.8rem 1rem; }
-            .cart-container { max-width: 680px; margin: 0 auto; }
+            main { padding: 1.4rem 1.2rem; max-width: 720px; }
         }
     </style>
 </head>
@@ -197,13 +211,15 @@
             My Cart <span class="cart-badge" id="cartBadge">0</span>
         </div>
     </header>
+
     <main>
         <div class="cart-container" id="cartContainer"></div>
     </main>
+
     <div class="totals-actions-wrapper" id="totalsActionsWrapper" style="display:none;">
         <div class="grand-total" id="floatingGrandTotal">₹0</div>
         <div id="discountLine" class="discount-line" style="display:none;"></div>
-        <div style="display:flex; gap:0.9rem; margin-top:0.9rem;">
+        <div style="display:flex; flex-wrap:wrap; gap:0.8rem; margin-top:0.8rem;">
             <button class="btn btn-clear" onclick="clearCart()">Clear Cart</button>
             <button class="btn btn-payment" id="proceedBtn" onclick="location.href='payment.html'">
                 Proceed to Payment
@@ -216,7 +232,7 @@
         const WATER = { name: "1L Pure Water Bottle", price: 13, shop: "_special_" };
         const COUPON_CODE = "REPUBLIC77";
         let cart = JSON.parse(localStorage.getItem(CART_KEY)) || {};
-        let appliedCouponDiscount = 0; // only one coupon per session
+        let appliedCouponDiscount = 0;
 
         const container = document.getElementById("cartContainer");
         const badge = document.getElementById("cartBadge");
@@ -295,7 +311,7 @@
             const code = (input.value || "").trim().toUpperCase();
 
             if (!code) {
-                msg.textContent = "Please enter a coupon code.";
+                msg.textContent = "Enter a coupon code.";
                 msg.className = "coupon-message coupon-error";
                 return;
             }
@@ -307,14 +323,13 @@
             }
 
             if (code === COUPON_CODE) {
-                // Random discount: mostly 10–15, rarely below 10
                 const rand = Math.random();
                 let discount;
 
-                if (rand < 0.08) {
-                    discount = Math.floor(Math.random() * 9) + 1; // 1–9 (rare ~8%)
+                if (rand < 0.07) {
+                    discount = Math.floor(Math.random() * 9) + 1; // 1–9 (very rare ~7%)
                 } else {
-                    discount = Math.floor(Math.random() * 6) + 10; // 10–15 (common ~92%)
+                    discount = Math.floor(Math.random() * 6) + 10; // 10–15 (93% cases)
                 }
 
                 appliedCouponDiscount = discount;
@@ -324,7 +339,7 @@
                 saveCart();
                 renderCart();
             } else {
-                msg.textContent = "Invalid coupon code.";
+                msg.textContent = "Invalid code. Try REPUBLIC77";
                 msg.className = "coupon-message coupon-error";
             }
         }
@@ -340,8 +355,8 @@
                 container.innerHTML = `
                     <div class="empty-cart">
                         <i class="fas fa-shopping-bag fa-6x"></i>
-                        <p>Your cart feels lonely...</p>
-                        <a href="index.html" style="color:var(--primary);font-weight:700;">Add something delicious!</a>
+                        <p>Your cart is empty</p>
+                        <a href="index.html" style="color:var(--primary);font-weight:700;">Browse Menu</a>
                     </div>`;
                 totalsWrapper.style.display = 'none';
                 return;
@@ -351,8 +366,8 @@
 
             for (let shop in cart) {
                 if (shop === WATER.shop) continue;
-                html += `<div style="padding:1rem 1.3rem; background:rgba(233,57,70,0.02);">
-                    <div style="font-weight:800; color:var(--primary); margin-bottom:0.9rem;">${shop}</div>`;
+                html += `<div style="padding:1rem 1.2rem; background:rgba(230,57,70,0.02);">
+                    <div style="font-weight:800; color:var(--primary); margin-bottom:0.8rem;">${shop}</div>`;
                 for (let name in cart[shop]) {
                     let item = cart[shop][name];
                     let itemTotal = item.qty * item.price;
@@ -380,10 +395,10 @@
             if (!hasB) {
                 html += `
                     <div class="water-bottle-promo">
-                        <h3>Beat Delivery Charges!</h3>
-                        <p style="margin:0.8rem 0;">Add <strong>1L Water Bottle</strong> for just ₹13<br>and get <strong>FREE DELIVERY</strong></p>
+                        <h3>Skip Delivery Fee!</h3>
+                        <p>Add <strong>1L Water Bottle</strong> for ₹13<br>and get <strong>FREE DELIVERY</strong></p>
                         <button class="add-water-btn" onclick="addWater()">
-                            <i class="fas fa-bottle-water"></i> Add 1L Water Bottle – ₹13
+                            <i class="fas fa-bottle-water"></i> Add 1L Water – ₹13
                         </button>
                     </div>`;
             } else {
@@ -403,9 +418,9 @@
             // Coupon section
             html += `
                 <div class="coupon-section">
-                    <h3>Have a Coupon?</h3>
+                    <h3>Apply Coupon</h3>
                     <div class="coupon-input-group">
-                        <input type="text" id="couponInput" class="coupon-input" placeholder="Enter code (e.g. REPUBLIC77)" />
+                        <input type="text" id="couponInput" class="coupon-input" placeholder="Enter code" />
                         <button class="coupon-btn" onclick="applyCoupon()">Apply</button>
                     </div>
                     <div id="couponMessage" class="coupon-message"></div>
@@ -413,7 +428,6 @@
 
             container.innerHTML = html;
 
-            // Show discount if applied
             if (appliedCouponDiscount > 0) {
                 discountLine.textContent = `Coupon Discount: -₹${appliedCouponDiscount}`;
                 discountLine.style.display = "block";
@@ -426,7 +440,7 @@
         }
 
         function clearCart() {
-            if (confirm("Clear your cart? This will also remove any applied coupon.")) {
+            if (confirm("Clear cart? Coupon will also reset.")) {
                 cart = {};
                 appliedCouponDiscount = 0;
                 localStorage.removeItem(CART_KEY);
