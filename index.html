@@ -3,312 +3,185 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Chat Point | Food Shops</title>
+  <title>Chat Point | Republic Day 2026 - Food Shops</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon-192.png" type="image/png" />
-  <link rel="icon" href="data:;base64,iVBORw0KGgo="> <!-- Fallback to remove 404 error -->
-  <meta name="theme-color" content="#2874F0" />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <meta name="theme-color" content="#FF9933" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  
+
   <style>
-    :root{
-      --bg:#fad075;
-      --card:#0e404c;
-      --text: #c07723;
-      --muted: #f89b9b;
-      --primary: #484841;
-      --accent: #000614;
-      --shadow: rgba(0,0,0,0.08);
-      --glass: rgba(23, 26, 27, 0.85);
-      --radius: 8px;
-      --glass-border: rgba(40,116,240,0.12);
-      --green-shade: #388e3c;
-      --primary-glow: rgba(1, 5, 12, 0.4);
+    :root {
+      --saffron: #FF9933;
+      --white: #FFFFFF;
+      --green: #138808;
+      --chakra-blue: #000080;
+      --text: #0d1b2a;
+      --muted: #4a5568;
+      --shadow: rgba(0,0,0,0.15);
+      --glow: rgba(255,153,51,0.4);
+      --radius: 16px;
     }
-    *{box-sizing:border-box;margin:0;padding:0;font-family:"Outfit",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
-    html,body{height:100%}
-    body{
-      background: var(--bg);
-      color:var(--text);
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      min-height:100vh;
-      overflow-x:hidden;
-      font-size:14px;
+    * { box-sizing:border-box; margin:0; padding:0; font-family:"Outfit",system-ui,sans-serif; }
+    body {
+      background: linear-gradient(to bottom, #fff5e6 0%, #ffffff 50%, #e6ffe6 100%);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
     }
-    /* Floating Icons */
-    .floating-icons{ position:fixed;left:0;top:0;right:0;bottom:0;pointer-events:none;z-index:0;overflow:hidden; }
-    .float-svg{
-      position:absolute; opacity:0.1;
-      filter:drop-shadow(0 4px 12px var(--shadow));
-      transform-origin:center;
-      transition:transform 0.6s ease, opacity 0.4s ease;
+
+    header {
+      position:sticky; top:0; z-index:120;
+      background: linear-gradient(90deg, var(--saffron), var(--white) 45%, var(--green));
+      padding:14px 18px;
+      display:flex; align-items:center; gap:12px;
+      box-shadow:0 4px 16px var(--shadow);
     }
-    .float-1{left:10%;top:15%;width:60px; animation: floatBounce 7s ease-in-out infinite;}
-    .float-2{right:10%;bottom:10%;width:80px; animation: floatSpin 9s linear infinite;}
-    .float-3{left:45%;top:35%;width:90px; animation: floatPulse 8s ease-in-out infinite;}
-    .float-4{left:15%;bottom:25%;width:50px; animation: floatPendulum 6s ease-in-out infinite alternate;}
-    .float-5{right:20%;top:5%;width:70px; animation: floatWarp 10s ease-in-out infinite;}
-    @keyframes floatBounce { 0%{transform:translateY(0) rotate(0deg)} 50%{transform:translateY(-15px) rotate(2deg)} 100%{transform:translateY(0) rotate(0deg)} }
-    @keyframes floatSpin { 0%{transform:rotate(0deg)} 100%{transform:rotate(360deg)} }
-    @keyframes floatPulse { 0%, 100%{transform:scale(1)} 50%{transform:scale(1.08)} }
-    @keyframes floatPendulum { 0%{transform:rotate(-8deg) translateX(-8px)} 50%{transform:rotate(8deg) translateX(8px)} 100%{transform:rotate(-8deg) translateX(-8px)} }
-    @keyframes floatWarp { 0%{transform:rotateZ(0) scale(1)} 33%{transform:rotateZ(20deg) scale(0.98)} 66%{transform:rotateZ(-20deg) scale(1.02)} 100%{transform:rotateZ(0) scale(1)} }
-    header{
-      position:sticky; top:0; z-index:120; display:flex;align-items:center;gap:8px;
-      background:linear-gradient(135deg, var(--primary), #00bcd4);
-      padding:10px 12px;
-      box-shadow: 0 2px 8px var(--shadow);
+    .nav-btn {
+      width:42px; height:42px; border-radius:10px;
+      background:rgba(255,255,255,0.95); border:2px solid var(--chakra-blue);
+      display:grid; place-items:center; cursor:pointer; transition:all 0.3s;
     }
-    .nav-btn{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;background:var(--glass);border:1px solid var(--glass-border);cursor:pointer;transition:background 0.3s, transform 0.3s;}
-    .nav-btn:hover { background: rgba(255,255,255,0.9); transform: scale(1.05); }
-    .brand{font-weight:800;font-size:18px;color:#fff;display:flex;gap:4px;align-items:center}
-    .brand span{color:#ffe500; font-weight:900}
-    .header-right{margin-left:auto;display:flex;gap:8px;align-items:center}
-    /* My Orders Button */
-    .orders-btn{
-      background:linear-gradient(135deg, #ff8f00, #ff6d00);
-      color:white;
-      padding:8px 14px;
-      border-radius:8px;
-      font-weight:700;
-      font-size:14px;
-      border:none;
-      cursor:pointer;
-      box-shadow:0 4px 12px rgba(255,152,0,0.3);
-      transition:transform 0.3s;
-      display:flex;
-      align-items:center;
-      gap:6px;
+    .nav-btn:hover { transform:scale(1.08); background:var(--saffron); }
+    .brand {
+      font-weight:900; font-size:22px; color:var(--chakra-blue);
+      display:flex; align-items:center; gap:6px;
     }
-    .orders-btn:hover { transform: translateY(-2px); }
-    .cart-btn{
-      background:linear-gradient(135deg, var(--accent), #ff8f00);
-      color:white;
-      padding:8px 12px;
-      border-radius:8px;
-      font-weight:700;
-      border:none;
-      cursor:pointer;
-      box-shadow:0 4px 12px rgba(255,152,0,0.3);
-      transition:transform 0.3s;
+    .brand span { color:var(--saffron); }
+    .header-right { margin-left:auto; display:flex; gap:12px; }
+    .orders-btn, .cart-btn {
+      padding:10px 18px; border-radius:10px; font-weight:800; font-size:15px;
+      border:none; cursor:pointer; transition:all 0.3s;
     }
-    .cart-btn:hover { transform: translateY(-2px); }
-    .sidebar{
-      position:fixed;left:-100%;top:0;width:280px;height:100%;z-index:220;
-      background:linear-gradient(180deg,#ffffff, #f1f3f6); padding:12px; box-shadow: 4px 12px 40px var(--shadow);
-      transition:left .3s ease; border-right:1px solid var(--glass-border);
+    .orders-btn { background:var(--saffron); color:white; box-shadow:0 4px 12px var(--glow); }
+    .orders-btn:hover { transform:translateY(-3px); }
+    .cart-btn { background:var(--chakra-blue); color:white; }
+
+    /* Attractive Offer Banner - Pure Tricolor Design (No Image) */
+    .offer-banner {
+      max-width: 920px;
+      margin: 24px auto;
+      padding: 32px 40px;
+      background: linear-gradient(135deg, var(--saffron) 0%, #fffaf0 50%, var(--green) 100%);
+      border: 5px solid var(--chakra-blue);
+      border-radius: var(--radius);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
     }
-    .sidebar.active{left:0}
-    .profile-section{background:linear-gradient(135deg,#e3f2fd,#bbdefb); border-radius:8px;padding:12px;border:1px solid var(--glass-border);display:flex;gap:8px;align-items:center;transition:box-shadow 0.3s;}
-    .profile-section:hover { box-shadow: 0 4px 12px rgba(40,116,240,0.2); }
-    .profile-section .avatar{width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,#bbdefb,#90caf9);display:flex;align-items:center;justify-content:center;font-size:24px; color: var(--primary)}
-    .sidebar a{display:block;color:var(--text);text-decoration:none;padding:10px;border-radius:8px;margin-top:8px;background:transparent; transition: background 0.3s, transform 0.3s;}
-    .sidebar a:hover{background:rgba(40,116,240,0.1); transform: translateX(4px);}
-    #logout{color:var(--accent);font-weight:800}
-    #logout i { color: var(--accent); }
-    .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:210;display:none;transition:opacity 0.3s;}
-    .overlay.active{display:block; opacity:1;}
-    main{max-width:100%;margin:0;padding:0 12px;position:relative;z-index:2}
-    .quotes-section { max-width:100%; margin:12px 0; padding:12px; background:linear-gradient(135deg, #e3f2fd, #fff); border-radius:8px; box-shadow:0 4px 12px var(--shadow); text-align:center; }
-    .quote { font-style:italic; color:var(--muted); font-size:14px; }
-    .quote-author { font-weight:700; color:var(--primary); margin-top:4px; }
-    .tab-switch{
-      display:flex;
-      gap:12px;
-      justify-content:center;
-      margin:20px 0 16px;
-      padding:0 12px;
+    .offer-banner::before {
+      content: "";
+      position: absolute;
+      top: -50%; left: -50%; width: 200%; height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+      opacity: 0.6;
+      z-index: 0;
     }
-    .tab-btn{
-      flex:1;
-      max-width:220px;
-      padding:16px 20px;
-      border-radius:20px;
-      font-weight:800;
-      font-size:17px;
-      cursor:pointer;
-      box-shadow:0 6px 16px rgba(0,0,0,0.12);
-      transition:transform 0.3s, box-shadow 0.3s;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
+    .offer-content {
+      position: relative;
+      z-index: 1;
     }
-    .tab-btn i{
-      font-size:22px;
+    .offer-title {
+      font-size: 36px;
+      font-weight: 900;
+      color: var(--chakra-blue);
+      margin-bottom: 14px;
+      text-shadow: 2px 2px 6px rgba(255,255,255,0.8);
     }
-    .tab-btn.food{
-      background:linear-gradient(135deg,var(--primary), var(--green-shade));
-      color:#fff;
+    .offer-text {
+      font-size: 32px;
+      font-weight: 900;
+      color: white;
+      background: linear-gradient(90deg, #000, #333, #000);
+      padding: 12px 28px;
+      border-radius: 12px;
+      display: inline-block;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      letter-spacing: 1.5px;
     }
-    .tab-btn.grocery{
-      background:#fff;
-      border:2px solid var(--primary);
-      color:var(--primary);
+    .offer-flag {
+      font-size: 60px;
+      margin: 0 20px;
+      vertical-align: middle;
     }
-    .tab-btn:hover{
-      transform:translateY(-4px);
-      box-shadow:0 12px 24px rgba(0,0,0,0.18);
+
+    .tab-switch { display:flex; gap:16px; justify-content:center; margin:28px 0; }
+    .tab-btn {
+      flex:1; max-width:240px; padding:16px 24px; border-radius:999px;
+      font-weight:900; font-size:18px; cursor:pointer; box-shadow:0 6px 16px var(--shadow);
+      transition:all 0.3s; display:flex; align-items:center; justify-content:center; gap:10px;
     }
-    .search-bar{max-width:100%;margin:12px 0;position:relative}
-    .search-bar input{
-      width:100%;padding:10px 36px 10px 12px;border-radius:8px;border:1px solid var(--glass-border);
-      background:white;font-size:14px;color:var(--text);transition:box-shadow 0.3s, border-color 0.3s;
-    }
-    .search-bar input:focus{
-      outline:none;
-      box-shadow:0 0 0 4px var(--primary-glow);
-      border-color: var(--primary);
-    }
-    .search-bar .icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--primary);pointer-events:none;z-index:1}
-    .grid{
-      display: grid;
-      gap: 16px;
-      max-width: 100%;
-      margin: 0 auto;
-      padding: 0 8px;
-      grid-template-columns: 1fr;
-    }
-    .card-wrap { position: relative; }
-    .card{
-      background:var(--card);
-      border-radius:8px;
-      border:1px solid var(--glass-border);
-      overflow:hidden;
-      cursor:pointer;
-      transition:transform 0.4s ease, box-shadow 0.4s ease;
-      display: flex;
-      flex-direction: column;
-      height: 320px;
-    }
-    .card img{
-      width:100%;
-      height: 160px;
-      object-fit: cover;
-      transition: transform 0.4s;
-    }
-    .card:hover{
-      transform:translateY(-6px);
-      box-shadow:0 12px 24px var(--shadow);
-    }
-    .card:hover img { transform: scale(1.08); }
-    .card .info{
-      padding:12px 14px 8px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-    }
-    .shop-name{font-weight:800;color:var(--text);font-size:15px}
-    .rating{display:inline-flex;align-items:center;gap:4px;font-weight:700;color:var(--accent);
-      background:linear-gradient(135deg,#fffaf0,#fff6da);padding:4px 8px;border-radius:999px;
-      border:1px solid var(--glass-border); font-size:13px;
-    }
-    .desc{padding:0 14px 8px;color:var(--muted);font-size:13px; line-height:1.4;}
-    .items-row{
-      display:flex;
-      gap:6px;
-      padding:0 14px 14px;
-      flex-wrap:wrap;
-      margin-top: auto;
-    }
-    .item-pill{
-      background:linear-gradient(135deg,#fff,#f1f3f6);
-      padding:5px 10px;
-      border-radius:999px;
-      font-weight:700;
-      font-size:11px;
-      border:1px solid var(--glass-border);
-    }
-    .badge-offer{
-      position:absolute;top:10px;left:10px;
-      background:linear-gradient(135deg, var(--accent), #ff8f00);
-      color:white;
-      padding:5px 10px;
-      border-radius:6px;
-      font-weight:800;
-      font-size:13px;
-      box-shadow:0 2px 8px rgba(255,152,0,0.3);
-    }
-    footer{padding:20px;text-align:center;color:var(--muted);font-size:13px}
-    @media (min-width: 640px) {
-      .grid {
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 20px;
-        padding: 0;
-      }
-      .card { height: 360px; }
-      .card img { height: 180px; }
-      main { max-width:1180px; margin:22px auto; padding:0 18px; }
-      .quotes-section { max-width:860px; margin:18px auto; padding:18px; font-size:16px; }
-      .search-bar { max-width:860px; margin:12px auto 20px; }
-    }
+    .tab-btn.food { background:linear-gradient(135deg, var(--saffron), var(--green)); color:white; border:3px solid var(--chakra-blue); }
+    .tab-btn.grocery { background:white; border:3px solid var(--saffron); color:var(--saffron); }
+    .tab-btn:hover { transform:translateY(-5px); }
+
+    .search-bar input { border:2px solid var(--saffron); background:white; }
+    .search-bar input:focus { border-color:var(--chakra-blue); box-shadow:0 0 0 5px var(--glow); }
+
+    .card { background:white; border:2px solid var(--saffron); border-radius:var(--radius); overflow:hidden; box-shadow:0 6px 16px var(--shadow); transition:all 0.3s; height:340px; display:flex; flex-direction:column; }
+    .card:hover { transform:translateY(-8px); border-color:var(--green); }
+
+    .quotes-section { background:white; border:2px solid var(--saffron); border-radius:12px; margin:16px; padding:20px; text-align:center; box-shadow:0 4px 16px var(--shadow); }
+    .quote { color:var(--chakra-blue); font-weight:700; font-size:15px; }
+
+    footer { background:var(--chakra-blue); color:white; padding:24px; text-align:center; font-weight:600; }
   </style>
 </head>
 <body>
-  <div class="floating-icons" aria-hidden="true">
-    <svg class="float-svg float-1" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-      <g fill="none" fill-rule="evenodd">
-        <ellipse fill="#FFE0B2" cx="32" cy="18" rx="20" ry="10"/>
-        <rect fill="#FFC107" x="18" y="22" width="28" height="6" rx="3"/>
-        <rect fill="#D32F2F" x="16" y="28" width="32" height="6" rx="3"/>
-        <rect fill="#4CAF50" x="14" y="34" width="36" height="6" rx="3"/>
-        <ellipse fill="#FFCC80" cx="32" cy="46" rx="20" ry="10"/>
-      </g>
-    </svg>
-    <!-- Add your other floating SVGs if you have them -->
-  </div>
-  <header role="banner">
+
+  <header>
     <button id="navBtn" class="nav-btn" aria-label="Open menu">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M4 7h16M4 12h16M4 17h16" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
     </button>
-    <div class="brand">Chat<span>Point</span></div>
+    <div class="brand">Chat<span>Point</span> 🇮🇳</div>
     <div class="header-right">
       <button class="orders-btn" onclick="location.href='tracking.html'">
-        <i class="fas fa-shopping-bag"></i> My Orders
+        <i class="fas fa-flag"></i> My Orders
       </button>
-      <button class="cart-btn" aria-label="Cart">🛒 Cart</button>
+      <button class="cart-btn">🛒 Cart</button>
     </div>
   </header>
-  <aside id="sidebar" class="sidebar" aria-hidden="true">
-    <div class="profile-section" id="profileSection" aria-live="polite">
-      <div class="avatar">🙂</div>
-      <div class="meta">Welcome<div style="font-size:13px;color:var(--muted);font-weight:600">Sign in for offers</div></div>
+
+  <!-- Republic Day Offer Banner - Pure Tricolor Colors -->
+  <div class="offer-banner">
+    <div class="offer-content">
+      <div class="offer-title">Republic Day 2026 Special! 🇮🇳</div>
+      <div>
+        <span class="offer-flag">🇮🇳</span>
+        <span class="offer-text">FLAT 20% OFF upto ₹20</span>
+        <span class="offer-flag">🇮🇳</span>
+      </div>
     </div>
-    <nav aria-label="Main navigation" style="margin-top:14px">
-      <a href="tracking.html"><i class="fas fa-shopping-bag" style="margin-right:8px;"></i> My Orders</a>
-      <a href="tel:9632367397"><i class="fas fa-phone-alt" style="margin-right:8px;"></i> Contact: 9632367397</a>
-      <a href="#" id="logout" style="display:none;"><i class="fas fa-sign-out-alt" style="margin-right:8px;"></i> Logout</a>
-    </nav>
-    <div style="margin-top:auto;font-size:13px;color:var(--muted);padding-top:18px">© 2025 Chat Point</div>
-  </aside>
-  <div id="overlay" class="overlay" tabindex="-1"></div>
+  </div>
+
   <main>
     <section class="quotes-section">
-      <div class="quote">"Food is symbolic of love when words are inadequate." – Alan D. Wolfelt</div>
-      <div class="quote-author">Life & Food Wisdom</div>
+      <div class="quote">"We the people of India... give to ourselves this Constitution."</div>
+      <div class="quote-author">Preamble – Happy 77th Republic Day</div>
     </section>
-    <div class="tab-switch" role="tablist" aria-label="Food or Grocery">
-      <a href="#" id="foodBtn" class="tab-btn food" role="tab" aria-selected="true" onclick="event.preventDefault()">
+
+    <div class="tab-switch">
+      <button id="foodBtn" class="tab-btn food" onclick="event.preventDefault()">
         <i class="fas fa-utensils"></i> Food
-      </a>
-      <a href="gindex.html" id="groceryBtn" class="tab-btn grocery" role="tab" aria-selected="false">
+      </button>
+      <a href="gindex.html" class="tab-btn grocery">
         <i class="fas fa-shopping-basket"></i> Grocery
       </a>
     </div>
-    <div class="search-bar" role="search">
-      <input type="text" id="searchInput" placeholder="Search your favorite shop..." oninput="searchShops()" aria-label="Search shops">
-      <i class="fas fa-search icon"></i>
+
+    <div class="search-bar" style="max-width:900px; margin:0 auto 24px; padding:0 16px; position:relative;">
+      <input type="text" id="searchInput" placeholder="Search Republic Day special offers..." oninput="searchShops()">
+      <i class="fas fa-search" style="position:absolute; right:28px; top:50%; transform:translateY(-50%); color:var(--chakra-blue); font-size:18px;"></i>
     </div>
-    <section class="quotes-section">
-      <div class="quote">"One cannot think well, love well, sleep well, if one has not dined well." – Virginia Woolf</div>
-      <div class="quote-author">Inspire Your Meal</div>
-    </section>
-    <section class="grid" id="grid" aria-live="polite" aria-label="Shops list"></section>
+
+    <section class="grid" id="grid" aria-live="polite"></section>
   </main>
-  <footer>© 2025 Chat Point • Made with Passion</footer>
+
+  <footer>© 2026 Chat Point • Jai Hind! 🇮🇳 • 77th Republic Day</footer>
+
   <script src="index.js"></script>
 </body>
 </html>
