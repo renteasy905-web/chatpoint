@@ -22,7 +22,12 @@
       --glow: rgba(255,153,51,0.4);
       --radius: 16px;
     }
-    * { box-sizing:border-box; margin:0; padding:0; font-family:"Outfit",system-ui,sans-serif; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Outfit", system-ui, sans-serif;
+    }
     body {
       background: linear-gradient(to bottom, #fff5e6 0%, #ffffff 50%, #e6ffe6 100%);
       color: var(--text);
@@ -31,33 +36,116 @@
     }
 
     header {
-      position:sticky; top:0; z-index:120;
+      position: sticky;
+      top: 0;
+      z-index: 120;
       background: linear-gradient(90deg, var(--saffron), var(--white) 45%, var(--green));
-      padding:14px 18px;
-      display:flex; align-items:center; gap:12px;
-      box-shadow:0 4px 16px var(--shadow);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 16px var(--shadow);
     }
     .nav-btn {
-      width:42px; height:42px; border-radius:10px;
-      background:rgba(255,255,255,0.95); border:2px solid var(--chakra-blue);
-      display:grid; place-items:center; cursor:pointer; transition:all 0.3s;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.95);
+      border: 2px solid var(--chakra-blue);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      transition: all 0.3s;
     }
-    .nav-btn:hover { transform:scale(1.08); background:var(--saffron); }
+    .nav-btn:hover {
+      transform: scale(1.08);
+      background: var(--saffron);
+    }
     .brand {
-      font-weight:900; font-size:22px; color:var(--chakra-blue);
-      display:flex; align-items:center; gap:6px;
+      font-weight: 900;
+      font-size: 22px;
+      color: var(--chakra-blue);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .brand span { color:var(--saffron); }
-    .header-right { margin-left:auto; display:flex; gap:12px; }
-    .orders-btn, .cart-btn {
-      padding:10px 18px; border-radius:10px; font-weight:800; font-size:15px;
-      border:none; cursor:pointer; transition:all 0.3s;
+    .brand span {
+      color: var(--saffron);
     }
-    .orders-btn { background:var(--saffron); color:white; box-shadow:0 4px 12px var(--glow); }
-    .orders-btn:hover { transform:translateY(-3px); }
-    .cart-btn { background:var(--chakra-blue); color:white; }
+    .header-right {
+      margin-left: auto;
+      display: flex;
+      gap: 12px;
+    }
+    .orders-btn,
+    .cart-btn {
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 15px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .orders-btn {
+      background: var(--saffron);
+      color: white;
+      box-shadow: 0 4px 12px var(--glow);
+    }
+    .orders-btn:hover {
+      transform: translateY(-3px);
+    }
+    .cart-btn {
+      background: var(--chakra-blue);
+      color: white;
+    }
 
-    /* Attractive Offer Banner - Pure Tricolor Design (No Image) */
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      left: -100%;
+      top: 0;
+      width: 280px;
+      height: 100%;
+      background: white;
+      border-right: 2px solid var(--saffron);
+      transition: left 0.4s ease;
+      z-index: 200;
+      padding: 20px;
+      box-shadow: 4px 0 20px var(--shadow);
+    }
+    .sidebar.active {
+      left: 0;
+    }
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 150;
+      display: none;
+    }
+    .overlay.active {
+      display: block;
+    }
+    .profile-section {
+      margin-bottom: 20px;
+      padding: 16px;
+      background: linear-gradient(135deg, #fffaf0, #f0fff0);
+      border-radius: 12px;
+      border: 2px solid var(--saffron);
+    }
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--chakra-blue);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+    }
+
+    /* Offer Banner */
     .offer-banner {
       max-width: 920px;
       margin: 24px auto;
@@ -73,7 +161,10 @@
     .offer-banner::before {
       content: "";
       position: absolute;
-      top: -50%; left: -50%; width: 200%; height: 200%;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
       background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
       opacity: 0.6;
       z-index: 0;
@@ -106,26 +197,188 @@
       vertical-align: middle;
     }
 
-    .tab-switch { display:flex; gap:16px; justify-content:center; margin:28px 0; }
-    .tab-btn {
-      flex:1; max-width:240px; padding:16px 24px; border-radius:999px;
-      font-weight:900; font-size:18px; cursor:pointer; box-shadow:0 6px 16px var(--shadow);
-      transition:all 0.3s; display:flex; align-items:center; justify-content:center; gap:10px;
+    .tab-switch {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin: 28px 0;
+      padding: 0 16px;
     }
-    .tab-btn.food { background:linear-gradient(135deg, var(--saffron), var(--green)); color:white; border:3px solid var(--chakra-blue); }
-    .tab-btn.grocery { background:white; border:3px solid var(--saffron); color:var(--saffron); }
-    .tab-btn:hover { transform:translateY(-5px); }
+    .tab-btn {
+      flex: 1;
+      max-width: 240px;
+      padding: 16px 24px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 6px 16px var(--shadow);
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .tab-btn.food {
+      background: linear-gradient(135deg, var(--saffron), var(--green));
+      color: white;
+      border: 3px solid var(--chakra-blue);
+    }
+    .tab-btn.grocery {
+      background: white;
+      border: 3px solid var(--saffron);
+      color: var(--saffron);
+    }
+    .tab-btn:hover {
+      transform: translateY(-5px);
+    }
 
-    .search-bar input { border:2px solid var(--saffron); background:white; }
-    .search-bar input:focus { border-color:var(--chakra-blue); box-shadow:0 0 0 5px var(--glow); }
+    .search-bar {
+      max-width: 900px;
+      margin: 0 auto 24px;
+      padding: 0 16px;
+      position: relative;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 14px 20px 14px 16px;
+      border: 2px solid var(--saffron);
+      border-radius: 12px;
+      font-size: 16px;
+      background: white;
+    }
+    .search-bar input:focus {
+      outline: none;
+      border-color: var(--chakra-blue);
+      box-shadow: 0 0 0 5px var(--glow);
+    }
+    .search-bar i {
+      position: absolute;
+      right: 32px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--chakra-blue);
+      font-size: 18px;
+    }
 
-    .card { background:white; border:2px solid var(--saffron); border-radius:var(--radius); overflow:hidden; box-shadow:0 6px 16px var(--shadow); transition:all 0.3s; height:340px; display:flex; flex-direction:column; }
-    .card:hover { transform:translateY(-8px); border-color:var(--green); }
+    .grid {
+      display: grid;
+      gap: 20px;
+      padding: 0 16px 40px;
+      grid-template-columns: 1fr;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    @media (min-width: 640px) {
+      .grid {
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      }
+    }
 
-    .quotes-section { background:white; border:2px solid var(--saffron); border-radius:12px; margin:16px; padding:20px; text-align:center; box-shadow:0 4px 16px var(--shadow); }
-    .quote { color:var(--chakra-blue); font-weight:700; font-size:15px; }
+    .card-wrap {
+      position: relative;
+    }
+    .card {
+      background: white;
+      border: 2px solid var(--saffron);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 6px 16px var(--shadow);
+      transition: all 0.3s;
+      height: 340px;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      border-color: var(--green);
+      box-shadow: 0 16px 36px rgba(19,136,8,0.25);
+    }
+    .card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+    }
+    .info {
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .shop-name {
+      font-weight: 800;
+      font-size: 17px;
+    }
+    .rating {
+      background: var(--saffron);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .desc {
+      padding: 0 16px 8px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .items-row {
+      padding: 0 16px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: auto;
+    }
+    .item-pill {
+      background: #f1f5f9;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid #e2e8f0;
+    }
+    .badge-offer {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: linear-gradient(135deg, var(--saffron), var(--green));
+      color: white;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 13px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      z-index: 2;
+    }
 
-    footer { background:var(--chakra-blue); color:white; padding:24px; text-align:center; font-weight:600; }
+    .quotes-section {
+      background: white;
+      border: 2px solid var(--saffron);
+      border-radius: 12px;
+      margin: 16px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 16px var(--shadow);
+    }
+    .quote {
+      color: var(--chakra-blue);
+      font-weight: 700;
+      font-size: 15px;
+      font-style: italic;
+    }
+
+    footer {
+      background: var(--chakra-blue);
+      color: white;
+      padding: 24px;
+      text-align: center;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -145,7 +398,26 @@
     </div>
   </header>
 
-  <!-- Republic Day Offer Banner - Pure Tricolor Colors -->
+  <!-- Sidebar -->
+  <div id="sidebar" class="sidebar" aria-hidden="true">
+    <div class="profile-section" id="profileSection">
+      <!-- Profile loaded via JS -->
+    </div>
+    <nav>
+      <a href="tracking.html" style="display:block; padding:12px; color:var(--text); text-decoration:none; border-radius:8px; margin:8px 0; background:#f8f9fa;">
+        <i class="fas fa-shopping-bag" style="margin-right:10px;"></i> My Orders
+      </a>
+      <a href="tel:9632367397" style="display:block; padding:12px; color:var(--text); text-decoration:none; border-radius:8px; margin:8px 0; background:#f8f9fa;">
+        <i class="fas fa-phone-alt" style="margin-right:10px;"></i> Contact: 9632367397
+      </a>
+      <a href="#" id="logout" style="display:none; color:var(--chakra-blue); font-weight:800; padding:12px; text-decoration:none; border-radius:8px; margin:8px 0; background:#f8f9fa;">
+        <i class="fas fa-sign-out-alt" style="margin-right:10px;"></i> Logout
+      </a>
+    </nav>
+  </div>
+  <div id="overlay" class="overlay"></div>
+
+  <!-- Offer Banner -->
   <div class="offer-banner">
     <div class="offer-content">
       <div class="offer-title">Republic Day 2026 Special! 🇮🇳</div>
@@ -172,9 +444,9 @@
       </a>
     </div>
 
-    <div class="search-bar" style="max-width:900px; margin:0 auto 24px; padding:0 16px; position:relative;">
+    <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Search Republic Day special offers..." oninput="searchShops()">
-      <i class="fas fa-search" style="position:absolute; right:28px; top:50%; transform:translateY(-50%); color:var(--chakra-blue); font-size:18px;"></i>
+      <i class="fas fa-search"></i>
     </div>
 
     <section class="grid" id="grid" aria-live="polite"></section>
@@ -182,6 +454,185 @@
 
   <footer>© 2026 Chat Point • Jai Hind! 🇮🇳 • 77th Republic Day</footer>
 
-  <script src="index.js"></script>
+  <script>
+    const shops = [
+      {
+        name: "Chat Point",
+        img: "https://plus.unsplash.com/premium_photo-1670601440146-3b33dfcd7e17?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8Zm9vZHxlbnwwfHwwfHx8MA%3D%3D",
+        rating: 4.9,
+        desc: "Your favorite hangout – burgers, chats, coffee & vibes!",
+        items: ["Burger", "Fries", "Oreo Shake", "Chicken Roll", "juice"]
+      },
+      {
+        name: "Hasanamba Iyengar Bakery",
+        img: "https://plus.unsplash.com/premium_photo-1665669263531-cdcbe18e7fe4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YmFrZXJ5fGVufDB8fDB8fHww",
+        rating: 4.5,
+        desc: "Fresh baked goods and sweet treats.",
+        items: ["Cake", "Puff", "rolls", "Puff Pastry"]
+      },
+      {
+        name: "Sangambar Udupi Hotel",
+        img: "https://plus.unsplash.com/premium_photo-1673108852141-e8c3c22a4a22?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Zm9vZHxlbnwwfHwwfHx8MA%3D%3D",
+        rating: 4.6,
+        desc: "Pure vegetarian South Indian meals.",
+        items: ["Masala Dosa", "Idli Vada", "Puri Bhaji", "Coffee"]
+      },
+      {
+        name: "Pizza Spot",
+        img: "https://plus.unsplash.com/premium_photo-1723478418445-b13c20b21231?q=80&w=1125&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        rating: 4.5,
+        desc: "Loaded pizzas with fresh toppings.",
+        items: ["momos", "pizza", "burger", "juice", "Veggie pizza", "pav bhaji"]
+      },
+      {
+        name: "Nandi Grand Hotels",
+        img: "https://plus.unsplash.com/premium_photo-1674106347866-8282d8c19f84?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTI5fHxmb29kfGVufDB8fDB8fHww",
+        rating: 4.7,
+        desc: "Crispy dosas with authentic flavors.",
+        items: ["Plain Dosa", "Ghee Roast", "Onion Uttapam", "Podi Idli"]
+      },
+      {
+        name: "connect with Pizza",
+        img: "https://plus.unsplash.com/premium_photo-1679924471091-f7cd7ad90ddf?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        rating: 4.6,
+        desc: "100% veg pizzas, light & tasty.",
+        items: ["Paneer Tikka", "Corn & Cheese", "nugets ", "Veg Extravaganza"]
+      },
+      {
+        name: "Mister Chef",
+        img: "https://images.unsplash.com/photo-1594179047519-f347310d3322?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8ZmFzdCUyMGZvb2R8ZW58MHx8MHx8fDA%3D",
+        rating: 4.7,
+        desc: "Juicy burgers with secret sauce.",
+        items: ["Classic Burger", "Cheese Blast", "Veg Crunch", "Fries Combo"]
+      },
+      {
+        name: "Dolphin Hotel",
+        img: "https://images.unsplash.com/photo-1496412705862-e0088f16f791?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjd8fGZvb2QlMjBwaG90b2dyYXBoeXxlbnwwfHwwfHx8MA%3D%3D",
+        rating: 4.5,
+        desc: "Fresh sandwiches & healthy bites.",
+        items: ["Veg Sandwich", "Grilled Cheese", "Club Sandwich", "rice", "panner", "Cold Coffee"]
+      }
+    ];
+
+    function renderShops(filter = "") {
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
+      shops
+        .filter(shop => shop.name.toLowerCase().includes(filter.toLowerCase()))
+        .forEach(shop => {
+          const cardWrap = document.createElement("div");
+          cardWrap.className = "card-wrap";
+
+          const card = document.createElement("div");
+          card.className = "card";
+          card.role = "button";
+          card.tabIndex = 0;
+          card.onclick = () => {
+            localStorage.setItem("currentShop", JSON.stringify({ name: shop.name, items: shop.items }));
+            location.href = `items.html?shop=${encodeURIComponent(shop.name)}`;
+          };
+          card.onkeydown = e => { if (e.key === "Enter") card.click(); };
+
+          const img = document.createElement("img");
+          img.src = shop.img;
+          img.alt = `${shop.name} image`;
+          img.loading = "lazy";
+          img.onerror = function() {
+            this.src = `https://via.placeholder.com/420x260/2874F0/FF9800?text=${encodeURIComponent(shop.name)}`;
+          };
+
+          const badge = document.createElement("div");
+          badge.className = "badge-offer";
+          badge.textContent = shop.rating >= 4.7 ? "⭐ TOP RATED" : "🔥 OFFER";
+
+          const info = document.createElement("div");
+          info.className = "info";
+          info.innerHTML = `
+            <div class="shop-name">${shop.name}</div>
+            <div class="rating" aria-label="Rating ${shop.rating}">
+              <i class="fas fa-star"></i> ${shop.rating}
+            </div>
+          `;
+
+          const desc = document.createElement("div");
+          desc.className = "desc";
+          desc.textContent = shop.desc;
+
+          const itemsRow = document.createElement("div");
+          itemsRow.className = "items-row";
+          shop.items.slice(0, 4).forEach(item => {
+            const pill = document.createElement("div");
+            pill.className = "item-pill";
+            pill.textContent = item;
+            itemsRow.appendChild(pill);
+          });
+
+          card.append(img, info, desc, itemsRow);
+          cardWrap.append(card);
+          if (Math.random() > 0.4) cardWrap.append(badge); // random badge placement
+          grid.append(cardWrap);
+        });
+    }
+
+    function searchShops() {
+      renderShops(document.getElementById("searchInput").value.trim());
+    }
+
+    // Sidebar toggle
+    document.getElementById("navBtn").onclick = () => {
+      document.getElementById("sidebar").classList.add("active");
+      document.getElementById("sidebar").setAttribute("aria-hidden", "false");
+      document.getElementById("overlay").classList.add("active");
+    };
+
+    document.getElementById("overlay").onclick = () => {
+      document.getElementById("sidebar").classList.remove("active");
+      document.getElementById("sidebar").setAttribute("aria-hidden", "true");
+      document.getElementById("overlay").classList.remove("active");
+    };
+
+    // Profile loading
+    function loadProfile() {
+      const user = JSON.parse(localStorage.getItem("chatpoint_user") || "null");
+      const profile = document.getElementById("profileSection");
+      const logoutBtn = document.getElementById("logout");
+
+      if (user && user._id) {
+        profile.innerHTML = `
+          <div style="display:flex;gap:12px;align-items:center">
+            <div class="avatar"><i class="fas fa-user"></i></div>
+            <div style="font-weight:800">
+              <div>${user.name}</div>
+              <div style="font-size:13px;color:var(--muted);font-weight:600">${user.phone}</div>
+            </div>
+          </div>
+        `;
+        logoutBtn.style.display = "block";
+        logoutBtn.onclick = () => {
+          localStorage.removeItem("chatpoint_user");
+          location.reload();
+        };
+      } else {
+        profile.innerHTML = `
+          <div style="font-size:15px;">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="avatar" style="background:#e3f2fd">🙂</div>
+              <div style="font-weight:700">Welcome</div>
+            </div>
+            <div style="margin-top:8px;color:var(--chakra-blue);font-size:13px">
+              <a href="login.html" style="color:var(--chakra-blue);text-decoration:underline">Login to see profile</a>
+            </div>
+          </div>
+        `;
+        logoutBtn.style.display = "none";
+      }
+    }
+
+    // Initial load
+    window.onload = () => {
+      renderShops();
+      loadProfile();
+    };
+  </script>
 </body>
 </html>
