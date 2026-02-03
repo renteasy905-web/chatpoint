@@ -2,337 +2,100 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>ChatPoint • Menu & Cart</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Menu - ChatPoint</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     :root {
       --primary: #e63946;
-      --primary-dark: #d00000;
-      --accent: #f4a261;
       --dark: #1d3557;
-      --gray: #457b9d;
       --light: #f1faee;
-      --white: #ffffff;
-      --card-bg: rgba(255, 255, 255, 0.94);
-      --shadow-sm: 0 6px 20px rgba(0,0,0,0.08);
-      --shadow-md: 0 12px 40px rgba(0,0,0,0.14);
-      --radius: 20px;
-      --transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      --card-bg: white;
+      --shadow: 0 8px 30px rgba(0,0,0,0.12);
+      --radius: 16px;
     }
-
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: 'Poppins', system-ui, sans-serif;
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      color: var(--dark);
-      min-height: 100vh;
-      line-height: 1.6;
-    }
-
+    body { font-family: 'Poppins', sans-serif; background: var(--light); margin: 0; padding: 0; }
     header {
-      background: rgba(255,255,255,0.96);
-      backdrop-filter: blur(12px);
+      background: white;
       padding: 14px 18px;
       position: sticky;
       top: 0;
-      z-index: 1000;
-      border-bottom: 1px solid rgba(0,0,0,0.06);
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: var(--shadow-sm);
     }
-
-    .back-btn {
-      font-size: 1.8rem;
-      background: none;
-      border: none;
+    .back-btn { font-size: 1.8rem; color: var(--primary); background: none; border: none; cursor: pointer; }
+    .page-title { font-size: 1.4rem; font-weight: 700; }
+    .cart-icon {
+      font-size: 1.6rem;
       color: var(--primary);
+      position: relative;
       cursor: pointer;
-      padding: 10px;
-      border-radius: 50%;
-      transition: var(--transition);
     }
-
-    .back-btn:hover { background: rgba(230,57,70,0.1); transform: scale(1.12); }
-
-    .page-title {
-      font-size: 1.45rem;
-      font-weight: 700;
-      color: var(--dark);
-    }
-
-    .tab-buttons {
-      display: flex;
-      background: rgba(241,250,238,0.7);
-      border-radius: 999px;
-      padding: 5px;
-      border: 1px solid rgba(230,57,70,0.15);
-      backdrop-filter: blur(10px);
-    }
-
-    .tab-btn {
-      padding: 10px 20px;
-      font-weight: 600;
-      font-size: 0.96rem;
-      border: none;
-      background: transparent;
-      border-radius: 999px;
-      cursor: pointer;
-      color: var(--gray);
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .tab-btn.active {
-      background: white;
-      color: var(--primary);
-      box-shadow: 0 4px 16px rgba(230,57,70,0.2);
-      transform: translateY(-2px);
-    }
-
-    main {
-      padding: 18px;
-      padding-bottom: 220px;
-    }
-
-    h1.shop-name {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin: 16px 0 28px;
-      text-align: center;
-      letter-spacing: -0.6px;
-    }
-
-    .veg-nonveg-filter {
-      display: none;
-      justify-content: center;
-      margin: 0 auto 24px;
-      max-width: 380px;
-    }
-    .veg-nonveg-filter.active { display: flex; }
-    .filter-btn {
-      flex: 1;
-      padding: 14px;
-      font-weight: 700;
-      font-size: 1.05rem;
-      border: none;
-      cursor: pointer;
-      transition: var(--transition);
+    .cart-count {
+      position: absolute;
+      top: -8px;
+      right: -10px;
+      background: var(--primary);
       color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 50%;
+      padding: 2px 6px;
+      min-width: 18px;
+      text-align: center;
     }
-    .filter-btn.veg { background: #2a9d8f; border-radius: 14px 0 0 14px; }
-    .filter-btn.nonveg { background: var(--primary); border-radius: 0 14px 14px 0; }
-    .filter-btn.active { box-shadow: 0 0 0 5px rgba(255,255,255,0.4); transform: scale(1.05); }
-
-    .items-container {
-      display: grid;
-      gap: 22px;
-    }
-
+    main { padding: 20px; }
+    h1 { text-align: center; color: var(--primary); font-size: 2.2rem; margin: 20px 0 30px; }
+    .items-container { display: grid; gap: 20px; }
     .item-card {
       background: var(--card-bg);
       border-radius: var(--radius);
+      box-shadow: var(--shadow);
       overflow: hidden;
-      box-shadow: var(--shadow-md);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(230,57,70,0.08);
-      transition: var(--transition);
     }
-
-    .item-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 20px 50px rgba(230,57,70,0.22);
-    }
-
-    .item-image {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    }
-
-    .item-content {
-      padding: 18px 20px;
-    }
-
-    .item-name {
-      font-size: 1.28rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: var(--dark);
-    }
-
-    .item-price {
-      font-size: 1.55rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin: 10px 0 16px;
-    }
-
+    .item-content { padding: 16px; }
+    .item-name { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; }
+    .item-price { font-size: 1.45rem; font-weight: 800; color: var(--primary); margin: 8px 0; }
     .quantity-row {
       display: flex;
       align-items: center;
-      gap: 18px;
-      margin-top: 12px;
+      gap: 16px;
     }
-
     .qty-btn {
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      background: rgba(230,57,70,0.08);
+      background: rgba(230,57,70,0.1);
       border: none;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       color: var(--primary);
       cursor: pointer;
-      transition: var(--transition);
     }
-
-    .qty-btn:hover { background: rgba(230,57,70,0.2); transform: scale(1.12); }
-
-    .qty-value {
-      font-size: 1.45rem;
-      font-weight: 800;
-      min-width: 44px;
-      text-align: center;
-    }
-
-    .cart-summary-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      padding: 20px 24px;
-      border-top: 1px solid rgba(230,57,70,0.15);
-      box-shadow: 0 -12px 40px rgba(0,0,0,0.18);
-      z-index: 900;
-      border-radius: 28px 28px 0 0;
-    }
-
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 1.12rem;
-      margin-bottom: 12px;
-      font-weight: 500;
-    }
-
-    .grand-total-row {
-      font-size: 1.9rem;
-      font-weight: 900;
-      color: var(--primary);
-      margin: 20px 0;
-      text-align: center;
-      letter-spacing: -0.8px;
-    }
-
-    .place-order-btn {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      border: none;
-      width: 100%;
-      padding: 18px;
-      font-size: 1.32rem;
-      font-weight: 800;
-      border-radius: 16px;
-      cursor: pointer;
-      box-shadow: 0 8px 30px rgba(230,57,70,0.4);
-      transition: var(--transition);
-    }
-
-    .place-order-btn:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 16px 50px rgba(230,57,70,0.5);
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 120px 30px 80px;
-      color: var(--gray);
-      font-size: 1.25rem;
-    }
-
-    .empty-state i {
-      font-size: 5.5rem;
-      color: rgba(230,57,70,0.15);
-      margin-bottom: 24px;
-    }
-
-    .hidden { display: none !important; }
+    .qty-btn:hover { background: rgba(230,57,70,0.2); }
+    .qty-value { font-size: 1.3rem; font-weight: 700; min-width: 40px; text-align: center; }
   </style>
 </head>
 <body>
 
 <header>
   <button class="back-btn" onclick="history.back()">←</button>
-  <div class="page-title">Order Now</div>
-  <div class="tab-buttons">
-    <button class="tab-btn active" data-tab="menu"><i class="fas fa-utensils"></i> Menu</button>
-    <button class="tab-btn" data-tab="cart">
-      <i class="fas fa-shopping-cart"></i> Cart <span id="cart-count">0</span>
-    </button>
+  <div class="page-title">Menu</div>
+  <div class="cart-icon" onclick="window.location.href='cart.html'">
+    <i class="fas fa-shopping-cart"></i>
+    <span class="cart-count" id="cart-count">0</span>
   </div>
 </header>
 
 <main>
-
-  <h1 class="shop-name" id="shopName">Loading...</h1>
-
-  <!-- Veg / Non-Veg filter -->
-  <div class="veg-nonveg-filter" id="vegNonVegFilter">
-    <button class="filter-btn veg active" onclick="filterItems('veg')">Veg</button>
-    <button class="filter-btn nonveg" onclick="filterItems('nonveg')">Non-Veg</button>
-  </div>
-
-  <!-- === MENU TAB === -->
-  <div id="menu-tab">
-    <div class="items-container" id="itemsContainer"></div>
-  </div>
-
-  <!-- === CART TAB === -->
-  <div id="cart-tab" class="hidden">
-    <div class="cart-items-list" id="cartItems"></div>
-    <div id="cartEmpty" class="empty-state hidden">
-      <i class="fas fa-shopping-bag"></i><br>
-      Your cart is empty
-    </div>
-  </div>
-
+  <h1 id="shopName">Loading...</h1>
+  <div class="items-container" id="itemsContainer"></div>
 </main>
 
-<!-- Floating Cart Summary Bar -->
-<div class="cart-summary-bar hidden" id="cartSummaryBar">
-  <div class="summary-row">
-    <span>Subtotal</span>
-    <span id="subtotal">₹0</span>
-  </div>
-  <div class="summary-row">
-    <span>Delivery</span>
-    <span id="delivery">₹0</span>
-  </div>
-  <div class="grand-total-row">
-    <span>Total</span>
-    <span id="grandTotal">₹0</span>
-  </div>
-  <button class="place-order-btn" onclick="window.location.href='cart.html'" style="margin-top:16px;">
-    Proceed to Checkout
-  </button>
-</div>
-
 <script>
-// =============================================
-// CONFIG & ALL SHOPS MENU DATA (COMPLETE)
-// =============================================
-
 const DELIVERY_THRESHOLD = 100;
 const DELIVERY_FEE = 20;
 
@@ -373,7 +136,6 @@ const shopMenus = {
     { name: "Fried Momos (Fyr)", originalPrice: 60 },
     { name: "Kurkure Momos", originalPrice: 80 }
   ],
-
   "Dolphin Hotel": [
     { name: "Tomato Soup", originalPrice: 85, type: "veg" },
     { name: "Veg Clear Soup", originalPrice: 85, type: "veg" },
@@ -490,7 +252,6 @@ const shopMenus = {
     { name: "CKN Biryani", originalPrice: 242 - 15, type: "nonveg" },
     { name: "Mutton Biryani", originalPrice: 272 - 15, type: "nonveg" }
   ],
-
   "Mister Chef": [
     { name: "Pizza Margherita", originalPrice: 139 },
     { name: "Veggie Pizza", originalPrice: 149 },
@@ -526,7 +287,6 @@ const shopMenus = {
     { name: "Paneer Sandwich", originalPrice: 60 },
     { name: "Club Sandwich", originalPrice: 70 }
   ],
-
   "connect with Pizza": [
     { name: "Margarita", originalPrice: 139 },
     { name: "Veggie", originalPrice: 149 },
@@ -585,7 +345,6 @@ const shopMenus = {
     { name: "Veg Burger Patty", originalPrice: 40 },
     { name: "Non Veg Burger Patty", originalPrice: 40 }
   ],
-
   "Nandi Grand Hotels": [
     { name: "Shira", originalPrice: 25 },
     { name: "Poori", originalPrice: 60 },
@@ -598,7 +357,6 @@ const shopMenus = {
     { name: "Cheese Dosa", originalPrice: 95 },
     { name: "Chou Chou Bath", originalPrice: 65 }
   ],
-
   "Sangambar Udupi Hotel": [
     { name: "Plain Dosa", originalPrice: 78 },
     { name: "Masala Dosa", originalPrice: 88 },
@@ -612,7 +370,6 @@ const shopMenus = {
     { name: "Paneer Manchurian", originalPrice: 198 },
     { name: "Veg Manchurian", originalPrice: 98 }
   ],
-
   "Hasanamba Iyengar Bakery": [
     { name: "Rasmalai Cake", originalPrice: 762 - 25 },
     { name: "Irish Coffee Cake", originalPrice: 762 - 25 },
@@ -638,14 +395,6 @@ const shopMenus = {
   ]
 };
 
-// =============================================
-// UTILITIES
-// =============================================
-
-function getDisplayedPrice(original) {
-  return original <= 100 ? original + 20 : original + 40;
-}
-
 function getShopFromURL() {
   const params = new URLSearchParams(location.search);
   return decodeURIComponent(params.get("shop") || "");
@@ -655,62 +404,20 @@ function formatPrice(num) {
   return "₹" + Math.round(num);
 }
 
-// =============================================
-// STATE & FILTER
-// =============================================
-
-let currentFilter = "veg";
-
-// Veg/Non-Veg filter (only for Dolphin Hotel)
-function filterItems(type) {
-  currentFilter = type;
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.classList.contains(type));
-  });
-  renderMenu();
+function getDisplayedPrice(original) {
+  return original <= 100 ? original + 20 : original + 40;
 }
-
-// =============================================
-// CART LOGIC
-// =============================================
 
 let cart = JSON.parse(localStorage.getItem("chatpoint_cart")) || {};
 
-function saveCart() {
-  localStorage.setItem("chatpoint_cart", JSON.stringify(cart));
-  updateCartUI();
-}
-
-function getCartSubtotal() {
-  let total = 0;
-  for (const shop in cart) {
-    for (const name in cart[shop]) {
-      total += cart[shop][name].qty * cart[shop][name].price;
-    }
-  }
-  return total;
-}
-
-function updateCartUI() {
+function updateCartCount() {
   let count = 0;
   for (const shop in cart) {
-    for (const item in cart[shop]) {
-      count += cart[shop][item].qty;
+    for (const name in cart[shop]) {
+      count += cart[shop][name].qty;
     }
   }
-
   document.getElementById("cart-count").textContent = count;
-
-  const bar = document.getElementById("cartSummaryBar");
-  bar.classList.toggle("hidden", count === 0);
-
-  const subtotal = getCartSubtotal();
-  const delivery = subtotal < DELIVERY_THRESHOLD ? DELIVERY_FEE : 0;
-  const grand = subtotal + delivery;
-
-  document.getElementById("subtotal").textContent = formatPrice(subtotal);
-  document.getElementById("delivery").textContent = formatPrice(delivery);
-  document.getElementById("grandTotal").textContent = formatPrice(grand);
 }
 
 function changeQty(shop, name, price, delta) {
@@ -722,14 +429,10 @@ function changeQty(shop, name, price, delta) {
   if (cart[shop][name].qty === 0) delete cart[shop][name];
   if (Object.keys(cart[shop]).length === 0) delete cart[shop];
 
-  saveCart();
+  localStorage.setItem("chatpoint_cart", JSON.stringify(cart));
+  updateCartCount();
   renderMenu();
-  updateCartUI();
 }
-
-// =============================================
-// RENDER MENU
-// =============================================
 
 function renderMenu() {
   const container = document.getElementById("itemsContainer");
@@ -738,32 +441,20 @@ function renderMenu() {
   const shop = getShopFromURL();
   const items = shopMenus[shop] || [];
 
-  document.getElementById("shopName").textContent = shop || "Shop not found";
-
-  document.getElementById("vegNonVegFilter").classList.toggle("active", shop === "Dolphin Hotel");
+  document.getElementById("shopName").textContent = shop || "Select a shop";
 
   if (items.length === 0) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <i class="fas fa-utensils"></i><br>No items available
-      </div>
-    `;
+    container.innerHTML = '<div style="text-align:center;padding:100px 20px;color:#777;">No items available</div>';
     return;
   }
 
   items.forEach(item => {
-    if (shop === "Dolphin Hotel") {
-      if (currentFilter === "veg" && item.type === "nonveg") return;
-      if (currentFilter === "nonveg" && item.type === "veg") return;
-    }
-
     const price = getDisplayedPrice(item.originalPrice);
     const qty = cart[shop]?.[item.name]?.qty || 0;
 
     const card = document.createElement("div");
     card.className = "item-card";
     card.innerHTML = `
-      <div class="item-image" style="background-image:url('${item.image || ''}')"></div>
       <div class="item-content">
         <div class="item-name">${item.name}</div>
         <div class="item-price">${formatPrice(price)}</div>
@@ -778,34 +469,8 @@ function renderMenu() {
   });
 }
 
-// =============================================
-// INIT & TAB LOGIC
-// =============================================
-
-const currentShop = getShopFromURL();
-if (currentShop && shopMenus[currentShop]) {
-  document.getElementById("shopName").textContent = currentShop;
-} else {
-  document.getElementById("shopName").textContent = "Shop not found";
-}
-
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    document.getElementById('menu-tab').classList.toggle('hidden', btn.dataset.tab !== 'menu');
-    document.getElementById('cart-tab').classList.toggle('hidden', btn.dataset.tab !== 'cart');
-
-    if (btn.dataset.tab === 'cart') {
-      window.location.href = 'cart.html';
-    }
-  });
-});
-
-// Initial load
 renderMenu();
-updateCartUI();
+updateCartCount();
 </script>
 </body>
 </html>
