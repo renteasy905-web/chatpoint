@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Menu - ChatPoint</title>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 
@@ -111,27 +112,46 @@
       color: var(--primary);
     }
 
-    /* BOTTOM BAR */
+    /* NEW PREMIUM FLOATING BOTTOM BAR */
     .cart-summary-bar {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 16px 20px;
-      background: #fff;
-      box-shadow: 0 -8px 25px rgba(0,0,0,0.15);
-      border-radius: 20px 20px 0 0;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 92%;
+      padding: 18px 22px;
+
+      background: linear-gradient(135deg, #ff4b5c, #e63946);
+      color: white;
+      border-radius: 22px;
+      box-shadow: 0px 12px 35px rgba(230, 57, 70, 0.4);
+
       display: none;
       cursor: pointer;
+      transition: 0.25s ease;
+      animation: popUp 0.35s ease-out;
     }
 
-    .cart-summary-bar.visible { display: block !important; }
+    .cart-summary-bar.visible {
+      display: block !important;
+    }
 
     .grand-total-row {
       text-align: center;
-      font-size: 1.7rem;
+      font-size: 1.8rem;
       font-weight: 900;
-      color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+
+    @keyframes popUp {
+      from {
+        transform: translateX(-50%) translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
     }
   </style>
 </head>
@@ -144,6 +164,7 @@
   <span id="cart-count" style="display:none">0</span>
 </header>
 
+<!-- TOP CART BAR -->
 <div class="cart-bar" id="cartBar">
   <div class="cart-info"><b id="cartCountBar">0</b> items added</div>
   <button class="view-cart-btn" onclick="window.location.href='cart.html'">View Cart →</button>
@@ -153,9 +174,11 @@
 
 <div class="items-container" id="itemsContainer"></div>
 
-<!-- BOTTOM BAR -->
+<!-- PREMIUM BOTTOM FLOATING BAR -->
 <div class="cart-summary-bar" id="cartSummaryBar" onclick="window.location.href='cart.html'">
-  <div class="grand-total-row">Total: <span id="grandTotal">₹0</span></div>
+  <div class="grand-total-row">
+    Total: <span id="grandTotal">₹0</span> →
+  </div>
 </div>
 
 <script>
@@ -210,7 +233,7 @@ function updateCartUI() {
   document.getElementById("grandTotal").textContent = "₹" + grand;
 }
 
-/* ------------------- QUANTITY ------------------- */
+/* ------------------- UPDATE QTY ------------------- */
 function changeQty(shop, name, price, delta) {
   if (!cart[shop]) cart[shop] = {};
   if (!cart[shop][name]) cart[shop][name] = { qty: 0, price };
@@ -224,7 +247,7 @@ function changeQty(shop, name, price, delta) {
   renderMenu();
 }
 
-/* ------------------- MENU ------------------- */
+/* ------------------- GET SHOP ------------------- */
 function getShopFromURL() {
   const params = new URLSearchParams(location.search);
   return decodeURIComponent(params.get("shop") || "");
