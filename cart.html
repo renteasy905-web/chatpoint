@@ -4,8 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cart - ChatPoint</title>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
   <style>
     :root {
       --primary: #e63946;
@@ -15,7 +17,14 @@
       --shadow: 0 8px 30px rgba(0,0,0,0.12);
       --radius: 16px;
     }
-    body { font-family: 'Poppins', sans-serif; background: var(--light); margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--light);
+      margin: 0;
+      padding: 0;
+    }
+
     header {
       background: white;
       padding: 14px 18px;
@@ -27,58 +36,107 @@
       align-items: center;
       justify-content: space-between;
     }
-    .back-btn { font-size: 1.8rem; color: var(--primary); background: none; border: none; cursor: pointer; }
-    .page-title { font-size: 1.4rem; font-weight: 700; }
-    main { padding: 20px; }
-    h1 { text-align: center; color: var(--primary); margin: 20px 0 30px; }
-    .cart-items-list { display: grid; gap: 20px; }
-    .cart-item-card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 16px;
-    }
-    .cart-item-name { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; }
-    .cart-item-price { font-size: 1.4rem; color: var(--primary); font-weight: 700; }
-    .quantity-row {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-top: 12px;
-    }
-    .qty-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: rgba(230,57,70,0.1);
-      border: none;
-      font-size: 1.5rem;
+
+    .back-btn {
+      font-size: 1.8rem;
       color: var(--primary);
+      background: none;
+      border: none;
       cursor: pointer;
     }
-    .qty-btn:hover { background: rgba(230,57,70,0.2); }
-    .qty-value { font-size: 1.3rem; font-weight: 700; min-width: 40px; text-align: center; }
+
+    h1 {
+      text-align: center;
+      color: var(--primary);
+      margin: 20px 0 30px;
+    }
+
+    main {
+      padding: 16px;
+      padding-bottom: 180px;
+    }
+
+    /* CART ITEM CARD (compact mobile friendly) */
+    .cart-item-card {
+      background: white;
+      padding: 14px;
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .item-left {
+      width: 60%;
+    }
+
+    .cart-item-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--dark);
+    }
+
+    .cart-item-price {
+      font-size: 1.25rem;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .item-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .qty-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(230,57,70,0.12);
+      border: none;
+      font-size: 1.4rem;
+      color: var(--primary);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .qty-value {
+      width: 28px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    /* SUMMARY BOX */
     .summary {
       background: white;
+      padding: 16px;
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 20px;
-      margin-top: 30px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding-bottom: 26px;
     }
+
     .summary-row {
       display: flex;
       justify-content: space-between;
       font-size: 1.15rem;
       margin: 12px 0;
     }
+
     .grand-total {
-      font-size: 1.6rem;
+      font-size: 1.55rem;
       font-weight: 800;
       color: var(--primary);
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 2px solid var(--primary);
+      margin-top: 14px;
     }
+
     .proceed-btn {
       background: var(--primary);
       color: white;
@@ -89,52 +147,61 @@
       font-weight: 700;
       border-radius: 14px;
       cursor: pointer;
-      margin-top: 24px;
+      margin-top: 18px;
     }
-    .proceed-btn:hover { background: #d00000; }
+
     .empty-state {
       text-align: center;
       padding: 100px 20px;
       color: #777;
       font-size: 1.3rem;
     }
-    .empty-state i { font-size: 5rem; color: rgba(230,57,70,0.2); margin-bottom: 20px; }
+
+    .empty-state i {
+      font-size: 5rem;
+      color: rgba(230,57,70,0.2);
+      margin-bottom: 20px;
+    }
   </style>
 </head>
+
 <body>
 
 <header>
-  <button class="back-btn" onclick="window.location.href='items.html'">←</button>
+  <button class="back-btn" onclick="history.back()">←</button>
   <div class="page-title">Your Cart</div>
   <div></div>
 </header>
 
 <main>
-  <h1>Cart</h1>
-  <div class="cart-items-list" id="cartItems"></div>
-  <div id="cartEmpty" class="empty-state hidden">
+  <h1>Your Cart</h1>
+
+  <div id="cartItems"></div>
+
+  <div id="cartEmpty" class="empty-state" style="display:none;">
     <i class="fas fa-shopping-bag"></i><br>
     Your cart is empty
   </div>
-
-  <div class="summary hidden" id="summary">
-    <div class="summary-row">
-      <span>Subtotal</span>
-      <span id="subtotal">₹0</span>
-    </div>
-    <div class="summary-row">
-      <span>Delivery</span>
-      <span id="delivery">₹0</span>
-    </div>
-    <div class="grand-total">
-      <span>Total</span>
-      <span id="grandTotal">₹0</span>
-    </div>
-    <button class="proceed-btn" onclick="window.location.href='payment.html'">
-      Proceed to Checkout
-    </button>
-  </div>
 </main>
+
+<!-- SUMMARY FIXED BOX -->
+<div class="summary" id="summaryBox" style="display:none;">
+  <div class="summary-row">
+    <span>Subtotal</span>
+    <span id="subtotal">₹0</span>
+  </div>
+  <div class="summary-row">
+    <span>Delivery</span>
+    <span id="delivery">₹0</span>
+  </div>
+  <div class="grand-total">
+    Total: <span id="grandTotal">₹0</span>
+  </div>
+
+  <button class="proceed-btn" onclick="window.location.href='payment.html'">
+    Proceed to Checkout
+  </button>
+</div>
 
 <script>
 const DELIVERY_THRESHOLD = 100;
@@ -146,14 +213,31 @@ function formatPrice(num) {
   return "₹" + Math.round(num);
 }
 
+function saveCart() {
+  localStorage.setItem("chatpoint_cart", JSON.stringify(cart));
+}
+
 function getCartSubtotal() {
   let total = 0;
-  for (const shop in cart) {
-    for (const name in cart[shop]) {
-      total += cart[shop][name].qty * cart[shop][name].price;
-    }
-  }
+  for (const shop in cart)
+    for (const item in cart[shop])
+      total += cart[shop][item].qty * cart[shop][item].price;
   return total;
+}
+
+function changeQty(shop, name, price, delta) {
+  if (!cart[shop]) cart[shop] = {};
+  if (!cart[shop][name]) cart[shop][name] = { qty: 0, price };
+
+  cart[shop][name].qty += delta;
+
+  if (cart[shop][name].qty <= 0) {
+    delete cart[shop][name];
+    if (Object.keys(cart[shop]).length === 0) delete cart[shop];
+  }
+
+  saveCart();
+  renderCart();
 }
 
 function renderCart() {
@@ -161,42 +245,46 @@ function renderCart() {
   container.innerHTML = "";
 
   if (Object.keys(cart).length === 0) {
-    document.getElementById("cartEmpty").classList.remove("hidden");
-    document.getElementById("summary").classList.add("hidden");
+    document.getElementById("cartEmpty").style.display = "block";
+    document.getElementById("summaryBox").style.display = "none";
     return;
   }
 
-  document.getElementById("cartEmpty").classList.add("hidden");
-  document.getElementById("summary").classList.remove("hidden");
+  document.getElementById("cartEmpty").style.display = "none";
+  document.getElementById("summaryBox").style.display = "block";
 
   Object.keys(cart).forEach(shop => {
-    const title = document.createElement("div");
-    title.style = "font-weight:700; color:#e63946; margin:24px 0 12px; font-size:1.3rem;";
-    title.textContent = shop;
-    container.appendChild(title);
-
     Object.keys(cart[shop]).forEach(name => {
       const item = cart[shop][name];
-      const row = document.createElement("div");
-      row.className = "cart-item-card";
-      row.innerHTML = `
-        <div class="cart-item-name">${name}</div>
-        <div class="cart-item-price">${formatPrice(item.price)} × ${item.qty}</div>
+
+      container.innerHTML += `
+        <div class="cart-item-card">
+          <div class="item-left">
+            <div class="cart-item-name">${name}</div>
+            <div class="cart-item-price">₹${item.price}</div>
+          </div>
+
+          <div class="item-controls">
+            <button class="qty-btn" onclick="changeQty('${shop}','${name}',${item.price},-1)">−</button>
+            <span class="qty-value">${item.qty}</span>
+            <button class="qty-btn" onclick="changeQty('${shop}','${name}',${item.price},1)">+</button>
+          </div>
+        </div>
       `;
-      container.appendChild(row);
     });
   });
 
   const subtotal = getCartSubtotal();
   const delivery = subtotal < DELIVERY_THRESHOLD ? DELIVERY_FEE : 0;
-  const grand = subtotal + delivery;
+  const total = subtotal + delivery;
 
   document.getElementById("subtotal").textContent = formatPrice(subtotal);
   document.getElementById("delivery").textContent = delivery === 0 ? "FREE" : formatPrice(delivery);
-  document.getElementById("grandTotal").textContent = formatPrice(grand);
+  document.getElementById("grandTotal").textContent = formatPrice(total);
 }
 
 renderCart();
 </script>
+
 </body>
 </html>
