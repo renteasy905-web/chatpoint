@@ -1,10 +1,10 @@
 const shops = [
-  {
-    name: "Chat Point",
-    img: "https://plus.unsplash.com/premium_photo-1670601440146-3b33dfcd7e17?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8Zm9vZHxlbnwwfHwwfHx8MA%3D%3D",
-    rating: 4.9,
-    desc: "Your favorite hangout – burgers, chats, coffee & vibes!",
-    items: ["Burger", "Fries", "Oreo Shake", "Chicken Roll", "juice"]
+   {
+    name: "connect with Pizza",
+    img: "https://plus.unsplash.com/premium_photo-1679924471091-f7cd7ad90ddf?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    rating: 4.6,
+    desc: "100% veg pizzas, light & tasty.",
+    items: ["Paneer Tikka", "Corn & Cheese", "nugets ", "Veg Extravaganza"]
   },
     {
     name: "Hasanamba Iyengar Bakery",
@@ -35,13 +35,7 @@ const shops = [
     items: ["Plain Dosa", "Ghee Roast", "Onion Uttapam", "Podi Idli"]
   },
   
-  {
-    name: "connect with Pizza",
-    img: "https://plus.unsplash.com/premium_photo-1679924471091-f7cd7ad90ddf?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-    rating: 4.6,
-    desc: "100% veg pizzas, light & tasty.",
-    items: ["Paneer Tikka", "Corn & Cheese", "nugets ", "Veg Extravaganza"]
-  },
+
   {
     name: "Mister Chef",
     img: "https://images.unsplash.com/photo-1594179047519-f347310d3322?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8ZmFzdCUyMGZvb2R8ZW58MHx8MHx8fDA%3D",
