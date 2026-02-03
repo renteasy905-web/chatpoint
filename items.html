@@ -4,26 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
   <title>Menu - ChatPoint</title>
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-
+  
   <style>
     :root {
       --primary: #e63946;
       --primary-dark: #d00000;
       --dark: #1d3557;
+      --gray: #457b9d;
       --light: #f1faee;
-      --card-bg: rgba(255,255,255,0.95);
-      --shadow-sm: 0 6px 20px rgba(0,0,0,0.1);
+      --card-bg: rgba(255, 255, 255, 0.94);
+      --shadow-sm: 0 6px 20px rgba(0,0,0,0.08);
       --radius: 16px;
     }
 
+    * { margin:0; padding:0; box-sizing:border-box; }
     body {
-      margin: 0;
-      padding: 0;
+      font-family: 'Poppins', sans-serif;
       background: var(--light);
-      font-family: Poppins, sans-serif;
+      color: var(--dark);
+      min-height: 100vh;
     }
 
     header {
@@ -32,109 +33,199 @@
       position: sticky;
       top: 0;
       z-index: 1000;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
       box-shadow: var(--shadow-sm);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
 
     .back-btn {
       font-size: 1.9rem;
-      border: none;
       background: none;
-      cursor: pointer;
+      border: none;
       color: var(--primary);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
     }
 
+    .back-btn:hover { background: rgba(230,57,70,0.1); }
+
     .page-title {
-      font-size: 1.5rem;
+      font-size: 1.45rem;
       font-weight: 700;
     }
 
-    /* TOP CART BAR */
+    /* Top fixed cart bar */
     .cart-bar {
-      display: none;
       position: fixed;
       top: 60px;
       left: 0;
       right: 0;
-      background: #fff;
+      background: white;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
       padding: 12px 18px;
-      z-index: 999;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-between;
+      display: none;
       align-items: center;
+      justify-content: space-between;
+      z-index: 999;
+      border-bottom: 1px solid #eee;
     }
 
-    .cart-bar.visible { display: flex !important; }
+    .cart-bar.visible { display: flex; }
 
-    /* MENU GRID */
+    .cart-info {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .view-cart-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .view-cart-btn:hover { background: var(--primary-dark); }
+
+    main {
+      padding: 90px 18px 220px;
+    }
+
+    h1.shop-name {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin: 0 0 28px;
+      text-align: center;
+    }
+
+    .veg-nonveg-filter {
+      display: none;
+      justify-content: center;
+      margin: 0 auto 24px;
+      max-width: 380px;
+    }
+    .veg-nonveg-filter.active { display: flex; }
+    .filter-btn {
+      flex: 1;
+      padding: 14px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      border: none;
+      cursor: pointer;
+      color: white;
+    }
+    .filter-btn.veg { background: #2a9d8f; border-radius: 14px 0 0 14px; }
+    .filter-btn.nonveg { background: var(--primary); border-radius: 0 14px 14px 0; }
+    .filter-btn.active { transform: scale(1.05); box-shadow: 0 0 0 4px rgba(255,255,255,0.4); }
+
     .items-container {
-      padding: 90px 18px 200px;
       display: grid;
-      gap: 18px;
+      gap: 20px;
     }
 
     .item-card {
       background: var(--card-bg);
       border-radius: var(--radius);
-      padding: 18px;
+      overflow: hidden;
       box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: row-reverse; /* Image on right */
+      align-items: center;
+      transition: all 0.25s ease;
+    }
+
+    .item-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(230,57,70,0.18);
+    }
+
+    .item-image-container {
+      width: 120px;
+      height: 120px;
+      flex-shrink: 0;
+      margin: 16px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #f8f9fa;
+      border: 1px solid #eee;
+    }
+
+    .item-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .item-content {
+      flex: 1;
+      padding: 16px 16px 16px 0;
     }
 
     .item-name {
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       font-weight: 700;
+      margin-bottom: 6px;
     }
 
     .item-price {
-      color: var(--primary);
+      font-size: 1.45rem;
       font-weight: 800;
-      font-size: 1.4rem;
-      margin: 10px 0;
+      color: var(--primary);
+      margin: 6px 0 12px;
     }
 
     .quantity-row {
       display: flex;
-      gap: 15px;
       align-items: center;
+      gap: 16px;
     }
 
     .qty-btn {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      background: rgba(230,57,70,0.1);
+      background: rgba(230,57,70,0.08);
       border: none;
-      font-size: 1.4rem;
-      cursor: pointer;
+      font-size: 1.5rem;
       color: var(--primary);
+      cursor: pointer;
+      transition: all 0.2s;
     }
 
-    /* NEW PREMIUM FLOATING BOTTOM BAR */
+    .qty-btn:hover { background: rgba(230,57,70,0.18); }
+
+    .qty-value {
+      font-size: 1.35rem;
+      font-weight: 700;
+      min-width: 40px;
+      text-align: center;
+    }
+
     .cart-summary-bar {
       position: fixed;
       bottom: 18px;
       left: 50%;
       transform: translateX(-50%);
       width: 92%;
+      max-width: 420px;
       padding: 18px 22px;
-
       background: linear-gradient(135deg, #ff4b5c, #e63946);
       color: white;
       border-radius: 22px;
       box-shadow: 0px 12px 35px rgba(230, 57, 70, 0.4);
-
       display: none;
       cursor: pointer;
       transition: 0.25s ease;
       animation: popUp 0.35s ease-out;
     }
 
-    .cart-summary-bar.visible {
-      display: block !important;
-    }
+    .cart-summary-bar.visible { display: block !important; }
 
     .grand-total-row {
       text-align: center;
@@ -144,37 +235,43 @@
     }
 
     @keyframes popUp {
-      from {
-        transform: translateX(-50%) translateY(30px);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(-50%) translateY(0);
-        opacity: 1;
-      }
+      from { transform: translateX(-50%) translateY(30px); opacity: 0; }
+      to   { transform: translateX(-50%) translateY(0); opacity: 1; }
     }
+
+    .hidden { display: none !important; }
   </style>
 </head>
-
 <body>
 
 <header>
-  <button class="back-btn" onclick="history.back()">←</button>
+  <button class="back-btn" onclick="window.location.href='index.html'">←</button>
   <div class="page-title">Menu</div>
-  <span id="cart-count" style="display:none">0</span>
+  <div></div>
 </header>
 
-<!-- TOP CART BAR -->
+<!-- Fixed top cart bar -->
 <div class="cart-bar" id="cartBar">
-  <div class="cart-info"><b id="cartCountBar">0</b> items added</div>
-  <button class="view-cart-btn" onclick="window.location.href='cart.html'">View Cart →</button>
+  <div class="cart-info">
+    <strong id="cartCountBar">0</strong> items added
+  </div>
+  <button class="view-cart-btn" onclick="window.location.href='cart.html'">
+    View Cart →
+  </button>
 </div>
 
-<h1 class="shop-name" id="shopName" style="text-align:center; margin-top:20px;">Loading...</h1>
+<main>
+  <h1 class="shop-name" id="shopName">Loading...</h1>
 
-<div class="items-container" id="itemsContainer"></div>
+  <div class="veg-nonveg-filter" id="vegNonVegFilter">
+    <button class="filter-btn veg active" onclick="filterItems('veg')">Veg</button>
+    <button class="filter-btn nonveg" onclick="filterItems('nonveg')">Non-Veg</button>
+  </div>
 
-<!-- PREMIUM BOTTOM FLOATING BAR -->
+  <div class="items-container" id="itemsContainer"></div>
+</main>
+
+<!-- Bottom floating total bar -->
 <div class="cart-summary-bar" id="cartSummaryBar" onclick="window.location.href='cart.html'">
   <div class="grand-total-row">
     Total: <span id="grandTotal">₹0</span> →
@@ -182,76 +279,12 @@
 </div>
 
 <script>
-/* ------------------- PRICING ------------------- */
-function getDisplayedPrice(original) {
-  return original <= 100 ? original + 20 : original + 40;
-}
+// =============================================
+// CONFIG - ALL SHOPS & ITEMS
+// =============================================
 
-/* ------------------- CART ------------------- */
 const DELIVERY_THRESHOLD = 100;
 const DELIVERY_FEE = 20;
-
-let cart = JSON.parse(localStorage.getItem("chatpoint_cart")) || {};
-
-function saveCart() {
-  localStorage.setItem("chatpoint_cart", JSON.stringify(cart));
-  updateCartUI();
-}
-
-function getCartSubtotal() {
-  let total = 0;
-  for (const shop in cart)
-    for (const item in cart[shop])
-      total += cart[shop][item].qty * cart[shop][item].price;
-  return total;
-}
-
-function updateCartUI() {
-  let count = 0;
-  for (const shop in cart)
-    for (const item in cart[shop])
-      count += cart[shop][item].qty;
-
-  document.getElementById("cart-count").textContent = count;
-  document.getElementById("cartCountBar").textContent = count;
-
-  const topBar = document.getElementById("cartBar");
-  const bottomBar = document.getElementById("cartSummaryBar");
-
-  if (count > 0) {
-    topBar.classList.add("visible");
-    bottomBar.classList.add("visible");
-  } else {
-    topBar.classList.remove("visible");
-    bottomBar.classList.remove("visible");
-  }
-
-  const subtotal = getCartSubtotal();
-  const delivery = subtotal < DELIVERY_THRESHOLD ? DELIVERY_FEE : 0;
-  const grand = subtotal + delivery;
-
-  document.getElementById("grandTotal").textContent = "₹" + grand;
-}
-
-/* ------------------- UPDATE QTY ------------------- */
-function changeQty(shop, name, price, delta) {
-  if (!cart[shop]) cart[shop] = {};
-  if (!cart[shop][name]) cart[shop][name] = { qty: 0, price };
-
-  cart[shop][name].qty = Math.max(0, cart[shop][name].qty + delta);
-
-  if (cart[shop][name].qty === 0) delete cart[shop][name];
-  if (Object.keys(cart[shop]).length === 0) delete cart[shop];
-
-  saveCart();
-  renderMenu();
-}
-
-/* ------------------- GET SHOP ------------------- */
-function getShopFromURL() {
-  const params = new URLSearchParams(location.search);
-  return decodeURIComponent(params.get("shop") || "");
-}
 
 const shopMenus = {
   "Pizza Spot": [
@@ -548,36 +581,159 @@ const shopMenus = {
     { name: "Mango Cake", originalPrice: 612 - 25 }
   ]
 };
+
+// =============================================
+// UTILITIES
+// =============================================
+
+function getDisplayedPrice(original) {
+  return original <= 100 ? original + 20 : original + 40;
+}
+
+function getShopFromURL() {
+  const params = new URLSearchParams(location.search);
+  return decodeURIComponent(params.get("shop") || "");
+}
+
+function formatPrice(num) {
+  return "₹" + Math.round(num);
+}
+
+// =============================================
+// CART LOGIC
+// =============================================
+
+let cart = JSON.parse(localStorage.getItem("chatpoint_cart")) || {};
+
+function saveCart() {
+  localStorage.setItem("chatpoint_cart", JSON.stringify(cart));
+  updateCartUI();
+}
+
+function getCartSubtotal() {
+  let total = 0;
+  for (const shop in cart) {
+    for (const name in cart[shop]) {
+      total += cart[shop][name].qty * cart[shop][name].price;
+    }
+  }
+  return total;
+}
+
+function updateCartUI() {
+  let count = 0;
+  for (const shop in cart) {
+    for (const item in cart[shop]) {
+      count += cart[shop][item].qty;
+    }
+  }
+
+  document.getElementById("cartCountBar").textContent = count;
+
+  const topBar = document.getElementById("cartBar");
+  const bottomBar = document.getElementById("cartSummaryBar");
+
+  if (count > 0) {
+    topBar.classList.add("visible");
+    bottomBar.classList.add("visible");
+  } else {
+    topBar.classList.remove("visible");
+    bottomBar.classList.remove("visible");
+  }
+
+  const subtotal = getCartSubtotal();
+  const delivery = subtotal < DELIVERY_THRESHOLD ? DELIVERY_FEE : 0;
+  const grand = subtotal + delivery;
+
+  document.getElementById("grandTotal").textContent = formatPrice(grand);
+}
+
+function changeQty(shop, name, price, delta) {
+  if (!cart[shop]) cart[shop] = {};
+  if (!cart[shop][name]) cart[shop][name] = { qty: 0, price };
+
+  cart[shop][name].qty = Math.max(0, (cart[shop][name].qty || 0) + delta);
+
+  if (cart[shop][name].qty === 0) delete cart[shop][name];
+  if (Object.keys(cart[shop]).length === 0) delete cart[shop];
+
+  saveCart();
+  renderMenu();
+  updateCartUI();
+}
+
+// =============================================
+// RENDER MENU WITH IMAGE ON RIGHT
+// =============================================
+
 function renderMenu() {
-  const shop = getShopFromURL();
-  const items = shopMenus[shop] || [];
   const container = document.getElementById("itemsContainer");
-
-  document.getElementById("shopName").textContent = shop;
-
   container.innerHTML = "";
 
+  const shop = getShopFromURL();
+  const items = shopMenus[shop] || [];
+
+  document.getElementById("shopName").textContent = shop || "Shop not found";
+
+  document.getElementById("vegNonVegFilter").classList.toggle("active", shop === "Dolphin Hotel");
+
+  if (items.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center; padding:100px 20px; color:#777;">
+        <i class="fas fa-utensils" style="font-size:3rem; opacity:0.3;"></i><br>
+        No items available
+      </div>
+    `;
+    return;
+  }
+
   items.forEach(item => {
+    if (shop === "Dolphin Hotel") {
+      if (currentFilter === "veg" && item.type === "nonveg") return;
+      if (currentFilter === "nonveg" && item.type === "veg") return;
+    }
+
     const price = getDisplayedPrice(item.originalPrice);
     const qty = cart[shop]?.[item.name]?.qty || 0;
 
-    container.innerHTML += `
-      <div class="item-card">
+    // Create image filename from item name
+    const imageName = item.name.toLowerCase().replace(/ /g, '-') + '.jpg';
+    const imagePath = 'images/' + imageName;
+
+    const card = document.createElement("div");
+    card.className = "item-card";
+    card.innerHTML = `
+      <div class="item-image-container">
+        <img src="${imagePath}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/120/eee/999?text=No+Img'">
+      </div>
+      <div class="item-content">
         <div class="item-name">${item.name}</div>
-        <div class="item-price">₹${price}</div>
+        <div class="item-price">${formatPrice(price)}</div>
         <div class="quantity-row">
-          <button class="qty-btn" onclick="changeQty('${shop}','${item.name}',${price},-1)">−</button>
+          <button class="qty-btn" onclick="changeQty('${shop}', '${item.name.replace(/'/g,"\\'")}', ${price}, -1)">−</button>
           <span class="qty-value">${qty}</span>
-          <button class="qty-btn" onclick="changeQty('${shop}','${item.name}',${price},1)">+</button>
+          <button class="qty-btn" onclick="changeQty('${shop}', '${item.name.replace(/'/g,"\\'")}', ${price}, 1)">+</button>
         </div>
       </div>
     `;
+    container.appendChild(card);
   });
 }
 
+// =============================================
+// INIT
+// =============================================
+
+const currentShop = getShopFromURL();
+if (currentShop && shopMenus[currentShop]) {
+  document.getElementById("shopName").textContent = currentShop;
+} else {
+  document.getElementById("shopName").textContent = "Shop not found";
+}
+
+// Initial load
 renderMenu();
 updateCartUI();
 </script>
-
 </body>
 </html>
