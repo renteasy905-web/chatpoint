@@ -2,748 +2,105 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>ChatPoint • Order Now</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Menu - ChatPoint</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <style>
     :root {
       --primary: #e63946;
-      --primary-dark: #d00000;
-      --accent: #f4a261;
       --dark: #1d3557;
       --gray: #457b9d;
       --light: #f1faee;
-      --white: #ffffff;
-      --card-bg: rgba(255, 255, 255, 0.94);
-      --shadow-sm: 0 6px 20px rgba(0,0,0,0.08);
-      --shadow-md: 0 12px 40px rgba(0,0,0,0.14);
-      --radius: 20px;
-      --transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      --card-bg: white;
+      --shadow: 0 8px 30px rgba(0,0,0,0.12);
+      --radius: 16px;
     }
-
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: 'Poppins', system-ui, sans-serif;
-      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-      color: var(--dark);
-      min-height: 100vh;
-      line-height: 1.6;
-    }
-
+    body { font-family: 'Poppins', sans-serif; background: var(--light); margin: 0; padding: 0; }
     header {
-      background: rgba(255,255,255,0.96);
-      backdrop-filter: blur(12px);
+      background: white;
       padding: 14px 18px;
       position: sticky;
       top: 0;
-      z-index: 1000;
-      border-bottom: 1px solid rgba(0,0,0,0.06);
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: var(--shadow-sm);
     }
-
-    .back-btn {
-      font-size: 1.8rem;
-      background: none;
-      border: none;
+    .back-btn { font-size: 1.8rem; color: var(--primary); background: none; border: none; cursor: pointer; }
+    .page-title { font-size: 1.4rem; font-weight: 700; }
+    .cart-icon {
+      font-size: 1.6rem;
       color: var(--primary);
+      position: relative;
       cursor: pointer;
-      padding: 10px;
-      border-radius: 50%;
-      transition: var(--transition);
     }
-
-    .back-btn:hover { background: rgba(230,57,70,0.1); transform: scale(1.12); }
-
-    .page-title {
-      font-size: 1.45rem;
-      font-weight: 700;
-      color: var(--dark);
-    }
-
-    .tab-buttons {
-      display: flex;
-      background: rgba(241,250,238,0.7);
-      border-radius: 999px;
-      padding: 5px;
-      border: 1px solid rgba(230,57,70,0.15);
-      backdrop-filter: blur(10px);
-    }
-
-    .tab-btn {
-      padding: 10px 20px;
-      font-weight: 600;
-      font-size: 0.96rem;
-      border: none;
-      background: transparent;
-      border-radius: 999px;
-      cursor: pointer;
-      color: var(--gray);
-      transition: var(--transition);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .tab-btn.active {
-      background: white;
-      color: var(--primary);
-      box-shadow: 0 4px 16px rgba(230,57,70,0.2);
-      transform: translateY(-2px);
-    }
-
-    main {
-      padding: 18px;
-      padding-bottom: 220px;
-    }
-
-    h1.shop-name, h2.section-title {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin: 16px 0 28px;
-      text-align: center;
-      letter-spacing: -0.6px;
-    }
-
-    .veg-nonveg-filter {
-      display: none;
-      justify-content: center;
-      margin: 0 auto 24px;
-      max-width: 380px;
-    }
-    .veg-nonveg-filter.active { display: flex; }
-    .filter-btn {
-      flex: 1;
-      padding: 14px;
-      font-weight: 700;
-      font-size: 1.05rem;
-      border: none;
-      cursor: pointer;
-      transition: var(--transition);
+    .cart-count {
+      position: absolute;
+      top: -8px;
+      right: -10px;
+      background: var(--primary);
       color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 50%;
+      padding: 2px 6px;
+      min-width: 18px;
+      text-align: center;
     }
-    .filter-btn.veg { background: #2a9d8f; border-radius: 14px 0 0 14px; }
-    .filter-btn.nonveg { background: var(--primary); border-radius: 0 14px 14px 0; }
-    .filter-btn.active { box-shadow: 0 0 0 5px rgba(255,255,255,0.4); transform: scale(1.05); }
-
-    .items-container, .cart-items-list {
-      display: grid;
-      gap: 22px;
-    }
-
-    .item-card, .cart-item-card {
+    main { padding: 20px; }
+    h1 { text-align: center; color: var(--primary); font-size: 2.2rem; margin: 20px 0 30px; }
+    .items-container { display: grid; gap: 20px; }
+    .item-card {
       background: var(--card-bg);
       border-radius: var(--radius);
+      box-shadow: var(--shadow);
       overflow: hidden;
-      box-shadow: var(--shadow-md);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(230,57,70,0.08);
-      transition: var(--transition);
     }
-
-    .item-card:hover, .cart-item-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 20px 50px rgba(230,57,70,0.22);
-    }
-
-    .item-image {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-    }
-
-    .item-content, .cart-item-content {
-      padding: 18px 20px;
-    }
-
-    .item-name, .cart-item-name {
-      font-size: 1.28rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-      color: var(--dark);
-    }
-
-    .item-price, .cart-item-price {
-      font-size: 1.55rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin: 10px 0 16px;
-    }
-
+    .item-content { padding: 16px; }
+    .item-name { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; }
+    .item-price { font-size: 1.45rem; font-weight: 800; color: var(--primary); margin: 8px 0; }
     .quantity-row {
       display: flex;
       align-items: center;
-      gap: 18px;
-      margin-top: 12px;
+      gap: 16px;
     }
-
     .qty-btn {
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      background: rgba(230,57,70,0.08);
+      background: rgba(230,57,70,0.1);
       border: none;
-      font-size: 1.6rem;
+      font-size: 1.5rem;
       color: var(--primary);
       cursor: pointer;
-      transition: var(--transition);
     }
-
-    .qty-btn:hover { background: rgba(230,57,70,0.2); transform: scale(1.12); }
-
-    .qty-value {
-      font-size: 1.45rem;
-      font-weight: 800;
-      min-width: 44px;
-      text-align: center;
-    }
-
-    .checkout-form {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      padding: 24px;
-      box-shadow: var(--shadow-md);
-      margin-top: 24px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(230,57,70,0.08);
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      font-size: 1.05rem;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(0,0,0,0.12);
-      font-size: 1.05rem;
-      transition: var(--transition);
-    }
-
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(230,57,70,0.15);
-    }
-
-    .order-summary {
-      background: rgba(230,57,70,0.04);
-      padding: 20px;
-      border-radius: 16px;
-      margin: 24px 0;
-      border: 1px solid rgba(230,57,70,0.12);
-    }
-
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 1.1rem;
-      margin-bottom: 12px;
-    }
-
-    .grand-total-row {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 2px solid var(--primary);
-    }
-
-    .place-order-btn {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      border: none;
-      width: 100%;
-      padding: 18px;
-      font-size: 1.32rem;
-      font-weight: 800;
-      border-radius: 16px;
-      cursor: pointer;
-      box-shadow: 0 8px 30px rgba(230,57,70,0.4);
-      transition: var(--transition);
-    }
-
-    .place-order-btn:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 16px 50px rgba(230,57,70,0.5);
-    }
-
-    .success-msg, .error-msg {
-      padding: 16px;
-      border-radius: 12px;
-      margin: 16px 0;
-      font-weight: 600;
-      text-align: center;
-      font-size: 1.15rem;
-      display: none;
-    }
-
-    .success-msg { background: rgba(46,204,113,0.15); color: #27ae60; border: 1px solid rgba(46,204,113,0.3); }
-    .error-msg   { background: rgba(231,76,60,0.15); color: #e74c3c; border: 1px solid rgba(231,76,60,0.3); }
-
-    .cart-summary-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: var(--card-bg);
-      backdrop-filter: blur(16px);
-      padding: 20px 24px;
-      border-top: 1px solid rgba(230,57,70,0.15);
-      box-shadow: 0 -12px 40px rgba(0,0,0,0.18);
-      z-index: 900;
-      border-radius: 28px 28px 0 0;
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 120px 30px 80px;
-      color: var(--gray);
-      font-size: 1.25rem;
-    }
-
-    .empty-state i {
-      font-size: 5.5rem;
-      color: rgba(230,57,70,0.15);
-      margin-bottom: 24px;
-    }
-
-    .hidden { display: none !important; }
-
-    @media (max-width: 480px) {
-      header { padding: 12px 16px; }
-      .page-title { font-size: 1.3rem; }
-      h1.shop-name, h2.section-title { font-size: 1.8rem; margin: 12px 0 24px; }
-      .qty-btn { width: 46px; height: 46px; font-size: 1.55rem; }
-      .cart-summary-bar { padding: 18px 20px; }
-    }
+    .qty-btn:hover { background: rgba(230,57,70,0.2); }
+    .qty-value { font-size: 1.3rem; font-weight: 700; min-width: 40px; text-align: center; }
   </style>
 </head>
 <body>
 
 <header>
   <button class="back-btn" onclick="history.back()">←</button>
-  <div class="page-title">Order Now</div>
-  <div class="tab-buttons">
-    <button class="tab-btn active" data-tab="menu"><i class="fas fa-utensils"></i> Menu</button>
-    <button class="tab-btn" data-tab="cart">
-      <i class="fas fa-shopping-cart"></i> Cart <span id="cart-count">0</span>
-    </button>
+  <div class="page-title">Menu</div>
+  <div class="cart-icon" onclick="window.location.href='cart.html'">
+    <i class="fas fa-shopping-cart"></i>
+    <span class="cart-count" id="cart-count">0</span>
   </div>
 </header>
 
 <main>
-
-  <h1 class="shop-name" id="shopName">Loading...</h1>
-
-  <!-- Veg / Non-Veg filter -->
-  <div class="veg-nonveg-filter" id="vegNonVegFilter">
-    <button class="filter-btn veg active" onclick="filterItems('veg')">Veg</button>
-    <button class="filter-btn nonveg" onclick="filterItems('nonveg')">Non-Veg</button>
-  </div>
-
-  <!-- === MENU TAB === -->
-  <div id="menu-tab">
-    <div class="items-container" id="itemsContainer"></div>
-  </div>
-
-  <!-- === CART + CHECKOUT TAB === -->
-  <div id="cart-tab" class="hidden">
-    <div class="cart-items-list" id="cartItems"></div>
-    <div id="cartEmpty" class="empty-state hidden">
-      <i class="fas fa-shopping-bag"></i><br>
-      Your cart is empty
-    </div>
-
-    <!-- Checkout Form -->
-    <div id="checkoutSection" class="hidden">
-      <div class="checkout-form" id="checkoutForm">
-        <h2 class="section-title">Checkout</h2>
-        <div id="successMsg" class="success-msg"></div>
-        <div id="errorMsg" class="error-msg"></div>
-
-        <div class="form-group">
-          <label>Name *</label>
-          <input type="text" id="name" required />
-        </div>
-        <div class="form-group">
-          <label>Phone *</label>
-          <input type="tel" id="phone" required />
-        </div>
-        <div class="form-group">
-          <label>Address Line 1 *</label>
-          <textarea id="address1" rows="3" required placeholder="House no., Building, Street"></textarea>
-        </div>
-        <div class="form-group">
-          <label>Address Line 2 (Optional)</label>
-          <textarea id="address2" rows="2" placeholder="Landmark, Area, Nearby"></textarea>
-        </div>
-
-        <div class="order-summary" id="orderSummary"></div>
-
-        <button id="placeOrderBtn" class="place-order-btn">
-          Place Order (Cash on Delivery)
-        </button>
-      </div>
-    </div>
-  </div>
-
+  <h1 id="shopName">Loading...</h1>
+  <div class="items-container" id="itemsContainer"></div>
 </main>
 
-<!-- Floating Cart Summary Bar -->
-<div class="cart-summary-bar hidden" id="cartSummaryBar">
-  <div class="summary-row">
-    <span>Subtotal</span>
-    <span id="subtotal">₹0</span>
-  </div>
-  <div class="summary-row">
-    <span>Delivery</span>
-    <span id="delivery">₹0</span>
-  </div>
-  <div class="grand-total-row">
-    <span>Total</span>
-    <span id="grandTotal">₹0</span>
-  </div>
-  <button class="place-order-btn" onclick="showCheckout()" style="margin-top:16px;">
-    Proceed to Checkout
-  </button>
-</div>
-
 <script>
-// =============================================
-// CONFIG & ALL SHOPS MENU DATA
-// =============================================
-
 const DELIVERY_THRESHOLD = 100;
 const DELIVERY_FEE = 20;
 
-const shopMenus = {
-  "Pizza Spot": [
-    { name: "Nuggets", originalPrice: 60 },
-    { name: "French Fries", originalPrice: 70 },
-    { name: "Photo Fries", originalPrice: 70 },
-    { name: "Masala Fries", originalPrice: 70 },
-    { name: "Smily Fash", originalPrice: 80 },
-    { name: "Pizza Spot (SPL)", originalPrice: 140 },
-    { name: "Burger Classic", originalPrice: 60 },
-    { name: "Aloo Tikki", originalPrice: 80 },
-    { name: "Paneer", originalPrice: 80 },
-    { name: "Double Decker", originalPrice: 100 },
-    { name: "Pizza Spot (SPL)", originalPrice: 140 },
-    { name: "Veg Sandwich", originalPrice: 50 },
-    { name: "Cheese", originalPrice: 60 },
-    { name: "Sweet Corn", originalPrice: 60 },
-    { name: "Mushroom", originalPrice: 60 },
-    { name: "Paneer", originalPrice: 60 },
-    { name: "Club Sandwich", originalPrice: 70 },
-    { name: "Pizza Spot (SPL)", originalPrice: 100 },
-    { name: "Pizza Spot (SPL)", originalPrice: 120 },
-    { name: "Margarita", originalPrice: 129 },
-    { name: "Veggie", originalPrice: 149 },
-    { name: "Veg Lover", originalPrice: 249 },
-    { name: "Sweet Corn", originalPrice: 219 },
-    { name: "Baby Corn", originalPrice: 199 },
-    { name: "Tandoori Paneer", originalPrice: 210 },
-    { name: "Pizza Spot (SPL)", originalPrice: 299 },
-    { name: "Pav Bhaji", originalPrice: 40 },
-    { name: "Cheese Pav Bhaji", originalPrice: 60 },
-    { name: "Veg Roll", originalPrice: 50 },
-    { name: "Sweet Corn Roll", originalPrice: 70 },
-    { name: "Paneer Roll", originalPrice: 80 },
-    { name: "Steam Momos", originalPrice: 50 },
-    { name: "Fried Momos (Fyr)", originalPrice: 60 },
-    { name: "Kurkure Momos", originalPrice: 80 }
-  ],
-
-  "Dolphin Hotel": [
-    // Veg items
-    { name: "Tomato Soup", originalPrice: 85, type: "veg" },
-    { name: "Veg Clear Soup", originalPrice: 85, type: "veg" },
-    { name: "Hot and Sour Soup", originalPrice: 100, type: "veg" },
-    { name: "Veg Manchow Soup", originalPrice: 110, type: "veg" },
-    { name: "Sweet Corn Soup", originalPrice: 110, type: "veg" },
-    { name: "Mushroom Soup", originalPrice: 110, type: "veg" },
-    { name: "Veg Noodles Soup", originalPrice: 110, type: "veg" },
-    { name: "Papad", originalPrice: 25, type: "veg" },
-    { name: "Masala Papad", originalPrice: 40, type: "veg" },
-    { name: "Finger Chips", originalPrice: 105, type: "veg" },
-    { name: "Finger Veg", originalPrice: 110, type: "veg" },
-    { name: "Veg Manchurian", originalPrice: 110, type: "veg" },
-    { name: "Veg 65", originalPrice: 110, type: "veg" },
-    { name: "Kaju Dry", originalPrice: 120, type: "veg" },
-    { name: "Gobi 65", originalPrice: 110, type: "veg" },
-    { name: "Gobi Manchurian", originalPrice: 110, type: "veg" },
-    { name: "Gobi Chilly", originalPrice: 110, type: "veg" },
-    { name: "Veg Spring Roll", originalPrice: 210, type: "veg" },
-    { name: "Veg Sangli Roll", originalPrice: 110, type: "veg" },
-    { name: "Veg Harabara Kabab", originalPrice: 190, type: "veg" },
-    { name: "Veg Pakoda", originalPrice: 180, type: "veg" },
-    { name: "Onion Pakoda", originalPrice: 110, type: "veg" },
-    { name: "Onion Ring Pakoda", originalPrice: 110, type: "veg" },
-    { name: "Palak Pakoda", originalPrice: 110, type: "veg" },
-    { name: "Veg Kofta", originalPrice: 180, type: "veg" },
-    { name: "Veg Hariyali", originalPrice: 190, type: "veg" },
-    { name: "Veg Lajawab", originalPrice: 200, type: "veg" },
-    { name: "Veg Pahadi Masala", originalPrice: 200, type: "veg" },
-    { name: "Mix Veg Masala", originalPrice: 140, type: "veg" },
-    { name: "Veg Paper Masala", originalPrice: 180, type: "veg" },
-    { name: "Matki Fry", originalPrice: 120, type: "veg" },
-    { name: "Malai Kofta", originalPrice: 180, type: "veg" },
-    { name: "Baigan Masala", originalPrice: 130, type: "veg" },
-    { name: "Aalu Mutter", originalPrice: 130, type: "veg" },
-    { name: "Aalu Gobi Masala", originalPrice: 130, type: "veg" },
-    { name: "Dum Aalu Kashmiri", originalPrice: 140, type: "veg" },
-    { name: "Green Peas Masala", originalPrice: 140, type: "veg" },
-    { name: "Capsicum Masala", originalPrice: 130, type: "veg" },
-    { name: "Shenga Bhaji", originalPrice: 130, type: "veg" },
-    { name: "Methi Masala", originalPrice: 120, type: "veg" },
-    { name: "Methi Sukka", originalPrice: 130, type: "veg" },
-    { name: "Bhendy Fry", originalPrice: 130, type: "veg" },
-    { name: "Bhendy Masala", originalPrice: 130, type: "veg" },
-    { name: "Tomato Fry", originalPrice: 120, type: "veg" },
-    { name: "Special Gravy", originalPrice: 100, type: "veg" },
-    { name: "Dal Fry", originalPrice: 110, type: "veg" },
-    { name: "Dal Methi", originalPrice: 110, type: "veg" },
-    { name: "Dal Tadka", originalPrice: 110, type: "veg" },
-    { name: "Butter Dal", originalPrice: 110, type: "veg" },
-    { name: "Dal Palak", originalPrice: 100, type: "veg" },
-    { name: "Mung Dal", originalPrice: 120, type: "veg" },
-    { name: "Dal Kolapuri", originalPrice: 110, type: "veg" },
-    { name: "Dal Makanwala", originalPrice: 110, type: "veg" },
-
-    // Non-Veg items (with ₹15 reduction)
-    { name: "CKN Soup", originalPrice: 192 - 15, type: "nonveg" },
-    { name: "MTN Soup", originalPrice: 192 - 15, type: "nonveg" },
-    { name: "CKN Lolipop", originalPrice: 222 - 15, type: "nonveg" },
-    { name: "CKN 65", originalPrice: 242 - 15, type: "nonveg" },
-    { name: "CKN 65 B-Less", originalPrice: 302 - 15, type: "nonveg" },
-    { name: "CKN 65 Half", originalPrice: 192 - 15, type: "nonveg" },
-    { name: "CKN 65 Full", originalPrice: 342 - 15, type: "nonveg" },
-    { name: "CKN Manchuri", originalPrice: 1042 - 15, type: "nonveg" },
-    { name: "CKN Manchuri Half", originalPrice: 542 - 15, type: "nonveg" },
-    { name: "CKN Manchuri Full", originalPrice: 2042 - 15, type: "nonveg" },
-    { name: "CKN Chilly Half", originalPrice: 192 - 15, type: "nonveg" },
-    { name: "CKN Chilly Full", originalPrice: 1042 - 15, type: "nonveg" },
-    { name: "CKN Tikka", originalPrice: 542 - 15, type: "nonveg" },
-    { name: "CKN Tandoori Half", originalPrice: 542 - 15, type: "nonveg" },
-    { name: "CKN Tandoori Full", originalPrice: 1042 - 15, type: "nonveg" },
-    { name: "CKN Kabbab", originalPrice: 292 - 15, type: "nonveg" },
-    { name: "CKN Masala", originalPrice: 192 - 15, type: "nonveg" },
-    { name: "CKN Handi Half", originalPrice: 542 - 15, type: "nonveg" },
-    { name: "CKN Handi Full", originalPrice: 1042 - 15, type: "nonveg" },
-    { name: "CKN Kolhapuri", originalPrice: 202 - 15, type: "nonveg" },
-    { name: "CKN Hydrabadi", originalPrice: 202 - 15, type: "nonveg" },
-    { name: "CKN Hydrabadi Half", originalPrice: 542 - 15, type: "nonveg" },
-    { name: "CKN Hydrabadi Full", originalPrice: 1042 - 15, type: "nonveg" },
-    { name: "CKN Sukka", originalPrice: 262 - 15, type: "nonveg" },
-    { name: "CKN Sukka Half", originalPrice: 642 - 15, type: "nonveg" },
-    { name: "CKN Sukka Full", originalPrice: 1242 - 15, type: "nonveg" },
-    { name: "Egg Chilly", originalPrice: 182 - 15, type: "nonveg" },
-    { name: "Egg Manchuri", originalPrice: 182 - 15, type: "nonveg" },
-    { name: "Egg Pakoda", originalPrice: 152 - 15, type: "nonveg" },
-    { name: "Egg 65", originalPrice: 172 - 15, type: "nonveg" },
-    { name: "Egg Burji", originalPrice: 122 - 15, type: "nonveg" },
-    { name: "Egg Omlet", originalPrice: 112 - 15, type: "nonveg" },
-    { name: "Egg Half Fry", originalPrice: 102 - 15, type: "nonveg" },
-    { name: "Boiled Egg (2 pcs)", originalPrice: 82 - 15, type: "nonveg" },
-    { name: "Boiled Egg (1 pc)", originalPrice: 62 - 15, type: "nonveg" },
-    { name: "Egg Masala", originalPrice: 162 - 15, type: "nonveg" },
-    { name: "Egg Hydrabadi", originalPrice: 172 - 15, type: "nonveg" },
-    { name: "Egg Makhanwala", originalPrice: 172 - 15, type: "nonveg" },
-    { name: "Egg Kolhapuri", originalPrice: 182 - 15, type: "nonveg" },
-    { name: "Egg Maharaja", originalPrice: 192 - 15, type: "nonveg" },
-    { name: "Egg Kheema", originalPrice: 192 - 15, type: "nonveg" },
-    { name: "Egg Moglai", originalPrice: 182 - 15, type: "nonveg" },
-    { name: "Egg DK", originalPrice: 192 - 15, type: "nonveg" },
-    { name: "Egg Kabbab", originalPrice: 192 - 15, type: "nonveg" },
-    { name: "Mtn Masala", originalPrice: 262 - 15, type: "nonveg" },
-    { name: "Mtn Handi Half", originalPrice: 642 - 15, type: "nonveg" },
-    { name: "Mtn Handi Full", originalPrice: 1242 - 15, type: "nonveg" },
-    { name: "Mtn Hydrabadi", originalPrice: 262 - 15, type: "nonveg" },
-    { name: "Mtn Makhanwala", originalPrice: 272 - 15, type: "nonveg" },
-    { name: "Mtn Kheema", originalPrice: 262 - 15, type: "nonveg" },
-    { name: "Mtn Kolhapuri", originalPrice: 272 - 15, type: "nonveg" },
-    { name: "Mtn Maharaja", originalPrice: 282 - 15, type: "nonveg" },
-    { name: "Mtn Sukka", originalPrice: 272 - 15, type: "nonveg" },
-    { name: "Mtn Sukka Half", originalPrice: 282 - 15, type: "nonveg" },
-    { name: "Mtn Sukka Full", originalPrice: 302 - 15, type: "nonveg" },
-    { name: "Fish Fry", originalPrice: 192 - 15, type: "nonveg" },
-    { name: "Fish Curry", originalPrice: 202 - 15, type: "nonveg" },
-    { name: "Egg Fried Rice", originalPrice: 192 - 15, type: "nonveg" },
-    { name: "Egg Biryani", originalPrice: 202 - 15, type: "nonveg" },
-    { name: "CKN Biryani", originalPrice: 242 - 15, type: "nonveg" },
-    { name: "Mutton Biryani", originalPrice: 272 - 15, type: "nonveg" }
-  ],
-
-  "Mister Chef": [
-    { name: "Pizza Margherita", originalPrice: 139 },
-    { name: "Veggie Pizza", originalPrice: 149 },
-    { name: "Veg Lover", originalPrice: 229 },
-    { name: "American Eat", originalPrice: 209 },
-    { name: "New York Special", originalPrice: 219 },
-    { name: "Paneer Pizza", originalPrice: 199 },
-    { name: "Butter Cheese Garlic", originalPrice: 110 },
-    { name: "Starters", originalPrice: 100 },
-    { name: "Cold Horlick", originalPrice: 70 },
-    { name: "Cold Coffee", originalPrice: 70 },
-    { name: "Ice Badam", originalPrice: 100 },
-    { name: "Cashew Dates", originalPrice: 90 },
-    { name: "Dry Fruit Shakes", originalPrice: 100 },
-    { name: "Butter Garlic Cheese", originalPrice: 110 },
-    { name: "Cheese Garlic", originalPrice: 100 },
-    { name: "Cold Coffee", originalPrice: 70 },
-    { name: "Burger Classic", originalPrice: 60 },
-    { name: "Aloo Tikki", originalPrice: 80 },
-    { name: "Paneer", originalPrice: 80 },
-    { name: "Cheese", originalPrice: 80 },
-    { name: "Double Decker", originalPrice: 100 },
-    { name: "Nuggets", originalPrice: 60 },
-    { name: "Veg Victory", originalPrice: 60 },
-    { name: "French Fries", originalPrice: 70 },
-    { name: "Masala Fries", originalPrice: 80 },
-    { name: "Potato Wedges", originalPrice: 80 },
-    { name: "Smily Face", originalPrice: 80 },
-    { name: "Veg Sandwich", originalPrice: 50 },
-    { name: "Cheese Sandwich", originalPrice: 60 },
-    { name: "Sweet Corn Sandwich", originalPrice: 60 },
-    { name: "Mushroom Sandwich", originalPrice: 60 },
-    { name: "Paneer Sandwich", originalPrice: 60 },
-    { name: "Club Sandwich", originalPrice: 70 }
-  ],
-
-  "connect with Pizza": [
-    { name: "Margarita", originalPrice: 139 },
-    { name: "Veggie", originalPrice: 149 },
-    { name: "Veg Lover", originalPrice: 229 },
-    { name: "Paneer Tikka", originalPrice: 209 },
-    { name: "New York Special", originalPrice: 219 },
-    { name: "Veg American", originalPrice: 199 },
-    { name: "Veg Overload", originalPrice: 229 },
-    { name: "Veg Supreme", originalPrice: 249 },
-    { name: "Spicy Veg", originalPrice: 289 },
-    { name: "Country Feast", originalPrice: 289 },
-    { name: "Veggie Paradise", originalPrice: 309 },
-    { name: "Peri Peri Paneer", originalPrice: 309 },
-    { name: "Tandoori Paneer", originalPrice: 309 },
-    { name: "Supreme Veg", originalPrice: 329 },
-    { name: "Veg Overloaded", originalPrice: 329 },
-    { name: "Fly Special Pizza", originalPrice: 349 },
-    { name: "Classic Chicken", originalPrice: 159 },
-    { name: "Chicken BBQ", originalPrice: 179 },
-    { name: "Chicken Feast", originalPrice: 299 },
-    { name: "Double Chicken", originalPrice: 299 },
-    { name: "Butter Chicken", originalPrice: 309 },
-    { name: "Chicken Tikka", originalPrice: 309 },
-    { name: "Chicken Maxicano", originalPrice: 309 },
-    { name: "Chicken Malai Tikka", originalPrice: 329 },
-    { name: "Peri Peri Chicken", originalPrice: 329 },
-    { name: "Tandoori Chicken", originalPrice: 329 },
-    { name: "Kadhai Chicken", originalPrice: 329 },
-    { name: "Chicken Supreme", originalPrice: 349 },
-    { name: "All The Meats", originalPrice: 349 },
-    { name: "Special Chicken", originalPrice: 349 },
-    { name: "Onion 2pcs + 250ml Coke", originalPrice: 189 },
-    { name: "Capsicum + Garlic Bread + 250ml Coke", originalPrice: 199 },
-    { name: "2pc Corn + 250ml Coke", originalPrice: 199 },
-    { name: "Paneer 2pc + 250ml Coke", originalPrice: 219 },
-    { name: "Delight Burger", originalPrice: 75 },
-    { name: "BBQ Burger", originalPrice: 89 },
-    { name: "Tandoori Burger", originalPrice: 99 },
-    { name: "Makhani Burger", originalPrice: 109 },
-    { name: "Paneer Tikka Burger", originalPrice: 136 },
-    { name: "Chicken Delight Burger", originalPrice: 99 },
-    { name: "BBQ Chicken Burger", originalPrice: 109 },
-    { name: "Tandoori Chicken Burger", originalPrice: 129 },
-    { name: "Chicken Makhani Burger", originalPrice: 135 },
-    { name: "Chicken Tikka Burger", originalPrice: 145 },
-    { name: "Delight Masala Sandwich", originalPrice: 99 },
-    { name: "Tandoori Masala Sandwich", originalPrice: 99 },
-    { name: "South Grilled Sandwich", originalPrice: 119 },
-    { name: "Spacial Paneer Sandwich", originalPrice: 119 },
-    { name: "Delight Chicken Masala Sandwich", originalPrice: 129 },
-    { name: "Tandoori Chicken Sandwich", originalPrice: 129 },
-    { name: "South Grilled Chicken Sandwich", originalPrice: 149 },
-    { name: "Cheese Slice", originalPrice: 20 },
-    { name: "Mayonnaise", originalPrice: 20 },
-    { name: "Extra Mayon Patty", originalPrice: 30 },
-    { name: "Veg Burger Patty", originalPrice: 40 },
-    { name: "Non Veg Burger Patty", originalPrice: 40 }
-  ],
-
-  "Nandi Grand Hotels": [
-    { name: "Shira", originalPrice: 25 },
-    { name: "Poori", originalPrice: 60 },
-    { name: "Full Meals", originalPrice: 85 },
-    { name: "Onion Dosa", originalPrice: 65 },
-    { name: "Utappa", originalPrice: 65 },
-    { name: "Mysore Bonda", originalPrice: 70 },
-    { name: "Mangalore Buns", originalPrice: 75 },
-    { name: "Paneer Dosa", originalPrice: 90 },
-    { name: "Cheese Dosa", originalPrice: 95 },
-    { name: "Chou Chou Bath", originalPrice: 65 }
-  ],
-
-  "Sangambar Udupi Hotel": [
-    { name: "Plain Dosa", originalPrice: 78 },
-    { name: "Masala Dosa", originalPrice: 88 },
-    { name: "Benne Dosa", originalPrice: 88 },
-    { name: "Benne Masala Dosa", originalPrice: 108 },
-    { name: "Mysore Masala Dosa", originalPrice: 108 },
-    { name: "Paneer Masala Dosa", originalPrice: 108 },
-    { name: "Gobi 65", originalPrice: 128 },
-    { name: "Gobi Manchurian", originalPrice: 118 },
-    { name: "Mushroom Manchurian", originalPrice: 178 },
-    { name: "Paneer Manchurian", originalPrice: 198 },
-    { name: "Veg Manchurian", originalPrice: 98 }
-  ],
-
-  "Hasanamba Iyengar Bakery": [
-    { name: "Rasmalai Cake", originalPrice: 762 - 25 },
-    { name: "Irish Coffee Cake", originalPrice: 762 - 25 },
-    { name: "Black Forest Cake", originalPrice: 662 - 25 },
-    { name: "American Nuts Cake", originalPrice: 762 - 25 },
-    { name: "French Vanilla Cake", originalPrice: 712 - 25 },
-    { name: "Pineapple Cake", originalPrice: 662 - 25 },
-    { name: "Strawberry Cake", originalPrice: 662 - 25 },
-    { name: "Death by Chocolate Cake", originalPrice: 712 - 25 },
-    { name: "Butterscotch Cake", originalPrice: 662 - 25 },
-    { name: "Veg Pizza", originalPrice: 187 - 25 },
-    { name: "Margherita", originalPrice: 177 - 25 },
-    { name: "Paneer Pizza", originalPrice: 237 - 25 },
-    { name: "Golden Corn Pizza", originalPrice: 247 - 25 },
-    { name: "Sweet Corn Pizza", originalPrice: 237 - 25 },
-    { name: "Baby Corn Pizza", originalPrice: 237 - 25 },
-    { name: "Classic Veg Burger", originalPrice: 87 - 25 },
-    { name: "Cheese Burger", originalPrice: 97 - 25 },
-    { name: "Paneer Tandoori Burger", originalPrice: 97 - 25 },
-    { name: "Cheese Sandwich", originalPrice: 87 - 25 },
-    { name: "Veg Sandwich", originalPrice: 78 - 25 },
-    { name: "Mango Cake", originalPrice: 612 - 25 }
-  ]
-};
-
-// =============================================
-// UTILITIES
-// =============================================
-
-function getDisplayedPrice(original) {
-  return original <= 100 ? original + 20 : original + 40;
-}
+const shopMenus = { /* paste your full shopMenus object here */ };
 
 function getShopFromURL() {
   const params = new URLSearchParams(location.search);
@@ -754,63 +111,20 @@ function formatPrice(num) {
   return "₹" + Math.round(num);
 }
 
-// =============================================
-// STATE & FILTER
-// =============================================
-
-let currentFilter = "veg";
-let showingCheckout = false;
-
-// Veg/Non-Veg filter (only for Dolphin Hotel)
-function filterItems(type) {
-  currentFilter = type;
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.classList.toggle('active', btn.classList.contains(type));
-  });
-  renderMenu();
+function getDisplayedPrice(original) {
+  return original <= 100 ? original + 20 : original + 40;
 }
-
-// =============================================
-// CART LOGIC
-// =============================================
 
 let cart = JSON.parse(localStorage.getItem("chatpoint_cart")) || {};
 
-function saveCart() {
-  localStorage.setItem("chatpoint_cart", JSON.stringify(cart));
-  updateCartUI();
-}
-
-function getCartSubtotal() {
-  let total = 0;
-  for (const shop in cart) {
-    for (const name in cart[shop]) {
-      total += cart[shop][name].qty * cart[shop][name].price;
-    }
-  }
-  return total;
-}
-
-function updateCartUI() {
+function updateCartCount() {
   let count = 0;
   for (const shop in cart) {
-    for (const item in cart[shop]) {
-      count += cart[shop][item].qty;
+    for (const name in cart[shop]) {
+      count += cart[shop][name].qty;
     }
   }
-
   document.getElementById("cart-count").textContent = count;
-
-  const bar = document.getElementById("cartSummaryBar");
-  bar.classList.toggle("hidden", count === 0);
-
-  const subtotal = getCartSubtotal();
-  const delivery = subtotal < DELIVERY_THRESHOLD ? DELIVERY_FEE : 0;
-  const grand = subtotal + delivery;
-
-  document.getElementById("subtotal").textContent = formatPrice(subtotal);
-  document.getElementById("delivery").textContent = formatPrice(delivery);
-  document.getElementById("grandTotal").textContent = formatPrice(grand);
 }
 
 function changeQty(shop, name, price, delta) {
@@ -822,15 +136,10 @@ function changeQty(shop, name, price, delta) {
   if (cart[shop][name].qty === 0) delete cart[shop][name];
   if (Object.keys(cart[shop]).length === 0) delete cart[shop];
 
-  saveCart();
-  if (!showingCheckout) renderMenu();
-  renderCart();
-  updateCartUI();
+  localStorage.setItem("chatpoint_cart", JSON.stringify(cart));
+  updateCartCount();
+  renderMenu();
 }
-
-// =============================================
-// RENDER MENU
-// =============================================
 
 function renderMenu() {
   const container = document.getElementById("itemsContainer");
@@ -841,30 +150,18 @@ function renderMenu() {
 
   document.getElementById("shopName").textContent = shop || "Shop not found";
 
-  document.getElementById("vegNonVegFilter").classList.toggle("active", shop === "Dolphin Hotel");
-
   if (items.length === 0) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <i class="fas fa-utensils"></i><br>No items available
-      </div>
-    `;
+    container.innerHTML = '<div style="text-align:center;padding:100px 20px;color:#777;">No items available</div>';
     return;
   }
 
   items.forEach(item => {
-    if (shop === "Dolphin Hotel") {
-      if (currentFilter === "veg" && item.type === "nonveg") return;
-      if (currentFilter === "nonveg" && item.type === "veg") return;
-    }
-
     const price = getDisplayedPrice(item.originalPrice);
     const qty = cart[shop]?.[item.name]?.qty || 0;
 
     const card = document.createElement("div");
     card.className = "item-card";
     card.innerHTML = `
-      <div class="item-image" style="background-image:url('${item.image || ''}')"></div>
       <div class="item-content">
         <div class="item-name">${item.name}</div>
         <div class="item-price">${formatPrice(price)}</div>
@@ -879,180 +176,8 @@ function renderMenu() {
   });
 }
 
-// =============================================
-// RENDER CART
-// =============================================
-
-function renderCart() {
-  const container = document.getElementById("cartItems");
-  container.innerHTML = "";
-
-  if (Object.keys(cart).length === 0) {
-    document.getElementById("cartEmpty").classList.remove("hidden");
-    document.getElementById("checkoutSection").classList.add("hidden");
-    return;
-  }
-
-  document.getElementById("cartEmpty").classList.add("hidden");
-
-  Object.keys(cart).forEach(shop => {
-    const title = document.createElement("div");
-    title.style = "font-weight:700; color:var(--primary); margin:28px 0 14px; font-size:1.32rem;";
-    title.textContent = shop;
-    container.appendChild(title);
-
-    Object.keys(cart[shop]).forEach(name => {
-      const item = cart[shop][name];
-      const row = document.createElement("div");
-      row.className = "cart-item-card";
-      row.innerHTML = `
-        <div class="cart-item-content">
-          <div class="cart-item-name">${name}</div>
-          <div class="cart-item-price">${formatPrice(item.price)} × ${item.qty}</div>
-        </div>
-        <div class="quantity-row">
-          <button class="qty-btn" onclick="changeQty('${shop}', '${name.replace(/'/g,"\\'")}', ${item.price}, -1)">−</button>
-          <span class="qty-value">${item.qty}</span>
-          <button class="qty-btn" onclick="changeQty('${shop}', '${name.replace(/'/g,"\\'")}', ${item.price}, 1)">+</button>
-        </div>
-      `;
-      container.appendChild(row);
-    });
-  });
-}
-
-// =============================================
-// SHOW CHECKOUT
-// =============================================
-
-function showCheckout() {
-  showingCheckout = true;
-  document.getElementById("cartItems").classList.add("hidden");
-  document.getElementById("checkoutSection").classList.remove("hidden");
-
-  const summaryDiv = document.getElementById("orderSummary");
-  let html = `<h3 style="margin-bottom:16px; color:var(--primary);">Order Summary</h3>`;
-
-  let subtotal = 0;
-  for (const shop in cart) {
-    for (const name in cart[shop]) {
-      const item = cart[shop][name];
-      const itemTotal = item.price * item.qty;
-      subtotal += itemTotal;
-      html += `
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eee;">
-          <span>${name} × ${item.qty}</span>
-          <span>₹${Math.round(itemTotal)}</span>
-        </div>`;
-    }
-  }
-
-  const delivery = subtotal < DELIVERY_THRESHOLD ? DELIVERY_FEE : 0;
-  const grand = subtotal + delivery;
-
-  html += `
-    <div style="display:flex;justify-content:space-between;font-weight:600;margin-top:12px;">
-      <span>Subtotal</span><span>₹${Math.round(subtotal)}</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;font-weight:600;">
-      <span>Delivery</span><span>${delivery === 0 ? 'FREE' : '₹' + delivery}</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;font-size:1.5rem;font-weight:800;color:var(--primary);margin-top:16px;padding-top:16px;border-top:2px solid var(--primary);">
-      <span>Total</span><span>₹${Math.round(grand)}</span>
-    </div>`;
-
-  summaryDiv.innerHTML = html;
-
-  document.getElementById("placeOrderBtn").onclick = placeOrder;
-}
-
-// =============================================
-// PLACE ORDER
-// =============================================
-
-function placeOrder() {
-  const name = document.getElementById("name").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const address1 = document.getElementById("address1").value.trim();
-  const address2 = document.getElementById("address2").value.trim();
-
-  if (!name || !phone || !address1) {
-    document.getElementById("errorMsg").textContent = "Please fill all required fields.";
-    document.getElementById("errorMsg").style.display = "block";
-    return;
-  }
-
-  let message = "New Order from ChatPoint!\n\n";
-  let subtotal = 0;
-
-  for (const shop in cart) {
-    message += `${shop}:\n`;
-    for (const name in cart[shop]) {
-      const item = cart[shop][name];
-      const itemTotal = item.price * item.qty;
-      subtotal += itemTotal;
-      message += `  ${name} × ${item.qty} = ₹${Math.round(itemTotal)}\n`;
-    }
-  }
-
-  const delivery = subtotal < DELIVERY_THRESHOLD ? 20 : 0;
-  const grand = subtotal + delivery;
-
-  message += `\nSubtotal: ₹${Math.round(subtotal)}\n`;
-  message += `Delivery: ${delivery === 0 ? 'FREE' : '₹' + delivery}\n`;
-  message += `Grand Total: ₹${Math.round(grand)}\n\n`;
-  message += `Name: ${name}\nPhone: ${phone}\nAddress: ${address1}`;
-  if (address2) message += `, ${address2}`;
-
-  const encoded = encodeURIComponent(message);
-
-  const primary = "9632367397";
-  const backup = "8088975913";
-
-  document.getElementById("successMsg").textContent = "Order placed! Opening WhatsApp...";
-  document.getElementById("successMsg").style.display = "block";
-  document.getElementById("errorMsg").style.display = "none";
-
-  // Clear cart
-  localStorage.removeItem("chatpoint_cart");
-  cart = {};
-  updateCartUI();
-
-  // Open WhatsApp
-  setTimeout(() => window.open(`https://wa.me/91${primary}?text=${encoded}`, '_blank'), 800);
-  setTimeout(() => window.open(`https://wa.me/91${backup}?text=${encoded}`, '_blank'), 1800);
-}
-
-// =============================================
-// INIT & TAB LOGIC
-// =============================================
-
-const currentShop = getShopFromURL();
-if (currentShop && shopMenus[currentShop]) {
-  document.getElementById("shopName").textContent = currentShop;
-} else {
-  document.getElementById("shopName").textContent = "Shop not found";
-}
-
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    document.getElementById('menu-tab').classList.toggle('hidden', btn.dataset.tab !== 'menu');
-    document.getElementById('cart-tab').classList.toggle('hidden', btn.dataset.tab !== 'cart');
-
-    if (btn.dataset.tab === 'cart') {
-      renderCart();
-      document.getElementById("checkoutSection").classList.add("hidden");
-      showingCheckout = false;
-    }
-  });
-});
-
-// Initial load
 renderMenu();
-updateCartUI();
+updateCartCount();
 </script>
 </body>
 </html>
