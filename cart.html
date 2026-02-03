@@ -1,453 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>My Cart • ChatPoint</title>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        :root {
-            --bg: #fdfbf7;
-            --card: #ffffff;
-            --primary: #e63946;
-            --primary-dark: #d00000;
-            --accent: #f4a261;
-            --success: #2a9d8f;
-            --text: #1d3557;
-            --muted: #6c757d;
-            --border: rgba(255,255,255,0.25);
-            --glass: rgba(255,255,255,0.7);
-            --shadow: 0 6px 18px rgba(0,0,0,0.07);
-            --radius: 14px;
-            --transition: all 0.25s ease;
-        }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body {
-            font-family: 'Outfit', sans-serif;
-            background: linear-gradient(135deg, #fdfbf7 0%, #fffaf0 100%);
-            color: var(--text);
-            min-height: 100vh;
-            line-height: 1.45;
-            font-size: 14px;
-        }
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(255,255,255,0.96);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            padding: 0.7rem 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .brand { font-size: 1.7rem; font-weight: 900; color: var(--primary); }
-        .back-btn {
-            width: 38px; height: 38px; background: rgba(230,57,70,0.08);
-            border: none; border-radius: 10px; font-size: 1.5rem; color: var(--primary);
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-        }
-        .cart-badge {
-            background: var(--primary); color: white; padding: 0.2rem 0.6rem;
-            border-radius: 50px; font-size: 0.8rem; font-weight: 800;
-        }
-        main {
-            padding: 0.7rem 0.8rem;
-            max-width: 100%;
-            margin: 0 auto;
-            padding-bottom: 180px;
-        }
-        .cart-container {
-            background: var(--card);
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-        .section-title {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white; padding: 0.9rem 1.1rem; font-size: 1.15rem; font-weight: 800;
-            display: flex; align-items: center; gap: 0.5rem;
-        }
-        .cart-item {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            padding: 0.9rem 1rem;
-            border-bottom: 1px solid rgba(0,0,0,0.04);
-            gap: 0.7rem;
-        }
-        .item-name {
-            flex: 1 1 100%;
-            font-weight: 600;
-            font-size: 0.95rem;
-            line-height: 1.35;
-            margin-bottom: 0.3rem;
-        }
-        .item-price {
-            font-weight: 800;
-            font-size: 1.05rem;
-            color: var(--primary);
-            min-width: 70px;
-            text-align: right;
-        }
-        .quantity {
-            display: flex;
-            align-items: center;
-            border: 1px solid rgba(230,57,70,0.25);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .qbtn {
-            width: 36px; height: 36px; background: transparent; border: none;
-            color: var(--primary); font-size: 1.4rem; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .qbtn:hover { background: rgba(230,57,70,0.1); }
-        .qty {
-            min-width: 40px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 0.95rem;
-            padding: 0 0.5rem;
-        }
-        .delivery-status {
-            padding: 0.9rem; margin: 0.6rem 0.9rem;
-            border-radius: 12px; text-align: center; font-weight: 700; font-size: 0.95rem;
-            background: rgba(230,57,70,0.04); border: 1px solid rgba(230,57,70,0.12);
-        }
-        .delivery-waived {
-            background: rgba(42,157,143,0.08); border-color: rgba(42,157,143,0.2); color: #1b5e20;
-        }
-        .water-bottle-promo {
-            margin: 0.9rem; padding: 1.1rem;
-            background: linear-gradient(135deg, #fffaf0, #fff8e1);
-            border: 2px dashed var(--accent); border-radius: 14px;
-            text-align: center; box-shadow: 0 5px 14px rgba(244,162,97,0.1);
-        }
-        .water-bottle-promo h3 { color: var(--primary); font-size: 1.15rem; margin-bottom: 0.4rem; }
-        .add-water-btn {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white; border: none; padding: 0.8rem 1.4rem;
-            border-radius: 12px; font-size: 0.95rem; font-weight: 700; cursor: pointer;
-            margin-top: 0.7rem; box-shadow: 0 3px 10px rgba(230,57,70,0.2);
-        }
-        .coupon-section {
-            margin: 0.9rem; padding: 1rem;
-            background: white; border-radius: 14px; box-shadow: var(--shadow);
-            border: 1px solid rgba(230,57,70,0.08);
-        }
-        .coupon-section h3 { font-size: 1.1rem; color: var(--primary); margin-bottom: 0.7rem; }
-        .coupon-input-group {
-            display: flex; flex-direction: column; gap: 0.7rem;
-        }
-        .coupon-input {
-            padding: 0.8rem 1rem; border: 2px solid #ddd;
-            border-radius: 10px; font-size: 0.95rem; outline: none;
-        }
-        .coupon-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(230,57,70,0.12); }
-        .coupon-btn {
-            background: var(--primary); color: white; border: none;
-            padding: 0.8rem; border-radius: 10px; font-weight: 700;
-            cursor: pointer; font-size: 0.95rem;
-        }
-        .coupon-message { font-size: 0.9rem; margin-top: 0.4rem; min-height: 1.2em; }
-        .coupon-success { color: var(--success); font-weight: 600; }
-        .coupon-error { color: #e63946; }
-        .totals-actions-wrapper {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(255,255,255,0.96); backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(0,0,0,0.06); box-shadow: 0 -5px 16px rgba(0,0,0,0.08);
-            padding: 0.8rem 0.7rem; z-index: 90;
-        }
-        .grand-total {
-            font-size: 2.1rem; font-weight: 900; color: var(--primary);
-            text-align: center; margin: 0.3rem 0; letter-spacing: -0.5px;
-        }
-        .discount-line {
-            font-size: 0.95rem; color: var(--success); text-align: center;
-            margin-bottom: 0.5rem; font-weight: 600;
-        }
-        .btn {
-            padding: 0.9rem; border: none; border-radius: 12px;
-            font-weight: 700; font-size: 0.98rem; cursor: pointer;
-            transition: var(--transition);
-        }
-        .btn-clear { background: #e76f51; color: white; flex: 1; }
-        .btn-payment {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white; box-shadow: 0 4px 12px rgba(230,57,70,0.25); flex: 2;
-        }
-        .btn-payment:hover { transform: translateY(-1px); }
-        .empty-cart {
-            text-align: center; padding: 7rem 1.2rem 5rem; color: var(--muted);
-        }
-        .empty-cart i { font-size: 5.5rem; color: rgba(230,57,70,0.12); margin-bottom: 1rem; }
-        .empty-cart p { font-size: 1.3rem; font-weight: 700; margin-bottom: 1rem; }
-
-        /* Mobile-first tweaks */
-        @media (min-width: 480px) {
-            .coupon-input-group { flex-direction: row; }
-            .coupon-btn { padding: 0.8rem 1.6rem; }
-            .grand-total { font-size: 2.4rem; }
-            .cart-item { flex-wrap: nowrap; }
-            .item-name { flex: 1 1 auto; margin-bottom: 0; }
-        }
-        @media (min-width: 720px) {
-            main { max-width: 720px; padding: 1.2rem 1.4rem; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cart - ChatPoint</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary: #e63946;
+      --dark: #1d3557;
+      --light: #f1faee;
+      --card-bg: white;
+      --shadow: 0 8px 30px rgba(0,0,0,0.12);
+      --radius: 16px;
+    }
+    body { font-family: 'Poppins', sans-serif; background: var(--light); margin: 0; padding: 0; }
+    header {
+      background: white;
+      padding: 14px 18px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .back-btn { font-size: 1.8rem; color: var(--primary); background: none; border: none; cursor: pointer; }
+    .page-title { font-size: 1.4rem; font-weight: 700; }
+    main { padding: 20px; }
+    h1 { text-align: center; color: var(--primary); margin: 20px 0 30px; }
+    .cart-items-list { display: grid; gap: 20px; }
+    .cart-item-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .cart-item-name { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; }
+    .cart-item-price { font-size: 1.4rem; color: var(--primary); font-weight: 700; }
+    .quantity-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 12px;
+    }
+    .qty-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(230,57,70,0.1);
+      border: none;
+      font-size: 1.5rem;
+      color: var(--primary);
+      cursor: pointer;
+    }
+    .qty-btn:hover { background: rgba(230,57,70,0.2); }
+    .qty-value { font-size: 1.3rem; font-weight: 700; min-width: 40px; text-align: center; }
+    .summary {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-top: 30px;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 1.15rem;
+      margin: 12px 0;
+    }
+    .grand-total {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 2px solid var(--primary);
+    }
+    .proceed-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 16px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      border-radius: 14px;
+      cursor: pointer;
+      margin-top: 24px;
+    }
+    .proceed-btn:hover { background: #d00000; }
+    .empty-state {
+      text-align: center;
+      padding: 100px 20px;
+      color: #777;
+      font-size: 1.3rem;
+    }
+    .empty-state i { font-size: 5rem; color: rgba(230,57,70,0.2); margin-bottom: 20px; }
+  </style>
 </head>
 <body>
-    <header>
-        <button class="back-btn" onclick="history.back()">←</button>
-        <div class="brand">ChatPoint</div>
-        <div>
-            My Cart <span class="cart-badge" id="cartBadge">0</span>
-        </div>
-    </header>
 
-    <main>
-        <div class="cart-container" id="cartContainer"></div>
-    </main>
+<header>
+  <button class="back-btn" onclick="window.location.href='items.html'">←</button>
+  <div class="page-title">Your Cart</div>
+  <div></div>
+</header>
 
-    <div class="totals-actions-wrapper" id="totalsActionsWrapper" style="display:none;">
-        <div class="grand-total" id="floatingGrandTotal">₹0</div>
-        <div id="discountLine" class="discount-line" style="display:none;"></div>
-        <div style="display:flex; flex-wrap:wrap; gap:0.7rem; margin-top:0.7rem;">
-            <button class="btn btn-clear" onclick="clearCart()">Clear Cart</button>
-            <button class="btn btn-payment" id="proceedBtn" onclick="location.href='payment.html'">
-                Pay Now
-            </button>
-        </div>
+<main>
+  <h1>Cart</h1>
+  <div class="cart-items-list" id="cartItems"></div>
+  <div id="cartEmpty" class="empty-state hidden">
+    <i class="fas fa-shopping-bag"></i><br>
+    Your cart is empty
+  </div>
+
+  <div class="summary hidden" id="summary">
+    <div class="summary-row">
+      <span>Subtotal</span>
+      <span id="subtotal">₹0</span>
     </div>
+    <div class="summary-row">
+      <span>Delivery</span>
+      <span id="delivery">₹0</span>
+    </div>
+    <div class="grand-total">
+      <span>Total</span>
+      <span id="grandTotal">₹0</span>
+    </div>
+    <button class="proceed-btn" onclick="window.location.href='payment.html'">
+      Proceed to Checkout
+    </button>
+  </div>
+</main>
 
-    <script>
-        const CART_KEY = "chatpoint_cart";
-        const WATER = { name: "1L Pure Water Bottle", price: 13, shop: "_special_" };
-        const COUPON_CODE = "REPUBLIC77";
-        let cart = JSON.parse(localStorage.getItem(CART_KEY)) || {};
-        let appliedCouponDiscount = 0;
+<script>
+const DELIVERY_THRESHOLD = 100;
+const DELIVERY_FEE = 20;
 
-        const container = document.getElementById("cartContainer");
-        const badge = document.getElementById("cartBadge");
-        const totalsWrapper = document.getElementById("totalsActionsWrapper");
-        const grandTotalEl = document.getElementById("floatingGrandTotal");
-        const discountLine = document.getElementById("discountLine");
+let cart = JSON.parse(localStorage.getItem("chatpoint_cart")) || {};
 
-        function saveCart() {
-            localStorage.setItem(CART_KEY, JSON.stringify(cart));
-            updateBadge();
-        }
+function formatPrice(num) {
+  return "₹" + Math.round(num);
+}
 
-        function updateBadge() {
-            let count = 0;
-            Object.values(cart).forEach(shop => {
-                Object.values(shop).forEach(item => count += item.qty || 0);
-            });
-            badge.textContent = count;
-        }
+function getCartSubtotal() {
+  let total = 0;
+  for (const shop in cart) {
+    for (const name in cart[shop]) {
+      total += cart[shop][name].qty * cart[shop][name].price;
+    }
+  }
+  return total;
+}
 
-        function format(n) { return '₹' + n.toLocaleString('en-IN'); }
+function renderCart() {
+  const container = document.getElementById("cartItems");
+  container.innerHTML = "";
 
-        function changeQty(shop, name, price, delta) {
-            if (!cart[shop]) cart[shop] = {};
-            if (!cart[shop][name]) cart[shop][name] = {qty:0, price};
-            cart[shop][name].qty = Math.max(0, (cart[shop][name].qty || 0) + delta);
-            if (cart[shop][name].qty === 0) delete cart[shop][name];
-            if (Object.keys(cart[shop]).length === 0) delete cart[shop];
-            saveCart();
-            renderCart();
-        }
+  if (Object.keys(cart).length === 0) {
+    document.getElementById("cartEmpty").classList.remove("hidden");
+    document.getElementById("summary").classList.add("hidden");
+    return;
+  }
 
-        function addWater() {
-            if (!cart[WATER.shop]) cart[WATER.shop] = {};
-            if (!cart[WATER.shop][WATER.name]) cart[WATER.shop][WATER.name] = {qty:0, price:WATER.price};
-            cart[WATER.shop][WATER.name].qty += 1;
-            saveCart();
-            renderCart();
-        }
+  document.getElementById("cartEmpty").classList.add("hidden");
+  document.getElementById("summary").classList.remove("hidden");
 
-        function hasWater() {
-            return (cart[WATER.shop]?.[WATER.name]?.qty || 0) > 0;
-        }
+  Object.keys(cart).forEach(shop => {
+    const title = document.createElement("div");
+    title.style = "font-weight:700; color:#e63946; margin:24px 0 12px; font-size:1.3rem;";
+    title.textContent = shop;
+    container.appendChild(title);
 
-        function getMainSubtotal() {
-            let sum = 0;
-            for (let shop in cart) {
-                if (shop === WATER.shop) continue;
-                for (let name in cart[shop]) {
-                    sum += cart[shop][name].qty * cart[shop][name].price;
-                }
-            }
-            return sum;
-        }
+    Object.keys(cart[shop]).forEach(name => {
+      const item = cart[shop][name];
+      const row = document.createElement("div");
+      row.className = "cart-item-card";
+      row.innerHTML = `
+        <div class="cart-item-name">${name}</div>
+        <div class="cart-item-price">${formatPrice(item.price)} × ${item.qty}</div>
+      `;
+      container.appendChild(row);
+    });
+  });
 
-        function getDelivery() {
-            if (hasWater()) return 0;
-            return getMainSubtotal() < 100 ? 30 : 27;
-        }
+  const subtotal = getCartSubtotal();
+  const delivery = subtotal < DELIVERY_THRESHOLD ? DELIVERY_FEE : 0;
+  const grand = subtotal + delivery;
 
-        function getGrandTotal() {
-            let total = 0;
-            for (let shop in cart) {
-                for (let name in cart[shop]) {
-                    total += cart[shop][name].qty * cart[shop][name].price;
-                }
-            }
-            total += getDelivery();
-            total -= appliedCouponDiscount;
-            return Math.max(0, total);
-        }
+  document.getElementById("subtotal").textContent = formatPrice(subtotal);
+  document.getElementById("delivery").textContent = delivery === 0 ? "FREE" : formatPrice(delivery);
+  document.getElementById("grandTotal").textContent = formatPrice(grand);
+}
 
-        function applyCoupon() {
-            const input = document.getElementById("couponInput");
-            const msg = document.getElementById("couponMessage");
-            const code = (input.value || "").trim().toUpperCase();
-
-            if (!code) {
-                msg.textContent = "Enter code";
-                msg.className = "coupon-message coupon-error";
-                return;
-            }
-
-            if (appliedCouponDiscount > 0) {
-                msg.textContent = "Already applied";
-                msg.className = "coupon-message coupon-error";
-                return;
-            }
-
-            if (code === COUPON_CODE) {
-                const rand = Math.random();
-                let discount;
-
-                if (rand < 0.07) {
-                    discount = Math.floor(Math.random() * 9) + 1; // 1–9 (very rare ~7%)
-                } else {
-                    discount = Math.floor(Math.random() * 6) + 10; // 10–15 (93% cases)
-                }
-
-                appliedCouponDiscount = discount;
-                msg.textContent = `₹${discount} off applied! 🎉`;
-                msg.className = "coupon-message coupon-success";
-                input.disabled = true;
-                input.value = code;
-                saveCart();
-                renderCart();
-            } else {
-                msg.textContent = "Invalid code";
-                msg.className = "coupon-message coupon-error";
-            }
-        }
-
-        function renderCart() {
-            container.innerHTML = "";
-            let mainSub = getMainSubtotal();
-            let delivery = getDelivery();
-            let grand = getGrandTotal();
-            let hasB = hasWater();
-
-            if (Object.keys(cart).length === 0) {
-                container.innerHTML = `
-                    <div class="empty-cart">
-                        <i class="fas fa-shopping-bag fa-5x"></i>
-                        <p>Cart is empty</p>
-                        <a href="index.html" style="color:var(--primary);font-weight:700;">Browse Menu</a>
-                    </div>`;
-                totalsWrapper.style.display = 'none';
-                return;
-            }
-
-            let html = '<div class="section-title"><i class="fas fa-shopping-cart"></i> Your Items</div>';
-
-            for (let shop in cart) {
-                if (shop === WATER.shop) continue;
-                html += `<div style="padding:0.9rem 1rem; background:rgba(230,57,70,0.02);">
-                    <div style="font-weight:800; color:var(--primary); margin-bottom:0.7rem; font-size:1.05rem;">${shop}</div>`;
-                for (let name in cart[shop]) {
-                    let item = cart[shop][name];
-                    let itemTotal = item.qty * item.price;
-                    html += `
-                        <div class="cart-item">
-                            <div class="item-name">${name}</div>
-                            <div class="item-price">${format(itemTotal)}</div>
-                            <div class="quantity">
-                                <button class="qbtn" onclick="changeQty('${shop}','${name.replace(/'/g,"\\'")}',${item.price},-1)">−</button>
-                                <div class="qty">${item.qty}</div>
-                                <button class="qbtn" onclick="changeQty('${shop}','${name.replace(/'/g,"\\'")}',${item.price},1)">+</button>
-                            </div>
-                        </div>`;
-                }
-                html += '</div>';
-            }
-
-            html += `
-                <div class="delivery-status ${hasB ? 'delivery-waived' : ''}">
-                    ${hasB
-                        ? '<i class="fas fa-check-circle"></i> Free Delivery!'
-                        : `<i class="fas fa-truck"></i> Delivery: ${format(delivery)}`}
-                </div>`;
-
-            if (!hasB) {
-                html += `
-                    <div class="water-bottle-promo">
-                        <h3>Skip Delivery Fee</h3>
-                        <p>Add 1L Water Bottle ₹13 → Free Delivery</p>
-                        <button class="add-water-btn" onclick="addWater()">
-                            <i class="fas fa-bottle-water"></i> Add Water – ₹13
-                        </button>
-                    </div>`;
-            } else {
-                let qty = cart[WATER.shop][WATER.name].qty;
-                html += `
-                    <div class="cart-item" style="background:rgba(42,157,143,0.08); border-left:4px solid var(--success);">
-                        <div class="item-name"><i class="fas fa-bottle-water" style="color:var(--success); margin-right:0.5rem;"></i>1L Water Bottle</div>
-                        <div class="item-price">${format(qty * 13)}</div>
-                        <div class="quantity">
-                            <button class="qbtn" onclick="changeQty('${WATER.shop}','${WATER.name}',13,-1)">−</button>
-                            <div class="qty">${qty}</div>
-                            <button class="qbtn" onclick="changeQty('${WATER.shop}','${WATER.name}',13,1)">+</button>
-                        </div>
-                    </div>`;
-            }
-
-            // Coupon section
-            html += `
-                <div class="coupon-section">
-                    <h3>Have Coupon?</h3>
-                    <div class="coupon-input-group">
-                        <input type="text" id="couponInput" class="coupon-input" placeholder="REPUBLIC77" />
-                        <button class="coupon-btn" onclick="applyCoupon()">Apply</button>
-                    </div>
-                    <div id="couponMessage" class="coupon-message"></div>
-                </div>`;
-
-            container.innerHTML = html;
-
-            if (appliedCouponDiscount > 0) {
-                discountLine.textContent = `Coupon: -₹${appliedCouponDiscount}`;
-                discountLine.style.display = "block";
-            } else {
-                discountLine.style.display = "none";
-            }
-
-            grandTotalEl.textContent = format(grand);
-            totalsWrapper.style.display = 'block';
-        }
-
-        function clearCart() {
-            if (confirm("Clear cart?")) {
-                cart = {};
-                appliedCouponDiscount = 0;
-                localStorage.removeItem(CART_KEY);
-                renderCart();
-            }
-        }
-
-        renderCart();
-        updateBadge();
-    </script>
+renderCart();
+</script>
 </body>
 </html>
