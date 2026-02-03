@@ -3,115 +3,98 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Chat Point | Republic Day 2026</title>
+  <title>Chat Point</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon-192.png" type="image/png" />
-  <meta name="theme-color" content="#FF9933" />
+  <meta name="theme-color" content="#e63946" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-
   <style>
     :root {
-      --saffron: #FF9933;
-      --white: #FFFFFF;
-      --green: #138808;
-      --chakra-blue: #000080;
-      --text: #0d1b2a;
-      --muted: #4a5568;
-      --shadow: rgba(0,0,0,0.12);
-      --glow: rgba(255,153,51,0.35);
+      --primary: #e63946;
+      --primary-dark: #d00000;
+      --light: #f8f9fa;
+      --white: #ffffff;
+      --dark: #1d3557;
+      --gray: #6b7280;
+      --shadow: rgba(0,0,0,0.08);
+      --glow: rgba(230,57,70,0.25);
       --radius: 16px;
     }
-
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
-
     html, body {
       height: 100%;
       font-family: "Outfit", system-ui, sans-serif;
-      background: linear-gradient(to bottom, #fff8e1, #ffffff, #f0fff0);
-      color: var(--text);
+      background: var(--light);
+      color: var(--dark);
       overflow-x: hidden;
     }
-
     header {
       position: sticky;
       top: 0;
       z-index: 120;
-      background: linear-gradient(90deg, var(--saffron), var(--white) 45%, var(--green));
+      background: white;
       padding: 14px 20px;
       display: flex;
       align-items: center;
       gap: 16px;
       box-shadow: 0 4px 16px var(--shadow);
     }
-
     .nav-btn {
       width: 44px;
       height: 44px;
       border-radius: 12px;
-      background: rgba(255,255,255,0.95);
-      border: 2px solid var(--chakra-blue);
+      background: rgba(230,57,70,0.08);
+      border: none;
       display: grid;
       place-items: center;
       cursor: pointer;
       transition: all 0.25s ease;
     }
-
     .nav-btn:hover {
+      background: rgba(230,57,70,0.18);
       transform: scale(1.08);
-      background: var(--saffron);
     }
-
     .brand {
       font-weight: 900;
       font-size: 24px;
-      color: var(--chakra-blue);
+      color: var(--primary);
       letter-spacing: -0.5px;
     }
-
-    .brand span {
-      color: var(--saffron);
-    }
-
     .header-right {
       margin-left: auto;
       display: flex;
       gap: 12px;
     }
-
     .orders-btn, .cart-btn {
       padding: 10px 18px;
       border-radius: 12px;
-      font-weight: 800;
+      font-weight: 700;
       font-size: 15px;
       border: none;
       cursor: pointer;
       transition: all 0.25s ease;
     }
-
     .orders-btn {
-      background: var(--saffron);
+      background: var(--primary);
       color: white;
       box-shadow: 0 4px 12px var(--glow);
     }
-
     .orders-btn:hover {
       transform: translateY(-2px);
     }
-
     .cart-btn {
-      background: var(--chakra-blue);
+      background: var(--dark);
       color: white;
     }
-
     /* Sidebar */
     #sidebar {
       position: fixed;
-      inset: 0  auto 0 0;
+      inset: 0 auto 0 0;
       width: 300px;
       height: 100%;
       background: white;
@@ -121,11 +104,9 @@
       box-shadow: 6px 0 24px rgba(0,0,0,0.18);
       overflow-y: auto;
     }
-
     #sidebar.active {
       transform: translateX(0);
     }
-
     #overlay {
       position: fixed;
       inset: 0;
@@ -135,181 +116,99 @@
       pointer-events: none;
       transition: opacity 0.4s ease;
     }
-
     #overlay.active {
       opacity: 1;
       pointer-events: auto;
     }
-
     .profile-section {
       padding: 20px 16px;
-      background: linear-gradient(135deg, #fffaf0, #f0fff0);
-      border-bottom: 2px solid var(--saffron);
+      background: #f8f9fa;
+      border-bottom: 1px solid #e5e7eb;
     }
-
     .avatar {
       width: 56px;
       height: 56px;
       border-radius: 50%;
-      background: var(--chakra-blue);
+      background: var(--primary);
       color: white;
       display: grid;
       place-items: center;
       font-size: 28px;
       margin-right: 12px;
     }
-
-    /* Offer Banner */
+    /* Big Price Drop Banner */
     .offer-banner {
       max-width: 960px;
-      margin: 20px auto;
-      padding: 28px 32px;
-      background: linear-gradient(135deg, var(--saffron), #fffaf0, var(--green));
-      border: 4px solid var(--chakra-blue);
+      margin: 24px auto;
+      padding: 32px 28px;
+      background: linear-gradient(135deg, #fff1f0, #ffebee);
+      border: 2px solid var(--primary);
       border-radius: var(--radius);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      box-shadow: 0 10px 30px rgba(230,57,70,0.15);
       text-align: center;
     }
-
     .offer-title {
-      font-size: 32px;
+      font-size: 2.4rem;
       font-weight: 900;
-      color: var(--chakra-blue);
+      color: var(--primary);
       margin-bottom: 12px;
+      letter-spacing: -0.5px;
     }
-
     .offer-text {
-      font-size: 28px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin: 12px 0;
+    }
+    .highlight {
+      color: var(--primary);
       font-weight: 900;
-      color: white;
-      background: #111;
-      padding: 12px 32px;
-      border-radius: 12px;
-      display: inline-block;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
-
-    .offer-flag {
-      font-size: 56px;
-      margin: 0 16px;
-    }
-
     main {
       max-width: 960px;
       margin: 0 auto;
       padding: 0 16px;
     }
-
-    .quotes-section {
-      background: white;
-      border: 2px solid var(--saffron);
-      border-radius: 16px;
-      padding: 24px;
-      margin: 24px 0;
-      text-align: center;
-      box-shadow: 0 6px 20px var(--shadow);
-    }
-
-    .quote {
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--chakra-blue);
-      font-style: italic;
-      margin-bottom: 8px;
-    }
-
-    .quote-author {
-      font-size: 15px;
-      color: var(--muted);
-    }
-
-    .tab-switch {
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-      margin: 24px 0 32px;
-    }
-
-    .tab-btn {
-      flex: 1;
-      max-width: 260px;
-      padding: 18px 24px;
-      border-radius: 999px;
-      font-size: 18px;
-      font-weight: 900;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      box-shadow: 0 6px 16px var(--shadow);
-    }
-
-    .tab-btn.food {
-      background: linear-gradient(135deg, var(--saffron), var(--green));
-      color: white;
-      border: 3px solid var(--chakra-blue);
-    }
-
-    .tab-btn.grocery {
-      background: white;
-      border: 3px solid var(--saffron);
-      color: var(--saffron);
-    }
-
-    .tab-btn:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 28px var(--shadow);
-    }
-
     .search-bar {
       margin: 0 auto 32px;
       max-width: 600px;
       position: relative;
     }
-
     .search-bar input {
       width: 100%;
       padding: 16px 20px 16px 52px;
-      border: 2px solid var(--saffron);
+      border: 2px solid #e5e7eb;
       border-radius: 16px;
       font-size: 17px;
       background: white;
       transition: all 0.3s;
     }
-
     .search-bar input:focus {
-      border-color: var(--chakra-blue);
-      box-shadow: 0 0 0 5px var(--glow);
+      border-color: var(--primary);
+      box-shadow: 0 0 0 5px rgba(230,57,70,0.15);
       outline: none;
     }
-
     .search-bar i {
       position: absolute;
       left: 20px;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--chakra-blue);
+      color: var(--primary);
       font-size: 20px;
     }
-
     .grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: 24px;
       padding-bottom: 80px;
     }
-
     @media (min-width: 640px) {
       .grid {
         grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
       }
     }
-
     .card {
       background: white;
-      border: 2px solid var(--saffron);
       border-radius: var(--radius);
       overflow: hidden;
       box-shadow: 0 8px 20px var(--shadow);
@@ -319,33 +218,27 @@
       flex-direction: column;
       cursor: pointer;
     }
-
     .card:hover {
       transform: translateY(-8px);
-      border-color: var(--green);
-      box-shadow: 0 16px 40px rgba(19,136,8,0.25);
+      box-shadow: 0 16px 40px rgba(230,57,70,0.2);
     }
-
     .card img {
       width: 100%;
       height: 180px;
       object-fit: cover;
     }
-
     .info {
       padding: 14px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-
     .shop-name {
       font-size: 18px;
       font-weight: 800;
     }
-
     .rating {
-      background: var(--saffron);
+      background: var(--primary);
       color: white;
       padding: 6px 14px;
       border-radius: 999px;
@@ -355,14 +248,12 @@
       align-items: center;
       gap: 6px;
     }
-
     .desc {
       padding: 0 18px 10px;
-      color: var(--muted);
+      color: var(--gray);
       font-size: 15px;
       line-height: 1.5;
     }
-
     .items-row {
       padding: 0 18px 18px;
       display: flex;
@@ -370,7 +261,6 @@
       gap: 10px;
       margin-top: auto;
     }
-
     .item-pill {
       background: #f8f9fa;
       padding: 6px 14px;
@@ -379,23 +269,8 @@
       font-weight: 600;
       border: 1px solid #e2e8f0;
     }
-
-    .badge-offer {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      background: linear-gradient(135deg, var(--saffron), var(--green));
-      color: white;
-      padding: 8px 16px;
-      border-radius: 10px;
-      font-weight: 800;
-      font-size: 14px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-      z-index: 2;
-    }
-
     footer {
-      background: var(--chakra-blue);
+      background: var(--dark);
       color: white;
       text-align: center;
       padding: 24px 16px;
@@ -410,72 +285,53 @@
   <header>
     <button id="navBtn" class="nav-btn" aria-label="Open menu">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <path d="M4 7h16M4 12h16M4 17h16" stroke="white" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
       </svg>
     </button>
-    <div class="brand">Chat<span>Point</span> 🇮🇳</div>
+    <div class="brand">Chat<span>Point</span></div>
     <div class="header-right">
       <button class="orders-btn" onclick="location.href='tracking.html'">
-        <i class="fas fa-flag"></i> My Orders
+        <i class="fas fa-bag-shopping"></i> My Orders
       </button>
-      <button class="cart-btn">🛒 Cart</button>
+      <button class="cart-btn" onclick="location.href='cart.html'">
+        <i class="fas fa-cart-shopping"></i> Cart
+      </button>
     </div>
   </header>
 
-  <!-- Sidebar -->
-  <div id="sidebar" class="sidebar" aria-hidden="true">
+  <!-- Sidebar (kept minimal - can be expanded later) -->
+  <div id="sidebar">
     <div class="profile-section" id="profileSection"></div>
     <nav style="margin-top: 16px;">
       <a href="tracking.html" style="display:block; padding:14px 16px; color:var(--text); text-decoration:none; border-radius:12px; margin:8px 0; background:#f8f9fa; font-weight:600;">
-        <i class="fas fa-shopping-bag" style="margin-right:12px; color:var(--chakra-blue);"></i> My Orders
+        <i class="fas fa-bag-shopping" style="margin-right:12px; color:var(--primary);"></i> My Orders
       </a>
       <a href="tel:9632367397" style="display:block; padding:14px 16px; color:var(--text); text-decoration:none; border-radius:12px; margin:8px 0; background:#f8f9fa; font-weight:600;">
-        <i class="fas fa-phone-alt" style="margin-right:12px; color:var(--chakra-blue);"></i> Contact: 9632367397
-      </a>
-      <a href="#" id="logout" style="display:none; color:var(--chakra-blue); font-weight:800; padding:14px 16px; text-decoration:none; border-radius:12px; margin:8px 0; background:#f8f9fa;">
-        <i class="fas fa-sign-out-alt" style="margin-right:12px;"></i> Logout
+        <i class="fas fa-phone-alt" style="margin-right:12px; color:var(--primary);"></i> Contact Us
       </a>
     </nav>
   </div>
+  <div id="overlay"></div>
 
-  <div id="overlay" class="overlay"></div>
-
-  <!-- Offer Banner -->
+  <!-- Attractive Big Price Drop Banner -->
   <div class="offer-banner">
-    <div class="offer-content">
-      <div class="offer-title">Republic Day 2026 Special! 🇮🇳</div>
-      <div style="margin-top:12px;">
-        <span class="offer-flag">🇮🇳</span>
-        <span class="offer-text">FLAT 20% OFF upto ₹20<br>USE CODE: <strong>REPUBLIC77</strong></span>
-        <span class="offer-flag">🇮🇳</span>
-      </div>
+    <div class="offer-title">BIG PRICE DROP!</div>
+    <div class="offer-text">
+      Massive savings <span class="highlight">on every item</span><br>
+      Limited time only — grab now!
     </div>
   </div>
 
   <main>
-    <section class="quotes-section">
-      <div class="quote">"We the people of India... give to ourselves this Constitution."</div>
-      <div class="quote-author">Preamble – Happy 77th Republic Day</div>
-    </section>
-
-    <div class="tab-switch">
-      <button id="foodBtn" class="tab-btn food" onclick="event.preventDefault()">
-        <i class="fas fa-utensils"></i> Food
-      </button>
-      <a href="gindex.html" class="tab-btn grocery">
-        <i class="fas fa-shopping-basket"></i> Grocery
-      </a>
-    </div>
-
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search Republic Day special offers..." oninput="searchShops()" />
+      <input type="text" id="searchInput" placeholder="Search shops or items..." oninput="searchShops()" />
       <i class="fas fa-search"></i>
     </div>
 
     <section class="grid" id="grid" aria-live="polite"></section>
   </main>
 
-  <footer>© 2026 Chat Point • Jai Hind! 🇮🇳 • 77th Republic Day</footer>
+  <footer>© Chat Point • Made with love in Bengaluru</footer>
 
   <script>
     const shops = [
@@ -484,114 +340,85 @@
         img: "https://plus.unsplash.com/premium_photo-1670601440146-3b33dfcd7e17?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8Zm9vZHxlbnwwfHwwfHx8MA%3D%3D",
         rating: 4.9,
         desc: "Your favorite hangout – burgers, chats, coffee & vibes!",
-        items: ["Burger", "Fries", "Oreo Shake", "Chicken Roll", "juice"]
+        items: ["Burger", "Fries", "Oreo Shake", "Chicken Roll", "Juice"]
       },
       {
         name: "Hasanamba Iyengar Bakery",
         img: "https://plus.unsplash.com/premium_photo-1665669263531-cdcbe18e7fe4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YmFrZXJ5fGVufDB8fDB8fHww",
         rating: 4.5,
-        desc: "Fresh baked goods and sweet treats.",
-        items: ["Cake", "Puff", "rolls", "Puff Pastry"]
+        desc: "Fresh baked goods, cakes, pastries & more.",
+        items: ["Rasmalai Cake", "Black Forest", "Veg Pizza", "Butterscotch Cake", "Mango Cake"]
       },
       {
         name: "Sangambar Udupi Hotel",
         img: "https://plus.unsplash.com/premium_photo-1673108852141-e8c3c22a4a22?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Zm9vZHxlbnwwfHwwfHx8MA%3D%3D",
         rating: 4.6,
-        desc: "Pure vegetarian South Indian meals.",
-        items: ["Masala Dosa", "Idli Vada", "Puri Bhaji", "Coffee"]
+        desc: "Authentic South Indian vegetarian meals.",
+        items: ["Masala Dosa", "Plain Dosa", "Idli Vada", "Gobi 65"]
       },
       {
         name: "Pizza Spot",
         img: "https://plus.unsplash.com/premium_photo-1723478418445-b13c20b21231?q=80&w=1125&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         rating: 4.5,
-        desc: "Loaded pizzas with fresh toppings.",
-        items: ["momos", "pizza", "burger", "juice", "Veggie pizza", "pav bhaji"]
+        desc: "Delicious pizzas & fast food favorites.",
+        items: ["Margherita", "Veg Lover", "Tandoori Paneer", "Pav Bhaji", "Momos"]
       },
       {
         name: "Nandi Grand Hotels",
         img: "https://plus.unsplash.com/premium_photo-1674106347866-8282d8c19f84?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTI5fHxmb29kfGVufDB8fDB8fHww",
         rating: 4.7,
-        desc: "Crispy dosas with authentic flavors.",
-        items: ["Plain Dosa", "Ghee Roast", "Onion Uttapam", "Podi Idli"]
+        desc: "South Indian breakfast & meals.",
+        items: ["Poori", "Full Meals", "Onion Dosa", "Paneer Dosa"]
       },
       {
         name: "connect with Pizza",
         img: "https://plus.unsplash.com/premium_photo-1679924471091-f7cd7ad90ddf?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
         rating: 4.6,
-        desc: "100% veg pizzas, light & tasty.",
-        items: ["Paneer Tikka", "Corn & Cheese", "nugets ", "Veg Extravaganza"]
+        desc: "Fresh & tasty vegetarian pizzas.",
+        items: ["Paneer Tikka", "Veg Supreme", "Peri Peri Paneer"]
       },
       {
         name: "Mister Chef",
         img: "https://images.unsplash.com/photo-1594179047519-f347310d3322?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8ZmFzdCUyMGZvb2R8ZW58MHx8MHx8fDA%3D",
         rating: 4.7,
-        desc: "Juicy burgers with secret sauce.",
-        items: ["Classic Burger", "Cheese Blast", "Veg Crunch", "Fries Combo"]
+        desc: "Juicy burgers, fries & quick bites.",
+        items: ["Classic Burger", "Cheese Blast", "Veg Crunch"]
       },
       {
         name: "Dolphin Hotel",
         img: "https://images.unsplash.com/photo-1496412705862-e0088f16f791?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjd8fGZvb2QlMjBwaG90b2dyYXBoeXxlbnwwfHwwfHx8MA%3D%3D",
         rating: 4.5,
-        desc: "Fresh sandwiches & healthy bites.",
-        items: ["Veg Sandwich", "Grilled Cheese", "Club Sandwich", "rice", "panner", "Cold Coffee"]
+        desc: "Fresh sandwiches, rolls & beverages.",
+        items: ["Veg Sandwich", "Grilled Cheese", "Cold Coffee"]
       }
     ];
 
     function renderShops(filter = "") {
       const grid = document.getElementById("grid");
       grid.innerHTML = "";
+
       shops
         .filter(shop => shop.name.toLowerCase().includes(filter.toLowerCase()))
         .forEach(shop => {
-          const cardWrap = document.createElement("div");
-          cardWrap.className = "card-wrap";
-
           const card = document.createElement("div");
           card.className = "card";
-          card.role = "button";
-          card.tabIndex = 0;
           card.onclick = () => {
-            localStorage.setItem("currentShop", JSON.stringify({ name: shop.name, items: shop.items }));
             location.href = `items.html?shop=${encodeURIComponent(shop.name)}`;
           };
-          card.onkeydown = e => { if (e.key === "Enter") card.click(); };
 
-          const img = document.createElement("img");
-          img.src = shop.img;
-          img.alt = shop.name;
-          img.loading = "lazy";
-          img.onerror = () => {
-            img.src = `https://via.placeholder.com/420x260/2874F0/FF9800?text=${encodeURIComponent(shop.name)}`;
-          };
-
-          const badge = document.createElement("div");
-          badge.className = "badge-offer";
-          badge.textContent = shop.rating >= 4.7 ? "⭐ TOP RATED" : "🔥 OFFER";
-
-          const info = document.createElement("div");
-          info.className = "info";
-          info.innerHTML = `
-            <div class="shop-name">${shop.name}</div>
-            <div class="rating"><i class="fas fa-star"></i> ${shop.rating}</div>
+          card.innerHTML = `
+            <img src="${shop.img}" alt="${shop.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/420x260/2874F0/FF9800?text=${encodeURIComponent(shop.name)}'">
+            <div class="info">
+              <div class="shop-name">${shop.name}</div>
+              <div class="rating"><i class="fas fa-star"></i> ${shop.rating}</div>
+            </div>
+            <div class="desc">${shop.desc}</div>
+            <div class="items-row">
+              ${shop.items.slice(0, 4).map(item => `<div class="item-pill">${item}</div>`).join('')}
+            </div>
           `;
 
-          const desc = document.createElement("div");
-          desc.className = "desc";
-          desc.textContent = shop.desc;
-
-          const itemsRow = document.createElement("div");
-          itemsRow.className = "items-row";
-          shop.items.slice(0, 4).forEach(item => {
-            const pill = document.createElement("div");
-            pill.className = "item-pill";
-            pill.textContent = item;
-            itemsRow.appendChild(pill);
-          });
-
-          card.append(img, info, desc, itemsRow);
-          cardWrap.append(card);
-          if (Math.random() > 0.4) cardWrap.append(badge);
-          grid.append(cardWrap);
+          grid.appendChild(card);
         });
     }
 
@@ -599,53 +426,19 @@
       renderShops(document.getElementById("searchInput").value.trim());
     }
 
+    // Sidebar toggle
     document.getElementById("navBtn").onclick = () => {
       document.getElementById("sidebar").classList.add("active");
       document.getElementById("overlay").classList.add("active");
-      document.getElementById("sidebar").setAttribute("aria-hidden", "false");
     };
 
     document.getElementById("overlay").onclick = () => {
       document.getElementById("sidebar").classList.remove("active");
       document.getElementById("overlay").classList.remove("active");
-      document.getElementById("sidebar").setAttribute("aria-hidden", "true");
     };
-
-    function loadProfile() {
-      const user = JSON.parse(localStorage.getItem("chatpoint_user") || "null");
-      const profile = document.getElementById("profileSection");
-      const logoutBtn = document.getElementById("logout");
-
-      if (user && user._id) {
-        profile.innerHTML = `
-          <div style="display:flex; align-items:center; gap:16px;">
-            <div class="avatar"><i class="fas fa-user"></i></div>
-            <div>
-              <div style="font-weight:800; font-size:18px;">${user.name}</div>
-              <div style="color:var(--muted); font-size:14px;">${user.phone}</div>
-            </div>
-          </div>
-        `;
-        logoutBtn.style.display = "block";
-        logoutBtn.onclick = () => {
-          localStorage.removeItem("chatpoint_user");
-          location.reload();
-        };
-      } else {
-        profile.innerHTML = `
-          <div style="text-align:center; padding:16px 0;">
-            <div style="font-size:20px; font-weight:700; margin-bottom:8px;">Welcome to Chat Point</div>
-            <div style="color:var(--muted); margin-bottom:16px;">Sign in for exclusive offers & more</div>
-            <a href="login.html" style="color:var(--chakra-blue); font-weight:700; text-decoration:underline;">Login / Sign Up</a>
-          </div>
-        `;
-        logoutBtn.style.display = "none";
-      }
-    }
 
     window.onload = () => {
       renderShops();
-      loadProfile();
     };
   </script>
 </body>
