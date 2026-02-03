@@ -4,8 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checkout | ChatPoint</title>
+
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+
     <style>
         :root {
             --bg: #FDFBF7;
@@ -21,7 +23,9 @@
             --shadow-md: 0 8px 32px rgba(0,0,0,0.08);
             --transition: all 0.25s ease;
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
             font-family: 'Outfit', sans-serif;
             background: var(--bg);
@@ -30,6 +34,7 @@
             padding: 1.2rem;
             line-height: 1.6;
         }
+
         .container {
             max-width: 620px;
             margin: 0 auto;
@@ -39,6 +44,7 @@
             border: 1px solid var(--border);
             box-shadow: var(--shadow-md);
         }
+
         h2 {
             text-align: center;
             margin-bottom: 1.8rem;
@@ -46,13 +52,16 @@
             font-size: 2rem;
             font-weight: 800;
         }
+
         .form-group { margin-bottom: 1.4rem; }
+
         label {
             display: block;
             margin-bottom: 0.6rem;
             font-weight: 600;
             font-size: 1.05rem;
         }
+
         input, textarea {
             width: 100%;
             padding: 1rem;
@@ -62,11 +71,14 @@
             font-size: 1.05rem;
             transition: var(--transition);
         }
+
         input:focus, textarea:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(201,60,46,0.15);
         }
+
+        /* SUMMARY */
         .cart-summary {
             background: rgba(201,60,46,0.03);
             padding: 1.5rem;
@@ -74,6 +86,7 @@
             margin: 1.8rem 0;
             border: 1px solid rgba(201,60,46,0.15);
         }
+
         .cart-item {
             display: flex;
             justify-content: space-between;
@@ -81,10 +94,12 @@
             border-bottom: 1px dashed var(--border);
             font-size: 1.05rem;
         }
+
         .delivery-free {
             color: #2e7d32;
             font-weight: 700;
         }
+
         .total-row {
             display: flex;
             justify-content: space-between;
@@ -95,6 +110,7 @@
             border-top: 2px solid var(--primary);
             color: var(--primary);
         }
+
         .btn {
             width: 100%;
             padding: 1.3rem;
@@ -109,16 +125,12 @@
             transition: var(--transition);
             box-shadow: 0 6px 20px rgba(201,60,46,0.25);
         }
+
         .btn:hover:not(:disabled) {
             background: var(--primary-dark);
             transform: translateY(-3px);
         }
-        .btn:disabled {
-            background: #d0c5b8;
-            cursor: not-allowed;
-            box-shadow: none;
-            opacity: 0.8;
-        }
+
         .msg {
             text-align: center;
             padding: 1.2rem;
@@ -128,270 +140,222 @@
             font-size: 1.15rem;
             display: none;
         }
-        .success { background: rgba(0,150,100,0.15); color: #006644; border: 1px solid rgba(0,150,100,0.3); }
-        .error { background: rgba(217,95,69,0.12); color: var(--danger); border: 1px solid rgba(217,95,69,0.35); }
-        .login-required {
-            text-align: center;
-            padding: 6rem 1.5rem;
-            color: var(--text-muted);
-            font-size: 1.3rem;
-        }
+
+        .success { background: rgba(0,150,100,0.15); color: #006644; }
+        .error { background: rgba(217,95,69,0.12); color: var(--danger); }
+
         @media (max-width: 480px) {
             .container { padding: 1.6rem; }
         }
     </style>
 </head>
+
 <body>
-    <div class="container" id="mainContainer"></div>
 
-    <script>
-        const CART_KEY = "chatpoint_cart";
-        const USER_KEY = "chatpoint_user";
-        const PRIMARY = "9632367397";
-        const BACKUP = "8088975913";
-        const API_BASE = window.location.origin;
+<div class="container" id="mainContainer"></div>
 
-        // ────────────────────────────────────────────────
-        // Delivery logic — exactly the same as in cart page
-        // ────────────────────────────────────────────────
-        const WATER = {
-            shop: "_special_",
-            name: "1L Pure Water Bottle",
-            price: 13
-        };
+<script>
+    // Storage Keys
+    const CART_KEY = "chatpoint_cart";
+    const USER_KEY = "chatpoint_user";
 
-        function hasWater(cart) {
-            return (cart?.[WATER.shop]?.[WATER.name]?.qty || 0) > 0;
-        }
+    // WhatsApp numbers
+    const PRIMARY = "9632367397";
+    const BACKUP = "8088975913";
 
-        function getMainSubtotal(cart) {
-            let sum = 0;
-            for (const shop in cart) {
-                if (shop === WATER.shop) continue;
-                for (const name in cart[shop]) {
-                    const item = cart[shop][name];
-                    sum += (item.price || 0) * (item.qty || 0);
-                }
+    // Delivery Logic
+    const WATER = { shop: "_special_", name: "1L Pure Water Bottle", price: 13 };
+
+    function hasWater(cart) {
+        return (cart?.[WATER.shop]?.[WATER.name]?.qty || 0) > 0;
+    }
+
+    function getMainSubtotal(cart) {
+        let sum = 0;
+        for (const shop in cart) {
+            if (shop === WATER.shop) continue;
+            for (const name in cart[shop]) {
+                const item = cart[shop][name];
+                sum += (item.price || 0) * (item.qty || 0);
             }
-            return sum;
         }
+        return sum;
+    }
 
-        function getDeliveryCharge(cart) {
-            if (hasWater(cart)) return 0;
-            const mainSub = getMainSubtotal(cart);
-            return mainSub < 100 ? 25 : 22;
-        }
+    function getDeliveryCharge(cart) {
+        if (hasWater(cart)) return 0;
+        const main = getMainSubtotal(cart);
+        return main < 100 ? 25 : 22;
+    }
 
-        function checkLogin() {
-            const user = JSON.parse(localStorage.getItem(USER_KEY) || "null");
-            if (!user || !user.phone) {
-                document.getElementById("mainContainer").innerHTML = `
-                    <div class="login-required">
-                        <h3>Login Required</h3>
-                        <p>Please <a href="login.html">login</a> to place an order.</p>
-                    </div>`;
-                return null;
-            }
-            return user;
-        }
-
-        function renderForm(user) {
-            const cart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
-
-            if (Object.keys(cart).length === 0) {
-                document.getElementById("mainContainer").innerHTML = `
-                    <div style="text-align:center; padding:6rem 2rem; color:var(--text-muted);">
-                        <h3>Cart is Empty</h3>
-                        <p style="margin:1rem 0;">
-                            <a href="index.html" style="color:var(--primary); font-weight:700;">
-                                Start Shopping →
-                            </a>
-                        </p>
-                    </div>`;
-                return;
-            }
-
-            let itemsArray = [];
-            let subtotal = 0;
-            let shopName = "ChatPoint"; // fallback
-
-            for (const shop in cart) {
-                shopName = shop; // take the last non-special shop or first one
-                for (const itemName in cart[shop]) {
-                    const item = cart[shop][itemName];
-                    if (item.qty > 0) {
-                        subtotal += item.price * item.qty;
-                        itemsArray.push({ name: itemName, price: item.price, quantity: item.qty });
-                    }
-                }
-            }
-
-            const deliveryCharge = getDeliveryCharge(cart);
-            const grandTotal = subtotal + deliveryCharge;
-
-            window.tempOrderData = { itemsArray, subtotal, shopName, deliveryCharge, grandTotal };
-
+    // Check login
+    function checkLogin() {
+        const user = JSON.parse(localStorage.getItem(USER_KEY) || "null");
+        if (!user || !user.phone) {
             document.getElementById("mainContainer").innerHTML = `
-                <h2>Checkout</h2>
-                <div id="successMsg" class="msg success"></div>
-                <div id="errorMsg" class="msg error"></div>
+                <div style="text-align:center; padding:6rem 1rem;">
+                    <h3>Please Login</h3>
+                    <p><a href="login.html" style="color:var(--primary); font-weight:700;">Login →</a></p>
+                </div>`;
+            return null;
+        }
+        return user;
+    }
 
-                <div class="form-group">
-                    <label>Name *</label>
-                    <input type="text" id="name" value="${user.name || ''}" required />
-                </div>
-                <div class="form-group">
-                    <label>Phone *</label>
-                    <input type="tel" id="phone" value="${user.phone || ''}" required />
-                </div>
-                <div class="form-group">
-                    <label>Address Line 1 *</label>
-                    <textarea id="address1" rows="3" required placeholder="House no., Building, Street"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>Address Line 2 (Optional)</label>
-                    <textarea id="address2" rows="2" placeholder="Landmark, Area, Nearby"></textarea>
-                </div>
+    // Render checkout form
+    function renderForm(user) {
+        const savedCart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
 
-                <div class="cart-summary">
-                    <h3 style="margin-bottom:1.2rem; color:var(--primary); font-weight:700;">
-                        Order Summary
-                    </h3>
-                    ${itemsArray.map(it => `
-                        <div class="cart-item">
-                            <span>${it.name} × ${it.quantity}</span>
-                            <span>₹${Math.round(it.price * it.quantity)}</span>
-                        </div>
-                    `).join('')}
-                    <div class="cart-item" style="font-weight:600;">
-                        <span>Subtotal</span>
-                        <span>₹${Math.round(subtotal)}</span>
-                    </div>
-                    <div class="cart-item" style="font-weight:600;">
-                        <span>Delivery Charge</span>
-                        <span ${deliveryCharge === 0 ? 'class="delivery-free"' : ''}>
-                            ${deliveryCharge === 0 ? 'FREE' : '₹' + deliveryCharge}
-                        </span>
-                    </div>
-                    <div class="total-row">
-                        <span>Grand Total</span>
-                        <span>₹${Math.round(grandTotal)}</span>
-                    </div>
-                </div>
-
-                <button id="placeOrderBtn" class="btn">
-                    Place Order (Cash on Delivery)
-                </button>
-            `;
-
-            document.getElementById("placeOrderBtn").onclick = placeOrder;
+        if (Object.keys(savedCart).length === 0) {
+            document.getElementById("mainContainer").innerHTML = `
+                <div style="text-align:center; padding:6rem 1rem;">
+                    <h3>Cart is Empty</h3>
+                    <p><a href="index.html" style="color:var(--primary); font-weight:700;">Shop Now →</a></p>
+                </div>`;
+            return;
         }
 
-        async function placeOrder() {
-            const name = document.getElementById("name").value.trim();
-            const phone = document.getElementById("phone").value.trim();
-            const address1 = document.getElementById("address1").value.trim();
-            const address2 = document.getElementById("address2").value.trim();
+        let itemsArray = [];
+        let subtotal = 0;
+        let shopName = "ChatPoint";
 
-            if (!name || !phone || !address1) {
-                showError("Please fill all required fields.");
-                return;
-            }
+        // Fetch items EXACTLY from cart
+        Object.keys(savedCart).forEach(shop => {
+            if (shop !== WATER.shop) shopName = shop;
 
-            const { itemsArray, subtotal, shopName, deliveryCharge, grandTotal } = window.tempOrderData;
-            const user = JSON.parse(localStorage.getItem(USER_KEY));
-            let userId = null;
-            if (user && user._id && /^[a-f0-9]{24}$/i.test(user._id)) {
-                userId = user._id;
-            }
+            Object.keys(savedCart[shop]).forEach(itemName => {
+                const item = savedCart[shop][itemName];
 
-            const cart = { [shopName]: {} };
-            itemsArray.forEach(item => {
-                cart[shopName][item.name] = { qty: item.quantity, price: item.price };
-            });
-
-            // If water is present, include it in the order cart too
-            const savedCart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
-            if (hasWater(savedCart)) {
-                if (!cart[WATER.shop]) cart[WATER.shop] = {};
-                cart[WATER.shop][WATER.name] = {
-                    qty: savedCart[WATER.shop][WATER.name].qty,
-                    price: WATER.price
-                };
-            }
-
-            const orderData = {
-                userId,
-                name,
-                phone,
-                address1,
-                address2: address2 || "",
-                grandTotal,
-                cart,
-                deliveryCharge
-            };
-
-            const btn = document.getElementById("placeOrderBtn");
-            btn.disabled = true;
-            btn.innerHTML = "Placing Order...";
-
-            try {
-                const res = await fetch(`${API_BASE}/api/save-order`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(orderData)
-                });
-
-                const data = await res.json();
-
-                if (res.ok && data.success) {
-                    showSuccess("Order Placed Successfully! 🎉");
-                    localStorage.removeItem(CART_KEY);
-
-                    const itemsList = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
-                    const deliveryText = deliveryCharge === 0 ? "FREE Delivery" : `Delivery: ₹${deliveryCharge}`;
-                    const message = `New Order!\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nSubtotal: ₹${Math.round(subtotal)}\n${deliveryText}\nTotal: ₹${Math.round(grandTotal)}\n\nPlease confirm soon!`;
-
-                    const encoded = encodeURIComponent(message);
-                    setTimeout(() => window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, '_blank'), 1000);
-                    setTimeout(() => window.open(`https://wa.me/91${BACKUP}?text=${encoded}`, '_blank'), 2000);
-                    setTimeout(() => window.location.href = "tracking.html", 3000);
-                } else {
-                    throw new Error(data.message || "Server error");
+                if (item.qty > 0) {
+                    itemsArray.push({
+                        name: itemName,
+                        price: item.price,
+                        quantity: item.qty
+                    });
+                    subtotal += item.price * item.qty;
                 }
-            } catch (err) {
-                console.error("Order failed:", err);
-                showError("Failed to save online. Sending via WhatsApp...");
+            });
+        });
 
-                const itemsList = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
-                const fallbackMsg = `(Online Failed)\nNew Order\n\n${itemsList}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nSubtotal: ₹${Math.round(subtotal)}\n${deliveryCharge === 0 ? 'FREE Delivery' : 'Delivery: ₹' + deliveryCharge}\nTotal: ₹${Math.round(grandTotal)}`;
+        const deliveryCharge = getDeliveryCharge(savedCart);
+        const grandTotal = subtotal + deliveryCharge;
 
-                const encoded = encodeURIComponent(fallbackMsg);
-                window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, '_blank');
-            }
+        // Store temp order data
+        window.tempOrderData = { itemsArray, subtotal, shopName, deliveryCharge, grandTotal };
 
-            btn.disabled = false;
-            btn.innerHTML = "Place Order (Cash on Delivery)";
+        document.getElementById("mainContainer").innerHTML = `
+            <h2>Checkout</h2>
+
+            <div id="successMsg" class="msg success"></div>
+            <div id="errorMsg" class="msg error"></div>
+
+            <div class="form-group">
+                <label>Name *</label>
+                <input id="name" value="${user.name || ''}" />
+            </div>
+
+            <div class="form-group">
+                <label>Phone *</label>
+                <input id="phone" value="${user.phone || ''}" />
+            </div>
+
+            <div class="form-group">
+                <label>Address Line 1 *</label>
+                <textarea id="address1" rows="2"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Address Line 2 (optional)</label>
+                <textarea id="address2" rows="2"></textarea>
+            </div>
+
+            <div class="cart-summary">
+                <h3 style="margin-bottom:12px;color:var(--primary);">Order Summary</h3>
+
+                ${itemsArray.map(i => `
+                    <div class="cart-item">
+                        <span>${i.name} × ${i.quantity}</span>
+                        <span>₹${i.price * i.quantity}</span>
+                    </div>
+                `).join('')}
+
+                <div class="cart-item"><b>Subtotal</b><b>₹${subtotal}</b></div>
+                <div class="cart-item"><b>Delivery</b> 
+                    <b class="${deliveryCharge===0?'delivery-free':''}">
+                        ${deliveryCharge === 0 ? 'FREE' : '₹' + deliveryCharge}
+                    </b>
+                </div>
+
+                <div class="total-row">
+                    <span>Total</span>
+                    <span>₹${grandTotal}</span>
+                </div>
+            </div>
+
+            <button id="placeOrderBtn" class="btn">Place Order (COD)</button>
+        `;
+
+        document.getElementById("placeOrderBtn").onclick = placeOrder;
+    }
+
+    // Place order
+    async function placeOrder() {
+        const name = document.getElementById("name").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const address1 = document.getElementById("address1").value.trim();
+        const address2 = document.getElementById("address2").value.trim();
+
+        if (!name || !phone || !address1) {
+            showError("Please fill all required fields.");
+            return;
         }
 
-        function showSuccess(msg) {
-            const el = document.getElementById("successMsg");
-            el.textContent = msg;
-            el.style.display = "block";
-            document.getElementById("errorMsg").style.display = "none";
-        }
+        const { itemsArray, subtotal, shopName, deliveryCharge, grandTotal } = window.tempOrderData;
 
-        function showError(msg) {
-            const el = document.getElementById("errorMsg");
-            el.textContent = msg;
-            el.style.display = "block";
-            document.getElementById("successMsg").style.display = "none";
-        }
+        const savedCart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
 
-        window.onload = () => {
-            const user = checkLogin();
-            if (user) renderForm(user);
-        };
-    </script>
+        // Build cart for backend
+        const orderCart = {};
+        Object.keys(savedCart).forEach(shop => {
+            orderCart[shop] = savedCart[shop];
+        });
+
+        const orderSummary = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
+
+        const finalMsg = `NEW ORDER\n\n${orderSummary}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n'+address2 : ''}\nSubtotal: ₹${subtotal}\nDelivery: ${deliveryCharge === 0 ? 'FREE' : '₹'+deliveryCharge}\nTotal: ₹${grandTotal}`;
+
+        const encoded = encodeURIComponent(finalMsg);
+
+        // Send to WhatsApp
+        window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, "_blank");
+        setTimeout(() => window.open(`https://wa.me/91${BACKUP}?text=${encoded}`, "_blank"), 1500);
+
+        // Clear Cart
+        localStorage.removeItem(CART_KEY);
+
+        showSuccess("Order Sent to Restaurant on WhatsApp!");
+        setTimeout(() => window.location.href = "tracking.html", 2000);
+    }
+
+    function showSuccess(msg) {
+        const el = document.getElementById("successMsg");
+        el.textContent = msg;
+        el.style.display = "block";
+        document.getElementById("errorMsg").style.display = "none";
+    }
+
+    function showError(msg) {
+        const el = document.getElementById("errorMsg");
+        el.textContent = msg;
+        el.style.display = "block";
+        document.getElementById("successMsg").style.display = "none";
+    }
+
+    window.onload = () => {
+        const user = checkLogin();
+        if (user) renderForm(user);
+    }
+</script>
+
 </body>
 </html>
