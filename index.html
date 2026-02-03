@@ -3,443 +3,379 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Chat Point</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="icon-192.png" type="image/png" />
-  <meta name="theme-color" content="#e63946" />
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <title>ChatPoint • Premium</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
     :root {
-      --primary: #e63946;
-      --primary-dark: #d00000;
-      --light: #f8f9fa;
-      --white: #ffffff;
-      --dark: #1d3557;
-      --gray: #6b7280;
-      --shadow: rgba(0,0,0,0.08);
-      --glow: rgba(230,57,70,0.25);
-      --radius: 16px;
+      --bg: #0d0e12;
+      --card: #14151a;
+      --text: #e6e6e6;
+      --text-muted: #9b9ca1;
+      --primary: #e6b25c; /* premium gold */
+      --primary-dark: #bb8c3d;
+      --glass: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.08);
+      --radius: 18px;
+      --shadow: rgba(0,0,0,0.55);
     }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+
+    *{margin:0;padding:0;box-sizing:border-box;}
+
+    body{
+      font-family:"Outfit",sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      overflow-x:hidden;
     }
-    html, body {
-      height: 100%;
-      font-family: "Outfit", system-ui, sans-serif;
-      background: var(--light);
-      color: var(--dark);
-      overflow-x: hidden;
+
+    /* HEADER */
+    header{
+      position:sticky;
+      top:0;
+      z-index:100;
+      background:rgba(20,21,26,0.7);
+      backdrop-filter:blur(10px);
+      padding:16px 20px;
+      display:flex;
+      align-items:center;
+      border-bottom:1px solid var(--border);
     }
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 120;
-      background: white;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      box-shadow: 0 4px 16px var(--shadow);
+
+    .nav-btn{
+      width:46px;
+      height:46px;
+      border-radius:14px;
+      background:var(--glass);
+      border:none;
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      color:var(--primary);
+      transition:0.25s;
     }
-    .nav-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      background: rgba(230,57,70,0.08);
-      border: none;
-      display: grid;
-      place-items: center;
-      cursor: pointer;
-      transition: all 0.25s ease;
+    .nav-btn:hover{background:rgba(255,255,255,0.10);}
+
+    .brand{
+      font-size:26px;
+      font-weight:900;
+      margin-left:12px;
+      color:var(--primary);
+      letter-spacing:-0.5px;
     }
-    .nav-btn:hover {
-      background: rgba(230,57,70,0.18);
-      transform: scale(1.08);
+
+    .header-right{
+      margin-left:auto;
+      display:flex;
+      gap:12px;
     }
-    .brand {
-      font-weight: 900;
-      font-size: 24px;
-      color: var(--primary);
-      letter-spacing: -0.5px;
+
+    .orders-btn, .cart-btn{
+      padding:10px 18px;
+      border-radius:14px;
+      font-weight:700;
+      cursor:pointer;
+      font-size:15px;
+      border:none;
+      transition:0.25s;
     }
-    .header-right {
-      margin-left: auto;
-      display: flex;
-      gap: 12px;
+
+    .orders-btn{
+      background:var(--primary);
+      color:#000;
     }
-    .orders-btn, .cart-btn {
-      padding: 10px 18px;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 15px;
-      border: none;
-      cursor: pointer;
-      transition: all 0.25s ease;
+    .orders-btn:hover{transform:scale(1.05);}
+
+    .cart-btn{
+      background:#ffffff;
+      color:#000;
     }
-    .orders-btn {
-      background: var(--primary);
-      color: white;
-      box-shadow: 0 4px 12px var(--glow);
+
+    /* SIDEBAR */
+    #sidebar{
+      position:fixed;
+      inset:0 auto 0 0;
+      width:300px;
+      background:#14151a;
+      height:100%;
+      transform:translateX(-100%);
+      transition:0.4s ease;
+      z-index:1000;
+      border-right:1px solid var(--border);
     }
-    .orders-btn:hover {
-      transform: translateY(-2px);
+    #sidebar.active{transform:translateX(0);}
+
+    #overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,0.6);
+      opacity:0;
+      pointer-events:none;
+      transition:0.3s ease;
+      z-index:999;
     }
-    .cart-btn {
-      background: var(--dark);
-      color: white;
+    #overlay.active{
+      opacity:1;
+      pointer-events:auto;
     }
-    /* Sidebar */
-    #sidebar {
-      position: fixed;
-      inset: 0 auto 0 0;
-      width: 300px;
-      height: 100%;
-      background: white;
-      transform: translateX(-100%);
-      transition: transform 0.4s ease;
-      z-index: 1000;
-      box-shadow: 6px 0 24px rgba(0,0,0,0.18);
-      overflow-y: auto;
+
+    .profile-section{
+      padding:20px;
+      background:#0f1014;
+      border-bottom:1px solid var(--border);
+      color:var(--primary);
+      font-weight:700;
+      font-size:20px;
     }
-    #sidebar.active {
-      transform: translateX(0);
+
+    nav a{
+      display:block;
+      padding:14px 18px;
+      text-decoration:none;
+      color:var(--text);
+      font-weight:600;
+      transition:0.25s;
     }
-    #overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 999;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.4s ease;
+    nav a:hover{
+      background:var(--glass);
+      color:var(--primary);
     }
-    #overlay.active {
-      opacity: 1;
-      pointer-events: auto;
+
+    /* OFFER BANNER */
+    .offer-banner{
+      max-width:960px;
+      margin:24px auto;
+      padding:30px 26px;
+      background:linear-gradient(145deg,#1b1c23,#111217);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:0 20px 50px rgba(0,0,0,0.55);
+      text-align:center;
     }
-    .profile-section {
-      padding: 20px 16px;
-      background: #f8f9fa;
-      border-bottom: 1px solid #e5e7eb;
+
+    .offer-title{
+      font-size:2.4rem;
+      font-weight:900;
+      color:var(--primary);
     }
-    .avatar {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: white;
-      display: grid;
-      place-items: center;
-      font-size: 28px;
-      margin-right: 12px;
+
+    .offer-text{
+      font-size:1.3rem;
+      color:var(--text);
+      margin-top:10px;
+      font-weight:600;
     }
-    /* Big Price Drop Banner */
-    .offer-banner {
-      max-width: 960px;
-      margin: 24px auto;
-      padding: 32px 28px;
-      background: linear-gradient(135deg, #fff1f0, #ffebee);
-      border: 2px solid var(--primary);
-      border-radius: var(--radius);
-      box-shadow: 0 10px 30px rgba(230,57,70,0.15);
-      text-align: center;
+
+    .highlight{color:var(--primary);}
+
+    /* SEARCH BAR */
+    .search-bar{
+      max-width:600px;
+      margin:0 auto 32px;
+      position:relative;
     }
-    .offer-title {
-      font-size: 2.4rem;
-      font-weight: 900;
-      color: var(--primary);
-      margin-bottom: 12px;
-      letter-spacing: -0.5px;
+    .search-bar input{
+      width:100%;
+      padding:16px 20px 16px 54px;
+      background:#1a1b20;
+      border-radius:16px;
+      border:1px solid var(--border);
+      color:var(--text);
+      font-size:17px;
     }
-    .offer-text {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #1f2937;
-      margin: 12px 0;
+    .search-bar input:focus{
+      border-color:var(--primary);
+      outline:none;
+      box-shadow:0 0 8px var(--primary);
     }
-    .highlight {
-      color: var(--primary);
-      font-weight: 900;
+    .search-bar i{
+      position:absolute;
+      left:20px;
+      top:50%;
+      transform:translateY(-50%);
+      font-size:20px;
+      color:var(--primary);
     }
-    main {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 0 16px;
+
+    /* GRID */
+    .grid{
+      display:grid;
+      gap:24px;
+      padding-bottom:60px;
+      grid-template-columns:1fr;
+      max-width:960px;
+      margin:auto;
     }
-    .search-bar {
-      margin: 0 auto 32px;
-      max-width: 600px;
-      position: relative;
+    @media(min-width:600px){
+      .grid{grid-template-columns:repeat(auto-fit,minmax(330px,1fr));}
     }
-    .search-bar input {
-      width: 100%;
-      padding: 16px 20px 16px 52px;
-      border: 2px solid #e5e7eb;
-      border-radius: 16px;
-      font-size: 17px;
-      background: white;
-      transition: all 0.3s;
+
+    /* SHOP CARD */
+    .card{
+      background:var(--card);
+      border-radius:var(--radius);
+      overflow:hidden;
+      box-shadow:0 12px 40px rgba(0,0,0,0.45);
+      transition:0.35s ease;
+      cursor:pointer;
     }
-    .search-bar input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 5px rgba(230,57,70,0.15);
-      outline: none;
+    .card:hover{
+      transform:translateY(-8px);
+      box-shadow:0 20px 50px rgba(0,0,0,0.7);
     }
-    .search-bar i {
-      position: absolute;
-      left: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--primary);
-      font-size: 20px;
+
+    .card img{
+      width:100%;
+      height:180px;
+      object-fit:cover;
+      opacity:0.85;
     }
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 24px;
-      padding-bottom: 80px;
+
+    .info{
+      padding:14px 18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
     }
-    @media (min-width: 640px) {
-      .grid {
-        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      }
+
+    .shop-name{
+      font-size:18px;
+      font-weight:800;
+      color:var(--text);
     }
-    .card {
-      background: white;
-      border-radius: var(--radius);
-      overflow: hidden;
-      box-shadow: 0 8px 20px var(--shadow);
-      transition: all 0.3s ease;
-      height: 360px;
-      display: flex;
-      flex-direction: column;
-      cursor: pointer;
+
+    .rating{
+      background:var(--primary);
+      color:#000;
+      padding:6px 14px;
+      border-radius:999px;
+      font-size:15px;
+      font-weight:700;
+      display:flex;
+      align-items:center;
+      gap:6px;
     }
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 16px 40px rgba(230,57,70,0.2);
+
+    .desc{
+      padding:0 18px 14px;
+      color:var(--text-muted);
+      font-size:15px;
     }
-    .card img {
-      width: 100%;
-      height: 180px;
-      object-fit: cover;
+
+    .item-pill{
+      background:#1f2024;
+      padding:6px 14px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:600;
+      color:var(--primary);
+      border:1px solid var(--border);
     }
-    .info {
-      padding: 14px 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .shop-name {
-      font-size: 18px;
-      font-weight: 800;
-    }
-    .rating {
-      background: var(--primary);
-      color: white;
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 15px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .desc {
-      padding: 0 18px 10px;
-      color: var(--gray);
-      font-size: 15px;
-      line-height: 1.5;
-    }
-    .items-row {
-      padding: 0 18px 18px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: auto;
-    }
-    .item-pill {
-      background: #f8f9fa;
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 600;
-      border: 1px solid #e2e8f0;
-    }
-    footer {
-      background: var(--dark);
-      color: white;
-      text-align: center;
-      padding: 24px 16px;
-      font-weight: 600;
-      font-size: 15px;
-      margin-top: 40px;
+
+    footer{
+      text-align:center;
+      padding:24px;
+      margin-top:40px;
+      background:#0f0f12;
+      color:#777;
+      border-top:1px solid var(--border);
     }
   </style>
 </head>
+
 <body>
 
-  <header>
-    <button id="navBtn" class="nav-btn" aria-label="Open menu">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-        <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
-      </svg>
-    </button>
-    <div class="brand">Chat<span>Point</span></div>
-    <div class="header-right">
-      <button class="orders-btn" onclick="location.href='tracking.html'">
-        <i class="fas fa-bag-shopping"></i> My Orders
-      </button>
-      <button class="cart-btn" onclick="location.href='cart.html'">
-        <i class="fas fa-cart-shopping"></i> Cart
-      </button>
-    </div>
-  </header>
+<header>
+  <button id="navBtn" class="nav-btn"><i class="fas fa-bars"></i></button>
+  <div class="brand">ChatPoint</div>
 
-  <!-- Sidebar (kept minimal - can be expanded later) -->
-  <div id="sidebar">
-    <div class="profile-section" id="profileSection"></div>
-    <nav style="margin-top: 16px;">
-      <a href="tracking.html" style="display:block; padding:14px 16px; color:var(--text); text-decoration:none; border-radius:12px; margin:8px 0; background:#f8f9fa; font-weight:600;">
-        <i class="fas fa-bag-shopping" style="margin-right:12px; color:var(--primary);"></i> My Orders
-      </a>
-      <a href="tel:9632367397" style="display:block; padding:14px 16px; color:var(--text); text-decoration:none; border-radius:12px; margin:8px 0; background:#f8f9fa; font-weight:600;">
-        <i class="fas fa-phone-alt" style="margin-right:12px; color:var(--primary);"></i> Contact Us
-      </a>
-    </nav>
+  <div class="header-right">
+    <button class="orders-btn" onclick="location.href='tracking.html'">My Orders</button>
+    <button class="cart-btn" onclick="location.href='cart.html'"><i class="fa-solid fa-cart-shopping"></i></button>
   </div>
-  <div id="overlay"></div>
+</header>
 
-  <!-- Attractive Big Price Drop Banner -->
-  <div class="offer-banner">
-    <div class="offer-title">BIG PRICE DROP!</div>
-    <div class="offer-text">
-      Massive savings <span class="highlight">on every item</span><br>
-      Limited time only — grab now!
-    </div>
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="profile-section">Menu</div>
+  <nav>
+    <a href="tracking.html"><i class="fa-solid fa-bag-shopping"></i> &nbsp; My Orders</a>
+    <a href="tel:9632367397"><i class="fa-solid fa-phone"></i> &nbsp; Contact Us</a>
+  </nav>
+</div>
+
+<div id="overlay"></div>
+
+<!-- OFFER BANNER -->
+<div class="offer-banner">
+  <div class="offer-title">BIG PRICE DROP</div>
+  <div class="offer-text">Save more on every order. <span class="highlight">Limited Time Offer</span></div>
+</div>
+
+<!-- MAIN -->
+<main>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search shops..." oninput="searchShops()">
+    <i class="fas fa-search"></i>
   </div>
 
-  <main>
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search shops or items..." oninput="searchShops()" />
-      <i class="fas fa-search"></i>
-    </div>
+  <section class="grid" id="grid"></section>
+</main>
 
-    <section class="grid" id="grid" aria-live="polite"></section>
-  </main>
+<footer>© ChatPoint • Premium Edition</footer>
 
-  <footer>© Chat Point • Made with love in Bengaluru</footer>
+<script>
+  const shops = [
+    { name:"Chat Point", img:"https://plus.unsplash.com/premium_photo-1670601440146-3b33dfcd7e17?w=600&q=80", rating:4.9,
+      desc:"Your favourite hangout corner.", items:["Burger","Fries","Coffee"] },
+    { name:"Pizza Spot", img:"https://plus.unsplash.com/premium_photo-1723478418445-b13c20b21231?q=80", rating:4.7,
+      desc:"Hot pizzas & cheesy treats.", items:["Margherita","Paneer Tikka"] },
+    { name:"Mister Chef", img:"https://images.unsplash.com/photo-1594179047519-f347310d3322?q=80", rating:4.6,
+      desc:"Burgers • Sandwich • Shakes", items:["Classic Burger","Cold Coffee"] },
+  ];
 
-  <script>
-    const shops = [
-      {
-        name: "Chat Point",
-        img: "https://plus.unsplash.com/premium_photo-1670601440146-3b33dfcd7e17?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8Zm9vZHxlbnwwfHwwfHx8MA%3D%3D",
-        rating: 4.9,
-        desc: "Your favorite hangout – burgers, chats, coffee & vibes!",
-        items: ["Burger", "Fries", "Oreo Shake", "Chicken Roll", "Juice"]
-      },
-      {
-        name: "Hasanamba Iyengar Bakery",
-        img: "https://plus.unsplash.com/premium_photo-1665669263531-cdcbe18e7fe4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YmFrZXJ5fGVufDB8fDB8fHww",
-        rating: 4.5,
-        desc: "Fresh baked goods, cakes, pastries & more.",
-        items: ["Rasmalai Cake", "Black Forest", "Veg Pizza", "Butterscotch Cake", "Mango Cake"]
-      },
-      {
-        name: "Sangambar Udupi Hotel",
-        img: "https://plus.unsplash.com/premium_photo-1673108852141-e8c3c22a4a22?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Zm9vZHxlbnwwfHwwfHx8MA%3D%3D",
-        rating: 4.6,
-        desc: "Authentic South Indian vegetarian meals.",
-        items: ["Masala Dosa", "Plain Dosa", "Idli Vada", "Gobi 65"]
-      },
-      {
-        name: "Pizza Spot",
-        img: "https://plus.unsplash.com/premium_photo-1723478418445-b13c20b21231?q=80&w=1125&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        rating: 4.5,
-        desc: "Delicious pizzas & fast food favorites.",
-        items: ["Margherita", "Veg Lover", "Tandoori Paneer", "Pav Bhaji", "Momos"]
-      },
-      {
-        name: "Nandi Grand Hotels",
-        img: "https://plus.unsplash.com/premium_photo-1674106347866-8282d8c19f84?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTI5fHxmb29kfGVufDB8fDB8fHww",
-        rating: 4.7,
-        desc: "South Indian breakfast & meals.",
-        items: ["Poori", "Full Meals", "Onion Dosa", "Paneer Dosa"]
-      },
-      {
-        name: "connect with Pizza",
-        img: "https://plus.unsplash.com/premium_photo-1679924471091-f7cd7ad90ddf?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-        rating: 4.6,
-        desc: "Fresh & tasty vegetarian pizzas.",
-        items: ["Paneer Tikka", "Veg Supreme", "Peri Peri Paneer"]
-      },
-      {
-        name: "Mister Chef",
-        img: "https://images.unsplash.com/photo-1594179047519-f347310d3322?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8ZmFzdCUyMGZvb2R8ZW58MHx8MHx8fDA%3D",
-        rating: 4.7,
-        desc: "Juicy burgers, fries & quick bites.",
-        items: ["Classic Burger", "Cheese Blast", "Veg Crunch"]
-      },
-      {
-        name: "Dolphin Hotel",
-        img: "https://images.unsplash.com/photo-1496412705862-e0088f16f791?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjd8fGZvb2QlMjBwaG90b2dyYXBoeXxlbnwwfHwwfHx8MA%3D%3D",
-        rating: 4.5,
-        desc: "Fresh sandwiches, rolls & beverages.",
-        items: ["Veg Sandwich", "Grilled Cheese", "Cold Coffee"]
-      }
-    ];
+  function renderShops(filter=""){
+    const grid=document.getElementById("grid");
+    grid.innerHTML="";
 
-    function renderShops(filter = "") {
-      const grid = document.getElementById("grid");
-      grid.innerHTML = "";
+    shops.filter(s=>s.name.toLowerCase().includes(filter.toLowerCase()))
+    .forEach(shop=>{
+      let div=document.createElement("div");
+      div.className="card";
+      div.onclick=()=>location.href=`items.html?shop=${shop.name}`;
+      div.innerHTML=`
+        <img src="${shop.img}">
+        <div class="info">
+          <div class="shop-name">${shop.name}</div>
+          <div class="rating"><i class="fa-solid fa-star"></i>${shop.rating}</div>
+        </div>
+        <div class="desc">${shop.desc}</div>
+        <div class="items-row" style="padding:0 18px 14px;">
+        ${shop.items.map(i=>`<span class="item-pill">${i}</span>`).join("")}
+        </div>
+      `;
+      grid.appendChild(div);
+    });
+  }
 
-      shops
-        .filter(shop => shop.name.toLowerCase().includes(filter.toLowerCase()))
-        .forEach(shop => {
-          const card = document.createElement("div");
-          card.className = "card";
-          card.onclick = () => {
-            location.href = `items.html?shop=${encodeURIComponent(shop.name)}`;
-          };
+  function searchShops(){
+    renderShops(document.getElementById("searchInput").value);
+  }
 
-          card.innerHTML = `
-            <img src="${shop.img}" alt="${shop.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/420x260/2874F0/FF9800?text=${encodeURIComponent(shop.name)}'">
-            <div class="info">
-              <div class="shop-name">${shop.name}</div>
-              <div class="rating"><i class="fas fa-star"></i> ${shop.rating}</div>
-            </div>
-            <div class="desc">${shop.desc}</div>
-            <div class="items-row">
-              ${shop.items.slice(0, 4).map(item => `<div class="item-pill">${item}</div>`).join('')}
-            </div>
-          `;
+  // SIDEBAR
+  document.getElementById("navBtn").onclick=()=>{
+    sidebar.classList.add("active");
+    overlay.classList.add("active");
+  };
+  overlay.onclick=()=>{
+    sidebar.classList.remove("active");
+    overlay.classList.remove("active");
+  };
 
-          grid.appendChild(card);
-        });
-    }
+  window.onload=()=>renderShops();
+</script>
 
-    function searchShops() {
-      renderShops(document.getElementById("searchInput").value.trim());
-    }
-
-    // Sidebar toggle
-    document.getElementById("navBtn").onclick = () => {
-      document.getElementById("sidebar").classList.add("active");
-      document.getElementById("overlay").classList.add("active");
-    };
-
-    document.getElementById("overlay").onclick = () => {
-      document.getElementById("sidebar").classList.remove("active");
-      document.getElementById("overlay").classList.remove("active");
-    };
-
-    window.onload = () => {
-      renderShops();
-    };
-  </script>
 </body>
 </html>
