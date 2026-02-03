@@ -101,7 +101,7 @@
       padding-bottom: 220px;
     }
 
-    h1.shop-name, h2.section-title {
+    h1.shop-name {
       font-size: 2rem;
       font-weight: 800;
       color: var(--primary);
@@ -131,12 +131,12 @@
     .filter-btn.nonveg { background: var(--primary); border-radius: 0 14px 14px 0; }
     .filter-btn.active { box-shadow: 0 0 0 5px rgba(255,255,255,0.4); transform: scale(1.05); }
 
-    .items-container, .cart-items-list {
+    .items-container {
       display: grid;
       gap: 22px;
     }
 
-    .item-card, .cart-item-card {
+    .item-card {
       background: var(--card-bg);
       border-radius: var(--radius);
       overflow: hidden;
@@ -146,7 +146,7 @@
       transition: var(--transition);
     }
 
-    .item-card:hover, .cart-item-card:hover {
+    .item-card:hover {
       transform: translateY(-10px);
       box-shadow: 0 20px 50px rgba(230,57,70,0.22);
     }
@@ -158,18 +158,18 @@
       background: linear-gradient(135deg, #f8f9fa, #e9ecef);
     }
 
-    .item-content, .cart-item-content {
+    .item-content {
       padding: 18px 20px;
     }
 
-    .item-name, .cart-item-name {
+    .item-name {
       font-size: 1.28rem;
       font-weight: 700;
       margin-bottom: 10px;
       color: var(--dark);
     }
 
-    .item-price, .cart-item-price {
+    .item-price {
       font-size: 1.55rem;
       font-weight: 800;
       color: var(--primary);
@@ -235,85 +235,6 @@
       letter-spacing: -0.8px;
     }
 
-    .pay-btn {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      border: none;
-      width: 100%;
-      padding: 18px;
-      font-size: 1.32rem;
-      font-weight: 800;
-      border-radius: 16px;
-      cursor: pointer;
-      box-shadow: 0 8px 30px rgba(230,57,70,0.4);
-      transition: var(--transition);
-    }
-
-    .pay-btn:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 16px 50px rgba(230,57,70,0.5);
-    }
-
-    .checkout-form {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      padding: 24px;
-      box-shadow: var(--shadow-md);
-      margin-top: 24px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(230,57,70,0.08);
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      font-size: 1.05rem;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(0,0,0,0.12);
-      font-size: 1.05rem;
-      transition: var(--transition);
-    }
-
-    input:focus, textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(230,57,70,0.15);
-    }
-
-    .order-summary {
-      background: rgba(230,57,70,0.04);
-      padding: 20px;
-      border-radius: 16px;
-      margin: 24px 0;
-      border: 1px solid rgba(230,57,70,0.12);
-    }
-
-    .summary-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 1.1rem;
-      margin-bottom: 12px;
-    }
-
-    .grand-total-row {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: var(--primary);
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 2px solid var(--primary);
-    }
-
     .place-order-btn {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white;
@@ -332,19 +253,6 @@
       transform: translateY(-4px);
       box-shadow: 0 16px 50px rgba(230,57,70,0.5);
     }
-
-    .success-msg, .error-msg {
-      padding: 16px;
-      border-radius: 12px;
-      margin: 16px 0;
-      font-weight: 600;
-      text-align: center;
-      font-size: 1.15rem;
-      display: none;
-    }
-
-    .success-msg { background: rgba(46,204,113,0.15); color: #27ae60; border: 1px solid rgba(46,204,113,0.3); }
-    .error-msg   { background: rgba(231,76,60,0.15); color: #e74c3c; border: 1px solid rgba(231,76,60,0.3); }
 
     .empty-state {
       text-align: center;
@@ -397,38 +305,6 @@
       <i class="fas fa-shopping-bag"></i><br>
       Your cart is empty
     </div>
-
-    <!-- Checkout Form -->
-    <div id="checkoutSection" class="hidden">
-      <div class="checkout-form" id="checkoutForm">
-        <h2 class="section-title">Checkout</h2>
-        <div id="successMsg" class="success-msg"></div>
-        <div id="errorMsg" class="error-msg"></div>
-
-        <div class="form-group">
-          <label>Name *</label>
-          <input type="text" id="name" required />
-        </div>
-        <div class="form-group">
-          <label>Phone *</label>
-          <input type="tel" id="phone" required />
-        </div>
-        <div class="form-group">
-          <label>Address Line 1 *</label>
-          <textarea id="address1" rows="3" required placeholder="House no., Building, Street"></textarea>
-        </div>
-        <div class="form-group">
-          <label>Address Line 2 (Optional)</label>
-          <textarea id="address2" rows="2" placeholder="Landmark, Area, Nearby"></textarea>
-        </div>
-
-        <div class="order-summary" id="orderSummary"></div>
-
-        <button id="placeOrderBtn" class="place-order-btn">
-          Place Order (Cash on Delivery)
-        </button>
-      </div>
-    </div>
   </div>
 
 </main>
@@ -447,14 +323,14 @@
     <span>Total</span>
     <span id="grandTotal">₹0</span>
   </div>
-  <button class="place-order-btn" onclick="showCheckout()" style="margin-top:16px;">
+  <button class="place-order-btn" onclick="window.location.href='cart.html'" style="margin-top:16px;">
     Proceed to Checkout
   </button>
 </div>
 
 <script>
 // =============================================
-// CONFIG & ALL SHOPS MENU DATA (7 shops)
+// CONFIG & ALL SHOPS MENU DATA (COMPLETE)
 // =============================================
 
 const DELIVERY_THRESHOLD = 100;
@@ -499,7 +375,6 @@ const shopMenus = {
   ],
 
   "Dolphin Hotel": [
-    // Veg items
     { name: "Tomato Soup", originalPrice: 85, type: "veg" },
     { name: "Veg Clear Soup", originalPrice: 85, type: "veg" },
     { name: "Hot and Sour Soup", originalPrice: 100, type: "veg" },
@@ -553,8 +428,6 @@ const shopMenus = {
     { name: "Mung Dal", originalPrice: 120, type: "veg" },
     { name: "Dal Kolapuri", originalPrice: 110, type: "veg" },
     { name: "Dal Makanwala", originalPrice: 110, type: "veg" },
-
-    // Non-Veg items (with ₹15 reduction)
     { name: "CKN Soup", originalPrice: 192 - 15, type: "nonveg" },
     { name: "MTN Soup", originalPrice: 192 - 15, type: "nonveg" },
     { name: "CKN Lolipop", originalPrice: 222 - 15, type: "nonveg" },
@@ -787,7 +660,6 @@ function formatPrice(num) {
 // =============================================
 
 let currentFilter = "veg";
-let showingCheckout = false;
 
 // Veg/Non-Veg filter (only for Dolphin Hotel)
 function filterItems(type) {
@@ -851,8 +723,7 @@ function changeQty(shop, name, price, delta) {
   if (Object.keys(cart[shop]).length === 0) delete cart[shop];
 
   saveCart();
-  if (!showingCheckout) renderMenu();
-  renderCart();
+  renderMenu();
   updateCartUI();
 }
 
@@ -908,150 +779,6 @@ function renderMenu() {
 }
 
 // =============================================
-// RENDER CART
-// =============================================
-
-function renderCart() {
-  const container = document.getElementById("cartItems");
-  container.innerHTML = "";
-
-  if (Object.keys(cart).length === 0) {
-    document.getElementById("cartEmpty").classList.remove("hidden");
-    document.getElementById("checkoutSection").classList.add("hidden");
-    return;
-  }
-
-  document.getElementById("cartEmpty").classList.add("hidden");
-
-  Object.keys(cart).forEach(shop => {
-    const title = document.createElement("div");
-    title.style = "font-weight:700; color:var(--primary); margin:28px 0 14px; font-size:1.32rem;";
-    title.textContent = shop;
-    container.appendChild(title);
-
-    Object.keys(cart[shop]).forEach(name => {
-      const item = cart[shop][name];
-      const row = document.createElement("div");
-      row.className = "cart-item-card";
-      row.innerHTML = `
-        <div class="cart-item-content">
-          <div class="cart-item-name">${name}</div>
-          <div class="cart-item-price">${formatPrice(item.price)} × ${item.qty}</div>
-        </div>
-        <div class="quantity-row">
-          <button class="qty-btn" onclick="changeQty('${shop}', '${name.replace(/'/g,"\\'")}', ${item.price}, -1)">−</button>
-          <span class="qty-value">${item.qty}</span>
-          <button class="qty-btn" onclick="changeQty('${shop}', '${name.replace(/'/g,"\\'")}', ${item.price}, 1)">+</button>
-        </div>
-      `;
-      container.appendChild(row);
-    });
-  });
-}
-
-// =============================================
-// SHOW CHECKOUT
-// =============================================
-
-function showCheckout() {
-  showingCheckout = true;
-  document.getElementById("cartItems").classList.add("hidden");
-  document.getElementById("checkoutSection").classList.remove("hidden");
-
-  const summaryDiv = document.getElementById("orderSummary");
-  let html = `<h3 style="margin-bottom:16px; color:var(--primary);">Order Summary</h3>`;
-
-  let subtotal = 0;
-  for (const shop in cart) {
-    for (const name in cart[shop]) {
-      const item = cart[shop][name];
-      const itemTotal = item.price * item.qty;
-      subtotal += itemTotal;
-      html += `
-        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed #eee;">
-          <span>${name} × ${item.qty}</span>
-          <span>₹${Math.round(itemTotal)}</span>
-        </div>`;
-    }
-  }
-
-  const delivery = subtotal < DELIVERY_THRESHOLD ? DELIVERY_FEE : 0;
-  const grand = subtotal + delivery;
-
-  html += `
-    <div style="display:flex;justify-content:space-between;font-weight:600;margin-top:12px;">
-      <span>Subtotal</span><span>₹${Math.round(subtotal)}</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;font-weight:600;">
-      <span>Delivery</span><span>${delivery === 0 ? 'FREE' : '₹' + delivery}</span>
-    </div>
-    <div style="display:flex;justify-content:space-between;font-size:1.5rem;font-weight:800;color:var(--primary);margin-top:16px;padding-top:16px;border-top:2px solid var(--primary);">
-      <span>Total</span><span>₹${Math.round(grand)}</span>
-    </div>`;
-
-  summaryDiv.innerHTML = html;
-
-  document.getElementById("placeOrderBtn").onclick = placeOrder;
-}
-
-// =============================================
-// PLACE ORDER
-// =============================================
-
-function placeOrder() {
-  const name = document.getElementById("name").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const address1 = document.getElementById("address1").value.trim();
-  const address2 = document.getElementById("address2").value.trim();
-
-  if (!name || !phone || !address1) {
-    document.getElementById("errorMsg").textContent = "Please fill all required fields.";
-    document.getElementById("errorMsg").style.display = "block";
-    return;
-  }
-
-  let message = "New Order from ChatPoint!\n\n";
-  let subtotal = 0;
-
-  for (const shop in cart) {
-    message += `${shop}:\n`;
-    for (const name in cart[shop]) {
-      const item = cart[shop][name];
-      const itemTotal = item.price * item.qty;
-      subtotal += itemTotal;
-      message += `  ${name} × ${item.qty} = ₹${Math.round(itemTotal)}\n`;
-    }
-  }
-
-  const delivery = subtotal < DELIVERY_THRESHOLD ? 20 : 0;
-  const grand = subtotal + delivery;
-
-  message += `\nSubtotal: ₹${Math.round(subtotal)}\n`;
-  message += `Delivery: ${delivery === 0 ? 'FREE' : '₹' + delivery}\n`;
-  message += `Grand Total: ₹${Math.round(grand)}\n\n`;
-  message += `Name: ${name}\nPhone: ${phone}\nAddress: ${address1}`;
-  if (address2) message += `, ${address2}`;
-
-  const encoded = encodeURIComponent(message);
-
-  const primary = "9632367397";
-  const backup = "8088975913";
-
-  document.getElementById("successMsg").textContent = "Order placed! Opening WhatsApp...";
-  document.getElementById("successMsg").style.display = "block";
-  document.getElementById("errorMsg").style.display = "none";
-
-  // Clear cart
-  localStorage.removeItem("chatpoint_cart");
-  cart = {};
-  updateCartUI();
-
-  // Open WhatsApp
-  setTimeout(() => window.open(`https://wa.me/91${primary}?text=${encoded}`, '_blank'), 800);
-  setTimeout(() => window.open(`https://wa.me/91${backup}?text=${encoded}`, '_blank'), 1800);
-}
-
-// =============================================
 // INIT & TAB LOGIC
 // =============================================
 
@@ -1071,9 +798,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     document.getElementById('cart-tab').classList.toggle('hidden', btn.dataset.tab !== 'cart');
 
     if (btn.dataset.tab === 'cart') {
-      renderCart();
-      document.getElementById("checkoutSection").classList.add("hidden");
-      showingCheckout = false;
+      window.location.href = 'cart.html';
     }
   });
 });
