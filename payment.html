@@ -69,7 +69,6 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(230,178,92,0.2);
         }
-        /* SUMMARY */
         .cart-summary {
             background: var(--glass);
             padding: 1.6rem;
@@ -141,7 +140,6 @@
             color: #dc3545;
             border: 1px solid rgba(220,53,69,0.3);
         }
-        /* Popup */
         #orderPopup {
             position: fixed;
             inset: 0;
@@ -196,7 +194,7 @@
     const PRIMARY = "9739632364";
     const BACKUP = "8088975913";
 
-    // Backend API endpoint – FIXED to match your server
+    // Backend API endpoint
     const BACKEND_URL = "https://chatpoint-3ycy.onrender.com/api/save-order";
 
     // Special water item logic
@@ -224,7 +222,6 @@
         return main < 100 ? 25 : 22;
     }
 
-    // Check if user is logged in
     function checkLogin() {
         const user = JSON.parse(localStorage.getItem(USER_KEY) || "null");
         if (!user || !user.phone) {
@@ -238,7 +235,6 @@
         return user;
     }
 
-    // Render checkout form
     function renderForm(user) {
         const savedCart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
         if (Object.keys(savedCart).length === 0) {
@@ -330,7 +326,6 @@
         document.getElementById("placeOrderBtn").onclick = placeOrder;
     }
 
-    // Place order function
     async function placeOrder() {
         const name = document.getElementById("name").value.trim();
         const phone = document.getElementById("phone").value.trim();
@@ -348,7 +343,6 @@
 
         const { itemsArray, subtotal, shopName, deliveryCharge, grandTotal, cart } = window.tempOrderData;
 
-        // Prepare data for backend (matches your saveOrderUniversal logic)
         const orderData = {
             user: { name, phone },
             shop: shopName,
@@ -368,31 +362,25 @@
             paymentMethod: "cash",
             status: "pending",
             date: new Date(),
-            // Optional: send full cart (your backend supports it)
-            cart: cart
+            cart: cart  // optional but helpful for backend
         };
 
         try {
-            // Send to backend
             const response = await fetch(BACKEND_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(orderData)
+                body: JSON.stringify(orderData),
+                mode: "cors",           // explicitly set
+                credentials: "omit"     // no cookies needed here
             });
 
-            // Optional: you can check response if you want stricter handling
-            // const result = await response.json();
-            // if (!response.ok || !result.success) throw new Error("Backend save failed");
-
-            // Show success popup with confetti
+            // Even if fetch fails → we still send WhatsApp
             showSuccessPopup();
 
-            // Prepare WhatsApp message
             const orderSummary = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
             const finalMsg = `NEW ORDER\n\n${orderSummary}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n'+address2 : ''}\nSubtotal: ₹${subtotal}\nDelivery: ${deliveryCharge === 0 ? 'FREE' : '₹'+deliveryCharge}\nTotal: ₹${grandTotal}`;
             const encoded = encodeURIComponent(finalMsg);
 
-            // Open WhatsApp
             setTimeout(() => {
                 window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, "_blank");
                 setTimeout(() => {
@@ -400,17 +388,23 @@
                 }, 1200);
             }, 2800);
 
-            // Clear cart
             localStorage.removeItem(CART_KEY);
 
-            // Redirect to tracking
             setTimeout(() => {
                 window.location.href = "tracking.html";
             }, 4500);
 
         } catch (err) {
             console.error("Order placement error:", err);
-            showError("Failed to connect to server. But WhatsApp message was prepared.");
+            console.error("→ This is most likely a CORS error from the backend.");
+            console.error("→ Fix: Update CORS settings in your Express server to allow https://chatpoint1.onrender.com");
+
+            showError(
+                "Could not save order to server (CORS issue?). " +
+                "But your order was sent via WhatsApp. " +
+                "Please contact support if this keeps happening."
+            );
+
             placeBtn.disabled = false;
             placeBtn.textContent = "Place Order (COD)";
         }
@@ -419,7 +413,6 @@
     function showSuccessPopup() {
         const popup = document.getElementById("orderPopup");
         popup.style.display = "flex";
-        // Confetti animation
         confetti({
             particleCount: 120,
             spread: 80,
@@ -442,7 +435,6 @@
         document.getElementById("successMsg").style.display = "none";
     }
 
-    // Initialize on page load
     window.onload = () => {
         const user = checkLogin();
         if (user) renderForm(user);
