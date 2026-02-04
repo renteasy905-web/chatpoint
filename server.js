@@ -39,8 +39,25 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage: storage });
 
-// =============== MIDDLEWARE ===============
-app.use(cors({ origin: "*", credentials: true }));
+// =============== FIXED CORS MIDDLEWARE ===============
+app.use(cors({
+  origin: [
+    "https://chatpoint1.onrender.com",      // your frontend domain
+    "https://chatpoint-3ycy.onrender.com",  // backend itself (if needed)
+    "http://localhost:5500",                // local development (Live Server)
+    "http://127.0.0.1:5500",
+    "http://localhost:3000"                 // another common local port
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  optionsSuccessStatus: 204
+}));
+
+// Explicitly handle OPTIONS preflight requests (important!)
+app.options("*", cors());
+
+// =============== OTHER MIDDLEWARE ===============
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
@@ -123,8 +140,6 @@ const Order = mongoose.model(
     status: { type: String, default: "pending" },
     progress: { type: Number, default: 0 },
     date: { type: Date, default: Date.now },
-
-    // ─── NEW FIELDS ADDED FOR DELIVERY PARTNER & PROFIT ───────────────────────
     deliveredBy: {
       type: String,
       enum: ["Suraj", "Guru", null],
@@ -135,7 +150,6 @@ const Order = mongoose.model(
       default: 0,
       min: 0,
     },
-    // ────────────────────────────────────────────────────────────────────────────
   })
 );
 
@@ -163,7 +177,6 @@ const saveOrderUniversal = async (req, res) => {
 
     let items = [];
     let shopName = null;
-
     for (const shop in cart) {
       if (!shopName) shopName = shop;
       for (const itemName in cart[shop]) {
@@ -202,15 +215,12 @@ const saveOrderUniversal = async (req, res) => {
 // =============== UPDATED: Make User Premium with Type ===============
 app.post("/api/admin/make-premium", async (req, res) => {
   const { password, phone, premiumType } = req.body;
-
   if (password !== ADMIN_PASSWORD) {
     return res.status(401).json({ success: false, message: "Wrong admin password" });
   }
-
   if (!["far", "local"].includes(premiumType)) {
     return res.status(400).json({ success: false, message: "Invalid premiumType. Must be 'far' or 'local'" });
   }
-
   try {
     const updatedUser = await User.findOneAndUpdate(
       { phone },
@@ -222,11 +232,9 @@ app.post("/api/admin/make-premium", async (req, res) => {
       },
       { new: true }
     );
-
     if (!updatedUser) {
       return res.status(404).json({ success: false, message: "User not found" });
     }
-
     console.log(`User ${phone} upgraded to ${premiumType.toUpperCase()} PREMIUM`);
     res.json({
       success: true,
@@ -281,14 +289,11 @@ app.post(
   async (req, res) => {
     const { password, category, name, originalPrice, offerPrice } = req.body;
     if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false, message: "Wrong password" });
-
     try {
       if (!req.files["image"] || !req.files["image"][0]) {
         return res.status(400).json({ success: false, message: "Item image required" });
       }
-
       const itemImageUrl = req.files["image"][0].path;
-
       if (req.files["categoryImage"] && req.files["categoryImage"][0]) {
         const catImageUrl = req.files["categoryImage"][0].path;
         await GroceryCategory.findOneAndUpdate(
@@ -300,7 +305,6 @@ app.post(
         const existing = await GroceryCategory.findOne({ name: category.trim() });
         if (!existing) return res.status(400).json({ success: false, message: "Category not found. Upload photo to create new." });
       }
-
       const newItem = new GroceryItem({
         category: category.trim(),
         name: name.trim(),
@@ -309,7 +313,6 @@ app.post(
         offerPrice: Number(offerPrice),
         imageUrl: itemImageUrl,
       });
-
       await newItem.save();
       res.json({ success: true, item: newItem });
     } catch (e) {
@@ -322,7 +325,6 @@ app.post(
 app.post("/api/admin/edit-item", async (req, res) => {
   const { password, itemId, originalPrice, offerPrice } = req.body;
   if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false });
-
   try {
     const updateData = {
       originalPrice: originalPrice ? Number(originalPrice) : undefined,
@@ -330,10 +332,8 @@ app.post("/api/admin/edit-item", async (req, res) => {
       price: offerPrice ? Number(offerPrice) : undefined,
     };
     Object.keys(updateData).forEach((key) => updateData[key] === undefined && delete updateData[key]);
-
     const updated = await GroceryItem.findByIdAndUpdate(itemId, updateData, { new: true });
     if (!updated) return res.status(404).json({ success: false });
-
     res.json({ success: true, item: updated });
   } catch (e) {
     res.status(500).json({ success: false });
@@ -343,7 +343,6 @@ app.post("/api/admin/edit-item", async (req, res) => {
 app.delete("/api/admin/delete-item/:id", async (req, res) => {
   const { password } = req.query;
   if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false });
-
   try {
     await GroceryItem.findByIdAndDelete(req.params.id);
     res.json({ success: true });
@@ -361,21 +360,16 @@ app.post("/api/user/signup", async (req, res) => {
   try {
     const { name, phone, password } = req.body;
     if (!name || !phone || !password) return res.status(400).json({ success: false });
-
     const exists = await User.findOne({ phone });
     if (exists) return res.status(400).json({ success: false, message: "Phone already registered" });
-
     const hash = crypto.createHash("sha256").update(password).digest("hex");
-
     const user = new User({
       name,
       phone,
       password: hash,
-      plainPassword: password, // Store plain password for admin view
+      plainPassword: password,
     });
-
     await user.save();
-
     res.json({ success: true });
   } catch (e) {
     console.error(e);
@@ -388,9 +382,7 @@ app.post("/api/user/login", async (req, res) => {
     const { phone, password } = req.body;
     const hash = crypto.createHash("sha256").update(password).digest("hex");
     const user = await User.findOne({ phone, password: hash });
-
     if (!user) return res.status(401).json({ success: false, message: "Wrong credentials" });
-
     res.json({
       success: true,
       user: {
@@ -453,27 +445,19 @@ app.post("/api/update-order-progress", async (req, res) => {
   }
 });
 
-// ─────────────────────────────────────────────────────────────
-// UPDATED ENDPOINT: Handles status + deliveredBy + profitAmount
-// ─────────────────────────────────────────────────────────────
 app.post("/api/update-order-status", async (req, res) => {
   try {
     const { orderId, status, deliveredBy, profitAmount } = req.body;
-
     if (!orderId) {
       return res.status(400).json({ success: false, message: "orderId is required" });
     }
-
     const updateData = {};
-
     if (status) {
       if (!["confirmed", "delivered", "cancelled"].includes(status)) {
         return res.status(400).json({ success: false, message: "Invalid status value" });
       }
       updateData.status = status;
     }
-
-    // Special validation & update when marking as delivered
     if (status === "delivered") {
       if (!deliveredBy || !["Suraj", "Guru"].includes(deliveredBy)) {
         return res.status(400).json({
@@ -481,29 +465,23 @@ app.post("/api/update-order-status", async (req, res) => {
           message: "When marking delivered, 'deliveredBy' must be 'Suraj' or 'Guru'",
         });
       }
-
       if (profitAmount === undefined || typeof profitAmount !== "number" || profitAmount < 0) {
         return res.status(400).json({
           success: false,
           message: "When marking delivered, 'profitAmount' must be a non-negative number",
         });
       }
-
       updateData.deliveredBy = deliveredBy;
       updateData.profitAmount = profitAmount;
     }
-
     const updatedOrder = await Order.findByIdAndUpdate(orderId, { $set: updateData }, { new: true, runValidators: true });
-
     if (!updatedOrder) {
       return res.status(404).json({ success: false, message: "Order not found" });
     }
-
     console.log(
       `Order ${orderId} updated → status: ${status || "unchanged"}, ` +
-        `deliveredBy: ${deliveredBy || "—"}, profit: ₹${profitAmount || "—"}`
+      `deliveredBy: ${deliveredBy || "—"}, profit: ₹${profitAmount || "—"}`
     );
-
     res.json({ success: true });
   } catch (err) {
     console.error("Update order status error:", err);
@@ -515,10 +493,8 @@ app.delete("/api/delete-order", async (req, res) => {
   try {
     const { orderId } = req.body;
     if (!orderId) return res.status(400).json({ success: false });
-
     const result = await Order.findByIdAndDelete(orderId);
     if (!result) return res.status(404).json({ success: false });
-
     console.log(`Order ${orderId} DELETED`);
     res.json({ success: true });
   } catch (err) {
@@ -568,7 +544,6 @@ app.get("/api/admin/users", async (req, res) => {
         _id: 0,
       }
     ).sort({ createdAt: -1 });
-
     const safeUsers = users.map((u) => ({
       name: u.name,
       phone: u.phone,
@@ -576,7 +551,6 @@ app.get("/api/admin/users", async (req, res) => {
       premiumType: u.premiumType,
       plainPassword: u.plainPassword || "Not available",
     }));
-
     res.json({ users: safeUsers });
   } catch (e) {
     console.error(e);
@@ -602,13 +576,11 @@ const pages = [
   "categories",
   "pindex",
 ];
-
 pages.forEach((p) => {
   const route = p === "index" ? "/" : `/${p}.html`;
   const file = p === "index" ? "index.html" : `${p}.html`;
   app.get(route, (req, res) => res.sendFile(path.join(__dirname, file)));
 });
-
 app.get("*", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
 app.listen(PORT, "0.0.0.0", () => {
