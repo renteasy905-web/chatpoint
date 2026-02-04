@@ -26,7 +26,6 @@
       color:var(--text);
       overflow-x:hidden;
     }
-    /* HEADER */
     header {
       position:sticky;
       top:0;
@@ -80,7 +79,6 @@
       background:#ffffff;
       color:#000;
     }
-    /* SIDEBAR */
     #sidebar {
       position:fixed;
       inset:0 auto 0 0;
@@ -91,6 +89,7 @@
       transition:0.4s ease;
       z-index:1000;
       border-right:1px solid var(--border);
+      overflow-y:auto;
     }
     #sidebar.active { transform:translateX(0); }
     #overlay {
@@ -114,19 +113,65 @@
       font-weight:700;
       font-size:20px;
     }
-    nav a {
+    nav a, .contact-btn {
       display:block;
       padding:14px 18px;
       text-decoration:none;
       color:var(--text);
       font-weight:600;
       transition:0.25s;
+      background:none;
+      border:none;
+      width:100%;
+      text-align:left;
+      cursor:pointer;
     }
-    nav a:hover {
+    nav a:hover, .contact-btn:hover {
       background:var(--glass);
       color:var(--primary);
     }
-    /* OFFER BANNER */
+    .contact-info {
+      display:none;
+      padding:16px 18px;
+      background:#0f1014;
+      border-top:1px solid var(--border);
+    }
+    .contact-info.show {
+      display:block;
+    }
+    .contact-number {
+      font-size:22px;
+      font-weight:700;
+      color:var(--primary);
+      margin:12px 0;
+      text-align:center;
+    }
+    .contact-actions {
+      display:flex;
+      gap:12px;
+      margin-top:16px;
+    }
+    .call-btn, .whatsapp-btn {
+      flex:1;
+      padding:12px;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+      border:none;
+      font-size:15px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+    .call-btn {
+      background:var(--primary);
+      color:#000;
+    }
+    .whatsapp-btn {
+      background:#25D366;
+      color:white;
+    }
     .offer-banner {
       max-width:960px;
       margin:24px auto;
@@ -149,7 +194,6 @@
       font-weight:600;
     }
     .highlight { color:var(--primary); }
-    /* SEARCH BAR */
     .search-bar {
       max-width:600px;
       margin:0 auto 32px;
@@ -177,7 +221,6 @@
       font-size:20px;
       color:var(--primary);
     }
-    /* GRID */
     .grid {
       display:grid;
       gap:24px;
@@ -189,10 +232,7 @@
     @media(min-width:600px){
       .grid { grid-template-columns:repeat(auto-fit,minmax(330px,1fr)); }
     }
-    /* CARDS */
-    .card-wrap {
-      position: relative;
-    }
+    .card-wrap { position:relative; }
     .card {
       background:var(--card);
       border-radius:var(--radius);
@@ -233,7 +273,7 @@
       gap:6px;
     }
     .desc {
-      padding:0 18px 14px;
+      padding:0 18px 10px;
       color:var(--text-muted);
       font-size:14px;
     }
@@ -288,8 +328,23 @@
   <div class="profile-section">Menu</div>
   <nav>
     <a href="tracking.html"><i class="fa-solid fa-bag-shopping"></i>   My Orders</a>
-    <a href="tel:9632367397"><i class="fa-solid fa-phone"></i>   Contact Us</a>
+    <button class="contact-btn" id="contactBtn">
+      <i class="fa-solid fa-phone"></i>   Contact Now
+    </button>
   </nav>
+
+  <!-- Contact Info (hidden by default) -->
+  <div class="contact-info" id="contactInfo">
+    <div class="contact-number">97396 32364</div>
+    <div class="contact-actions">
+      <button class="call-btn" onclick="window.location.href='tel:+919739632364'">
+        <i class="fas fa-phone"></i> Call Now
+      </button>
+      <button class="whatsapp-btn" onclick="window.open('https://wa.me/+919739632364', '_blank')">
+        <i class="fab fa-whatsapp"></i> WhatsApp
+      </button>
+    </div>
+  </div>
 </div>
 <div id="overlay"></div>
 
@@ -301,7 +356,7 @@
 
 <!-- SEARCH -->
 <div class="search-bar">
-  <input type="text" id="searchInput" placeholder="Search shops..." oninput="searchShops()">
+  <input type="text" id="searchInput" placeholder="Search shops or items..." oninput="searchShops()">
   <i class="fas fa-search"></i>
 </div>
 
@@ -318,14 +373,14 @@ const shops = [
     img: "https://plus.unsplash.com/premium_photo-1679924471091-f7cd7ad90ddf?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     rating: 4.6,
     desc: "100% veg pizzas, light & tasty.",
-    items: ["Paneer Tikka", "Corn & Cheese", "nugets ", "Veg Extravaganza"]
+    items: ["Paneer Tikka", "Corn & Cheese", "Nuggets", "Veg Extravaganza"]
   },
   {
     name: "Hasanamba Iyengar Bakery",
     img: "https://plus.unsplash.com/premium_photo-1665669263531-cdcbe18e7fe4?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YmFrZXJ5fGVufDB8fDB8fHww",
     rating: 4.5,
     desc: "Fresh baked goods and sweet treats.",
-    items: ["Cake", "Puff", "rolls", "Puff Pastry"]
+    items: ["Cake", "Puff", "Rolls", "Puff Pastry"]
   },
   {
     name: "Sangambar Udupi Hotel",
@@ -339,7 +394,7 @@ const shops = [
     img: "https://plus.unsplash.com/premium_photo-1723478418445-b13c20b21231?q=80&w=1125&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     rating: 4.5,
     desc: "Loaded pizzas with fresh toppings.",
-    items: ["momos", "pizza", "burger", "juice", "Veggie pizza", "pav bhaji"]
+    items: ["Momos", "Pizza", "Burger", "Juice", "Veggie Pizza", "Pav Bhaji"]
   },
   {
     name: "Nandi Grand Hotels",
@@ -360,17 +415,26 @@ const shops = [
     img: "https://images.unsplash.com/photo-1496412705862-e0088f16f791?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjd8fGZvb2QlMjBwaG90b2dyYXBoeXxlbnwwfHwwfHx8MA%3D%3D",
     rating: 4.5,
     desc: "Fresh sandwiches & healthy bites.",
-    items: ["Veg Sandwich", "Grilled Cheese", "Club Sandwich", "rice", "panner", "Cold Coffee"]
+    items: ["Veg Sandwich", "Grilled Cheese", "Club Sandwich", "Rice", "Paneer", "Cold Coffee"]
   }
 ];
 
-// Render shops function
+// Render shops
 function renderShops(filter = "") {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
+  const lowerFilter = filter.toLowerCase().trim();
+
   shops
-    .filter(shop => shop.name.toLowerCase().includes(filter.toLowerCase()))
+    .filter(shop => {
+      if (!lowerFilter) return true;
+      const nameMatch = shop.name.toLowerCase().includes(lowerFilter);
+      const itemMatch = shop.items.some(item => 
+        item.toLowerCase().includes(lowerFilter)
+      );
+      return nameMatch || itemMatch;
+    })
     .forEach(shop => {
       const cardWrap = document.createElement("div");
       cardWrap.className = "card-wrap";
@@ -424,10 +488,7 @@ function renderShops(filter = "") {
       card.append(img, info, desc, itemsRow);
       cardWrap.appendChild(card);
 
-      // Randomly show badge (as in your original logic)
-      if (Math.random() > 0.4) {
-        cardWrap.appendChild(badge);
-      }
+      if (Math.random() > 0.4) cardWrap.appendChild(badge);
 
       grid.appendChild(cardWrap);
     });
@@ -435,7 +496,7 @@ function renderShops(filter = "") {
 
 // Search handler
 function searchShops() {
-  const query = document.getElementById("searchInput").value.trim();
+  const query = document.getElementById("searchInput").value;
   renderShops(query);
 }
 
@@ -450,11 +511,15 @@ document.getElementById("overlay").onclick = () => {
   document.getElementById("overlay").classList.remove("active");
 };
 
+// Contact button toggle
+document.getElementById("contactBtn").onclick = () => {
+  const info = document.getElementById("contactInfo");
+  info.classList.toggle("show");
+};
+
 // Initial load
 window.onload = () => {
   renderShops();
-  // You can keep loadProfile() if you plan to use it later
-  // loadProfile();
 };
 </script>
 </body>
