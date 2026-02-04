@@ -60,9 +60,10 @@
     .header-right {
       margin-left:auto;
       display:flex;
+      align-items:center;
       gap:12px;
     }
-    .orders-btn, .cart-btn {
+    .orders-btn, .cart-btn, .login-btn {
       padding:10px 18px;
       border-radius:14px;
       font-weight:700;
@@ -79,6 +80,47 @@
       background:#ffffff;
       color:#000;
     }
+    .login-btn {
+      background: #e6b25c;
+      color: #000;
+      box-shadow: 0 0 12px rgba(230,178,92,0.5);
+    }
+    .login-btn:hover {
+      background: #bb8c3d;
+      transform: translateY(-2px);
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--glass);
+      padding: 8px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      background: var(--primary);
+      color: #000;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 16px;
+    }
+    .user-details {
+      font-size: 14px;
+      line-height: 1.3;
+    }
+    .user-name {
+      font-weight: 700;
+      color: var(--text);
+    }
+    .user-phone {
+      color: var(--text-muted);
+    }
+    /* rest of your styles remain the same */
     #sidebar {
       position:fixed;
       inset:0 auto 0 0;
@@ -317,10 +359,7 @@
 <header>
   <button id="navBtn" class="nav-btn"><i class="fas fa-bars"></i></button>
   <div class="brand">ChatPoint</div>
-  <div class="header-right">
-    <button class="orders-btn" onclick="location.href='tracking.html'">My Orders</button>
-    <button class="cart-btn" onclick="location.href='cart.html'"><i class="fa-solid fa-cart-shopping"></i></button>
-  </div>
+  <div class="header-right" id="headerRight"></div>
 </header>
 
 <!-- SIDEBAR -->
@@ -332,8 +371,6 @@
       <i class="fa-solid fa-phone"></i>   Contact Now
     </button>
   </nav>
-
-  <!-- Contact Info (hidden by default) -->
   <div class="contact-info" id="contactInfo">
     <div class="contact-number">97396 32364</div>
     <div class="contact-actions">
@@ -423,14 +460,12 @@ const shops = [
 function renderShops(filter = "") {
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
-
   const lowerFilter = filter.toLowerCase().trim();
-
   shops
     .filter(shop => {
       if (!lowerFilter) return true;
       const nameMatch = shop.name.toLowerCase().includes(lowerFilter);
-      const itemMatch = shop.items.some(item => 
+      const itemMatch = shop.items.some(item =>
         item.toLowerCase().includes(lowerFilter)
       );
       return nameMatch || itemMatch;
@@ -438,19 +473,15 @@ function renderShops(filter = "") {
     .forEach(shop => {
       const cardWrap = document.createElement("div");
       cardWrap.className = "card-wrap";
-
       const card = document.createElement("div");
       card.className = "card";
       card.role = "button";
       card.tabIndex = 0;
-
       card.onclick = () => {
         localStorage.setItem("currentShop", JSON.stringify({ name: shop.name, items: shop.items }));
         location.href = `items.html?shop=${encodeURIComponent(shop.name)}`;
       };
-
       card.onkeydown = e => { if (e.key === "Enter") card.click(); };
-
       const img = document.createElement("img");
       img.src = shop.img;
       img.alt = `${shop.name} image`;
@@ -458,11 +489,9 @@ function renderShops(filter = "") {
       img.onerror = function() {
         this.src = `https://via.placeholder.com/420x260/2874F0/FF9800?text=${encodeURIComponent(shop.name)}`;
       };
-
       const badge = document.createElement("div");
       badge.className = "badge-offer";
       badge.textContent = shop.rating >= 4.7 ? "⭐ TOP RATED" : "🔥 OFFER";
-
       const info = document.createElement("div");
       info.className = "info";
       info.innerHTML = `
@@ -471,11 +500,9 @@ function renderShops(filter = "") {
           <i class="fas fa-star"></i> ${shop.rating}
         </div>
       `;
-
       const desc = document.createElement("div");
       desc.className = "desc";
       desc.textContent = shop.desc;
-
       const itemsRow = document.createElement("div");
       itemsRow.className = "items-row";
       shop.items.slice(0, 4).forEach(item => {
@@ -484,12 +511,9 @@ function renderShops(filter = "") {
         pill.textContent = item.trim();
         itemsRow.appendChild(pill);
       });
-
       card.append(img, info, desc, itemsRow);
       cardWrap.appendChild(card);
-
       if (Math.random() > 0.4) cardWrap.appendChild(badge);
-
       grid.appendChild(cardWrap);
     });
 }
@@ -517,9 +541,38 @@ document.getElementById("contactBtn").onclick = () => {
   info.classList.toggle("show");
 };
 
+// Render header right (user info or login button)
+function renderHeaderRight() {
+  const user = JSON.parse(localStorage.getItem("chatpoint_user") || "null");
+  const headerRight = document.getElementById("headerRight");
+
+  if (user && user.name && user.phone) {
+    // Logged in → show user info
+    headerRight.innerHTML = `
+      <div class="user-info">
+        <div class="user-avatar"><i class="fas fa-user"></i></div>
+        <div class="user-details">
+          <div class="user-name">${user.name}</div>
+          <div class="user-phone">${user.phone}</div>
+        </div>
+      </div>
+      <button class="orders-btn" onclick="location.href='tracking.html'">My Orders</button>
+      <button class="cart-btn" onclick="location.href='cart.html'"><i class="fa-solid fa-cart-shopping"></i></button>
+    `;
+  } else {
+    // Not logged in → show Login button
+    headerRight.innerHTML = `
+      <a href="login.html" class="login-btn">Login</a>
+      <button class="orders-btn" onclick="location.href='tracking.html'">My Orders</button>
+      <button class="cart-btn" onclick="location.href='cart.html'"><i class="fa-solid fa-cart-shopping"></i></button>
+    `;
+  }
+}
+
 // Initial load
 window.onload = () => {
   renderShops();
+  renderHeaderRight();
 };
 </script>
 </body>
