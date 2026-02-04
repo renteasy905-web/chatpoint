@@ -161,7 +161,6 @@
     }
     .toast.success { background: #2e7d32; }
     .toast.error { background: #c62828; }
-    .toast.offline { background: #e65100; }
     .toast .close-btn {
       cursor: pointer;
       font-size: 20px;
@@ -213,11 +212,11 @@
     </div>
   </div>
 
-  <!-- Loading Overlay -->
+  <!-- Loading Overlay (still used for fake delay) -->
   <div id="loadingOverlay">
     <div class="loader">
       <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-      <div id="loaderText">Connecting...</div>
+      <div id="loaderText">Processing...</div>
     </div>
   </div>
 
@@ -227,43 +226,7 @@
   <script>
     const $ = id => document.getElementById(id);
 
-    // Change this to your real backend URL
-    const API_BASE = 'https://chatpoint-3ycy.onrender.com';  // ← your backend
-
-    // Check if already logged in → redirect
-    window.addEventListener('load', () => {
-      const stored = localStorage.getItem('chatpoint_user');
-      if (stored) {
-        try {
-          const user = JSON.parse(stored);
-          if (user && user.phone) {
-            // If you have premium page, uncomment this logic
-            // if (user.isPremium) {
-            //   location.href = 'pindex.html';
-            // } else {
-              location.href = 'index.html';
-            // }
-          }
-        } catch (e) {
-          localStorage.removeItem('chatpoint_user');
-        }
-      }
-    });
-
-    // Toggle between login & signup
-    $('showSignup').onclick = e => {
-      e.preventDefault();
-      $('loginForm').style.display = 'none';
-      $('signupForm').style.display = 'block';
-    };
-
-    $('showLogin').onclick = e => {
-      e.preventDefault();
-      $('signupForm').style.display = 'none';
-      $('loginForm').style.display = 'block';
-    };
-
-    // Loading helpers
+    // Loading helpers (fake delay for better UX)
     function showLoading() {
       $('loadingOverlay').classList.add('active');
       let w = 10;
@@ -273,7 +236,7 @@
       }, 280);
       let dots = 0;
       const textInt = setInterval(() => {
-        $('loaderText').textContent = 'Connecting' + '.'.repeat((dots++ % 3) + 1);
+        $('loaderText').textContent = 'Processing' + '.'.repeat((dots++ % 3) + 1);
       }, 500);
       return () => { clearInterval(int); clearInterval(textInt); };
     }
@@ -308,8 +271,8 @@
 
     const isValidPhone = p => /^\d{10}$/.test(p.trim());
 
-    // Signup
-    $('btnSignup').onclick = async () => {
+    // Signup - Store in localStorage only
+    $('btnSignup').onclick = () => {
       const name = $('signupName').value.trim();
       const phone = $('signupPhone').value.trim();
       const password = $('signupPassword').value;
@@ -319,40 +282,26 @@
 
       const stopLoading = showLoading();
 
-      try {
-        const res = await fetch(`${API_BASE}/api/user/signup`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, phone, password })
-        });
-
-        const data = await res.json();
-
-        if (!data.success) {
-          throw new Error(data.message || 'Signup failed');
-        }
-
-        // Save user to localStorage
+      // Simulate delay (fake network)
+      setTimeout(() => {
+        // Save to localStorage
         localStorage.setItem('chatpoint_user', JSON.stringify({
-          name: data.user.name,
-          phone: data.user.phone,
-          // Add more fields if your backend returns them
-          // isPremium: data.user.isPremium || false,
+          name: name,
+          phone: phone,
+          // You can store password if you want (not recommended for real apps)
+          // password: password,
         }));
 
-        showToast(`Welcome ${name}! Account created.`, 'success', 5000);
-        setTimeout(() => location.href = 'index.html', 1800);
+        showToast(`Welcome ${name}! Account created.`, 'success', 4000);
+        setTimeout(() => location.href = 'index.html', 1500);
 
-      } catch (err) {
-        showToast(err.message || 'Something went wrong', 'error');
-      } finally {
         stopLoading();
         hideLoading();
-      }
+      }, 1200);
     };
 
-    // Login
-    $('btnLogin').onclick = async () => {
+    // Login - Check against localStorage
+    $('btnLogin').onclick = () => {
       const phone = $('loginPhone').value.trim();
       const password = $('loginPassword').value;
 
@@ -361,41 +310,51 @@
 
       const stopLoading = showLoading();
 
-      try {
-        const res = await fetch(`${API_BASE}/api/user/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, password })
-        });
+      // Simulate delay
+      setTimeout(() => {
+        const storedUser = localStorage.getItem('chatpoint_user');
 
-        const data = await res.json();
-
-        if (!data.success) {
-          throw new Error(data.message || 'Invalid credentials');
+        if (!storedUser) {
+          showToast('No account found. Please sign up first.', 'error');
+          stopLoading();
+          hideLoading();
+          return;
         }
 
-        // Save user to localStorage
-        localStorage.setItem('chatpoint_user', JSON.stringify({
-          name: data.user.name,
-          phone: data.user.phone,
-          // isPremium: data.user.isPremium || false,
-        }));
+        const user = JSON.parse(storedUser);
 
-        showToast('Login successful! Redirecting...', 'success', 3000);
-
-        // You can add premium check later
-        // if (data.user.isPremium) {
-        //   setTimeout(() => location.href = 'pindex.html', 1200);
-        // } else {
-          setTimeout(() => location.href = 'index.html', 1200);
+        // For demo: we don't even check password (you can add it if you want)
+        // if (user.password !== password) {
+        //   showToast('Wrong phone number or password', 'error');
+        //   stopLoading();
+        //   hideLoading();
+        //   return;
         // }
 
-      } catch (err) {
-        showToast(err.message || 'Login failed', 'error');
-      } finally {
+        // Just check phone exists
+        if (user.phone === phone) {
+          showToast('Login successful! Redirecting...', 'success', 3000);
+          setTimeout(() => location.href = 'index.html', 1200);
+        } else {
+          showToast('Phone number not found', 'error');
+        }
+
         stopLoading();
         hideLoading();
-      }
+      }, 1200);
+    };
+
+    // Toggle forms
+    $('showSignup').onclick = e => {
+      e.preventDefault();
+      $('loginForm').style.display = 'none';
+      $('signupForm').style.display = 'block';
+    };
+
+    $('showLogin').onclick = e => {
+      e.preventDefault();
+      $('signupForm').style.display = 'none';
+      $('loginForm').style.display = 'block';
     };
 
     // Press Enter to submit
@@ -403,6 +362,13 @@
       if (e.key === 'Enter') {
         if ($('signupForm').style.display !== 'none') $('btnSignup').click();
         else $('btnLogin').click();
+      }
+    });
+
+    // Auto-redirect if already logged in
+    window.addEventListener('load', () => {
+      if (localStorage.getItem('chatpoint_user')) {
+        location.href = 'index.html';
       }
     });
   </script>
