@@ -168,20 +168,16 @@
 </div>
 
 <script>
-    // ────────────────────────────────────────────────
-    // CONFIG
-    // ────────────────────────────────────────────────
+    // Configuration
     const CART_KEY = "chatpoint_cart";
     const USER_KEY = "chatpoint_user";
-    const PRIMARY_WHATSAPP = "9739632364";
-    const BACKUP_WHATSAPP = "8088975913";
+    const PRIMARY = "9739632364";
+    const BACKUP = "8088975913";
     const BACKEND_URL = "https://chatpoint-3ycy.onrender.com/api/save-order";
 
+    // Water special logic
     const WATER = { shop: "_special_", name: "1L Pure Water Bottle", price: 13 };
 
-    // ────────────────────────────────────────────────
-    // HELPERS
-    // ────────────────────────────────────────────────
     function hasWater(cart) {
         return (cart?.[WATER.shop]?.[WATER.name]?.qty || 0) > 0;
     }
@@ -217,21 +213,6 @@
         return user;
     }
 
-    function showMessage(text, type = "info") {
-        const el = document.getElementById("statusMsg") || document.createElement("div");
-        if (!document.getElementById("statusMsg")) {
-            el.id = "statusMsg";
-            el.className = "msg";
-            document.querySelector(".container").prepend(el);
-        }
-        el.textContent = text;
-        el.className = `msg ${type}`;
-        el.style.display = "block";
-    }
-
-    // ────────────────────────────────────────────────
-    // RENDER CHECKOUT FORM
-    // ────────────────────────────────────────────────
     function renderForm(user) {
         const savedCart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
         if (Object.keys(savedCart).length === 0) {
@@ -275,7 +256,7 @@
 
         document.getElementById("mainContainer").innerHTML = `
             <h2>Checkout</h2>
-            <div id="statusMsg" class="msg" style="display:none;"></div>
+            <div id="statusMsg" class="msg"></div>
 
             <div class="form-group">
                 <label>Name *</label>
@@ -321,9 +302,6 @@
         document.getElementById("placeOrderBtn").onclick = placeOrder;
     }
 
-    // ────────────────────────────────────────────────
-    // PLACE ORDER LOGIC
-    // ────────────────────────────────────────────────
     async function placeOrder() {
         const name = document.getElementById("name").value.trim();
         const phone = document.getElementById("phone").value.trim();
@@ -341,21 +319,9 @@
 
         const { itemsArray, subtotal, deliveryCharge, grandTotal, cart } = window.tempOrderData;
 
-        const orderData = {
-            name,
-            phone,
-            address1,
-            address2: address2 || "",
-            items: itemsArray,
-            subtotal,
-            deliveryCharge,
-            grandTotal,
-            paymentMethod: "cash",
-            cart
-        };
-
-        // Show popup immediately (optimistic UI)
-        document.getElementById("orderPopup").style.display = "flex";
+        // Show success popup immediately
+        const popup = document.getElementById("orderPopup");
+        popup.style.display = "flex";
         confetti({
             particleCount: 120,
             spread: 80,
@@ -365,14 +331,14 @@
 
         // Prepare WhatsApp message
         const orderSummary = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
-        const msg = `NEW ORDER\n\n${orderSummary}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n'+address2 : ''}\nSubtotal: ₹${subtotal}\nDelivery: ${deliveryCharge === 0 ? 'FREE' : '₹'+deliveryCharge}\nTotal: ₹${grandTotal}`;
+        const msg = `NEW ORDER\n\n${orderSummary}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nSubtotal: ₹${subtotal}\nDelivery: ${deliveryCharge === 0 ? 'FREE' : '₹'+deliveryCharge}\nTotal: ₹${grandTotal}`;
         const encoded = encodeURIComponent(msg);
 
-        // Always send WhatsApp
+        // Send to WhatsApp
         setTimeout(() => {
-            window.open(`https://wa.me/91${PRIMARY_WHATSAPP}?text=${encoded}`, "_blank");
+            window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, "_blank");
             setTimeout(() => {
-                window.open(`https://wa.me/91${BACKUP_WHATSAPP}?text=${encoded}`, "_blank");
+                window.open(`https://wa.me/91${BACKUP}?text=${encoded}`, "_blank");
             }, 1200);
         }, 2800);
 
@@ -382,31 +348,49 @@
             const response = await fetch(BACKEND_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(orderData)
+                body: JSON.stringify({
+                    name,
+                    phone,
+                    address1,
+                    address2: address2 || "",
+                    items: itemsArray,
+                    subtotal,
+                    deliveryCharge,
+                    grandTotal,
+                    paymentMethod: "cash",
+                    cart
+                })
             });
 
             if (response.ok) {
                 backendSuccess = true;
-                document.getElementById("popupText").textContent = "Order saved & sent to WhatsApp!";
+                document.getElementById("popupText").textContent = "Order saved successfully & sent to WhatsApp!";
             }
         } catch (err) {
-            console.error("Backend error:", err);
+            console.error("Backend save failed:", err);
         }
 
         // Clear cart
         localStorage.removeItem(CART_KEY);
 
+        // Show feedback message
+        if (backendSuccess) {
+            showMessage("Order placed successfully! Saved in system & sent via WhatsApp.", "success");
+        } else {
+            showMessage("Order sent via WhatsApp (database save failed - likely CORS issue on server)", "warning");
+        }
+
         // Redirect after delay
         setTimeout(() => {
             window.location.href = "tracking.html";
         }, 5000);
+    }
 
-        // Show status message
-        if (backendSuccess) {
-            showMessage("Order successfully saved and sent via WhatsApp!", "success");
-        } else {
-            showMessage("Order sent via WhatsApp (database save failed - team is fixing it)", "warning");
-        }
+    function showMessage(text, type) {
+        const el = document.getElementById("statusMsg");
+        el.textContent = text;
+        el.className = `msg ${type}`;
+        el.style.display = "block";
     }
 
     window.onload = () => {
