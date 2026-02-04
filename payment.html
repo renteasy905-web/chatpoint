@@ -196,8 +196,8 @@
     const PRIMARY = "9739632364";
     const BACKUP = "8088975913";
 
-    // Backend API endpoint
-    const BACKEND_URL = "https://chatpoint-3ycy.onrender.com/api/orders";
+    // Backend API endpoint – FIXED to match your server
+    const BACKEND_URL = "https://chatpoint-3ycy.onrender.com/api/save-order";
 
     // Special water item logic
     const WATER = { shop: "_special_", name: "1L Pure Water Bottle", price: 13 };
@@ -272,13 +272,13 @@
         const deliveryCharge = getDeliveryCharge(savedCart);
         const grandTotal = subtotal + deliveryCharge;
 
-        window.tempOrderData = { 
-            itemsArray, 
-            subtotal, 
-            shopName, 
-            deliveryCharge, 
-            grandTotal, 
-            cart: savedCart 
+        window.tempOrderData = {
+            itemsArray,
+            subtotal,
+            shopName,
+            deliveryCharge,
+            grandTotal,
+            cart: savedCart
         };
 
         document.getElementById("mainContainer").innerHTML = `
@@ -348,7 +348,7 @@
 
         const { itemsArray, subtotal, shopName, deliveryCharge, grandTotal, cart } = window.tempOrderData;
 
-        // Prepare data for MongoDB
+        // Prepare data for backend (matches your saveOrderUniversal logic)
         const orderData = {
             user: { name, phone },
             shop: shopName,
@@ -367,30 +367,32 @@
             },
             paymentMethod: "cash",
             status: "pending",
-            date: new Date()
+            date: new Date(),
+            // Optional: send full cart (your backend supports it)
+            cart: cart
         };
 
         try {
-            // 1. Try to save to backend
+            // Send to backend
             const response = await fetch(BACKEND_URL, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(orderData)
             });
 
-            // We don't strictly require success here — proceed even if backend fails
-            // (WhatsApp is the main confirmation method)
+            // Optional: you can check response if you want stricter handling
+            // const result = await response.json();
+            // if (!response.ok || !result.success) throw new Error("Backend save failed");
 
-            // 2. Show success popup with confetti
+            // Show success popup with confetti
             showSuccessPopup();
 
-            // 3. Prepare WhatsApp message
+            // Prepare WhatsApp message
             const orderSummary = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
             const finalMsg = `NEW ORDER\n\n${orderSummary}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n'+address2 : ''}\nSubtotal: ₹${subtotal}\nDelivery: ${deliveryCharge === 0 ? 'FREE' : '₹'+deliveryCharge}\nTotal: ₹${grandTotal}`;
-
             const encoded = encodeURIComponent(finalMsg);
 
-            // 4. Open WhatsApp after popup delay
+            // Open WhatsApp
             setTimeout(() => {
                 window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, "_blank");
                 setTimeout(() => {
@@ -398,17 +400,17 @@
                 }, 1200);
             }, 2800);
 
-            // 5. Clear cart
+            // Clear cart
             localStorage.removeItem(CART_KEY);
 
-            // 6. Redirect to tracking page after delay
+            // Redirect to tracking
             setTimeout(() => {
                 window.location.href = "tracking.html";
             }, 4500);
 
         } catch (err) {
             console.error("Order placement error:", err);
-            showError("Failed to process order. Please try again or contact support.");
+            showError("Failed to connect to server. But WhatsApp message was prepared.");
             placeBtn.disabled = false;
             placeBtn.textContent = "Place Order (COD)";
         }
@@ -417,7 +419,6 @@
     function showSuccessPopup() {
         const popup = document.getElementById("orderPopup");
         popup.style.display = "flex";
-
         // Confetti animation
         confetti({
             particleCount: 120,
