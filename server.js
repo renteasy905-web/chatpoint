@@ -39,22 +39,19 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage: storage });
 
-// =============== FIXED CORS MIDDLEWARE ===============
+// =============== FIXED CORS FOR RENDER (ONLY YOUR DOMAINS) ===============
 app.use(cors({
   origin: [
-    "https://chatpoint1.onrender.com",      // your frontend domain
-    "https://chatpoint-3ycy.onrender.com",  // backend itself (if needed)
-    "http://localhost:5500",                // local development (Live Server)
-    "http://127.0.0.1:5500",
-    "http://localhost:3000"                 // another common local port
+    "https://chatpoint1.onrender.com",     // Your frontend domain
+    "https://chatpoint-3ycy.onrender.com"  // Your backend domain (safety)
   ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+  methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
   optionsSuccessStatus: 204
 }));
 
-// Explicitly handle OPTIONS preflight requests (important!)
+// Important: Handles preflight OPTIONS requests properly
 app.options("*", cors());
 
 // =============== OTHER MIDDLEWARE ===============
@@ -81,8 +78,8 @@ const User = mongoose.model(
     {
       name: String,
       phone: { type: String, required: true, unique: true },
-      password: String, // Hashed password
-      plainPassword: String, // Plain password (for admin view only)
+      password: String,
+      plainPassword: String,
       isPremium: String,
       premiumType: {
         type: String,
