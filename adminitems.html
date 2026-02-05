@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - Add Item</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    body { font-family: 'Poppins', sans-serif; background: #f1faee; padding: 20px; max-width: 600px; margin: auto; }
+    h1 { color: #e63946; text-align: center; }
+    form { background: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+    label { display: block; margin: 12px 0 6px; font-weight: 600; }
+    input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+    button { background: #e63946; color: white; border: none; padding: 14px; width: 100%; border-radius: 10px; font-size: 1.1rem; font-weight: 700; margin-top: 20px; cursor: pointer; }
+    button:hover { background: #d00000; }
+    #preview { max-width: 100%; margin-top: 12px; border-radius: 8px; display: none; }
+    #message { margin-top: 20px; padding: 12px; border-radius: 8px; text-align: center; }
+    .success { background: #d4edda; color: #155724; }
+    .error { background: #f8d7da; color: #721c24; }
+  </style>
+</head>
+<body>
+  <h1>Add New Menu Item</h1>
+  
+  <form id="addItemForm">
+    <label>Shop Name</label>
+    <input type="text" id="shop" required placeholder="e.g. Dolphin Hotel">
+
+    <label>Item Name</label>
+    <input type="text" id="name" required placeholder="e.g. Paneer Tikka">
+
+    <label>Original Price (₹)</label>
+    <input type="number" id="originalPrice" required min="1" placeholder="e.g. 210">
+
+    <label>Type (for filtering)</label>
+    <select id="type">
+      <option value="veg">Veg</option>
+      <option value="nonveg">Non-Veg</option>
+      <option value="">Not specified</option>
+    </select>
+
+    <label>Upload Image</label>
+    <input type="file" id="image" accept="image/*">
+
+    <img id="preview" alt="Preview">
+
+    <button type="submit">Add Item to Menu</button>
+  </form>
+
+  <div id="message"></div>
+
+  <script>
+    const form = document.getElementById("addItemForm");
+    const imageInput = document.getElementById("image");
+    const preview = document.getElementById("preview");
+    const message = document.getElementById("message");
+
+    imageInput.addEventListener("change", () => {
+      const file = imageInput.files[0];
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+      }
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      message.textContent = "";
+      message.className = "";
+
+      const formData = new FormData();
+      formData.append("shop", document.getElementById("shop").value.trim());
+      formData.append("name", document.getElementById("name").value.trim());
+      formData.append("originalPrice", document.getElementById("originalPrice").value);
+      formData.append("type", document.getElementById("type").value);
+      if (imageInput.files[0]) {
+        formData.append("image", imageInput.files[0]);
+      }
+
+      try {
+        const res = await fetch("/api/admin/add-item", {
+          method: "POST",
+          body: formData
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          message.textContent = "Item added successfully!";
+          message.className = "success";
+          form.reset();
+          preview.style.display = "none";
+        } else {
+          throw new Error(data.error || "Failed to add item");
+        }
+      } catch (err) {
+        message.textContent = err.message;
+        message.className = "error";
+      }
+    });
+  </script>
+</body>
+</html>
