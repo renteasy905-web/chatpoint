@@ -42,8 +42,8 @@ const upload = multer({ storage: storage });
 // =============== FIXED CORS FOR RENDER (ONLY YOUR DOMAINS) ===============
 app.use(cors({
   origin: [
-    "https://chatpoint1.onrender.com",     // Your frontend domain
-    "https://chatpoint-3ycy.onrender.com"  // Your backend domain (safety)
+    "https://chatpoint1.onrender.com", // Your frontend domain
+    "https://chatpoint-3ycy.onrender.com" // Your backend domain (safety)
   ],
   methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -150,6 +150,19 @@ const Order = mongoose.model(
   })
 );
 
+// NEW: Menu Item Model
+const Item = mongoose.model(
+  "Item",
+  new mongoose.Schema({
+    shop: { type: String, required: true, index: true },
+    name: { type: String, required: true },
+    originalPrice: { type: Number, required: true },
+    type: { type: String, enum: ["veg", "nonveg", ""], default: "" },
+    imageUrl: { type: String },
+    createdAt: { type: Date, default: Date.now },
+  })
+);
+
 // =============== ADMIN PASSWORD ===============
 const ADMIN_PASSWORD = "Brand";
 
@@ -164,14 +177,12 @@ const saveOrderUniversal = async (req, res) => {
     const address2 = body.address2 || body.line2 || "";
     const grandTotal = Number(body.grandTotal || body.totalAmount || body.total);
     const cart = body.cart || body.items;
-
     if (!name || !phone || !address1)
       return res.status(400).json({ success: false, message: "Missing name, phone or address" });
     if (!grandTotal || isNaN(grandTotal) || grandTotal <= 0)
       return res.status(400).json({ success: false, message: "Invalid total amount" });
     if (!cart || typeof cart !== "object" || Object.keys(cart).length === 0)
       return res.status(400).json({ success: false, message: "Empty cart" });
-
     let items = [];
     let shopName = null;
     for (const shop in cart) {
@@ -185,9 +196,7 @@ const saveOrderUniversal = async (req, res) => {
         }
       }
     }
-
     if (items.length === 0) return res.status(400).json({ success: false, message: "No valid items" });
-
     const order = new Order({
       userId: userId || null,
       user: { name, phone },
@@ -199,7 +208,6 @@ const saveOrderUniversal = async (req, res) => {
       paymentMethod: body.paymentMethod || "cash",
       progress: 0,
     });
-
     await order.save();
     console.log(`NEW ORDER → #${order._id} | ₹${grandTotal} | ${name}`);
     res.json({ success: true, orderId: order._id });
@@ -348,6 +356,65 @@ app.delete("/api/admin/delete-item/:id", async (req, res) => {
   }
 });
 
+// ─────────────────────────────────────────────
+// NEW MENU ENDPOINTS
+// ─────────────────────────────────────────────
+
+// Get menu items for a shop
+app.get("/api/menu", async (req, res) => {
+  try {
+    const shop = req.query.shop?.trim();
+    if (!shop) {
+      return res.status(400).json({ success: false, message: "Shop name required" });
+    }
+
+    const items = await Item.find({ shop }).sort({ name: 1 }).lean();
+    res.json(items);
+  } catch (err) {
+    console.error("Get menu error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// Admin add new menu item (with Cloudinary upload)
+app.post(
+  "/api/admin/add-menu-item",
+  upload.single("image"),
+  async (req, res) => {
+    const { password, shop, name, originalPrice, type } = req.body;
+
+    if (password !== ADMIN_PASSWORD) {
+      return res.status(401).json({ success: false, message: "Wrong admin password" });
+    }
+
+    if (!shop || !name || !originalPrice) {
+      return res.status(400).json({ success: false, message: "Missing required fields: shop, name, originalPrice" });
+    }
+
+    try {
+      const itemData = {
+        shop: shop.trim(),
+        name: name.trim(),
+        originalPrice: Number(originalPrice),
+        type: type || "",
+      };
+
+      if (req.file) {
+        itemData.imageUrl = req.file.path; // Cloudinary secure URL
+      }
+
+      const newItem = new Item(itemData);
+      await newItem.save();
+
+      res.json({ success: true, message: "Menu item added successfully", item: newItem });
+    } catch (err) {
+      console.error("Add menu item error:", err);
+      res.status(500).json({ success: false, message: "Server error" });
+    }
+  }
+);
+
+// =============== ORDER & OTHER ROUTES ===============
 app.post("/api/save-order", saveOrderUniversal);
 app.post("/api/place-order", saveOrderUniversal);
 app.post("/api/checkout", saveOrderUniversal);
@@ -573,11 +640,13 @@ const pages = [
   "categories",
   "pindex",
 ];
+
 pages.forEach((p) => {
   const route = p === "index" ? "/" : `/${p}.html`;
   const file = p === "index" ? "index.html" : `${p}.html`;
   app.get(route, (req, res) => res.sendFile(path.join(__dirname, file)));
 });
+
 app.get("*", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
 app.listen(PORT, "0.0.0.0", () => {
