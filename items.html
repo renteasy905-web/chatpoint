@@ -118,23 +118,45 @@
       border-radius: var(--radius);
       overflow: hidden;
       box-shadow: var(--shadow-sm);
-      padding: 18px;
       transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
     }
     .item-card:hover {
       transform: translateY(-6px);
       box-shadow: 0 16px 40px rgba(230,57,70,0.18);
     }
+    .item-img-container {
+      width: 100%;
+      height: 160px;
+      overflow: hidden;
+      background: #f8f9fa;
+    }
+    .item-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .item-card:hover .item-img {
+      transform: scale(1.08);
+    }
+    .item-details {
+      padding: 16px 18px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
     .item-name {
       font-size: 1.25rem;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .item-price {
       font-size: 1.45rem;
       font-weight: 800;
       color: var(--primary);
-      margin: 8px 0 12px;
+      margin: 4px 0 12px;
     }
     .quantity-row {
       display: flex;
@@ -222,7 +244,7 @@
 
 <script>
 // =============================================
-// CONFIG
+// CONFIG - shopMenus (unchanged)
 // =============================================
 const DELIVERY_THRESHOLD = 100;
 const DELIVERY_FEE = 20;
@@ -536,6 +558,33 @@ const shopMenus = {
 };
 
 // =============================================
+// IMAGE HELPERS
+// =============================================
+function getItemImageUrl(itemName) {
+  // Convert item name to filename-friendly format
+  const normalized = itemName
+    .replace(/[^a-zA-Z0-9\s-]/g, '')     // keep letters, numbers, space, hyphen
+    .trim()
+    .replace(/\s+/g, '-');               // spaces → hyphen
+
+  const possibleNames = [
+    normalized + '.jpg',
+    normalized + '.JPG',
+    normalized + '.png',
+    normalized + '.jpeg',
+    itemName.replace(/ /g, '-') + '.jpg',
+    itemName.replace(/ /g, '-') + '.JPG',
+    itemName.replace(/ /g, '') + '.jpg',
+    itemName + '.jpg',
+    itemName + '.JPG',
+    itemName + '.png'
+  ];
+
+  // Return the first likely match from your folder
+  return `/images/${possibleNames[0]}`;
+}
+
+// =============================================
 // UTILITIES
 // =============================================
 function getDisplayedPrice(original) {
@@ -609,7 +658,7 @@ function changeQty(shop, name, price, delta) {
 }
 
 // =============================================
-// RENDER MENU
+// RENDER MENU - WITH IMAGES
 // =============================================
 let currentFilter = "veg";
 
@@ -619,17 +668,14 @@ function renderMenu() {
 
   const inputShop = getShopFromURL();
 
-  // Case-insensitive lookup
   const shopKey = Object.keys(shopMenus).find(
     key => key.toLowerCase() === inputShop.toLowerCase()
   );
 
   const items = shopKey ? shopMenus[shopKey] : [];
 
-  // Show original casing from shopMenus
   document.getElementById("shopName").textContent = shopKey || inputShop || "Shop not found";
 
-  // Show filter only for Dolphin Hotel
   document.getElementById("vegNonVegFilter").classList.toggle("active", shopKey === "Dolphin Hotel");
 
   if (items.length === 0) {
@@ -643,7 +689,6 @@ function renderMenu() {
   }
 
   items.forEach(item => {
-    // Apply filter only for Dolphin Hotel
     if (shopKey === "Dolphin Hotel") {
       if (currentFilter === "veg" && item.type === "nonveg") return;
       if (currentFilter === "nonveg" && item.type === "veg") return;
@@ -651,16 +696,26 @@ function renderMenu() {
 
     const price = getDisplayedPrice(item.originalPrice);
     const qty = cart[shopKey]?.[item.name]?.qty || 0;
+    const imgUrl = getItemImageUrl(item.name);
 
     const card = document.createElement("div");
     card.className = "item-card";
     card.innerHTML = `
-      <div class="item-name">${item.name}</div>
-      <div class="item-price">${formatPrice(price)}</div>
-      <div class="quantity-row">
-        <button class="qty-btn" onclick="changeQty('${shopKey}', '${item.name.replace(/'/g,"\\'")}', ${price}, -1)">−</button>
-        <span class="qty-value">${qty}</span>
-        <button class="qty-btn" onclick="changeQty('${shopKey}', '${item.name.replace(/'/g,"\\'")}', ${price}, 1)">+</button>
+      <div class="item-img-container">
+        <img class="item-img"
+             src="${imgUrl}"
+             alt="${item.name}"
+             loading="lazy"
+             onerror="this.src='/images/default.jpg'">
+      </div>
+      <div class="item-details">
+        <div class="item-name">${item.name}</div>
+        <div class="item-price">${formatPrice(price)}</div>
+        <div class="quantity-row">
+          <button class="qty-btn" onclick="changeQty('${shopKey}', '${item.name.replace(/'/g,"\\'")}', ${price}, -1)">−</button>
+          <span class="qty-value">${qty}</span>
+          <button class="qty-btn" onclick="changeQty('${shopKey}', '${item.name.replace(/'/g,"\\'")}', ${price}, 1)">+</button>
+        </div>
       </div>
     `;
     container.appendChild(card);
