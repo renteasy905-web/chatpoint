@@ -128,7 +128,7 @@
         }
         .success { background: rgba(40,167,69,0.15); color: #4caf50; border: 1px solid rgba(40,167,69,0.3); }
         .warning { background: rgba(255,152,0,0.15); color: #ff9800; border: 1px solid rgba(255,152,0,0.3); }
-        .error   { background: rgba(220,53,69,0.12); color: #dc3545; border: 1px solid rgba(220,53,69,0.3); }
+        .error { background: rgba(220,53,69,0.12); color: #dc3545; border: 1px solid rgba(220,53,69,0.3); }
         #orderPopup {
             position: fixed;
             inset: 0;
@@ -224,21 +224,22 @@
             return;
         }
 
-        let itemsArray = [];
         let subtotal = 0;
+        let itemsArray = [];
         let shopName = "Multiple Shops";
 
         Object.keys(savedCart).forEach(shop => {
             if (shop !== WATER.shop) shopName = shop;
             Object.keys(savedCart[shop]).forEach(itemName => {
                 const item = savedCart[shop][itemName];
-                if (item.qty > 0) {
+                if ((item.qty || 0) > 0) {
+                    const itemTotal = (item.price || 0) * item.qty;
+                    subtotal += itemTotal;
                     itemsArray.push({
                         name: itemName,
                         price: item.price,
                         quantity: item.qty
                     });
-                    subtotal += item.price * item.qty;
                 }
             });
         });
@@ -246,6 +247,7 @@
         const deliveryCharge = getDeliveryCharge(savedCart);
         const grandTotal = subtotal + deliveryCharge;
 
+        // Store data needed for order placement
         window.tempOrderData = {
             itemsArray,
             subtotal,
@@ -257,7 +259,6 @@
         document.getElementById("mainContainer").innerHTML = `
             <h2>Checkout</h2>
             <div id="statusMsg" class="msg"></div>
-
             <div class="form-group">
                 <label>Name *</label>
                 <input id="name" value="${user.name || ''}" required />
@@ -274,16 +275,15 @@
                 <label>Address Line 2 (optional)</label>
                 <textarea id="address2" rows="2"></textarea>
             </div>
-
             <div class="cart-summary">
                 <h3 style="margin-bottom:1rem;color:var(--primary);">Order Summary</h3>
                 ${itemsArray.map(i => `
                     <div class="cart-item">
                         <span>${i.name} × ${i.quantity}</span>
-                        <span>₹${i.price * i.quantity}</span>
+                        <span>₹${(i.price * i.quantity).toFixed(0)}</span>
                     </div>
                 `).join('')}
-                <div class="cart-item"><b>Subtotal</b><b>₹${subtotal}</b></div>
+                <div class="cart-item"><b>Subtotal</b><b>₹${subtotal.toFixed(0)}</b></div>
                 <div class="cart-item">
                     <b>Delivery</b>
                     <b class="${deliveryCharge===0?'delivery-free':''}">
@@ -292,14 +292,13 @@
                 </div>
                 <div class="total-row">
                     <span>Total</span>
-                    <span>₹${grandTotal}</span>
+                    <span>₹${grandTotal.toFixed(0)}</span>
                 </div>
             </div>
-
             <button id="placeOrderBtn" class="btn">Place Order (COD)</button>
         `;
 
-        document.getElementById("placeOrderBtn").onclick = placeOrder;
+        document.getElementById("placeOrderBtn").addEventListener("click", placeOrder);
     }
 
     async function placeOrder() {
@@ -317,9 +316,9 @@
         btn.disabled = true;
         btn.textContent = "Processing...";
 
-        const { itemsArray, subtotal, deliveryCharge, grandTotal, cart } = window.tempOrderData;
+        const { cart, grandTotal } = window.tempOrderData;
 
-        // Show success popup immediately
+        // Show popup early for better UX
         const popup = document.getElementById("orderPopup");
         popup.style.display = "flex";
         confetti({
@@ -329,12 +328,21 @@
             colors: ['#e6b25c', '#ffffff', '#bb8c3d', '#4caf50']
         });
 
-        // Prepare WhatsApp message
-        const orderSummary = itemsArray.map(i => `${i.name} × ${i.quantity}`).join("\n");
-        const msg = `NEW ORDER\n\n${orderSummary}\n\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nSubtotal: ₹${subtotal}\nDelivery: ${deliveryCharge === 0 ? 'FREE' : '₹'+deliveryCharge}\nTotal: ₹${grandTotal}`;
+        // Build WhatsApp message
+        let orderSummary = "";
+        Object.keys(cart).forEach(shop => {
+            Object.keys(cart[shop]).forEach(itemName => {
+                const item = cart[shop][itemName];
+                if (item.qty > 0) {
+                    orderSummary += `${itemName} × ${item.qty}\n`;
+                }
+            });
+        });
+
+        const msg = `NEW ORDER\n\n${orderSummary}\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nTotal: ₹${grandTotal}`;
         const encoded = encodeURIComponent(msg);
 
-        // Send to WhatsApp
+        // Open WhatsApp chats
         setTimeout(() => {
             window.open(`https://wa.me/91${PRIMARY}?text=${encoded}`, "_blank");
             setTimeout(() => {
@@ -342,8 +350,10 @@
             }, 1200);
         }, 2800);
 
-        // Try to save to backend
+        // Save to backend (this is the fixed payload)
         let backendSuccess = false;
+        let orderId = null;
+
         try {
             const response = await fetch(BACKEND_URL, {
                 method: "POST",
@@ -353,36 +363,43 @@
                     phone,
                     address1,
                     address2: address2 || "",
-                    items: itemsArray,
-                    subtotal,
-                    deliveryCharge,
                     grandTotal,
-                    paymentMethod: "cash",
-                    cart
+                    cart,                      // ← nested cart your backend expects
+                    paymentMethod: "cash"
+                    // userId: JSON.parse(localStorage.getItem(USER_KEY))?._id || null
                 })
             });
 
-            if (response.ok) {
+            const data = await response.json();
+
+            if (data.success) {
                 backendSuccess = true;
-                document.getElementById("popupText").textContent = "Order saved successfully & sent to WhatsApp!";
+                orderId = data.orderId;
+                document.getElementById("popupText").textContent = "Order placed & saved successfully!";
+            } else {
+                document.getElementById("popupText").textContent = "Order sent to WhatsApp (save failed)";
             }
         } catch (err) {
-            console.error("Backend save failed:", err);
+            console.error("Backend save error:", err);
+            document.getElementById("popupText").textContent = "Order sent — server connection issue";
         }
 
-        // Clear cart
+        // Clear cart after attempt
         localStorage.removeItem(CART_KEY);
 
-        // Show feedback message
-        if (backendSuccess) {
-            showMessage("Order placed successfully! Saved in system & sent via WhatsApp.", "success");
-        } else {
-            showMessage("Order sent via WhatsApp (database save failed - likely CORS issue on server)", "warning");
-        }
+        // Show message on page
+        showMessage(
+            backendSuccess
+                ? "Order placed successfully!"
+                : "Order sent via WhatsApp (database save may have failed)",
+            backendSuccess ? "success" : "warning"
+        );
 
-        // Redirect after delay
+        // Redirect to tracking page
         setTimeout(() => {
-            window.location.href = "tracking.html";
+            let url = "tracking.html";
+            if (orderId) url += `?orderId=${orderId}`;
+            window.location.href = url;
         }, 5000);
     }
 
