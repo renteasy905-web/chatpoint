@@ -6,7 +6,7 @@
   <title>Menu - ChatPoint</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-  
+ 
   <style>
     :root {
       --primary: #e63946;
@@ -18,7 +18,6 @@
       --shadow-sm: 0 6px 20px rgba(0,0,0,0.08);
       --radius: 16px;
     }
-
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
       font-family: 'Poppins', sans-serif;
@@ -26,7 +25,6 @@
       color: var(--dark);
       min-height: 100vh;
     }
-
     header {
       background: white;
       padding: 14px 18px;
@@ -38,7 +36,6 @@
       align-items: center;
       justify-content: space-between;
     }
-
     .back-btn {
       font-size: 1.9rem;
       background: none;
@@ -48,15 +45,11 @@
       padding: 8px;
       border-radius: 50%;
     }
-
     .back-btn:hover { background: rgba(230,57,70,0.1); }
-
     .page-title {
       font-size: 1.45rem;
       font-weight: 700;
     }
-
-    /* Top fixed cart bar */
     .cart-bar {
       position: fixed;
       top: 60px;
@@ -71,15 +64,12 @@
       z-index: 999;
       border-bottom: 1px solid #eee;
     }
-
     .cart-bar.visible { display: flex; }
-
     .cart-info {
       font-size: 1.1rem;
       font-weight: 600;
       color: var(--primary);
     }
-
     .view-cart-btn {
       background: var(--primary);
       color: white;
@@ -89,13 +79,10 @@
       font-weight: 700;
       cursor: pointer;
     }
-
     .view-cart-btn:hover { background: var(--primary-dark); }
-
     main {
       padding: 90px 18px 220px;
     }
-
     h1.shop-name {
       font-size: 2rem;
       font-weight: 800;
@@ -103,7 +90,6 @@
       margin: 0 0 28px;
       text-align: center;
     }
-
     .veg-nonveg-filter {
       display: none;
       justify-content: center;
@@ -123,45 +109,60 @@
     .filter-btn.veg { background: #2a9d8f; border-radius: 14px 0 0 14px; }
     .filter-btn.nonveg { background: var(--primary); border-radius: 0 14px 14px 0; }
     .filter-btn.active { transform: scale(1.05); box-shadow: 0 0 0 4px rgba(255,255,255,0.4); }
-
     .items-container {
       display: grid;
       gap: 20px;
     }
-
     .item-card {
       background: var(--card-bg);
       border-radius: var(--radius);
       overflow: hidden;
       box-shadow: var(--shadow-sm);
-      padding: 18px;
       transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
     }
-
     .item-card:hover {
       transform: translateY(-6px);
       box-shadow: 0 16px 40px rgba(230,57,70,0.18);
     }
-
+    .item-img-container {
+      width: 100%;
+      height: 160px;
+      overflow: hidden;
+      background: #f8f9fa;
+    }
+    .item-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .item-card:hover .item-img {
+      transform: scale(1.08);
+    }
+    .item-details {
+      padding: 16px 18px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
     .item-name {
       font-size: 1.25rem;
       font-weight: 700;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
-
     .item-price {
       font-size: 1.45rem;
       font-weight: 800;
       color: var(--primary);
-      margin: 8px 0 12px;
+      margin: 4px 0 12px;
     }
-
     .quantity-row {
       display: flex;
       align-items: center;
       gap: 16px;
     }
-
     .qty-btn {
       width: 44px;
       height: 44px;
@@ -173,16 +174,13 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-
     .qty-btn:hover { background: rgba(230,57,70,0.18); }
-
     .qty-value {
       font-size: 1.35rem;
       font-weight: 700;
       min-width: 40px;
       text-align: center;
     }
-
     .cart-summary-bar {
       position: fixed;
       bottom: 18px;
@@ -200,79 +198,23 @@
       transition: 0.25s ease;
       animation: popUp 0.35s ease-out;
     }
-
     .cart-summary-bar.visible { display: block !important; }
-
     .grand-total-row {
       text-align: center;
       font-size: 1.8rem;
       font-weight: 900;
       letter-spacing: 0.5px;
     }
-
     @keyframes popUp {
       from { transform: translateX(-50%) translateY(30px); opacity: 0; }
-      to   { transform: translateX(-50%) translateY(0); opacity: 1; }
+      to { transform: translateX(-50%) translateY(0); opacity: 1; }
     }
-
-    .hidden { display: none !important; }
-    .item-card {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  padding: 0;  /* Remove old padding, image will take space */
-  transition: all 0.25s ease;
-  display: flex;
-  flex-direction: column;
-}
-
-.item-img-container {
-  width: 100%;
-  height: 160px;          /* Fixed height for consistency */
-  overflow: hidden;
-  background: #f8f9fa;
-}
-
-.item-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;      /* Crops nicely without distortion */
-  transition: transform 0.4s ease;
-}
-
-.item-card:hover .item-img {
-  transform: scale(1.08); /* Nice zoom effect on hover */
-}
-
-.item-details {
-  padding: 16px 18px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.item-name {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.item-price {
-  font-size: 1.45rem;
-  font-weight: 800;
-  color: var(--primary);
-  margin: 4px 0 12px;
-}
-
-/* For mobile - smaller image height */
-@media (max-width: 480px) {
-  .item-img-container { height: 140px; }
-}
+    @media (max-width: 480px) {
+      .item-img-container { height: 140px; }
+    }
   </style>
 </head>
 <body>
-
 <header>
   <button class="back-btn" onclick="window.location.href='index.html'">←</button>
   <div class="page-title">Menu</div>
@@ -290,12 +232,10 @@
 
 <main>
   <h1 class="shop-name" id="shopName">Loading...</h1>
-
   <div class="veg-nonveg-filter" id="vegNonVegFilter">
     <button class="filter-btn veg active" onclick="filterItems('veg')">Veg</button>
     <button class="filter-btn nonveg" onclick="filterItems('nonveg')">Non-Veg</button>
   </div>
-
   <div class="items-container" id="itemsContainer"></div>
 </main>
 
@@ -307,9 +247,8 @@
 
 <script>
 // =============================================
-// CONFIG - ALL SHOPS & ALL ITEMS (no images)
+// CONFIG - ALL SHOPS & ALL ITEMS (complete, no skipped items)
 // =============================================
-
 const DELIVERY_THRESHOLD = 100;
 const DELIVERY_FEE = 20;
 
@@ -609,47 +548,29 @@ const shopMenus = {
   ]
 };
 
-
 // =============================================
-// ITEM IMAGES (thumbnails - fast loading, appetizing)
+// ITEM IMAGES
 // =============================================
-
 const itemImages = {
-  // Pizza Spot & similar pizza places
   "Margarita": "https://thumbs.dreamstime.com/b/hot-melting-cheese-pizza-slice-golden-crust-gooey-texture-close-up-delicious-baked-stretching-slow-motion-warm-413947085.jpg",
   "Veggie": "https://thumbs.dreamstime.com/b/close-up-shot-freshly-baked-pizza-wooden-board-slice-being-lifted-showcasing-stringy-melted-cheese-topped-406606770.jpg",
   "Veg Lover": "https://thumbs.dreamstime.com/b/close-up-four-cheese-pizza-slice-close-up-shot-four-cheese-pizza-perfectly-melted-cheese-stretchy-gooey-ready-327216466.jpg",
   "Tandoori Paneer": "https://thumbs.dreamstime.com/b/generative-illustration-close-up-shot-delicious-pizza-slice-melted-cheese-steam-rising-tempting-appetizing-400069956.jpg",
   "Burger Classic": "https://i0.wp.com/curryandvanilla.com/wp-content/uploads/2018/02/matar-paneer-burger-1b.jpg?resize=715%2C588&ssl=1",
   "Paneer": "https://cdn.prod.website-files.com/64931d2aee18510b47f4bb1f/64ecfeaabcba01b63384e630_a51qss7pr5ecmtp120javht18sah4nyf.jpeg",
-  "French Fries": "https://images.unsplash.com/photo-1585109643930-0f5d0c2e8e2c?w=800", // fallback fries
-
-  // Dolphin Hotel (Indo-Chinese & Non-veg)
+  "French Fries": "https://images.unsplash.com/photo-1585109643930-0f5d0c2e8e2c?w=800",
   "Veg Manchurian": "https://indishious.com/_astro/8ab9fbbb-a6c0-4358-9173-f86383ed7dca_Manchurian_Zn0EeK.jpeg",
   "Gobi Manchurian": "https://i.ytimg.com/vi/wjz8MEaWp2Q/maxresdefault.jpg",
   "Veg 65": "https://madhurasrecipe.com/wp-content/uploads/2024/02/Veg-manchurian-dry-Featured.jpg",
-  "CKN Tandoori": "https://www.foodandwine.com/thmb/Km8A0Dc_s5E8alSiWbehwuk8gI4=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Grilled-Tandori-Chicken-FT-RECIPE0323-de1e247b1dbb4c0e9cb11243141eaa50.jpg",
-  "CKN Masala": "https://www.allrecipes.com/thmb/ygY1JXP8_IkDSjPPW5VH2dTiMMU=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/50347-indian-tandoori-chicken-DDMFS-4x3-3035-205e98c80b2f4275b5bd010c396d9149.jpg",
-  "Butter Dal": "https://onestophalal.com/cdn/shop/articles/butter_chicken_and_naan-1701754798038_1200x.jpg?v=1701756090",
-  "Dal Fry": "https://www.allrecipes.com/thmb/8L5gq8V7Kyl3qfoDe5vhCU_rvZI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/AR-141169-Easy-Indian-Butter-Chicken-DDMFS-4x3-beauty-588ff54d1e0f4a0788906e851e27d540.jpg",
-
-  // South Indian shops
   "Masala Dosa": "http://www.redrickshaw.com/cdn/shop/articles/1582305526_1582305520_1582305364_1582305349_1582304487_1582304482_1582297507_1582297420_1582297166_1582297160_Masala_Dosa_1.jpg?v=1582305529",
   "Plain Dosa": "https://i.ytimg.com/vi/F8yz7VJj3I4/sddefault.jpg",
-  "Paneer Dosa": "https://images.unsplash.com/photo-1630409351343-6360a6a2b0c8?w=800", // similar
-
-  // Bakery / Cakes
   "Black Forest Cake": "https://www.allrecipes.com/thmb/WkIeZXMl0NxzMLVwvQm9pfYVtPI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/AR-8095-black-forest-cake-beauty-4x3-3df4387fe611404abdce43ab4aca38f5.jpg",
-  "Pineapple Cake": "https://thumbs.dreamstime.com/b/black-forest-cake-slice-cherries-cream-chocolate-slice-black-forest-cake-chocolate-layers-whipped-cream-cherry-382164783.jpg",
-
-  // General fallback
-  "default": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800"  // generic delicious food
+  "default": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800"
 };
 
 // =============================================
 // UTILITIES
 // =============================================
-
 function getDisplayedPrice(original) {
   return original <= 100 ? original + 20 : original + 40;
 }
@@ -666,7 +587,6 @@ function formatPrice(num) {
 // =============================================
 // CART LOGIC
 // =============================================
-
 let cart = JSON.parse(localStorage.getItem("chatpoint_cart")) || {};
 
 function saveCart() {
@@ -692,24 +612,26 @@ function updateCartUI() {
     }
   }
 
-  document.getElementById("cartCountBar").textContent = count;
+  const cartCountEl = document.getElementById("cartCountBar");
+  if (cartCountEl) cartCountEl.textContent = count;
 
   const topBar = document.getElementById("cartBar");
   const bottomBar = document.getElementById("cartSummaryBar");
 
   if (count > 0) {
-    topBar.classList.add("visible");
-    bottomBar.classList.add("visible");
+    if (topBar) topBar.classList.add("visible");
+    if (bottomBar) bottomBar.classList.add("visible");
   } else {
-    topBar.classList.remove("visible");
-    bottomBar.classList.remove("visible");
+    if (topBar) topBar.classList.remove("visible");
+    if (bottomBar) bottomBar.classList.remove("visible");
   }
 
   const subtotal = getCartSubtotal();
   const delivery = subtotal < DELIVERY_THRESHOLD ? DELIVERY_FEE : 0;
   const grand = subtotal + delivery;
 
-  document.getElementById("grandTotal").textContent = formatPrice(grand);
+  const grandEl = document.getElementById("grandTotal");
+  if (grandEl) grandEl.textContent = formatPrice(grand);
 }
 
 function changeQty(shop, name, price, delta) {
@@ -727,19 +649,23 @@ function changeQty(shop, name, price, delta) {
 }
 
 // =============================================
-// RENDER MENU (no images)
+// RENDER MENU - ALL ITEMS SHOWN
 // =============================================
+let currentFilter = "veg";
 
 function renderMenu() {
   const container = document.getElementById("itemsContainer");
+  if (!container) return;
+
   container.innerHTML = "";
 
   const shop = getShopFromURL();
   const items = shopMenus[shop] || [];
 
-  document.getElementById("shopName").textContent = shop || "Shop not found";
-
-  document.getElementById("vegNonVegFilter").classList.toggle("active", shop === "Dolphin Hotel");
+  const shopNameEl = document.getElementById("shopName");
+  if (shopNameEl) {
+    shopNameEl.textContent = shop && shopMenus[shop] ? shop : "Shop not found";
+  }
 
   if (items.length === 0) {
     container.innerHTML = `
@@ -752,6 +678,7 @@ function renderMenu() {
   }
 
   items.forEach(item => {
+    // Filter only for Dolphin Hotel
     if (shop === "Dolphin Hotel") {
       if (currentFilter === "veg" && item.type === "nonveg") return;
       if (currentFilter === "nonveg" && item.type === "veg") return;
@@ -759,34 +686,27 @@ function renderMenu() {
 
     const price = getDisplayedPrice(item.originalPrice);
     const qty = cart[shop]?.[item.name]?.qty || 0;
-const imgUrl = itemImages[item.name] || itemImages["default"];
+    const imgUrl = itemImages[item.name] || itemImages["default"];
 
-const card = document.createElement("div");
-card.className = "item-card";
-card.innerHTML = `
-  <div class="item-img-container">
-    <img class="item-img" src="${imgUrl}" alt="${item.name}" loading="lazy">
-  </div>
-  <div class="item-details">
-    <div class="item-name">${item.name}</div>
-    <div class="item-price">${formatPrice(price)}</div>
-    <div class="quantity-row">
-      <button class="qty-btn" onclick="changeQty('${shop}', '${item.name.replace(/'/g,"\\'")}', ${price}, -1)">−</button>
-      <span class="qty-value">${qty}</span>
-      <button class="qty-btn" onclick="changeQty('${shop}', '${item.name.replace(/'/g,"\\'")}', ${price}, 1)">+</button>
-    </div>
-  </div>
-`;
+    const card = document.createElement("div");
+    card.className = "item-card";
+    card.innerHTML = `
+      <div class="item-img-container">
+        <img class="item-img" src="${imgUrl}" alt="${item.name}" loading="lazy">
+      </div>
+      <div class="item-details">
+        <div class="item-name">${item.name}</div>
+        <div class="item-price">${formatPrice(price)}</div>
+        <div class="quantity-row">
+          <button class="qty-btn" onclick="changeQty('${shop.replace(/'/g,"\\'")}', '${item.name.replace(/'/g,"\\'")}', ${price}, -1)">−</button>
+          <span class="qty-value">${qty}</span>
+          <button class="qty-btn" onclick="changeQty('${shop.replace(/'/g,"\\'")}', '${item.name.replace(/'/g,"\\'")}', ${price}, 1)">+</button>
+        </div>
+      </div>
     `;
     container.appendChild(card);
   });
 }
-
-// =============================================
-// INIT
-// =============================================
-
-let currentFilter = "veg";
 
 function filterItems(type) {
   currentFilter = type;
@@ -796,15 +716,19 @@ function filterItems(type) {
   renderMenu();
 }
 
-const currentShop = getShopFromURL();
-if (currentShop && shopMenus[currentShop]) {
-  document.getElementById("shopName").textContent = currentShop;
-} else {
-  document.getElementById("shopName").textContent = "Shop not found";
-}
+// =============================================
+// INIT - Runs after page is fully loaded
+// =============================================
+document.addEventListener("DOMContentLoaded", () => {
+  const currentShop = getShopFromURL();
+  const filterEl = document.getElementById("vegNonVegFilter");
+  if (filterEl) {
+    filterEl.classList.toggle("active", currentShop === "Dolphin Hotel");
+  }
 
-renderMenu();
-updateCartUI();
+  renderMenu();
+  updateCartUI();
+});
 </script>
 </body>
 </html>
