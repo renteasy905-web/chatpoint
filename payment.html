@@ -1,343 +1,249 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Checkout | ChatPoint</title>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-  <style>
-    :root {
-      --bg: #0d0e12;
-      --card: #14151a;
-      --text: #e6e6e6;
-      --text-muted: #9b9ca1;
-      --primary: #e6b25c;
-      --primary-dark: #bb8c3d;
-      --glass: rgba(255,255,255,0.06);
-      --border: rgba(255,255,255,0.08);
-      --radius: 18px;
-    }
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Outfit',sans-serif; }
-    body { background:var(--bg); color:var(--text); padding:1.5rem; line-height:1.5; }
-    .container { max-width:520px; margin:auto; }
-    .form-group { margin-bottom:1.4rem; }
-    .form-group label { display:block; margin-bottom:0.5rem; font-weight:600; color:var(--text-muted); }
-    input, textarea {
-      width:100%; padding:1rem; border-radius:12px; border:1px solid var(--border);
-      background:var(--card); color:var(--text); font-size:1.1rem;
-    }
-    .cart-summary {
-      background:var(--glass); padding:1.6rem; border-radius:16px;
-      border:1px solid var(--border); margin:2rem 0;
-    }
-    .cart-item {
-      display:flex; justify-content:space-between; padding:0.9rem 0;
-      border-bottom:1px dashed var(--border); font-size:1.1rem;
-    }
-    .total-row {
-      display:flex; justify-content:space-between; font-size:1.7rem;
-      font-weight:900; margin-top:1.4rem; padding-top:1.4rem;
-      border-top:2px solid var(--primary); color:var(--primary);
-    }
-    .delivery-free { color:#4caf50 !important; font-weight:700; }
-    .btn {
-      width:100%; padding:1.4rem; font-size:1.35rem; font-weight:800;
-      border:none; border-radius:16px; background:var(--primary); color:#000;
-      cursor:pointer; margin-top:2rem; transition:all 0.2s;
-    }
-    .btn:hover:not(:disabled) {
-      background:var(--primary-dark); transform:translateY(-3px);
-    }
-    .btn:disabled { background:#444; cursor:not-allowed; transform:none; }
-    .msg {
-      text-align:center; padding:1.3rem; border-radius:14px; margin:1.4rem 0;
-      font-weight:700; font-size:1.2rem; display:none;
-    }
-    .success { background:rgba(40,167,69,.18); color:#4caf50; border:1px solid rgba(40,167,69,.4); }
-    .warning { background:rgba(255,152,0,.15); color:#ff9800; border:1px solid rgba(255,152,0,.4); }
-    .error   { background:rgba(220,53,69,.15); color:#dc3545; border:1px solid rgba(220,53,69,.4); }
-    #orderPopup {
-      position:fixed; inset:0; background:rgba(0,0,0,0.8);
-      display:none; align-items:center; justify-content:center; z-index:3000;
-    }
-    .popup-content {
-      background:var(--card); padding:3rem 2.2rem; border-radius:var(--radius);
-      text-align:center; border:2px solid var(--primary); max-width:90%;
-      box-shadow:0 20px 70px rgba(0,0,0,0.8);
-    }
-    .popup-content h2 { margin-bottom:1rem; font-size:2.3rem; }
-    .popup-content p { font-size:1.35rem; color:var(--text-muted); }
-    @media (max-width:480px) { .container { padding:1rem; } }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout — ChatPoint</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background:#f8f8f8;
+            margin:0;
+            padding:0;
+        }
+        .header {
+            position:sticky; top:0; background:white; padding:15px;
+            box-shadow:0 2px 10px rgba(0,0,0,0.1); display:flex; align-items:center; gap:15px; z-index:10;
+        }
+        .back { font-size:28px; cursor:pointer; color:#4CAF50; }
+        .title { font-size:20px; font-weight:bold; flex:1; }
+        .container { padding:20px; max-width:600px; margin:0 auto; }
+        .form-group { margin-bottom:20px; }
+        label { display:block; font-weight:600; margin-bottom:8px; color:#333; }
+        input, textarea {
+            width:100%; padding:14px; border:1px solid #ddd;
+            border-radius:10px; font-size:16px; box-sizing:border-box;
+        }
+        input[readonly] { background:#f0f0f0; color:#555; }
+        textarea { resize:vertical; min-height:100px; }
+        .items-section {
+            background:white; padding:20px; border-radius:12px;
+            box-shadow:0 4px 10px rgba(0,0,0,0.08); margin:20px 0;
+        }
+        .item-row {
+            display:flex; align-items:center; gap:16px;
+            padding:12px 0; border-bottom:1px solid #eee;
+        }
+        .item-row:last-child { border-bottom:none; }
+        .item-img { width:60px; height:60px; object-fit:cover; border-radius:8px; }
+        .item-info { flex:1; }
+        .item-name { font-weight:600; font-size:16px; }
+        .item-details { color:#666; font-size:14px; margin-top:4px; }
+        .item-price { color:#4CAF50; font-weight:bold; font-size:16px; }
+        .summary {
+            background:white; padding:20px; border-radius:12px;
+            box-shadow:0 4px 10px rgba(0,0,0,0.08); margin:20px 0;
+        }
+        .summary-row {
+            display:flex; justify-content:space-between; font-size:16px; margin-bottom:12px;
+        }
+        .grand-total {
+            font-size:20px; font-weight:bold; color:#4CAF50; padding-top:12px; border-top:2px solid #eee;
+        }
+        .order-btn {
+            width:100%; background:#4CAF50; color:white; border:none;
+            padding:16px; font-size:18px; font-weight:bold; border-radius:12px;
+            cursor:pointer; box-shadow:0 4px 15px rgba(76,175,80,0.3); margin-top:20px;
+        }
+        .order-btn:hover { background:#43a047; }
+        .order-btn:disabled { background:#aaa; cursor:not-allowed; box-shadow:none; }
+        .min-note { text-align:center; color:#e74c3c; font-size:14px; margin:10px 0; }
+        .login-required {
+            text-align:center; padding:80px 20px; color:#e74c3c; font-size:18px;
+        }
+        .login-required a {
+            color:#4CAF50; text-decoration:none; font-weight:bold;
+        }
+    </style>
 </head>
 <body>
+    <div class="header">
+        <div class="back" onclick="history.back()">←</div>
+        <div class="title">Checkout</div>
+    </div>
+    <div class="container">
+        <!-- Shown only if not logged in -->
+        <div id="loginRequired" class="login-required">
+            <p>Login is required to place an order</p>
+            <p><a href="login.html">Login Now →</a></p>
+        </div>
 
-<div class="container" id="mainContainer"></div>
+        <!-- Main checkout form -->
+        <div id="checkoutForm" style="display:none;">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="name" readonly>
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="phone" readonly>
+            </div>
+            <div class="form-group">
+                <label>Delivery Address <span style="color:#e74c3c;">*</span></label>
+                <textarea id="address" placeholder="House no., street, landmark, city, pin code" required></textarea>
+            </div>
 
-<!-- Success Popup -->
-<div id="orderPopup">
-  <div class="popup-content">
-    <h2>Order Placed!</h2>
-    <p id="popupText">Redirecting to WhatsApp...</p>
-    <i class="fas fa-check-circle" style="font-size:5.5rem; color:#4caf50; margin:1.5rem 0;"></i>
-  </div>
-</div>
+            <div class="items-section">
+                <h3 style="margin-top:0; margin-bottom:16px; color:#333;">Your Order</h3>
+                <div id="itemsList"></div>
+            </div>
 
-<script>
-  // ────────────────────────────────────────────────
-  // CONFIG
-  // ────────────────────────────────────────────────
-  const CART_KEY    = "chatpoint_cart";
-  const USER_KEY    = "chatpoint_user";
-  const PRIMARY     = "9739632364";   // Change if needed
-  const BACKUP      = "8088975913";
-  const BACKEND_URL = "https://chatpoint-3ycy.onrender.com/api/save-order";
+            <div class="summary">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="subtotal">₹0</span>
+                </div>
+                <div class="summary-row">
+                    <span>Delivery Charge (10%)</span>
+                    <span id="delivery">₹0</span>
+                </div>
+                <div class="summary-row grand-total">
+                    <span>Grand Total</span>
+                    <span id="grandTotal">₹0</span>
+                </div>
+                <div class="min-note" id="minNote" style="display:none;">
+                    Minimum order ₹300 required
+                </div>
+                <button class="order-btn" id="orderBtn" disabled>Order Now</button>
+            </div>
+        </div>
+    </div>
 
-  // Water special case
-  const WATER = { shop: "_special_", name: "1L Pure Water Bottle", price: 13 };
+    <script>
+        const MIN_ORDER = 300;
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const loggedUser = JSON.parse(localStorage.getItem('chatpoint_user') || 'null');
 
-  function hasWater(cart) {
-    return (cart?.[WATER.shop]?.[WATER.name]?.qty || 0) > 0;
-  }
+        if (!loggedUser) {
+            document.getElementById('checkoutForm').style.display = 'none';
+            document.getElementById('loginRequired').style.display = 'block';
+        } else {
+            document.getElementById('loginRequired').style.display = 'none';
+            document.getElementById('checkoutForm').style.display = 'block';
 
-  function getMainSubtotal(cart) {
-    let sum = 0;
-    for (const shop in cart) {
-      if (shop === WATER.shop) continue;
-      for (const name in cart[shop]) {
-        const item = cart[shop][name];
-        sum += (item.price || 0) * (item.qty || 0);
-      }
-    }
-    return sum;
-  }
+            // Pre-fill readonly fields
+            document.getElementById('name').value = loggedUser.name || '';
+            document.getElementById('phone').value = loggedUser.phone || '';
 
-  function getDeliveryCharge(cart) {
-    if (hasWater(cart)) return 0;
-    const main = getMainSubtotal(cart);
-    return main < 100 ? 25 : 22;
-  }
-
-  // ────────────────────────────────────────────────
-  // HELPERS
-  // ────────────────────────────────────────────────
-  function checkLogin() {
-    const user = JSON.parse(localStorage.getItem(USER_KEY) || "null");
-    if (!user || !user.phone) {
-      document.getElementById("mainContainer").innerHTML = `
-        <div style="text-align:center; padding:10rem 1rem;">
-          <h3>Please Login First</h3>
-          <a href="login.html" style="color:var(--primary); font-weight:800; font-size:1.3rem;">Login →</a>
-        </div>`;
-      return null;
-    }
-    return user;
-  }
-
-  function showMessage(text, type) {
-    const el = document.getElementById("statusMsg");
-    el.textContent = text;
-    el.className = `msg ${type}`;
-    el.style.display = "block";
-  }
-
-  // ────────────────────────────────────────────────
-  // RENDER CHECKOUT FORM
-  // ────────────────────────────────────────────────
-  function renderForm(user) {
-    const savedCart = JSON.parse(localStorage.getItem(CART_KEY) || "{}");
-    if (Object.keys(savedCart).length === 0) {
-      document.getElementById("mainContainer").innerHTML = `
-        <div style="text-align:center; padding:10rem 1rem;">
-          <h3>Cart is Empty</h3>
-          <a href="index.html" style="color:var(--primary); font-weight:800; font-size:1.3rem;">Shop Now →</a>
-        </div>`;
-      return;
-    }
-
-    let subtotal = 0;
-    const itemsArray = [];
-    let displayShop = "Multiple Shops";
-
-    Object.keys(savedCart).forEach(shop => {
-      if (shop !== WATER.shop) displayShop = shop;
-      Object.keys(savedCart[shop]).forEach(itemName => {
-        const item = savedCart[shop][itemName];
-        if (item.qty > 0) {
-          const itemTotal = item.price * item.qty;
-          subtotal += itemTotal;
-          itemsArray.push({ name: itemName, price: item.price, quantity: item.qty });
+            renderItems();
         }
-      });
-    });
 
-    const deliveryCharge = getDeliveryCharge(savedCart);
-    const grandTotal = subtotal + deliveryCharge;
+        function renderItems() {
+            const itemsList = document.getElementById('itemsList');
+            if (cart.length === 0) {
+                itemsList.innerHTML = '<div style="text-align:center;padding:40px;color:#888;">Your cart is empty</div>';
+                document.querySelector('.summary').style.display = 'none';
+                return;
+            }
 
-    window.tempOrderData = { itemsArray, subtotal, deliveryCharge, grandTotal, cart: savedCart };
+            itemsList.innerHTML = cart.map(item => `
+                <div class="item-row">
+                    <img class="item-img" src="${item.img}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60'">
+                    <div class="item-info">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-details">Quantity: ${item.qty} × ₹${item.price}</div>
+                    </div>
+                    <div class="item-price">₹${item.price * item.qty}</div>
+                </div>
+            `).join('');
 
-    document.getElementById("mainContainer").innerHTML = `
-      <h2>Checkout</h2>
-      <div id="statusMsg" class="msg"></div>
+            calculateTotal();
+        }
 
-      <div class="form-group">
-        <label>Name *</label>
-        <input id="name" value="${user.name || ''}" required />
-      </div>
-      <div class="form-group">
-        <label>Phone *</label>
-        <input id="phone" value="${user.phone || ''}" required />
-      </div>
-      <div class="form-group">
-        <label>Address Line 1 *</label>
-        <textarea id="address1" rows="2" required></textarea>
-      </div>
-      <div class="form-group">
-        <label>Address Line 2 (optional)</label>
-        <textarea id="address2" rows="2"></textarea>
-      </div>
+        function calculateTotal() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const delivery = Math.round(subtotal * 0.10);
+            const total = subtotal + delivery;
 
-      <div class="cart-summary">
-        <h3 style="margin-bottom:1.2rem; color:var(--primary);">Order Summary</h3>
-        ${itemsArray.map(i => `
-          <div class="cart-item">
-            <span>${i.name} × ${i.quantity}</span>
-            <span>₹${(i.price * i.quantity).toFixed(0)}</span>
-          </div>
-        `).join('')}
-        <div class="cart-item"><b>Subtotal</b><b>₹${subtotal.toFixed(0)}</b></div>
-        <div class="cart-item">
-          <b>Delivery</b>
-          <b class="${deliveryCharge === 0 ? 'delivery-free' : ''}">
-            ${deliveryCharge === 0 ? 'FREE' : '₹' + deliveryCharge}
-          </b>
-        </div>
-        <div class="total-row">
-          <span>Total</span>
-          <span>₹${grandTotal.toFixed(0)}</span>
-        </div>
-      </div>
+            document.getElementById('subtotal').textContent = `₹${subtotal}`;
+            document.getElementById('delivery').textContent = `₹${delivery}`;
+            document.getElementById('grandTotal').textContent = `₹${total}`;
 
-      <button id="placeOrderBtn" class="btn">Place Order (COD)</button>
-    `;
+            const btn = document.getElementById('orderBtn');
+            const note = document.getElementById('minNote');
 
-    document.getElementById("placeOrderBtn").addEventListener("click", placeOrder);
-  }
+            if (subtotal >= MIN_ORDER) {
+                btn.disabled = false;
+                note.style.display = 'none';
+            } else {
+                btn.disabled = true;
+                note.style.display = 'block';
+                note.textContent = `Add ₹${MIN_ORDER - subtotal} more items`;
+            }
+        }
 
-  // ────────────────────────────────────────────────
-  // PLACE ORDER – BOTH WHATSAPP + BACKEND
-  // ────────────────────────────────────────────────
-  async function placeOrder() {
-    const name     = document.getElementById("name").value.trim();
-    const phone    = document.getElementById("phone").value.trim();
-    const address1 = document.getElementById("address1").value.trim();
-    const address2 = document.getElementById("address2").value.trim();
+        // MAIN FIX: Send userId when placing order
+        async function placeOrder() {
+            const address = document.getElementById('address').value.trim();
+            if (!address) {
+                alert("Please enter your delivery address");
+                return;
+            }
 
-    if (!name || !phone || !address1) {
-      showMessage("Please fill all required fields.", "error");
-      return;
-    }
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            if (subtotal < MIN_ORDER) {
+                alert("Minimum order value is ₹300");
+                return;
+            }
 
-    const btn = document.getElementById("placeOrderBtn");
-    btn.disabled = true;
-    btn.textContent = "Processing...";
+            // Format cart for backend (same as before)
+            const cartFormatted = {};
+            const shopName = "ChatPoint";  // or get from localStorage if needed
+            cartFormatted[shopName] = {};
+            cart.forEach(item => {
+                cartFormatted[shopName][item.name] = {
+                    qty: item.qty,
+                    price: item.price
+                };
+            });
 
-    const { cart, grandTotal } = window.tempOrderData;
+            const orderData = {
+                name: loggedUser.name,
+                phone: loggedUser.phone,
+                address1: address,
+                grandTotal: subtotal + Math.round(subtotal * 0.10),
+                cart: cartFormatted,
 
-    // Show success popup early (good UX)
-    const popup = document.getElementById("orderPopup");
-    popup.style.display = "flex";
-    confetti({
-      particleCount: 140,
-      spread: 90,
-      origin: { y: 0.6 },
-      colors: ['#e6b25c', '#ffffff', '#bb8c3d', '#4caf50']
-    });
+                // CRITICAL: This links the order to the user for tracking
+                userId: loggedUser._id,
+                customer_name: loggedUser.name,
+                customer_phone: loggedUser.phone
+            };
 
-    // Prepare WhatsApp message
-    let summary = "";
-    Object.keys(cart).forEach(shop => {
-      Object.keys(cart[shop]).forEach(itemName => {
-        const item = cart[shop][itemName];
-        if (item.qty > 0) summary += `${itemName} × ${item.qty}\n`;
-      });
-    });
+            try {
+                const res = await fetch('/api/save-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderData)
+                });
 
-    const msg = `NEW ORDER\n\n${summary}\nName: ${name}\nPhone: ${phone}\nAddress: ${address1}${address2 ? '\n' + address2 : ''}\nTotal: ₹${grandTotal}`;
-    const encodedMsg = encodeURIComponent(msg);
+                const result = await res.json();
 
-    // Open WhatsApp (primary → backup with delay)
-    setTimeout(() => {
-      window.open(`https://wa.me/91${PRIMARY}?text=${encodedMsg}`, "_blank");
-      setTimeout(() => {
-        window.open(`https://wa.me/91${BACKUP}?text=${encodedMsg}`, "_blank");
-      }, 1400);
-    }, 2400);
+                if (result.success) {
+                    alert(`Order placed successfully!\nOrder ID: ${result.orderId}\nThank you!`);
+                    localStorage.removeItem('cart');
+                    cart = [];
+                    window.location.href = 'tracking.html';  // Go directly to tracking
+                } else {
+                    alert("Order failed: " + (result.message || "Try again"));
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Network error. Please try again.");
+            }
+        }
 
-    // Try to save to backend
-    let backendSuccess = false;
-    let orderId = null;
-
-    try {
-      const res = await fetch(BACKEND_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          phone,
-          address1,
-          address2: address2 || "",
-          grandTotal,
-          cart,                   // full cart object (as your backend expects)
-          paymentMethod: "cash"
-          // Optional: userId: JSON.parse(localStorage.getItem(USER_KEY))?._id || null
-        })
-      });
-
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-      const data = await res.json();
-      if (data.success) {
-        backendSuccess = true;
-        orderId = data.orderId || null;
-      }
-    } catch (err) {
-      console.error("Backend error:", err);
-    }
-
-    // Update popup text based on backend result
-    document.getElementById("popupText").textContent = backendSuccess
-      ? "Order placed & saved successfully!"
-      : "Order sent to WhatsApp (save failed)";
-
-    // Show message on main page too
-    showMessage(
-      backendSuccess
-        ? "Order placed successfully! Redirecting..."
-        : "Order sent via WhatsApp (database save failed)",
-      backendSuccess ? "success" : "warning"
-    );
-
-    // Clear cart
-    localStorage.removeItem(CART_KEY);
-
-    // Redirect to tracking
-    setTimeout(() => {
-      let url = "tracking.html";
-      if (orderId) url += `?orderId=${orderId}`;
-      window.location.href = url;
-    }, 5800);
-  }
-
-  // ────────────────────────────────────────────────
-  // INIT
-  // ────────────────────────────────────────────────
-  window.onload = () => {
-    const user = checkLogin();
-    if (user) renderForm(user);
-  };
-</script>
+        document.getElementById('orderBtn').onclick = placeOrder;
+    </script>
 </body>
 </html>
