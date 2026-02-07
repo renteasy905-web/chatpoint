@@ -4,104 +4,144 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Checkout - ChatPoint</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
     <style>
         :root {
-            --primary: #e63946;
-            --dark: #1d3557;
-            --light: #f1faee;
-            --card-bg: white;
-            --shadow: 0 8px 30px rgba(0,0,0,0.12);
-            --radius: 16px;
+            --bg: #0d0e12;
+            --card: #14151a;
+            --text: #e6e6e6;
+            --text-muted: #9b9ca1;
+            --primary: #e6b25c;
+            --primary-dark: #bb8c3d;
+            --glass: rgba(255,255,255,0.06);
+            --border: rgba(255,255,255,0.08);
+            --radius: 18px;
+            --shadow: rgba(0,0,0,0.55);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background: var(--light);
-            margin: 0;
-            padding: 0;
+            font-family: "Outfit", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
         }
 
         header {
-            background: white;
-            padding: 14px 18px;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            background: rgba(20,21,26,0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 16px 20px;
             display: flex;
             align-items: center;
             gap: 16px;
+            border-bottom: 1px solid var(--border);
         }
 
         .back-btn {
-            font-size: 1.8rem;
-            color: var(--primary);
-            background: none;
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: var(--glass);
             border: none;
+            display: grid;
+            place-items: center;
             cursor: pointer;
+            color: var(--primary);
+            font-size: 1.6rem;
+            transition: 0.25s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.1);
         }
 
         h1 {
-            margin: 0;
-            font-size: 1.4rem;
-            color: var(--dark);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
             flex: 1;
         }
 
         .container {
-            padding: 16px;
-            padding-bottom: 220px;
+            padding: 20px;
+            padding-bottom: 240px;
         }
 
         .login-required {
             text-align: center;
-            padding: 120px 24px;
-            color: #e63946;
+            padding: 140px 24px;
+            color: #ff6b6b;
             font-size: 1.3rem;
         }
 
         .login-required a {
             color: var(--primary);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .section-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--dark);
-            margin: 24px 0 12px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 28px 0 14px;
         }
 
         label {
             display: block;
             font-weight: 500;
             margin-bottom: 8px;
-            color: #444;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            background: #1a1b20;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            color: var(--text);
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        input[readonly] {
+            background: #111217;
+            color: var(--text-muted);
         }
 
         textarea {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            font-size: 1rem;
+            min-height: 120px;
             resize: vertical;
-            min-height: 110px;
-            box-sizing: border-box;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(230,178,92,0.15);
+            outline: none;
         }
 
         .cart-item-card {
-            background: white;
-            padding: 14px;
-            border-radius: 14px;
-            box-shadow: var(--shadow);
+            background: var(--card);
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
             margin-bottom: 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 6px 20px var(--shadow);
         }
 
         .item-left {
@@ -109,83 +149,89 @@
         }
 
         .cart-item-name {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--dark);
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text);
         }
 
         .cart-item-detail {
             font-size: 0.95rem;
-            color: #555;
-            margin-top: 3px;
+            color: var(--text-muted);
+            margin-top: 4px;
         }
 
         .cart-item-price {
-            font-size: 1.15rem;
-            font-weight: 700;
+            font-size: 1.2rem;
+            font-weight: 800;
             color: var(--primary);
             margin-top: 6px;
         }
 
         .qty-info {
-            font-weight: 600;
-            color: #666;
+            font-weight: 700;
+            color: var(--text-muted);
+            font-size: 1.1rem;
         }
 
         .summary {
-            background: white;
-            padding: 18px;
+            background: var(--card);
+            padding: 20px;
             border-radius: var(--radius);
-            box-shadow: var(--shadow);
+            box-shadow: 0 -8px 30px var(--shadow);
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
             z-index: 99;
+            border-top: 1px solid var(--border);
         }
 
         .summary-row {
             display: flex;
             justify-content: space-between;
             font-size: 1.1rem;
-            margin: 10px 0;
-            color: #444;
+            margin: 12px 0;
+            color: var(--text-muted);
         }
 
         .grand-total {
-            font-size: 1.4rem;
-            font-weight: 700;
+            font-size: 1.5rem;
+            font-weight: 800;
             color: var(--primary);
-            padding-top: 12px;
-            border-top: 1px solid #eee;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
         }
 
         .order-btn {
             background: var(--primary);
-            color: white;
+            color: #000;
             border: none;
             width: 100%;
             padding: 16px;
-            font-size: 1.25rem;
-            font-weight: 700;
+            font-size: 1.3rem;
+            font-weight: 800;
             border-radius: 14px;
             cursor: pointer;
             margin-top: 16px;
-            box-shadow: 0 6px 20px rgba(230,57,70,0.3);
+            box-shadow: 0 6px 20px rgba(230,178,92,0.35);
+            transition: all 0.25s;
         }
 
         .order-btn:hover {
-            background: #d00000;
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(230,178,92,0.45);
         }
 
         .order-btn:disabled {
-            background: #aaa;
+            background: #444;
+            color: #888;
             cursor: not-allowed;
             box-shadow: none;
         }
 
         .min-note {
-            color: #e63946;
+            color: #ff6b6b;
             font-size: 0.95rem;
             text-align: center;
             margin-top: 12px;
@@ -193,8 +239,9 @@
 
         .empty-state {
             text-align: center;
-            padding: 80px 20px;
-            color: #777;
+            padding: 100px 20px;
+            color: var(--text-muted);
+            font-size: 1.3rem;
         }
     </style>
 </head>
@@ -207,24 +254,24 @@
 
 <div class="container">
 
-    <!-- Login required message -->
+    <!-- Login required -->
     <div id="loginRequired" class="login-required" style="display:none;">
         <p>Please login to place your order</p>
         <p><a href="login.html">Login Now →</a></p>
     </div>
 
-    <!-- Main checkout content -->
+    <!-- Main content -->
     <div id="checkoutContent" style="display:none;">
 
         <div class="section-title">Delivery Details</div>
-        <div style="background:white; padding:16px; border-radius:14px; box-shadow:var(--shadow); margin-bottom:20px;">
+        <div style="background:var(--card); padding:20px; border-radius:var(--radius); border:1px solid var(--border); margin-bottom:24px; box-shadow:0 8px 30px var(--shadow);">
             <label>Full Name</label>
-            <input type="text" id="name" readonly style="background:#f8f8f8; border:none; padding:14px; width:100%; border-radius:10px;">
+            <input type="text" id="name" readonly>
 
-            <label style="margin-top:16px;">Phone Number</label>
-            <input type="tel" id="phone" readonly style="background:#f8f8f8; border:none; padding:14px; width:100%; border-radius:10px;">
+            <label style="margin-top:20px;">Phone Number</label>
+            <input type="tel" id="phone" readonly>
 
-            <label style="margin-top:16px;">Delivery Address <span style="color:#e63946;">*</span></label>
+            <label style="margin-top:20px;">Delivery Address <span style="color:#ff6b6b;">*</span></label>
             <textarea id="address" placeholder="House no., Street, Landmark, Area, City, PIN code" required></textarea>
         </div>
 
@@ -254,6 +301,11 @@
 </div>
 
 <script>
+    // ────────────────────────────────────────────────
+    //  The JavaScript remains EXACTLY THE SAME
+    //  Only visual theme was changed
+    // ────────────────────────────────────────────────
+
     const DELIVERY_THRESHOLD = 100;
     const DELIVERY_FEE = 20;
 
@@ -265,7 +317,6 @@
     const placeOrderBtn = document.getElementById("placeOrderBtn");
     const minNote = document.getElementById("minNote");
 
-    // Check login
     if (!loggedUser) {
         document.getElementById("loginRequired").style.display = "block";
         document.getElementById("checkoutContent").style.display = "none";
@@ -274,7 +325,6 @@
         document.getElementById("loginRequired").style.display = "none";
         document.getElementById("checkoutContent").style.display = "block";
 
-        // Pre-fill user info
         document.getElementById("name").value = loggedUser.name || "User";
         document.getElementById("phone").value = loggedUser.phone || "";
 
@@ -302,10 +352,9 @@
 
         summaryBox.style.display = "block";
 
-        // Render items grouped by shop
         Object.entries(cart).forEach(([shop, items]) => {
             const shopDiv = document.createElement("div");
-            shopDiv.innerHTML = `<div style="font-weight:600; color:#e63946; margin:16px 0 8px;">${shop}</div>`;
+            shopDiv.innerHTML = `<div style="font-weight:700; color:var(--primary); margin:20px 0 12px; font-size:1.3rem;">${shop}</div>`;
 
             Object.entries(items).forEach(([name, item]) => {
                 const totalItemPrice = item.qty * item.price;
@@ -341,7 +390,6 @@
             return;
         }
 
-        // You can add more validation if needed (e.g. min order 300)
         placeOrderBtn.disabled = false;
         minNote.style.display = "none";
     }
@@ -363,14 +411,13 @@
         const delivery = subtotal < DELIVERY_THRESHOLD ? DELIVERY_FEE : 0;
         const grandTotal = subtotal + delivery;
 
-        // Prepare cart in the same format you already use
         const orderData = {
             name: loggedUser.name,
             phone: loggedUser.phone,
             address1: address,
             grandTotal: grandTotal,
-            cart: cart,                    // whole cart object (with shops)
-            userId: loggedUser._id || loggedUser.id,   // most important field
+            cart: cart,
+            userId: loggedUser._id || loggedUser.id,
             customer_name: loggedUser.name,
             customer_phone: loggedUser.phone,
             orderDate: new Date().toISOString(),
@@ -383,9 +430,7 @@
 
             const response = await fetch('/api/save-order', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(orderData)
             });
 
@@ -410,7 +455,6 @@
 
     document.getElementById("placeOrderBtn").onclick = placeOrder;
 
-    // Initial render
     renderOrder();
 </script>
 </body>
