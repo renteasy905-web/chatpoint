@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delivery Portal | ChatPoint</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --primary: #3b82f6;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --whatsapp: #25D366;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 100px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
+    .header {
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+      padding: 1rem 0;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-left { font-size: 1.6rem; font-weight: 700; }
+    .header-right { display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap; }
+    .header-btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+    .btn-users { background: var(--primary); color: white; }
+    .btn-users:hover { background: #2563eb; }
+    .logout-btn { background: var(--danger); color: white; }
+    .logout-btn:hover { background: #dc2626; }
+    .mute-btn { background: #475569; color: white; }
+    .mute-btn.muted { background: #64748b; }
+    /* rest of your styles remain unchanged */
+    .new-order-alert {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(239, 68, 68, 0.98);
+      color: white;
+      z-index: 99999;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 4rem;
+      font-weight: 900;
+      animation: flash 0.8s infinite alternate;
+      backdrop-filter: blur(5px);
+    }
+    @keyframes flash {
+      from { background: rgba(239, 68, 68, 0.98); }
+      to { background: rgba(220, 38, 38, 1); }
+    }
+    .new-order-alert small { font-size: 2rem; margin-top: 2rem; }
+    /* ... your other styles (cards, buttons, loader, etc.) ... */
+  </style>
+</head>
+<body>
+
+  <div id="bigAlert" class="new-order-alert">
+    <div>NEW ORDER!</div>
+    <small>Check the portal now!</small>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <div class="header-left">Delivery Portal</div>
+      <div class="header-right">
+        <button class="header-btn btn-users" id="usersBtn">
+          <i class="fas fa-users"></i> Users
+        </button>
+        <button id="muteBtn" class="header-btn mute-btn">
+          <i class="fas fa-volume-up"></i> Sound On
+        </button>
+        <button class="header-btn logout-btn" id="logoutBtn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+      </div>
+    </div>
+
+    <!-- Your filter tabs, loading, orders container, empty state remain the same -->
+    <div class="filter-tabs">...</div>
+    <div id="loading">...</div>
+    <div id="orders-container"></div>
+    <div id="empty" class="empty" style="display:none;">...</div>
+
+    <div style="text-align:center; color:#64748b; font-size:0.85rem; margin-top:2rem;">
+      Auto-refresh every 5 seconds • New orders play sound
+    </div>
+  </div>
+
+  <!-- Custom sound file - CHANGE NAME IF YOUR FILE IS DIFFERENT -->
+  <audio id="newOrderSound" src="new-order-alert.mp3" preload="auto"></audio>
+
+  <script>
+    const API_BASE = window.location.origin;
+    const REFRESH_INTERVAL = 5000;
+
+    let allOrders = [];
+    let currentFilter = 'active';
+    let lastOrderTimestamp = 0;           // track newest order time
+    let previousPendingCount = 0;
+    let soundEnabled = true;
+
+    const $ = s => document.querySelector(s);
+    const ordersContainer = $('#orders-container');
+    const loadingEl = $('#loading');
+    const bigAlert = $('#bigAlert');
+    const newOrderSound = $('#newOrderSound');
+    const muteBtn = $('#muteBtn');
+
+    // Mute / unmute toggle
+    muteBtn.onclick = () => {
+      soundEnabled = !soundEnabled;
+      muteBtn.innerHTML = soundEnabled
+        ? '<i class="fas fa-volume-up"></i> Sound On'
+        : '<i class="fas fa-volume-mute"></i> Sound Off';
+      muteBtn.classList.toggle('muted', !soundEnabled);
+    };
+
+    function showBigAlert() {
+      bigAlert.style.display = 'flex';
+      if (soundEnabled) {
+        newOrderSound.currentTime = 0;
+        newOrderSound.play().catch(e => console.log("Autoplay blocked", e));
+      }
+      setTimeout(() => bigAlert.style.display = 'none', 10000);
+    }
+
+    async function fetchData() {
+      try {
+        const res = await fetch(`${API_BASE}/api/all-delivery-orders?t=${Date.now()}`);
+        const data = await res.json();
+
+        if (data.success && Array.isArray(data.orders)) {
+          const orders = data.orders;
+
+          // Find newest order timestamp
+          let newestTimestamp = 0;
+          let pendingCount = 0;
+
+          orders.forEach(order => {
+            const orderTime = new Date(order.date).getTime();
+            if (orderTime > newestTimestamp) newestTimestamp = orderTime;
+            if (order.status === 'pending') pendingCount++;
+          });
+
+          // Detect new order
+          const isNewOrder = newestTimestamp > lastOrderTimestamp && lastOrderTimestamp !== 0;
+          const pendingIncreased = pendingCount > previousPendingCount;
+
+          if ((isNewOrder || pendingIncreased) && pendingCount > 0) {
+            console.log("🔔 New order detected!");
+            if (soundEnabled) {
+              newOrderSound.currentTime = 0;
+              newOrderSound.play().catch(e => console.log("Sound play failed", e));
+            }
+            // showBigAlert();   // ← uncomment if you want flashing screen too
+          }
+
+          // Update trackers
+          lastOrderTimestamp = newestTimestamp;
+          previousPendingCount = pendingCount;
+
+          allOrders = orders
+            .map(o => ({ ...o, progress: o.progress || 0 }))
+            .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+          applyView();
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        ordersContainer.innerHTML = '<div class="empty">Failed to load data. Retrying...</div>';
+      }
+    }
+
+    // Your existing renderOrderCard, applyView, updateOrderStatus, openWhatsApp etc. functions remain unchanged
+    // ... paste all your original functions here (renderOrderCard, applyView, etc.) ...
+
+    // Event listeners remain the same
+    document.addEventListener('click', async (e) => { /* your existing click handler */ });
+    document.querySelectorAll('.filter-btn').forEach(btn => { /* your filter logic */ });
+    $('#logoutBtn').onclick = () => { /* your logout */ };
+    $('#usersBtn').onclick = () => { alert("Users section coming soon!"); };
+
+    // Start
+    fetchData();
+    setInterval(fetchData, REFRESH_INTERVAL);
+  </script>
+</body>
+</html>
