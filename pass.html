@@ -102,16 +102,6 @@
       justify-content: center;
       flex-wrap: wrap;
     }
-    .user-password {
-      font-family: monospace;
-      background: #000;
-      color: #0f0;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 0.9rem;
-      margin-top: 4px;
-      display: inline-block;
-    }
   </style>
 </head>
 <body>
@@ -119,13 +109,11 @@
     <div>NEW ORDER!</div>
     <small>Check the portal now!</small>
   </div>
-
   <div class="container">
     <div class="header">
       <h1>Delivery Portal</h1>
       <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
     </div>
-
     <div class="filter-tabs">
       <button class="filter-btn active" data-filter="active">Active Orders</button>
       <button class="filter-btn" data-filter="delivered">Delivered</button>
@@ -133,18 +121,15 @@
       <button class="filter-btn" data-filter="all">All Orders</button>
       <button class="filter-btn" data-filter="users">Users</button>
     </div>
-
     <div id="loading">
       <div class="loader"></div>
       <p style="text-align:center; color:#94a3b8;">Loading...</p>
     </div>
-
     <div id="orders-container"></div>
     <div id="users-container" style="display:none;"></div>
     <div id="empty" class="empty" style="display:none;">
       <p>No items in this section.</p>
     </div>
-
     <div style="text-align:center; color:#64748b; font-size:0.85rem; margin-top:2rem;">
       Auto-refresh every 5 seconds • New orders trigger alert
     </div>
@@ -167,12 +152,12 @@
     const bigAlert = $('#bigAlert');
     const loudSound = $('#loudSound');
 
-    function openWhatsApp(phone, message) {
+    function openWhatsApp(phone) {
       if (!phone) return alert("Phone number missing");
       let cleaned = phone.replace(/\D/g, '');
       if (cleaned.startsWith('0')) cleaned = '91' + cleaned.slice(1);
       else if (!cleaned.startsWith('91')) cleaned = '91' + cleaned;
-      window.open(`https://wa.me/${cleaned}?text=${encodeURIComponent(message)}`, '_blank');
+      window.open(`https://wa.me/${cleaned}`, '_blank');
     }
 
     function showBigAlert() {
@@ -215,7 +200,7 @@
     async function deleteOrder(orderId) {
       try {
         const res = await fetch(`${API_BASE}/api/delete-order`, {
-          method: 'DELETE',
+          method: 'POST', // your backend uses POST for delete-order
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ orderId })
         });
@@ -323,12 +308,11 @@
             <div style="flex:1;">
               <strong style="font-size:1.1rem;">${i+1}. ${user.name || 'No Name'}</strong><br>
               <small style="color:#94a3b8;">${user.phone}</small><br>
-              <div class="user-password">Password: ${user.plainPassword || 'Not available'}</div>
               ${premiumBadge}
             </div>
             <div style="display:flex;gap:0.6rem;flex-wrap:wrap;align-items:center;">
-              <button class="btn btn-whatsapp" onclick="openWhatsApp('${user.phone}', 'Hello! Your ChatPoint login details:\\nPhone: ${user.phone}\\nPassword: ${user.plainPassword || 'Not set'}')">
-                <i class="fab fa-whatsapp"></i> Send Login
+              <button class="btn btn-whatsapp" onclick="openWhatsApp('${user.phone}')">
+                <i class="fab fa-whatsapp"></i> Send Message on WhatsApp
               </button>
             </div>
           </div>
@@ -401,21 +385,14 @@
       const name = btn.dataset.name;
 
       btn.disabled = true;
-
       let success = false;
 
       if (action === 'confirm') {
         success = await updateOrderStatus(orderId, 'confirmed');
-        if (success) {
-          openWhatsApp(phone, `Hi ${name}! 😊\nYour order on ChatPoint has been confirmed!\nWe'll prepare it soon. 🚀\nThanks for shopping with us!`);
-          alert("Order confirmed & WhatsApp sent!");
-        }
+        if (success) alert("Order confirmed!");
       } else if (action === 'delivered') {
         success = await updateOrderStatus(orderId, 'delivered');
-        if (success) {
-          openWhatsApp(phone, `Great news! 🎉\nYour ChatPoint order has been delivered.\nEnjoy your items!\nOrder again at chatpoint.shop 🌟`);
-          alert("Order marked delivered & WhatsApp sent!");
-        }
+        if (success) alert("Order marked delivered!");
       } else if (action === 'cancel') {
         if (confirm("Cancel this order?")) {
           success = await updateOrderStatus(orderId, 'cancelled');
@@ -432,9 +409,9 @@
         }
       }
 
-      if (success || action === 'cancel') {
+      if (success) {
         fetchData();
-      } else if (!success) {
+      } else if (!success && action !== 'cancel') {
         alert("Action failed. Try again.");
       }
 
@@ -459,7 +436,7 @@
       }
     };
 
-    // Start
+    // Start fetching data
     fetchData();
     setInterval(fetchData, REFRESH_INTERVAL);
   </script>
