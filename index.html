@@ -81,12 +81,12 @@
       color:#000;
     }
     .login-btn {
-      background: #e6b25c;
+      background: var(--primary);
       color: #000;
       box-shadow: 0 0 12px rgba(230,178,92,0.5);
     }
     .login-btn:hover {
-      background: #bb8c3d;
+      background: var(--primary-dark);
       transform: translateY(-2px);
     }
     .user-info {
@@ -113,14 +113,9 @@
       font-size: 14px;
       line-height: 1.3;
     }
-    .user-name {
-      font-weight: 700;
-      color: var(--text);
-    }
-    .user-phone {
-      color: var(--text-muted);
-    }
-    /* rest of your styles remain the same */
+    .user-name { font-weight:700; color:var(--text); }
+    .user-phone { color:var(--text-muted); }
+
     #sidebar {
       position:fixed;
       inset:0 auto 0 0;
@@ -143,10 +138,8 @@
       transition:0.3s ease;
       z-index:999;
     }
-    #overlay.active {
-      opacity:1;
-      pointer-events:auto;
-    }
+    #overlay.active { opacity:1; pointer-events:auto; }
+
     .profile-section {
       padding:20px;
       background:#0f1014;
@@ -178,9 +171,7 @@
       background:#0f1014;
       border-top:1px solid var(--border);
     }
-    .contact-info.show {
-      display:block;
-    }
+    .contact-info.show { display:block; }
     .contact-number {
       font-size:22px;
       font-weight:700;
@@ -206,14 +197,9 @@
       justify-content:center;
       gap:8px;
     }
-    .call-btn {
-      background:var(--primary);
-      color:#000;
-    }
-    .whatsapp-btn {
-      background:#25D366;
-      color:white;
-    }
+    .call-btn { background:var(--primary); color:#000; }
+    .whatsapp-btn { background:#25D366; color:white; }
+
     .offer-banner {
       max-width:960px;
       margin:24px auto;
@@ -236,6 +222,7 @@
       font-weight:600;
     }
     .highlight { color:var(--primary); }
+
     .search-bar {
       max-width:600px;
       margin:0 auto 32px;
@@ -263,6 +250,7 @@
       font-size:20px;
       color:var(--primary);
     }
+
     .grid {
       display:grid;
       gap:24px;
@@ -274,6 +262,7 @@
     @media(min-width:600px){
       .grid { grid-template-columns:repeat(auto-fit,minmax(330px,1fr)); }
     }
+
     .card-wrap { position:relative; }
     .card {
       background:var(--card);
@@ -412,11 +401,11 @@ const shops = [
     desc: "100% veg pizzas, light & tasty.",
     items: ["Paneer Tikka", "Corn & Cheese", "Nuggets", "Veg Extravaganza"]
   },
-   {
+  {
     name: " MANIKANT BENNE DOSA",
     img: "https://plus.unsplash.com/premium_photo-1674106347866-8282d8c19f84?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTI5fHxmb29kfGVufDB8fDB8fHww",
     rating: 4.7,
-    desc: "tasty breakfast  with secret sauce.",
+    desc: "tasty breakfast with secret sauce.",
     items: ["dosa", "idly", "vada", "set dosa"]
   },
   {
@@ -536,7 +525,6 @@ document.getElementById("navBtn").onclick = () => {
   document.getElementById("sidebar").classList.add("active");
   document.getElementById("overlay").classList.add("active");
 };
-
 document.getElementById("overlay").onclick = () => {
   document.getElementById("sidebar").classList.remove("active");
   document.getElementById("overlay").classList.remove("active");
@@ -552,7 +540,6 @@ document.getElementById("contactBtn").onclick = () => {
 function renderHeaderRight() {
   const user = JSON.parse(localStorage.getItem("chatpoint_user") || "null");
   const headerRight = document.getElementById("headerRight");
-
   if (user && user.name && user.phone) {
     // Logged in → show user info
     headerRight.innerHTML = `
