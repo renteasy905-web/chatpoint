@@ -39,22 +39,23 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage: storage });
 
-// =============== FIXED CORS FOR RENDER (ONLY YOUR DOMAINS) ===============
+// =============== CORS ===============
 app.use(cors({
   origin: [
-    "https://chatpoint1.onrender.com",      // Your frontend domain
-    "https://chatpoint-3ycy.onrender.com"   // Your backend domain (safety)
+    "https://chatpoint1.onrender.com",
+    "https://chatpoint-3ycy.onrender.com",
+    "http://localhost:3000",
+    "http://localhost:5000",
   ],
   methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "x-user-id"],
   credentials: true,
   optionsSuccessStatus: 204
 }));
 
-// Important: Handles preflight OPTIONS requests properly
 app.options("*", cors());
 
-// =============== OTHER MIDDLEWARE ===============
+// =============== MIDDLEWARE ===============
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
@@ -138,7 +139,6 @@ const Order = mongoose.model(
   })
 );
 
-// NEW: Menu Item Model
 const Item = mongoose.model(
   "Item",
   new mongoose.Schema({
@@ -200,7 +200,6 @@ const saveOrderUniversal = async (req, res) => {
 
     await order.save();
     console.log(`NEW ORDER → #${order._id} | ₹${grandTotal} | ${name}`);
-
     res.json({ success: true, orderId: order._id });
   } catch (err) {
     console.error("Order save error:", err);
@@ -208,7 +207,57 @@ const saveOrderUniversal = async (req, res) => {
   }
 };
 
-// =============== UPDATED: Make User Premium with Type ===============
+// =============== API ROUTES (MUST BE BEFORE STATIC SERVING) ===============
+
+// User Signup
+app.post("/api/user/signup", async (req, res) => {
+  try {
+    const { name, phone, password } = req.body;
+    if (!name || !phone || !password) return res.status(400).json({ success: false, message: "All fields required" });
+
+    const exists = await User.findOne({ phone });
+    if (exists) return res.status(400).json({ success: false, message: "Phone already registered" });
+
+    const hash = crypto.createHash("sha256").update(password).digest("hex");
+    const user = new User({ name, phone, password: hash, plainPassword: password });
+    await user.save();
+
+    res.json({
+      success: true,
+      user: { _id: user._id.toString(), name: user.name, phone: user.phone }
+    });
+  } catch (err) {
+    console.error("Signup error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// User Login
+app.post("/api/user/login", async (req, res) => {
+  try {
+    const { phone, password } = req.body;
+    const hash = crypto.createHash("sha256").update(password).digest("hex");
+    const user = await User.findOne({ phone, password: hash });
+
+    if (!user) return res.status(401).json({ success: false, message: "Wrong credentials" });
+
+    res.json({
+      success: true,
+      user: {
+        _id: user._id.toString(),
+        name: user.name,
+        phone: user.phone,
+        isPremium: user.isPremium === "yes",
+        premiumType: user.premiumType || null,
+      },
+    });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// Make user premium
 app.post("/api/admin/make-premium", async (req, res) => {
   const { password, phone, premiumType } = req.body;
   if (password !== ADMIN_PASSWORD) {
@@ -223,9 +272,7 @@ app.post("/api/admin/make-premium", async (req, res) => {
       { $set: { isPremium: "yes", premiumType: premiumType } },
       { new: true }
     );
-    if (!updatedUser) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
+    if (!updatedUser) return res.status(404).json({ success: false, message: "User not found" });
     console.log(`User ${phone} upgraded to ${premiumType.toUpperCase()} PREMIUM`);
     res.json({
       success: true,
@@ -238,7 +285,7 @@ app.post("/api/admin/make-premium", async (req, res) => {
   }
 });
 
-// =============== API ENDPOINTS ===============
+// Categories
 app.get("/api/categories", async (req, res) => {
   try {
     const cats = await GroceryCategory.find().sort({ name: 1 });
@@ -249,6 +296,7 @@ app.get("/api/categories", async (req, res) => {
   }
 });
 
+// Items by category
 app.get("/api/items/:category", async (req, res) => {
   try {
     const category = decodeURIComponent(req.params.category);
@@ -268,19 +316,18 @@ app.get("/api/items/:category", async (req, res) => {
   }
 });
 
+// Admin add item
 app.post(
   "/api/admin/add-item",
   upload.fields([{ name: "image", maxCount: 1 }, { name: "categoryImage", maxCount: 1 }]),
   async (req, res) => {
     const { password, category, name, originalPrice, offerPrice } = req.body;
     if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false, message: "Wrong password" });
-
     try {
       if (!req.files["image"] || !req.files["image"][0]) {
         return res.status(400).json({ success: false, message: "Item image required" });
       }
       const itemImageUrl = req.files["image"][0].path;
-
       if (req.files["categoryImage"] && req.files["categoryImage"][0]) {
         const catImageUrl = req.files["categoryImage"][0].path;
         await GroceryCategory.findOneAndUpdate(
@@ -292,7 +339,6 @@ app.post(
         const existing = await GroceryCategory.findOne({ name: category.trim() });
         if (!existing) return res.status(400).json({ success: false, message: "Category not found. Upload photo to create new." });
       }
-
       const newItem = new GroceryItem({
         category: category.trim(),
         name: name.trim(),
@@ -301,7 +347,6 @@ app.post(
         offerPrice: Number(offerPrice),
         imageUrl: itemImageUrl,
       });
-
       await newItem.save();
       res.json({ success: true, item: newItem });
     } catch (e) {
@@ -311,10 +356,10 @@ app.post(
   }
 );
 
+// Other admin routes...
 app.post("/api/admin/edit-item", async (req, res) => {
   const { password, itemId, originalPrice, offerPrice } = req.body;
   if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false });
-
   try {
     const updateData = {
       originalPrice: originalPrice ? Number(originalPrice) : undefined,
@@ -322,7 +367,6 @@ app.post("/api/admin/edit-item", async (req, res) => {
       price: offerPrice ? Number(offerPrice) : undefined,
     };
     Object.keys(updateData).forEach((key) => updateData[key] === undefined && delete updateData[key]);
-
     const updated = await GroceryItem.findByIdAndUpdate(itemId, updateData, { new: true });
     if (!updated) return res.status(404).json({ success: false });
     res.json({ success: true, item: updated });
@@ -334,7 +378,6 @@ app.post("/api/admin/edit-item", async (req, res) => {
 app.delete("/api/admin/delete-item/:id", async (req, res) => {
   const { password } = req.query;
   if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false });
-
   try {
     await GroceryItem.findByIdAndDelete(req.params.id);
     res.json({ success: true });
@@ -343,15 +386,11 @@ app.delete("/api/admin/delete-item/:id", async (req, res) => {
   }
 });
 
-// ─────────────────────────────────────────────
-// NEW MENU ENDPOINTS
-// ─────────────────────────────────────────────
+// Menu endpoints
 app.get("/api/menu", async (req, res) => {
   try {
     const shop = req.query.shop?.trim();
-    if (!shop) {
-      return res.status(400).json({ success: false, message: "Shop name required" });
-    }
+    if (!shop) return res.status(400).json({ success: false, message: "Shop name required" });
     const items = await Item.find({ shop }).sort({ name: 1 }).lean();
     res.json(items);
   } catch (err) {
@@ -365,13 +404,8 @@ app.post(
   upload.single("image"),
   async (req, res) => {
     const { password, shop, name, originalPrice, type } = req.body;
-    if (password !== ADMIN_PASSWORD) {
-      return res.status(401).json({ success: false, message: "Wrong admin password" });
-    }
-    if (!shop || !name || !originalPrice) {
-      return res.status(400).json({ success: false, message: "Missing required fields: shop, name, originalPrice" });
-    }
-
+    if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false, message: "Wrong admin password" });
+    if (!shop || !name || !originalPrice) return res.status(400).json({ success: false, message: "Missing required fields" });
     try {
       const itemData = {
         shop: shop.trim(),
@@ -379,14 +413,9 @@ app.post(
         originalPrice: Number(originalPrice),
         type: type || "",
       };
-
-      if (req.file) {
-        itemData.imageUrl = req.file.path; // Cloudinary secure URL
-      }
-
+      if (req.file) itemData.imageUrl = req.file.path;
       const newItem = new Item(itemData);
       await newItem.save();
-
       res.json({ success: true, message: "Menu item added successfully", item: newItem });
     } catch (err) {
       console.error("Add menu item error:", err);
@@ -395,63 +424,27 @@ app.post(
   }
 );
 
-// =============== ORDER & OTHER ROUTES ===============
+// Order routes (all use the same function)
 app.post("/api/save-order", saveOrderUniversal);
 app.post("/api/place-order", saveOrderUniversal);
 app.post("/api/checkout", saveOrderUniversal);
 app.post("/api/order", saveOrderUniversal);
 
-app.post("/api/user/signup", async (req, res) => {
+// My orders
+app.get("/api/my-orders", async (req, res) => {
   try {
-    const { name, phone, password } = req.body;
-    if (!name || !phone || !password) return res.status(400).json({ success: false });
-
-    const exists = await User.findOne({ phone });
-    if (exists) return res.status(400).json({ success: false, message: "Phone already registered" });
-
-    const hash = crypto.createHash("sha256").update(password).digest("hex");
-    const user = new User({ name, phone, password: hash, plainPassword: password });
-    await user.save();
-
-    res.json({ success: true });
+    const userId = req.headers["x-user-id"];
+    let query = {};
+    if (userId) query = { userId };
+    const orders = await Order.find(query).sort({ date: -1 }).lean();
+    res.json({ success: true, orders });
   } catch (e) {
     console.error(e);
     res.status(500).json({ success: false });
   }
 });
 
-app.post("/api/user/login", async (req, res) => {
-  try {
-    const { phone, password } = req.body;
-    const hash = crypto.createHash("sha256").update(password).digest("hex");
-    const user = await User.findOne({ phone, password: hash });
-    if (!user) return res.status(401).json({ success: false, message: "Wrong credentials" });
-
-    res.json({
-      success: true,
-      user: {
-        _id: user._id.toString(),
-        name: user.name,
-        phone: user.phone,
-        isPremium: user.isPremium === "yes",
-        premiumType: user.premiumType || null,
-      },
-    });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false });
-  }
-});
-
-app.get("/api/shops", async (req, res) => {
-  try {
-    const shops = await Shop.find({ type: "shop" }).sort({ date: -1 }).lean();
-    res.json({ success: true, shops });
-  } catch (e) {
-    res.status(500).json({ success: false });
-  }
-});
-
+// More order routes...
 app.get("/api/delivery-orders", async (req, res) => {
   try {
     const orders = await Order.find({ status: { $in: ["pending", "confirmed"] } })
@@ -479,9 +472,7 @@ app.get("/api/all-delivery-orders", async (req, res) => {
 app.post("/api/update-order-progress", async (req, res) => {
   try {
     const { orderId, progress } = req.body;
-    if (!orderId || progress < 0 || progress > 4) {
-      return res.status(400).json({ success: false, message: "Invalid data" });
-    }
+    if (!orderId || progress < 0 || progress > 4) return res.status(400).json({ success: false, message: "Invalid data" });
     const updated = await Order.findByIdAndUpdate(
       orderId,
       { progress: Number(progress) },
@@ -499,9 +490,7 @@ app.post("/api/update-order-progress", async (req, res) => {
 app.post("/api/update-order-status", async (req, res) => {
   try {
     const { orderId, status, deliveredBy, profitAmount } = req.body;
-    if (!orderId) {
-      return res.status(400).json({ success: false, message: "orderId is required" });
-    }
+    if (!orderId) return res.status(400).json({ success: false, message: "orderId is required" });
 
     const updateData = {};
     if (status) {
@@ -510,7 +499,6 @@ app.post("/api/update-order-status", async (req, res) => {
       }
       updateData.status = status;
     }
-
     if (status === "delivered") {
       if (!deliveredBy || !["Suraj", "Guru"].includes(deliveredBy)) {
         return res.status(400).json({
@@ -534,15 +522,12 @@ app.post("/api/update-order-status", async (req, res) => {
       { new: true, runValidators: true }
     );
 
-    if (!updatedOrder) {
-      return res.status(404).json({ success: false, message: "Order not found" });
-    }
+    if (!updatedOrder) return res.status(404).json({ success: false, message: "Order not found" });
 
     console.log(
       `Order ${orderId} updated → status: ${status || "unchanged"}, ` +
       `deliveredBy: ${deliveredBy || "—"}, profit: ₹${profitAmount || "—"}`
     );
-
     res.json({ success: true });
   } catch (err) {
     console.error("Update order status error:", err);
@@ -554,41 +539,10 @@ app.delete("/api/delete-order", async (req, res) => {
   try {
     const { orderId } = req.body;
     if (!orderId) return res.status(400).json({ success: false });
-
     const result = await Order.findByIdAndDelete(orderId);
     if (!result) return res.status(404).json({ success: false });
-
     console.log(`Order ${orderId} DELETED`);
     res.json({ success: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false });
-  }
-});
-
-app.get("/api/my-orders", async (req, res) => {
-  try {
-    const userId = req.headers["x-user-id"];
-    let query = {};
-    if (userId) {
-      query = { userId };
-    } else {
-      return res.json({ success: true, orders: [] });
-    }
-
-    const orders = await Order.find(query).sort({ date: -1 }).lean();
-    res.json({ success: true, orders });
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ success: false });
-  }
-});
-
-app.get("/api/order/:id", async (req, res) => {
-  try {
-    const order = await Order.findById(req.params.id).lean();
-    if (!order) return res.status(404).json({ success: false, message: "Order not found" });
-    res.json({ success: true, order });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false });
@@ -601,7 +555,6 @@ app.get("/api/admin/users", async (req, res) => {
       {},
       { name: 1, phone: 1, isPremium: 1, premiumType: 1, plainPassword: 1, _id: 0 }
     ).sort({ createdAt: -1 });
-
     const safeUsers = users.map((u) => ({
       name: u.name,
       phone: u.phone,
@@ -609,7 +562,6 @@ app.get("/api/admin/users", async (req, res) => {
       premiumType: u.premiumType,
       plainPassword: u.plainPassword || "Not available",
     }));
-
     res.json({ users: safeUsers });
   } catch (e) {
     console.error(e);
@@ -617,12 +569,10 @@ app.get("/api/admin/users", async (req, res) => {
   }
 });
 
-// =============== SERVE PAGES ===============
+// =============== SERVE PAGES (LAST) ===============
 const pages = [
   "index", "gitems", "adminportal", "gcart", "privacy", "delivery", "orders",
   "cart", "payment", "login", "admin", "items", "tracking", "categories", "pindex",
-  // If you created a new file like delivery-new.html, add it here:
-  // "delivery-new",
 ];
 
 pages.forEach((p) => {
@@ -631,11 +581,11 @@ pages.forEach((p) => {
   app.get(route, (req, res) => res.sendFile(path.join(__dirname, file)));
 });
 
+// Catch-all fallback
 app.get("*", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 
 // Start server
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`Categories: http://localhost:${PORT}/categories.html`);
-  console.log(`Tracking: http://localhost:${PORT}/tracking.html`);
+  console.log(`API base: http://localhost:${PORT}/api`);
 });
