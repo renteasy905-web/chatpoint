@@ -1,384 +1,591 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>ChatPoint — Login / Signup</title>
-  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <style>
-    :root {
-      --bg: #0d0e12;
-      --card: #14151a;
-      --text: #e6e6e6;
-      --muted: #9b9ca1;
-      --primary: #e6b25c;
-      --primary-dark: #bb8c3d;
-      --radius: 18px;
-      --shadow: 0 16px 48px rgba(0,0,0,0.55);
-      --transition: all 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Outfit', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100dvh;
-      display: grid;
-      place-items: center;
-      padding: 16px;
-    }
-    .container { width: 100%; max-width: 420px; position: relative; z-index: 10; }
-    .card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 36px 32px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(255,255,255,0.08);
-      text-align: center;
-    }
-    .brand {
-      font-size: 32px;
-      font-weight: 900;
-      color: var(--primary);
-      margin-bottom: 24px;
-      letter-spacing: -1px;
-    }
-    .lead {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 28px;
-    }
-    .form-group {
-      margin-bottom: 18px;
-      text-align: left;
-    }
-    .input {
-      width: 100%;
-      padding: 16px 18px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: #1a1b20;
-      color: var(--text);
-      font-size: 16px;
-      outline: none;
-      transition: var(--transition);
-    }
-    .input:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(230,178,92,0.2);
-    }
-    .btn {
-      width: 100%;
-      padding: 16px;
-      margin-top: 12px;
-      background: var(--primary);
-      color: #000;
-      border: none;
-      border-radius: 12px;
-      font-weight: 800;
-      font-size: 17px;
-      cursor: pointer;
-      transition: var(--transition);
-      box-shadow: 0 6px 20px rgba(230,178,92,0.3);
-    }
-    .btn:hover {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-    }
-    .toggle-text {
-      margin-top: 24px;
-      font-size: 15px;
-      color: var(--muted);
-    }
-    .toggle-text a {
-      color: var(--primary);
-      font-weight: 700;
-      text-decoration: none;
-    }
-    .toggle-text a:hover {
-      text-decoration: underline;
-    }
-    #loadingOverlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(13,14,18,0.95);
-      backdrop-filter: blur(8px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-    #loadingOverlay.active { display: flex; }
-    .loader {
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-      color: white;
-    }
-    .progress-bar {
-      height: 10px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 10px;
-      overflow: hidden;
-      margin: 20px 0;
-    }
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: var(--primary);
-      border-radius: 10px;
-      transition: width 0.4s ease;
-    }
-    #toast-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 10000;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .toast {
-      min-width: 320px;
-      padding: 16px 20px;
-      background: #1f1f1f;
-      color: white;
-      border-radius: 10px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-      opacity: 0;
-      transform: translateX(120%);
-      transition: all 0.4s ease;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .toast.show {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    .toast.success { background: #2e7d32; }
-    .toast.error { background: #c62828; }
-    .toast .close-btn {
-      cursor: pointer;
-      font-size: 20px;
-      margin-left: 16px;
-    }
-    @media (max-width: 480px) {
-      .card { padding: 28px 20px; }
-      .brand { font-size: 28px; }
-      .lead { font-size: 20px; }
-      #toast-container { right: 12px; left: 12px; top: 12px; }
-      .toast { min-width: auto; }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="card">
-      <div class="brand">ChatPoint</div>
+require("dotenv").config();
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const path = require("path");
+const bodyParser = require("body-parser");
+const crypto = require("crypto");
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-      <!-- Login Form -->
-      <div id="loginForm">
-        <div class="lead">Welcome back!</div>
-        <div class="form-group">
-          <input type="tel" id="loginPhone" class="input" placeholder="Phone number" maxlength="10" inputmode="numeric" />
-        </div>
-        <div class="form-group">
-          <input type="password" id="loginPassword" class="input" placeholder="Password" />
-        </div>
-        <button class="btn" id="btnLogin">Login</button>
-        <div class="toggle-text">New to ChatPoint? <a href="#" id="showSignup">Create account</a></div>
-      </div>
+const app = express();
+const PORT = process.env.PORT || 5000;
 
-      <!-- Signup Form -->
-      <div id="signupForm" style="display:none">
-        <div class="lead">Join ChatPoint</div>
-        <div class="form-group">
-          <input type="text" id="signupName" class="input" placeholder="Full name" />
-        </div>
-        <div class="form-group">
-          <input type="tel" id="signupPhone" class="input" placeholder="Phone number" maxlength="10" inputmode="numeric" />
-        </div>
-        <div class="form-group">
-          <input type="password" id="signupPassword" class="input" placeholder="Create password" />
-        </div>
-        <button class="btn" id="btnSignup">Sign Up</button>
-        <div class="toggle-text">Already have an account? <a href="#" id="showLogin">Sign in</a></div>
-      </div>
-    </div>
-  </div>
+// =============== CLOUDINARY CONFIG ===============
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME || "djlkwjeb2",
+  api_key: process.env.CLOUDINARY_API_KEY || "942326953292277",
+  api_secret: process.env.CLOUDINARY_API_SECRET || "GC0SO2VrcpdMSLGzQsYjLZ1SAZg",
+});
 
-  <!-- Loading Overlay -->
-  <div id="loadingOverlay">
-    <div class="loader">
-      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-      <div id="loaderText">Processing...</div>
-    </div>
-  </div>
-
-  <!-- Toast Container -->
-  <div id="toast-container"></div>
-
-  <script>
-    const $ = id => document.getElementById(id);
-
-    // Loading helpers
-    function showLoading() {
-      $('loadingOverlay').classList.add('active');
-      let w = 10;
-      const int = setInterval(() => {
-        w = Math.min(w + 8, 94);
-        $('progressFill').style.width = w + '%';
-      }, 280);
-      let dots = 0;
-      const textInt = setInterval(() => {
-        $('loaderText').textContent = 'Processing' + '.'.repeat((dots++ % 3) + 1);
-      }, 500);
-      return () => { clearInterval(int); clearInterval(textInt); };
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: (req, file) => {
+    if (file.fieldname === "categoryImage") {
+      return {
+        folder: "grocery_categories",
+        allowed_formats: ["jpg", "jpeg", "png", "webp"],
+        transformation: [{ width: 600, height: 600, crop: "fill" }],
+      };
     }
+    return {
+      folder: "grocery_items",
+      allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"],
+      transformation: [{ width: 800, height: 800, crop: "limit" }],
+    };
+  },
+});
 
-    function hideLoading() {
-      $('progressFill').style.width = '100%';
-      setTimeout(() => {
-        $('loadingOverlay').classList.remove('active');
-        $('progressFill').style.width = '0%';
-      }, 600);
-    }
+const upload = multer({ storage: storage });
 
-    // Toast notification
-    function showToast(message, type = 'info', duration = 4000) {
-      const container = $('toast-container');
-      const toast = document.createElement('div');
-      toast.className = `toast ${type}`;
-      toast.innerHTML = `
-        <span>${message}</span>
-        <span class="close-btn" onclick="this.parentElement.remove()">×</span>
-      `;
-      container.appendChild(toast);
-      setTimeout(() => toast.classList.add('show'), 80);
-      if (duration > 0) {
-        setTimeout(() => {
-          toast.classList.remove('show');
-          setTimeout(() => toast.remove(), 400);
-        }, duration);
-      }
-    }
+// =============== CORS ===============
+app.use(cors({
+  origin: [
+    "https://chatpoint1.onrender.com",
+    "https://chatpoint-3ycy.onrender.com",
+    "http://localhost:3000",
+    "http://localhost:5000",
+  ],
+  methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE", "PATCH"],
+  allowedHeaders: ["Content-Type", "Authorization", "x-user-id"],
+  credentials: true,
+  optionsSuccessStatus: 204
+}));
 
-    const isValidPhone = p => /^\d{10}$/.test(p.trim());
+app.options("*", cors());
 
-    // SIGNUP - Saves to MongoDB + localStorage (same format as before)
-    $('btnSignup').onclick = async () => {
-      const name = $('signupName').value.trim();
-      const phone = $('signupPhone').value.trim();
-      const password = $('signupPassword').value;
+// =============== MIDDLEWARE ===============
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(__dirname));
 
-      if (!name || !phone || !password) return showToast('Please fill all fields', 'error');
-      if (!isValidPhone(phone)) return showToast('Enter valid 10-digit phone number', 'error');
+// =============== MONGO DB CONNECTION ===============
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => {
+    console.error("MongoDB Error:", err);
+    process.exit(1);
+  });
 
-      const stopLoading = showLoading();
+// =============== MODELS ===============
+const User = mongoose.model(
+  "User",
+  new mongoose.Schema(
+    {
+      name: String,
+      phone: { type: String, required: true, unique: true },
+      password: String,
+      plainPassword: String,
+      isPremium: String,
+      premiumType: { type: String, enum: ["far", "local", null], default: null },
+    },
+    { timestamps: true }
+  )
+);
 
-      try {
-        const response = await fetch('/api/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, phone, password })
-        });
+const GroceryCategory = mongoose.model(
+  "GroceryCategory",
+  new mongoose.Schema({
+    name: { type: String, required: true, unique: true },
+    imageUrl: { type: String, required: true },
+  })
+);
 
-        const result = await response.json();
+const GroceryItem = mongoose.model(
+  "GroceryItem",
+  new mongoose.Schema({
+    category: { type: String, required: true },
+    name: { type: String, required: true },
+    price: { type: Number, required: true },
+    originalPrice: { type: Number },
+    offerPrice: { type: Number },
+    imageUrl: { type: String, required: true },
+  })
+);
 
-        if (result.success) {
-          // Save to localStorage - same format your other pages expect
-          localStorage.setItem('chatpoint_user', JSON.stringify({
-            name: result.user.name,
-            phone: result.user.phone,
-            _id: result.user._id || null  // _id from MongoDB
-          }));
+const Shop = mongoose.model(
+  "Shop",
+  new mongoose.Schema({
+    type: { type: String, default: "shop" },
+    shopName: String,
+    ownerName: String,
+    mobile: String,
+    items: [{ name: String, price: Number, description: String, imageUrl: [String] }],
+    date: { type: Date, default: Date.now },
+  })
+);
 
-          showToast(`Welcome ${name}! Account created successfully.`, 'success', 4000);
-          setTimeout(() => location.href = 'index.html', 1500);
-        } else {
-          showToast(result.message || 'Signup failed. Try again.', 'error');
+const Order = mongoose.model(
+  "Order",
+  new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
+    user: { name: String, phone: String },
+    shop: String,
+    items: [{ name: String, price: Number, quantity: Number }],
+    totalAmount: Number,
+    deliveryCharge: Number,
+    address: { name: String, phone: String, line1: String, line2: String },
+    paymentMethod: { type: String, default: "cash" },
+    status: { type: String, default: "pending" },
+    progress: { type: Number, default: 0 },
+    date: { type: Date, default: Date.now },
+    deliveredBy: { type: String, enum: ["Suraj", "Guru", null], default: null },
+    profitAmount: { type: Number, default: 0, min: 0 },
+  })
+);
+
+const Item = mongoose.model(
+  "Item",
+  new mongoose.Schema({
+    shop: { type: String, required: true, index: true },
+    name: { type: String, required: true },
+    originalPrice: { type: Number, required: true },
+    type: { type: String, enum: ["veg", "nonveg", ""], default: "" },
+    imageUrl: { type: String },
+    createdAt: { type: Date, default: Date.now },
+  })
+);
+
+// =============== ADMIN PASSWORD ===============
+const ADMIN_PASSWORD = "Brand";
+
+// =============== UNIVERSAL ORDER SAVE ===============
+const saveOrderUniversal = async (req, res) => {
+  try {
+    const body = req.body;
+    let userId = body.userId || body.user_id || null;
+    const name = body.name || body.customer_name;
+    const phone = body.phone || body.customer_phone;
+    const address1 = body.address1 || body.address || body.line1;
+    const address2 = body.address2 || body.line2 || "";
+    const grandTotal = Number(body.grandTotal || body.totalAmount || body.total);
+    const cart = body.cart || body.items;
+
+    if (!name || !phone || !address1) return res.status(400).json({ success: false, message: "Missing name, phone or address" });
+    if (!grandTotal || isNaN(grandTotal) || grandTotal <= 0) return res.status(400).json({ success: false, message: "Invalid total amount" });
+    if (!cart || typeof cart !== "object" || Object.keys(cart).length === 0) return res.status(400).json({ success: false, message: "Empty cart" });
+
+    let items = [];
+    let shopName = null;
+    for (const shop in cart) {
+      if (!shopName) shopName = shop;
+      for (const itemName in cart[shop]) {
+        const item = cart[shop][itemName];
+        const qty = item.qty || item.quantity || 0;
+        const price = Number(item.price);
+        if (qty > 0 && !isNaN(price)) {
+          items.push({ name: itemName, price, quantity: qty });
         }
-      } catch (err) {
-        showToast('Network error. Please check your connection.', 'error');
-        console.error(err);
-      } finally {
-        stopLoading();
-        hideLoading();
       }
-    };
+    }
 
-    // LOGIN - Checks MongoDB + saves to localStorage
-    $('btnLogin').onclick = async () => {
-      const phone = $('loginPhone').value.trim();
-      const password = $('loginPassword').value;
+    if (items.length === 0) return res.status(400).json({ success: false, message: "No valid items" });
 
-      if (!phone || !password) return showToast('Please fill all fields', 'error');
-      if (!isValidPhone(phone)) return showToast('Enter valid 10-digit phone number', 'error');
-
-      const stopLoading = showLoading();
-
-      try {
-        const response = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, password })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          // Save to localStorage - same format
-          localStorage.setItem('chatpoint_user', JSON.stringify({
-            name: result.user.name,
-            phone: result.user.phone,
-            _id: result.user._id || null
-          }));
-
-          showToast('Login successful! Redirecting...', 'success', 3000);
-          setTimeout(() => location.href = 'index.html', 1200);
-        } else {
-          showToast(result.message || 'Invalid phone number or password', 'error');
-        }
-      } catch (err) {
-        showToast('Network error. Please check your connection.', 'error');
-        console.error(err);
-      } finally {
-        stopLoading();
-        hideLoading();
-      }
-    };
-
-    // Toggle forms
-    $('showSignup').onclick = e => {
-      e.preventDefault();
-      $('loginForm').style.display = 'none';
-      $('signupForm').style.display = 'block';
-    };
-
-    $('showLogin').onclick = e => {
-      e.preventDefault();
-      $('signupForm').style.display = 'none';
-      $('loginForm').style.display = 'block';
-    };
-
-    // Enter key to submit
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        if ($('signupForm').style.display !== 'none') $('btnSignup').click();
-        else $('btnLogin').click();
-      }
+    const order = new Order({
+      userId: userId || null,
+      user: { name, phone },
+      shop: shopName || "ChatPoint",
+      items,
+      totalAmount: grandTotal,
+      deliveryCharge: grandTotal >= 69 ? 0 : 30,
+      address: { name, phone, line1: address1, line2: address2 },
+      paymentMethod: body.paymentMethod || "cash",
+      progress: 0,
     });
 
-    // If already logged in → redirect to home
-    window.addEventListener('load', () => {
-      if (localStorage.getItem('chatpoint_user')) {
-        location.href = 'index.html';
-      }
+    await order.save();
+    console.log(`NEW ORDER → #${order._id} | ₹${grandTotal} | ${name}`);
+    res.json({ success: true, orderId: order._id });
+  } catch (err) {
+    console.error("Order save error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// =============== API ROUTES (MUST BE BEFORE STATIC SERVING) ===============
+
+// User Signup
+app.post("/api/user/signup", async (req, res) => {
+  try {
+    const { name, phone, password } = req.body;
+    if (!name || !phone || !password) return res.status(400).json({ success: false, message: "All fields required" });
+
+    const exists = await User.findOne({ phone });
+    if (exists) return res.status(400).json({ success: false, message: "Phone already registered" });
+
+    const hash = crypto.createHash("sha256").update(password).digest("hex");
+    const user = new User({ name, phone, password: hash, plainPassword: password });
+    await user.save();
+
+    res.json({
+      success: true,
+      user: { _id: user._id.toString(), name: user.name, phone: user.phone }
     });
-  </script>
-</body>
-</html>
+  } catch (err) {
+    console.error("Signup error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// User Login
+app.post("/api/user/login", async (req, res) => {
+  try {
+    const { phone, password } = req.body;
+    const hash = crypto.createHash("sha256").update(password).digest("hex");
+    const user = await User.findOne({ phone, password: hash });
+
+    if (!user) return res.status(401).json({ success: false, message: "Wrong credentials" });
+
+    res.json({
+      success: true,
+      user: {
+        _id: user._id.toString(),
+        name: user.name,
+        phone: user.phone,
+        isPremium: user.isPremium === "yes",
+        premiumType: user.premiumType || null,
+      },
+    });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// Make user premium
+app.post("/api/admin/make-premium", async (req, res) => {
+  const { password, phone, premiumType } = req.body;
+  if (password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ success: false, message: "Wrong admin password" });
+  }
+  if (!["far", "local"].includes(premiumType)) {
+    return res.status(400).json({ success: false, message: "Invalid premiumType. Must be 'far' or 'local'" });
+  }
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { phone },
+      { $set: { isPremium: "yes", premiumType: premiumType } },
+      { new: true }
+    );
+    if (!updatedUser) return res.status(404).json({ success: false, message: "User not found" });
+    console.log(`User ${phone} upgraded to ${premiumType.toUpperCase()} PREMIUM`);
+    res.json({
+      success: true,
+      message: `User upgraded to ${premiumType.toUpperCase()} Premium!`,
+      user: updatedUser,
+    });
+  } catch (err) {
+    console.error("Make premium error:", err);
+    res.status(500).json({ success: false });
+  }
+});
+
+// Categories
+app.get("/api/categories", async (req, res) => {
+  try {
+    const cats = await GroceryCategory.find().sort({ name: 1 });
+    res.json({ success: true, categories: cats.map((c) => ({ name: c.name, imageUrl: c.imageUrl })) });
+  } catch (e) {
+    console.error(e);
+    res.json({ success: true, categories: [] });
+  }
+});
+
+// Items by category
+app.get("/api/items/:category", async (req, res) => {
+  try {
+    const category = decodeURIComponent(req.params.category);
+    const items = await GroceryItem.find({ category });
+    const formattedItems = items.map((item) => {
+      const obj = item.toObject();
+      return {
+        ...obj,
+        originalPrice: obj.originalPrice || obj.price,
+        offerPrice: obj.offerPrice || obj.price,
+      };
+    });
+    res.json({ success: true, items: formattedItems });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false });
+  }
+});
+
+// Admin add item
+app.post(
+  "/api/admin/add-item",
+  upload.fields([{ name: "image", maxCount: 1 }, { name: "categoryImage", maxCount: 1 }]),
+  async (req, res) => {
+    const { password, category, name, originalPrice, offerPrice } = req.body;
+    if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false, message: "Wrong password" });
+    try {
+      if (!req.files["image"] || !req.files["image"][0]) {
+        return res.status(400).json({ success: false, message: "Item image required" });
+      }
+      const itemImageUrl = req.files["image"][0].path;
+      if (req.files["categoryImage"] && req.files["categoryImage"][0]) {
+        const catImageUrl = req.files["categoryImage"][0].path;
+        await GroceryCategory.findOneAndUpdate(
+          { name: category.trim() },
+          { name: category.trim(), imageUrl: catImageUrl },
+          { upsert: true, new: true }
+        );
+      } else {
+        const existing = await GroceryCategory.findOne({ name: category.trim() });
+        if (!existing) return res.status(400).json({ success: false, message: "Category not found. Upload photo to create new." });
+      }
+      const newItem = new GroceryItem({
+        category: category.trim(),
+        name: name.trim(),
+        price: Number(offerPrice || originalPrice),
+        originalPrice: Number(originalPrice),
+        offerPrice: Number(offerPrice),
+        imageUrl: itemImageUrl,
+      });
+      await newItem.save();
+      res.json({ success: true, item: newItem });
+    } catch (e) {
+      console.error("Add item error:", e);
+      res.status(500).json({ success: false, message: e.message || "Server error" });
+    }
+  }
+);
+
+// Other admin routes...
+app.post("/api/admin/edit-item", async (req, res) => {
+  const { password, itemId, originalPrice, offerPrice } = req.body;
+  if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false });
+  try {
+    const updateData = {
+      originalPrice: originalPrice ? Number(originalPrice) : undefined,
+      offerPrice: offerPrice ? Number(offerPrice) : undefined,
+      price: offerPrice ? Number(offerPrice) : undefined,
+    };
+    Object.keys(updateData).forEach((key) => updateData[key] === undefined && delete updateData[key]);
+    const updated = await GroceryItem.findByIdAndUpdate(itemId, updateData, { new: true });
+    if (!updated) return res.status(404).json({ success: false });
+    res.json({ success: true, item: updated });
+  } catch (e) {
+    res.status(500).json({ success: false });
+  }
+});
+
+app.delete("/api/admin/delete-item/:id", async (req, res) => {
+  const { password } = req.query;
+  if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false });
+  try {
+    await GroceryItem.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ success: false });
+  }
+});
+
+// Menu endpoints
+app.get("/api/menu", async (req, res) => {
+  try {
+    const shop = req.query.shop?.trim();
+    if (!shop) return res.status(400).json({ success: false, message: "Shop name required" });
+    const items = await Item.find({ shop }).sort({ name: 1 }).lean();
+    res.json(items);
+  } catch (err) {
+    console.error("Get menu error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+app.post(
+  "/api/admin/add-menu-item",
+  upload.single("image"),
+  async (req, res) => {
+    const { password, shop, name, originalPrice, type } = req.body;
+    if (password !== ADMIN_PASSWORD) return res.status(401).json({ success: false, message: "Wrong admin password" });
+    if (!shop || !name || !originalPrice) return res.status(400).json({ success: false, message: "Missing required fields" });
+    try {
+      const itemData = {
+        shop: shop.trim(),
+        name: name.trim(),
+        originalPrice: Number(originalPrice),
+        type: type || "",
+      };
+      if (req.file) itemData.imageUrl = req.file.path;
+      const newItem = new Item(itemData);
+      await newItem.save();
+      res.json({ success: true, message: "Menu item added successfully", item: newItem });
+    } catch (err) {
+      console.error("Add menu item error:", err);
+      res.status(500).json({ success: false, message: "Server error" });
+    }
+  }
+);
+
+// Order routes (all use the same function)
+app.post("/api/save-order", saveOrderUniversal);
+app.post("/api/place-order", saveOrderUniversal);
+app.post("/api/checkout", saveOrderUniversal);
+app.post("/api/order", saveOrderUniversal);
+
+// My orders
+app.get("/api/my-orders", async (req, res) => {
+  try {
+    const userId = req.headers["x-user-id"];
+    let query = {};
+    if (userId) query = { userId };
+    const orders = await Order.find(query).sort({ date: -1 }).lean();
+    res.json({ success: true, orders });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false });
+  }
+});
+
+// More order routes...
+app.get("/api/delivery-orders", async (req, res) => {
+  try {
+    const orders = await Order.find({ status: { $in: ["pending", "confirmed"] } })
+      .sort({ date: -1 })
+      .limit(50)
+      .lean();
+    res.json({ success: true, orders });
+  } catch (e) {
+    res.status(500).json({ success: false });
+  }
+});
+
+app.get("/api/all-delivery-orders", async (req, res) => {
+  try {
+    const orders = await Order.find({})
+      .sort({ date: -1 })
+      .limit(1000)
+      .lean();
+    res.json({ success: true, orders });
+  } catch (e) {
+    res.status(500).json({ success: false });
+  }
+});
+
+app.post("/api/update-order-progress", async (req, res) => {
+  try {
+    const { orderId, progress } = req.body;
+    if (!orderId || progress < 0 || progress > 4) return res.status(400).json({ success: false, message: "Invalid data" });
+    const updated = await Order.findByIdAndUpdate(
+      orderId,
+      { progress: Number(progress) },
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ success: false, message: "Order not found" });
+    console.log(`Order ${orderId} → Progress ${progress}/4`);
+    res.json({ success: true, order: updated });
+  } catch (err) {
+    console.error("Progress update error:", err);
+    res.status(500).json({ success: false });
+  }
+});
+
+app.post("/api/update-order-status", async (req, res) => {
+  try {
+    const { orderId, status, deliveredBy, profitAmount } = req.body;
+    if (!orderId) return res.status(400).json({ success: false, message: "orderId is required" });
+
+    const updateData = {};
+    if (status) {
+      if (!["confirmed", "delivered", "cancelled"].includes(status)) {
+        return res.status(400).json({ success: false, message: "Invalid status value" });
+      }
+      updateData.status = status;
+    }
+    if (status === "delivered") {
+      if (!deliveredBy || !["Suraj", "Guru"].includes(deliveredBy)) {
+        return res.status(400).json({
+          success: false,
+          message: "When marking delivered, 'deliveredBy' must be 'Suraj' or 'Guru'",
+        });
+      }
+      if (profitAmount === undefined || typeof profitAmount !== "number" || profitAmount < 0) {
+        return res.status(400).json({
+          success: false,
+          message: "When marking delivered, 'profitAmount' must be a non-negative number",
+        });
+      }
+      updateData.deliveredBy = deliveredBy;
+      updateData.profitAmount = profitAmount;
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedOrder) return res.status(404).json({ success: false, message: "Order not found" });
+
+    console.log(
+      `Order ${orderId} updated → status: ${status || "unchanged"}, ` +
+      `deliveredBy: ${deliveredBy || "—"}, profit: ₹${profitAmount || "—"}`
+    );
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Update order status error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+app.delete("/api/delete-order", async (req, res) => {
+  try {
+    const { orderId } = req.body;
+    if (!orderId) return res.status(400).json({ success: false });
+    const result = await Order.findByIdAndDelete(orderId);
+    if (!result) return res.status(404).json({ success: false });
+    console.log(`Order ${orderId} DELETED`);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false });
+  }
+});
+
+app.get("/api/admin/users", async (req, res) => {
+  try {
+    const users = await User.find(
+      {},
+      { name: 1, phone: 1, isPremium: 1, premiumType: 1, plainPassword: 1, _id: 0 }
+    ).sort({ createdAt: -1 });
+    const safeUsers = users.map((u) => ({
+      name: u.name,
+      phone: u.phone,
+      isPremium: u.isPremium,
+      premiumType: u.premiumType,
+      plainPassword: u.plainPassword || "Not available",
+    }));
+    res.json({ users: safeUsers });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false });
+  }
+});
+
+// =============== SERVE PAGES (LAST) ===============
+const pages = [
+  "index", "gitems", "adminportal", "gcart", "privacy", "delivery", "orders",
+  "cart", "payment", "login", "admin", "items", "tracking", "categories", "pindex",
+];
+
+pages.forEach((p) => {
+  const route = p === "index" ? "/" : `/${p}.html`;
+  const file = p === "index" ? "index.html" : `${p}.html`;
+  app.get(route, (req, res) => res.sendFile(path.join(__dirname, file)));
+});
+
+// Catch-all fallback
+app.get("*", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
+
+// Start server
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`API base: http://localhost:${PORT}/api`);
+});
